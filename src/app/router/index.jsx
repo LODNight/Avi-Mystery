@@ -10,7 +10,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { isAdmin, isLearner } from '../../constants/roles.js';
 import { LearnerLayout } from '../layouts/LearnerLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
-import { PageLoader } from '../../components/ui/Skeleton.jsx';
+import { PageLoader, PageSkeleton } from '../../components/ui/Skeleton.jsx';
 
 // Pages (lazy không cần thiết cho MVP)
 import { LoginPage, RegisterPage } from '../../features/auth/LoginPage.jsx';
@@ -25,7 +25,7 @@ import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
  */
 function RequireAuth({ children }) {
   const { isLoading, isAuthenticated } = useAuth();
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <PageSkeleton />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 }
@@ -61,7 +61,7 @@ function RequireAdmin() {
  */
 function RootRedirect() {
   const { isLoading, isAuthenticated, user } = useAuth();
-  if (isLoading) return <PageLoader />;
+  if (isLoading) return <PageSkeleton />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return isAdmin(user?.role)
     ? <Navigate to="/admin" replace />
@@ -123,17 +123,22 @@ export function AppRouter() {
   );
 }
 
-/* ─── Placeholder tạm cho các route chưa implement ─── */
+/* ─── Placeholder cho các route đang phát triển ─── */
 function PlaceholderPage({ title }) {
   return (
-    <div className="page-container">
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mb-4">
-          <span className="text-2xl">🚧</span>
+    <div className="mx-auto max-w-7xl flex flex-col gap-6 animate-fade-in">
+      <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card/60 p-8 text-center shadow-sm">
+        <div className="grid size-14 place-items-center rounded-2xl bg-amber-500/15 font-mono text-2xl text-amber-600 dark:text-amber-400 mb-3">
+          🚧
         </div>
-        <h1 className="text-lg font-semibold text-slate-900 mb-2">{title}</h1>
-        <p className="text-sm text-slate-500">Trang này đang được phát triển trong sprint tiếp theo.</p>
+        <h2 className="text-xl font-bold text-foreground">{title}</h2>
+        <p className="mt-1 text-sm text-muted-foreground max-w-md">
+          Tính năng này đang được phát triển trong Sprint tiếp theo. Dưới đây là mô phỏng bố cục dự kiến của trang.
+        </p>
       </div>
+
+      {/* Skeleton Preview Grid */}
+      <PageSkeleton />
     </div>
   );
 }

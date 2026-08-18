@@ -19,7 +19,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
 import { missionService, courseService } from '../../services/index.js';
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
-import { SkeletonCard, Skeleton } from '../../components/ui/Skeleton.jsx';
+import { SkeletonCard, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 
 export function DashboardPage() {
@@ -42,6 +42,10 @@ export function DashboardPage() {
   const xpPercent = user
     ? Math.min(100, Math.round((user.xp / (user.xpToNextLevel || 1000)) * 100))
     : 0;
+
+  if (courses.loading && recommended.loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">

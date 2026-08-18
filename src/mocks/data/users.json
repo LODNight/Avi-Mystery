@@ -1,0 +1,44 @@
+[
+  {
+    "id": "user-001",
+    "email": "learner@avimystery.dev",
+    "password": "demo1234",
+    "name": "Minh Quân",
+    "role": "learner",
+    "avatar": null,
+    "level": 3,
+    "xp": 720,
+    "xpToNextLevel": 1000,
+    "streak": 5,
+    "joinedAt": "2026-07-01T08:00:00Z",
+    "lastActiveAt": "2026-08-17T10:30:00Z"
+  },
+  {
+    "id": "user-002",
+    "email": "admin@avimystery.dev",
+    "password": "admin1234",
+    "name": "Phương Anh",
+    "role": "content_admin",
+    "avatar": null,
+    "level": 1,
+    "xp": 0,
+    "xpToNextLevel": 1000,
+    "streak": 0,
+    "joinedAt": "2026-06-15T08:00:00Z",
+    "lastActiveAt": "2026-08-17T09:00:00Z"
+  },
+  {
+    "id": "user-003",
+    "email": "superadmin@avimystery.dev",
+    "password": "super1234",
+    "name": "Tuấn Kiệt",
+    "role": "super_admin",
+    "avatar": null,
+    "level": 1,
+    "xp": 0,
+    "xpToNextLevel": 1000,
+    "streak": 0,
+    "joinedAt": "2026-06-01T08:00:00Z",
+    "lastActiveAt": "2026-08-17T07:00:00Z"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "step-001",
+    "missionId": "mission-001",
+    "title": "Tính tổng doanh thu tháng 3",
+    "instruction": "Trong ô B15, hãy viết công thức để tính tổng doanh thu của tháng 3 (March). Dùng hàm SUMIF với cột month là cột A và cột revenue là cột D.",
+    "answerType": "formula",
+    "targetCell": "B15",
+    "starterContent": "",
+    "orderIndex": 1,
+    "checkerConfig": {
+      "checkType": "formula_and_result",
+      "requiredFunctions": ["SUMIF"],
+      "forbiddenFunctions": [],
+      "expectedResult": 125000000,
+      "tolerance": 0.001,
+      "caseSensitive": false
+    }
+  },
+  {
+    "id": "step-002",
+    "missionId": "mission-001",
+    "title": "So sánh với tháng 2",
+    "instruction": "Trong ô B16, hãy tính phần trăm thay đổi so với tháng 2. Tháng 2 đã được tính ở ô B14. Công thức: (Tháng3 - Tháng2) / Tháng2.",
+    "answerType": "formula",
+    "targetCell": "B16",
+    "starterContent": "",
+    "orderIndex": 2,
+    "checkerConfig": {
+      "checkType": "result_only",
+      "requiredFunctions": [],
+      "forbiddenFunctions": [],
+      "expectedResult": -0.083,
+      "tolerance": 0.005,
+      "caseSensitive": false
+    }
+  },
+  {
+    "id": "step-003",
+    "missionId": "mission-013",
+    "title": "Tổng doanh thu theo chi nhánh",
+    "instruction": "Viết câu SQL để tính tổng doanh thu (SUM of revenue) theo từng chi nhánh (branch). Sắp xếp từ thấp đến cao.",
+    "answerType": "sql",
+    "targetCell": null,
+    "starterContent": "SELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\n-- Thêm GROUP BY và ORDER BY",
+    "orderIndex": 1,
+    "checkerConfig": {
+      "checkType": "result_set",
+      "expectedColumns": ["branch", "total_revenue"],
+      "orderMatters": true,
+      "requiredConstructs": ["GROUP_BY"],
+      "forbiddenConstructs": ["UPDATE", "DELETE", "DROP", "INSERT"],
+      "numericTolerance": 0.001,
+      "maxExecutionMs": 2000,
+      "maxRows": 500
+    }
+  }
+]

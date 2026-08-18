@@ -1,0 +1,68 @@
+[
+  {
+    "id": "ch-001",
+    "courseId": "course-001",
+    "title": "Chương 1: Những con số biết nói",
+    "description": "Học cách tính toán cơ bản và hiểu ý nghĩa của số liệu trong kinh doanh.",
+    "orderIndex": 1,
+    "unlockRule": "none",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 90
+  },
+  {
+    "id": "ch-002",
+    "courseId": "course-001",
+    "title": "Chương 2: Điều kiện và logic",
+    "description": "Sử dụng IF, COUNTIF và SUMIF để lọc và tổng hợp dữ liệu theo điều kiện.",
+    "orderIndex": 2,
+    "unlockRule": "complete_previous",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 120
+  },
+  {
+    "id": "ch-003",
+    "courseId": "course-001",
+    "title": "Chương 3: Tìm kiếm và kết hợp",
+    "description": "Dùng VLOOKUP và INDEX/MATCH để liên kết dữ liệu từ nhiều bảng.",
+    "orderIndex": 3,
+    "unlockRule": "complete_previous",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 150
+  },
+  {
+    "id": "ch-004",
+    "courseId": "course-002",
+    "title": "Chương 1: Bắt đầu điều tra",
+    "description": "Làm quen với SELECT, WHERE và cách đọc dữ liệu từ database.",
+    "orderIndex": 1,
+    "unlockRule": "none",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 90
+  },
+  {
+    "id": "ch-005",
+    "courseId": "course-002",
+    "title": "Chương 2: Tổng hợp manh mối",
+    "description": "GROUP BY, COUNT, SUM và các hàm tổng hợp để phân tích xu hướng.",
+    "orderIndex": 2,
+    "unlockRule": "complete_previous",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 120
+  },
+  {
+    "id": "ch-006",
+    "courseId": "course-002",
+    "title": "Chương 3: Kết nối bằng chứng",
+    "description": "JOIN nhiều bảng để tìm mối quan hệ ẩn trong dữ liệu.",
+    "orderIndex": 3,
+    "unlockRule": "complete_previous",
+    "status": "published",
+    "totalMissions": 3,
+    "estimatedDuration": 150
+  }
+]

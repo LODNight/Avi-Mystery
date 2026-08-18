@@ -1,0 +1,371 @@
+[
+  {
+    "id": "mission-001",
+    "chapterId": "ch-001",
+    "courseId": "course-001",
+    "title": "Vì sao doanh thu tháng 3 giảm?",
+    "story": "Giám đốc tài chính gọi điện cho bạn lúc 8 giờ sáng: 'Doanh thu tháng 3 của chúng ta có vẻ thấp hơn kỳ vọng. Tôi cần biết con số chính xác ngay bây giờ.' Bạn mở file Excel, nhìn vào hàng dữ liệu bán hàng hàng tháng...",
+    "objective": "Tính tổng doanh thu tháng 3 và so sánh với tháng 2.",
+    "tool": "excel",
+    "difficulty": "easy",
+    "estimatedDuration": 15,
+    "datasetId": "ds-001",
+    "rewardXp": 100,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Sales",
+      "targetCell": "B15",
+      "hint": "Dùng hàm SUMIF để tính tổng theo điều kiện tháng"
+    }
+  },
+  {
+    "id": "mission-002",
+    "chapterId": "ch-001",
+    "courseId": "course-001",
+    "title": "Chi nhánh nào bán tốt nhất?",
+    "story": "Hội đồng quản trị muốn biết chi nhánh nào đang hoạt động hiệu quả nhất để nhân rộng mô hình. Bạn có bảng dữ liệu doanh thu theo từng chi nhánh trong 6 tháng đầu năm.",
+    "objective": "Tìm chi nhánh có tổng doanh thu cao nhất bằng SUM và MAX.",
+    "tool": "excel",
+    "difficulty": "easy",
+    "estimatedDuration": 20,
+    "datasetId": "ds-001",
+    "rewardXp": 120,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Sales",
+      "targetCell": "E5",
+      "hint": "Dùng hàm MAX để tìm giá trị lớn nhất"
+    }
+  },
+  {
+    "id": "mission-003",
+    "chapterId": "ch-001",
+    "courseId": "course-001",
+    "title": "Trung bình đơn hàng của chúng ta là bao nhiêu?",
+    "story": "Trưởng phòng kinh doanh hỏi: 'Một đơn hàng trung bình của chúng ta đáng giá bao nhiêu?' Bạn phải tính giá trị đơn hàng trung bình từ dữ liệu thực tế.",
+    "objective": "Tính giá trị đơn hàng trung bình và phân phối theo nhóm.",
+    "tool": "excel",
+    "difficulty": "easy",
+    "estimatedDuration": 15,
+    "datasetId": "ds-001",
+    "rewardXp": 100,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Sales",
+      "targetCell": "C20",
+      "hint": "Dùng hàm AVERAGE để tính trung bình"
+    }
+  },
+  {
+    "id": "mission-004",
+    "chapterId": "ch-002",
+    "courseId": "course-001",
+    "title": "Bao nhiêu đơn hàng vượt chỉ tiêu?",
+    "story": "Công ty đặt chỉ tiêu doanh thu 10 triệu mỗi đơn hàng. Quản lý muốn biết có bao nhiêu đơn đạt hoặc vượt con số này.",
+    "objective": "Đếm số đơn hàng có doanh thu >= 10,000,000 VNĐ.",
+    "tool": "excel",
+    "difficulty": "medium",
+    "estimatedDuration": 20,
+    "datasetId": "ds-001",
+    "rewardXp": 150,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Sales",
+      "targetCell": "D10",
+      "hint": "Dùng hàm COUNTIF với điều kiện >= 10000000"
+    }
+  },
+  {
+    "id": "mission-005",
+    "chapterId": "ch-002",
+    "courseId": "course-001",
+    "title": "Tổng doanh thu của sản phẩm A",
+    "story": "Phòng marketing muốn đánh giá hiệu suất từng dòng sản phẩm. Bạn cần tính tổng doanh thu riêng cho sản phẩm 'Laptop Pro'.",
+    "objective": "Tính tổng doanh thu chỉ cho sản phẩm 'Laptop Pro' bằng SUMIF.",
+    "tool": "excel",
+    "difficulty": "medium",
+    "estimatedDuration": 25,
+    "datasetId": "ds-001",
+    "rewardXp": 150,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Sales",
+      "targetCell": "F8",
+      "hint": "SUMIF(range, criteria, sum_range)"
+    }
+  },
+  {
+    "id": "mission-006",
+    "chapterId": "ch-002",
+    "courseId": "course-001",
+    "title": "Khách hàng VIP của chúng ta",
+    "story": "Chúng ta định nghĩa khách hàng VIP là người có tổng giá trị mua hàng trên 50 triệu. Hãy phân loại từng khách hàng.",
+    "objective": "Dùng hàm IF để gắn nhãn VIP / Regular cho từng khách hàng.",
+    "tool": "excel",
+    "difficulty": "medium",
+    "estimatedDuration": 20,
+    "datasetId": "ds-002",
+    "rewardXp": 150,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Customers",
+      "targetCell": "D2",
+      "hint": "=IF(C2>=50000000, \"VIP\", \"Regular\")"
+    }
+  },
+  {
+    "id": "mission-007",
+    "chapterId": "ch-003",
+    "courseId": "course-001",
+    "title": "Tìm thông tin khách hàng từ mã đơn hàng",
+    "story": "Hệ thống CRM bị lỗi, bạn phải tra cứu thủ công thông tin khách hàng từ mã đơn hàng trong hai bảng riêng biệt.",
+    "objective": "Dùng VLOOKUP để lấy tên và email khách hàng từ bảng Orders sang bảng Customers.",
+    "tool": "excel",
+    "difficulty": "hard",
+    "estimatedDuration": 30,
+    "datasetId": "ds-002",
+    "rewardXp": 200,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Orders",
+      "targetCell": "E2",
+      "hint": "=VLOOKUP(lookup_value, table_array, col_index_num, 0)"
+    }
+  },
+  {
+    "id": "mission-008",
+    "chapterId": "ch-003",
+    "courseId": "course-001",
+    "title": "Hàng tồn kho nào cần nhập thêm?",
+    "story": "Kho hàng đang cạn một số mặt hàng. Bạn cần tự động check xem sản phẩm nào có tồn kho dưới mức tối thiểu và trả về tên sản phẩm đó.",
+    "objective": "Kết hợp INDEX + MATCH để tìm sản phẩm có tồn kho thấp nhất.",
+    "tool": "excel",
+    "difficulty": "hard",
+    "estimatedDuration": 35,
+    "datasetId": "ds-001",
+    "rewardXp": 250,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Inventory",
+      "targetCell": "B5",
+      "hint": "=INDEX(product_range, MATCH(MIN(stock_range), stock_range, 0))"
+    }
+  },
+  {
+    "id": "mission-009",
+    "chapterId": "ch-003",
+    "courseId": "course-001",
+    "title": "Báo cáo tổng hợp cuối kỳ",
+    "story": "Đây là nhiệm vụ cuối cùng của khóa học. Bạn phải tổng hợp toàn bộ kiến thức: tính tổng doanh thu, tìm top sản phẩm, phân loại khách hàng và tra cứu thông tin liên quan.",
+    "objective": "Hoàn thành báo cáo tổng hợp sử dụng SUM, MAX, SUMIF, IF, VLOOKUP.",
+    "tool": "excel",
+    "difficulty": "hard",
+    "estimatedDuration": 45,
+    "datasetId": "ds-001",
+    "rewardXp": 300,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "targetSheet": "Report",
+      "targetCell": "C3",
+      "hint": "Kết hợp nhiều hàm, bắt đầu từ tổng doanh thu"
+    }
+  },
+  {
+    "id": "mission-010",
+    "chapterId": "ch-004",
+    "courseId": "course-002",
+    "title": "Khám phá dữ liệu bán hàng",
+    "story": "Bạn vừa được tuyển làm Data Analyst cho một công ty bán lẻ. Nhiệm vụ đầu tiên: xem qua dữ liệu bán hàng để hiểu cấu trúc và nội dung.",
+    "objective": "Viết câu SELECT cơ bản để xem toàn bộ bảng sales và lọc theo cột cụ thể.",
+    "tool": "sql",
+    "difficulty": "easy",
+    "estimatedDuration": 15,
+    "datasetId": "ds-001",
+    "rewardXp": 100,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "-- Hãy xem toàn bộ dữ liệu trong bảng sales\nSELECT * FROM sales;",
+      "hint": "Dùng SELECT cột1, cột2 FROM bảng để chọn cột cụ thể"
+    }
+  },
+  {
+    "id": "mission-011",
+    "chapterId": "ch-004",
+    "courseId": "course-002",
+    "title": "Tìm đơn hàng có giá trị cao",
+    "story": "Giám đốc muốn review lại các đơn hàng có giá trị lớn. Hãy lọc ra các đơn hàng trên 5 triệu đồng.",
+    "objective": "Dùng WHERE để lọc đơn hàng có revenue > 5,000,000.",
+    "tool": "sql",
+    "difficulty": "easy",
+    "estimatedDuration": 15,
+    "datasetId": "ds-001",
+    "rewardXp": 100,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "-- Lọc đơn hàng có doanh thu cao\nSELECT * FROM sales\nWHERE -- thêm điều kiện của bạn ở đây",
+      "hint": "WHERE revenue > 5000000"
+    }
+  },
+  {
+    "id": "mission-012",
+    "chapterId": "ch-004",
+    "courseId": "course-002",
+    "title": "Sản phẩm nào chúng ta đang bán?",
+    "story": "Phòng marketing cần danh sách đầy đủ các sản phẩm hiện đang được bán, không trùng lặp.",
+    "objective": "Dùng DISTINCT để lấy danh sách sản phẩm không trùng.",
+    "tool": "sql",
+    "difficulty": "easy",
+    "estimatedDuration": 10,
+    "datasetId": "ds-001",
+    "rewardXp": 80,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "-- Lấy danh sách sản phẩm không trùng lặp\nSELECT -- thêm DISTINCT ở đây\nFROM sales;",
+      "hint": "SELECT DISTINCT product_name FROM sales"
+    }
+  },
+  {
+    "id": "mission-013",
+    "chapterId": "ch-005",
+    "courseId": "course-002",
+    "title": "Chi nhánh nào đang hoạt động kém?",
+    "story": "CEO yêu cầu một báo cáo chi tiết về hiệu suất từng chi nhánh. Bạn cần tính tổng doanh thu theo từng chi nhánh và xếp hạng chúng.",
+    "objective": "Dùng GROUP BY để tính tổng doanh thu theo branch, sắp xếp từ thấp đến cao.",
+    "tool": "sql",
+    "difficulty": "medium",
+    "estimatedDuration": 25,
+    "datasetId": "ds-001",
+    "rewardXp": 180,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "-- Tổng doanh thu theo chi nhánh\nSELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\n-- GROUP BY ở đây\n-- ORDER BY ở đây",
+      "hint": "GROUP BY branch ORDER BY total_revenue ASC"
+    }
+  },
+  {
+    "id": "mission-014",
+    "chapterId": "ch-005",
+    "courseId": "course-002",
+    "title": "Chi nhánh nào dưới chỉ tiêu?",
+    "story": "Chỉ tiêu doanh thu mỗi chi nhánh là 50 triệu/tháng. Cần tìm các chi nhánh chưa đạt.",
+    "objective": "Dùng HAVING để lọc chi nhánh có tổng doanh thu < 50,000,000.",
+    "tool": "sql",
+    "difficulty": "medium",
+    "estimatedDuration": 25,
+    "datasetId": "ds-001",
+    "rewardXp": 180,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "SELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY branch\n-- Thêm HAVING ở đây để lọc chi nhánh dưới chỉ tiêu",
+      "hint": "HAVING SUM(revenue) < 50000000"
+    }
+  },
+  {
+    "id": "mission-015",
+    "chapterId": "ch-005",
+    "courseId": "course-002",
+    "title": "Top 5 sản phẩm bán chạy",
+    "story": "Phòng supply chain cần biết 5 sản phẩm bán chạy nhất để ưu tiên nhập hàng.",
+    "objective": "Dùng COUNT, GROUP BY và LIMIT để tìm top 5 sản phẩm.",
+    "tool": "sql",
+    "difficulty": "medium",
+    "estimatedDuration": 20,
+    "datasetId": "ds-001",
+    "rewardXp": 150,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "SELECT product_name,\n       COUNT(*) AS order_count\nFROM sales\n-- GROUP BY ở đây\n-- ORDER BY ở đây\n-- LIMIT ở đây",
+      "hint": "GROUP BY product_name ORDER BY order_count DESC LIMIT 5"
+    }
+  },
+  {
+    "id": "mission-016",
+    "chapterId": "ch-006",
+    "courseId": "course-002",
+    "title": "Ai là khách hàng của chúng ta?",
+    "story": "Database có hai bảng riêng: orders và customers. Bạn cần kết hợp để lấy tên khách hàng và giá trị đơn hàng của họ.",
+    "objective": "Dùng INNER JOIN để kết hợp bảng orders với bảng customers.",
+    "tool": "sql",
+    "difficulty": "hard",
+    "estimatedDuration": 30,
+    "datasetId": "ds-002",
+    "rewardXp": 250,
+    "orderIndex": 1,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "SELECT customers.name,\n       orders.order_value\nFROM orders\n-- JOIN bảng customers ở đây",
+      "hint": "INNER JOIN customers ON orders.customer_id = customers.id"
+    }
+  },
+  {
+    "id": "mission-017",
+    "chapterId": "ch-006",
+    "courseId": "course-002",
+    "title": "Khách hàng nào chưa mua hàng?",
+    "story": "Marketing muốn liên hệ lại những khách hàng đã đăng ký nhưng chưa từng mua hàng để gửi offer đặc biệt.",
+    "objective": "Dùng LEFT JOIN + IS NULL để tìm khách hàng chưa có đơn hàng.",
+    "tool": "sql",
+    "difficulty": "hard",
+    "estimatedDuration": 30,
+    "datasetId": "ds-002",
+    "rewardXp": 280,
+    "orderIndex": 2,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "SELECT customers.name, customers.email\nFROM customers\n-- LEFT JOIN orders ở đây\nWHERE -- điều kiện tìm khách chưa mua hàng",
+      "hint": "LEFT JOIN orders ON customers.id = orders.customer_id WHERE orders.id IS NULL"
+    }
+  },
+  {
+    "id": "mission-018",
+    "chapterId": "ch-006",
+    "courseId": "course-002",
+    "title": "Báo cáo điều tra tổng thể",
+    "story": "Đây là vụ án cuối cùng. Bạn cần kết hợp toàn bộ kỹ năng SQL để viết một báo cáo toàn diện: tổng hợp, lọc điều kiện, JOIN và sắp xếp.",
+    "objective": "Viết một query phức tạp kết hợp JOIN, GROUP BY, HAVING và ORDER BY.",
+    "tool": "sql",
+    "difficulty": "hard",
+    "estimatedDuration": 45,
+    "datasetId": "ds-002",
+    "rewardXp": 400,
+    "orderIndex": 3,
+    "status": "published",
+    "version": 1,
+    "starterContent": {
+      "starterSql": "-- Báo cáo tổng hợp: khách hàng VIP\n-- Tìm khách hàng có tổng giá trị đơn hàng >= 50 triệu\nSELECT -- cột cần hiển thị\nFROM -- bắt đầu từ bảng nào\n-- JOIN\n-- GROUP BY\n-- HAVING\n-- ORDER BY",
+      "hint": "Bắt đầu bằng JOIN customers và orders, sau đó GROUP BY customer, HAVING SUM >= 50000000"
+    }
+  }
+]

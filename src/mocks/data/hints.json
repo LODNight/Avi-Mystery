@@ -1,0 +1,44 @@
+[
+  {
+    "id": "hint-001",
+    "stepId": "step-001",
+    "level": 1,
+    "content": "Hàm SUMIF có cú pháp: SUMIF(range, criteria, sum_range). Trong đó range là vùng để kiểm tra điều kiện.",
+    "xpPenalty": 10
+  },
+  {
+    "id": "hint-002",
+    "stepId": "step-001",
+    "level": 2,
+    "content": "Cột A chứa tên tháng (\"March\", \"February\"...). Cột D chứa doanh thu. Hãy dùng SUMIF để tổng cột D với điều kiện cột A = \"March\".",
+    "xpPenalty": 20
+  },
+  {
+    "id": "hint-003",
+    "stepId": "step-001",
+    "level": 3,
+    "content": "Công thức hoàn chỉnh: =SUMIF(A:A, \"March\", D:D)",
+    "xpPenalty": 40
+  },
+  {
+    "id": "hint-004",
+    "stepId": "step-003",
+    "level": 1,
+    "content": "Dùng GROUP BY để nhóm dữ liệu theo một cột. Sau SELECT và FROM, thêm GROUP BY tên_cột.",
+    "xpPenalty": 10
+  },
+  {
+    "id": "hint-005",
+    "stepId": "step-003",
+    "level": 2,
+    "content": "Sau GROUP BY branch, thêm ORDER BY total_revenue ASC để sắp xếp từ thấp đến cao.",
+    "xpPenalty": 20
+  },
+  {
+    "id": "hint-006",
+    "stepId": "step-003",
+    "level": 3,
+    "content": "Câu SQL hoàn chỉnh:\nSELECT branch, SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY branch\nORDER BY total_revenue ASC;",
+    "xpPenalty": 40
+  }
+]

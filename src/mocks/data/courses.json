@@ -1,0 +1,53 @@
+[
+  {
+    "id": "course-001",
+    "slug": "excel-adventure",
+    "title": "Excel Adventure",
+    "description": "Khám phá sức mạnh của Excel thông qua các tình huống kinh doanh thực tế. Từ tính toán cơ bản đến phân tích dữ liệu nâng cao.",
+    "tool": "excel",
+    "difficulty": "beginner",
+    "thumbnail": null,
+    "estimatedDuration": 600,
+    "totalChapters": 3,
+    "totalMissions": 9,
+    "status": "published",
+    "version": 1,
+    "createdBy": "user-002",
+    "createdAt": "2026-07-01T08:00:00Z",
+    "updatedAt": "2026-08-10T12:00:00Z"
+  },
+  {
+    "id": "course-002",
+    "slug": "sql-investigation",
+    "title": "SQL Investigation",
+    "description": "Trở thành thám tử dữ liệu với SQL. Viết query để tìm manh mối, phân tích hành vi khách hàng và đưa ra quyết định kinh doanh.",
+    "tool": "sql",
+    "difficulty": "beginner",
+    "thumbnail": null,
+    "estimatedDuration": 720,
+    "totalChapters": 3,
+    "totalMissions": 9,
+    "status": "published",
+    "version": 1,
+    "createdBy": "user-002",
+    "createdAt": "2026-07-05T08:00:00Z",
+    "updatedAt": "2026-08-12T10:00:00Z"
+  },
+  {
+    "id": "course-003",
+    "slug": "advanced-excel",
+    "title": "Advanced Excel: Data Mastery",
+    "description": "Khoá học nâng cao về Excel dành cho người đã nắm vững cơ bản.",
+    "tool": "excel",
+    "difficulty": "intermediate",
+    "thumbnail": null,
+    "estimatedDuration": 900,
+    "totalChapters": 0,
+    "totalMissions": 0,
+    "status": "draft",
+    "version": 1,
+    "createdBy": "user-002",
+    "createdAt": "2026-08-15T08:00:00Z",
+    "updatedAt": "2026-08-15T08:00:00Z"
+  }
+]

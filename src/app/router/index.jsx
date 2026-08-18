@@ -13,7 +13,7 @@ import { AdminLayout } from '../layouts/AdminLayout.jsx';
 import { PageLoader } from '../../components/ui/Skeleton.jsx';
 
 // Pages (lazy không cần thiết cho MVP)
-import { LoginPage } from '../../features/auth/LoginPage.jsx';
+import { LoginPage, RegisterPage } from '../../features/auth/LoginPage.jsx';
 import { DashboardPage } from '../../pages/learner/DashboardPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
@@ -76,6 +76,7 @@ export function AppRouter() {
       <Routes>
         {/* Public */}
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Root redirect */}
         <Route path="/" element={<RootRedirect />} />

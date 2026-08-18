@@ -33,6 +33,40 @@ export const mockAuthService = {
     return { data: safeUser, error: null };
   },
 
+  async register({ name, email, password }) {
+    await delay();
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    // Kiểm tra email trùng
+    const existing = usersData.find(
+      (u) => u.email.toLowerCase() === normalizedEmail
+    );
+    if (existing) {
+      return { data: null, error: 'Email này đã được sử dụng. Vui lòng thử email khác hoặc đăng nhập.' };
+    }
+
+    const newUser = {
+      id: `user-${Date.now()}`,
+      name: name.trim(),
+      email: normalizedEmail,
+      role: 'learner',
+      avatar: null,
+      level: 1,
+      xp: 100,
+      xpToNextLevel: 1000,
+      streak: 1,
+    };
+
+    // Thêm vào usersData mảng trong bộ nhớ
+    usersData.push({ ...newUser, password });
+
+    // Lưu session
+    storage.set(SESSION_KEY, newUser);
+
+    return { data: newUser, error: null };
+  },
+
   async logout() {
     await delay(100);
     storage.remove(SESSION_KEY);

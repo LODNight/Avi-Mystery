@@ -1,34 +1,53 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
+  Zap,
   LayoutDashboard,
-  BookOpen,
-  Layers,
-  Target,
-  Database,
+  FileSpreadsheet,
   Users,
   BarChart3,
-  Settings,
   LogOut,
-  Shield,
-  ExternalLink,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  PanelLeft,
+  ChevronLeft,
+  ChevronRight,
+  Settings,
+  Database,
+  Layers,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
+import { useTheme } from '../providers/ThemeProvider.jsx';
 
-const navItems = [
-  { to: '/admin',          label: 'Tổng quan',   Icon: LayoutDashboard, end: true },
-  { to: '/admin/courses',  label: 'Khóa học',    Icon: BookOpen         },
-  { to: '/admin/chapters', label: 'Chương học',  Icon: Layers           },
-  { to: '/admin/missions', label: 'Nhiệm vụ',    Icon: Target           },
-  { to: '/admin/datasets', label: 'Dataset',     Icon: Database         },
-  { to: '/admin/learners', label: 'Học viên',    Icon: Users            },
-  { to: '/admin/analytics',label: 'Phân tích',   Icon: BarChart3        },
-  { to: '/admin/settings', label: 'Cài đặt',     Icon: Settings         },
+const adminNav = [
+  { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
+  { label: 'Quản lý khóa học', to: '/admin/courses', icon: FileSpreadsheet },
+  { label: 'Quản lý chương', to: '/admin/chapters', icon: Layers },
+  { label: 'Quản lý Dataset', to: '/admin/datasets', icon: Database },
+  { label: 'Học viên', to: '/admin/learners', icon: Users },
+  { label: 'Phân tích', to: '/admin/analytics', icon: BarChart3 },
+  { label: 'Cài đặt', to: '/admin/settings', icon: Settings },
 ];
 
 export function AdminLayout({ children }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('avi_admin_sidebar_collapsed') === 'true';
+    }
+    return false;
+  });
+
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    localStorage.setItem('avi_admin_sidebar_collapsed', collapsed ? 'true' : 'false');
+  }, [collapsed]);
 
   async function handleLogout() {
     await logout();
@@ -37,113 +56,204 @@ export function AdminLayout({ children }) {
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
-    : '?';
+    : 'AD';
+
+  const activeNavItem = adminNav.find((item) => item.to === location.pathname);
+  const pageTitle = activeNavItem ? activeNavItem.label : 'Quản trị hệ thống';
 
   return (
-    <div className="app-shell">
-      {/* ── Admin Sidebar ── */}
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
+      {/* Mobile Backdrop */}
+      {mobileOpen && (
+        <button
+          aria-label="Đóng menu điều hướng"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* ── Sidebar ── */}
       <aside
-        className="sidebar flex-shrink-0"
-        style={{ background: '#0f172a' }}
-        aria-label="Admin navigation"
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar py-5 transition-all duration-300 ease-in-out lg:translate-x-0 ${
+          collapsed ? 'w-20 px-3.5' : 'w-72 px-4'
+        } ${mobileOpen ? 'translate-x-0 w-72 px-4' : '-translate-x-full'}`}
       >
-        {/* Logo + Admin indicator */}
-        <div className="px-4 py-4 border-b border-slate-800">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 bg-secondary-600 rounded-lg flex items-center justify-center shrink-0">
-              <Shield size={15} className="text-white" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm font-bold text-white leading-tight">AviMystery</p>
-              <p className="text-xs text-secondary-400">Admin Panel</p>
-            </div>
+        {/* Brand Header */}
+        <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'justify-between px-1'}`}>
+          <Link
+            to="/admin"
+            className="flex items-center gap-3 min-w-0"
+            onClick={() => setMobileOpen(false)}
+            title="AviAdmin Workspace"
+          >
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+              <Zap className="size-5 fill-current" />
+            </span>
+            {(!collapsed || mobileOpen) && (
+              <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
+                avi<span className="text-primary">admin</span>
+              </span>
+            )}
+          </Link>
+
+          {/* Desktop Toggle Collapse (Chỉ hiện khi mở rộng) */}
+          {(!collapsed || mobileOpen) && (
+            <button
+              onClick={() => setCollapsed(true)}
+              className="hidden lg:flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0"
+              title="Thu gọn sidebar"
+              aria-label="Thu gọn sidebar"
+            >
+              <ChevronLeft className="size-4" />
+            </button>
+          )}
+
+          {/* Mobile Close Button */}
+          <button
+            className="rounded-lg p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        {/* User Card Badge */}
+        <div className="mt-6 rounded-2xl border border-sidebar-border bg-sidebar-accent/50 p-2.5 transition-all">
+          <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'gap-3'}`}>
+            <span
+              className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-500/20 font-mono text-sm font-bold text-amber-500"
+              title={user?.name || 'Quản trị viên'}
+            >
+              {initials}
+            </span>
+            {(!collapsed || mobileOpen) && (
+              <div className="min-w-0 flex-1 animate-fade-in">
+                <p className="truncate text-sm font-semibold text-sidebar-foreground">
+                  {user?.name || 'Quản trị viên'}
+                </p>
+                <p className="truncate text-xs text-muted-foreground">Admin Workspace</p>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Admin menu">
-          <ul className="space-y-0.5" role="list">
-            {navItems.map(({ to, label, Icon, end }) => (
-              <li key={to}>
-                <NavLink
-                  to={to}
-                  end={end}
-                  className={({ isActive }) =>
-                    `sidebar-nav-item ${isActive ? 'active' : ''}`
-                  }
-                >
-                  <Icon size={16} className="shrink-0" aria-hidden="true" />
-                  <span className="truncate">{label}</span>
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-
-          {/* Preview as Learner */}
-          <div className="mt-4 pt-4 border-t border-slate-800">
-            <a
-              href="/dashboard"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sidebar-nav-item"
+        {/* Navigation items */}
+        <nav className="mt-6 flex flex-col gap-1 overflow-y-auto flex-1" aria-label="Menu Admin">
+          {(!collapsed || mobileOpen) && (
+            <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
+              Quản lý
+            </p>
+          )}
+          {adminNav.map(({ label, to, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={() => setMobileOpen(false)}
+              title={collapsed && !mobileOpen ? label : undefined}
+              className={({ isActive }) =>
+                `flex items-center gap-3 rounded-xl transition-all ${
+                  collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                } ${
+                  isActive
+                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                }`
+              }
             >
-              <ExternalLink size={15} className="shrink-0" />
-              <span className="truncate text-xs">Xem Learner App</span>
-            </a>
-          </div>
-        </nav>
+              <Icon className="size-[18px] shrink-0" />
+              {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
+            </NavLink>
+          ))}
 
-        {/* User section */}
-        <div className="px-3 py-4 border-t border-slate-800">
-          <div className="flex items-center gap-3 px-1">
+          <div className="my-3 h-px bg-sidebar-border" />
+
+          {(!collapsed || mobileOpen) && (
+            <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
+              Hệ thống
+            </p>
+          )}
+          <button
+            onClick={handleLogout}
+            title={collapsed && !mobileOpen ? 'Đăng xuất' : undefined}
+            className={`flex items-center gap-3 rounded-xl text-destructive hover:bg-sidebar-accent transition-all ${
+              collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-left text-sm font-medium'
+            }`}
+          >
+            <LogOut className="size-[18px] shrink-0" />
+            {(!collapsed || mobileOpen) && <span>Đăng xuất</span>}
+          </button>
+        </nav>
+      </aside>
+
+      {/* ── Main Content Area ── */}
+      <div
+        className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
+          collapsed ? 'lg:pl-20' : 'lg:pl-72'
+        }`}
+      >
+        {/* Sticky Header */}
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-background/80 px-5 backdrop-blur-md sm:px-8">
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Button */}
+            <button
+              className="rounded-xl border border-border p-2.5 lg:hidden text-foreground hover:bg-muted"
+              aria-label="Mở menu"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu className="size-5" />
+            </button>
+
+            {/* Desktop Sidebar Toggle Button */}
+            <button
+              onClick={() => setCollapsed((v) => !v)}
+              className="hidden lg:flex items-center justify-center rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              title={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
+              aria-label="Toggle sidebar collapse"
+            >
+              <PanelLeft className="size-5" />
+            </button>
+
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                Quản trị nội dung
+              </p>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">{pageTitle}</h1>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Dark/Light mode toggle */}
+            <button
+              onClick={toggleTheme}
+              className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              title={theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối'}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
+            </button>
+
+            {/* Back to Learner View */}
+            <Link
+              to="/dashboard"
+              className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted lg:flex"
+            >
+              <PanelLeft className="size-4 text-primary" />
+              Xem giao diện Learner
+            </Link>
+
+            {/* User Avatar Initials */}
             <div
-              className="w-8 h-8 rounded-full bg-secondary-600 flex items-center justify-center text-white text-xs font-bold shrink-0"
-              aria-hidden="true"
+              className="grid size-9 place-items-center rounded-xl bg-amber-500 text-slate-950 font-mono text-xs font-bold"
+              title={user?.name}
             >
               {initials}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-              <p className="text-xs text-slate-400 capitalize">
-                {user?.role?.replace('_', ' ')}
-              </p>
-            </div>
-            <button
-              onClick={handleLogout}
-              aria-label="Đăng xuất"
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-            >
-              <LogOut size={15} />
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      {/* ── Main ── */}
-      <div className="main-content">
-        {/* Admin Topbar */}
-        <header
-          className="topbar border-b border-slate-200"
-          aria-label="Admin topbar"
-        >
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium bg-secondary-50 text-secondary-700 border border-secondary-200 rounded-md px-2 py-1">
-              <Shield size={11} />
-              Admin App
-            </span>
-          </div>
-          <div className="flex-1" />
-          <div
-            className="w-8 h-8 rounded-full bg-secondary-600 flex items-center justify-center text-white text-xs font-bold cursor-pointer"
-            aria-hidden="true"
-          >
-            {initials}
           </div>
         </header>
 
-        <main className="page-area" id="main-content">
-          {children}
-        </main>
+        {/* Page Content Container */}
+        <main className="flex-1 p-5 sm:p-8">{children}</main>
       </div>
     </div>
   );

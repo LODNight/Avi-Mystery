@@ -32,6 +32,15 @@ export function AuthProvider({ children }) {
     return result;
   }, []);
 
+  const register = useCallback(async (data) => {
+    const result = await authService.register(data);
+    if (result.data) {
+      setUser(result.data);
+      setStatus('authenticated');
+    }
+    return result;
+  }, []);
+
   const logout = useCallback(async () => {
     await authService.logout();
     setUser(null);
@@ -44,6 +53,7 @@ export function AuthProvider({ children }) {
     isLoading: status === 'loading',
     isAuthenticated: status === 'authenticated',
     login,
+    register,
     logout,
   };
 

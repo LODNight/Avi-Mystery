@@ -35,6 +35,7 @@
  *
  * @type {{
  *   login: (credentials: LoginCredentials) => Promise<{data: AuthUser|null, error: string|null}>,
+ *   register: (data: {name: string, email: string, password: string}) => Promise<{data: AuthUser|null, error: string|null}>,
  *   logout: () => Promise<void>,
  *   getCurrentUser: () => Promise<{data: AuthUser|null, error: string|null}>,
  * }}
@@ -42,6 +43,9 @@
 export const authServiceContract = {
   async login(_credentials) {
     throw new Error('authService.login not implemented');
+  },
+  async register(_data) {
+    throw new Error('authService.register not implemented');
   },
   async logout() {
     throw new Error('authService.logout not implemented');

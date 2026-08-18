@@ -3,28 +3,96 @@
 @tailwind utilities;
 
 /* ============================================================
-   CSS Variables — Design Tokens
+   Detective Theme & DataQuest Design System
    ============================================================ */
 @layer base {
   :root {
-    /* Sidebar */
-    --sidebar-width: 240px;
-    --sidebar-collapsed-width: 64px;
-    --topbar-height: 56px;
+    color-scheme: light;
+    
+    --background: #fafaf9;          /* Warm stone/parchment light */
+    --foreground: #1c1917;          /* Deep warm charcoal text */
+    
+    --card: #ffffff;
+    --card-foreground: #1c1917;
+    
+    --popover: #ffffff;
+    --popover-foreground: #1c1917;
+    
+    --primary: #d97706;             /* Warm detective amber */
+    --primary-foreground: #ffffff;
+    
+    --secondary: #f5f5f4;
+    --secondary-foreground: #1c1917;
+    
+    --muted: #f5f5f4;
+    --muted-foreground: #78716c;
+    
+    --accent: #fef3c7;
+    --accent-foreground: #78350f;
+    
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    
+    --border: #e7e5e4;
+    --input: #e7e5e4;
+    --ring: #d97706;
+    --radius: 0.75rem;
 
-    /* Transitions */
-    --transition-fast: 150ms ease;
-    --transition-base: 200ms ease;
-    --transition-slow: 300ms ease;
+    /* Sidebar theme tokens (Light mode) */
+    --sidebar: #ffffff;
+    --sidebar-foreground: #1c1917;
+    --sidebar-primary: #d97706;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f5f5f4;
+    --sidebar-accent-foreground: #1c1917;
+    --sidebar-border: #e7e5e4;
+    --sidebar-ring: #d97706;
+  }
 
-    /* Shadows */
-    --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
-    --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
-    --shadow-sidebar: 4px 0 16px rgb(0 0 0 / 0.12);
+  .dark {
+    color-scheme: dark;
+
+    --background: #0c0a09;          /* Deep dark wood / slate */
+    --foreground: #f5f5f4;
+
+    --card: #1c1917;
+    --card-foreground: #f5f5f4;
+
+    --popover: #1c1917;
+    --popover-foreground: #f5f5f4;
+
+    --primary: #f59e0b;             /* Glowing amber gold */
+    --primary-foreground: #0c0a09;
+
+    --secondary: #292524;
+    --secondary-foreground: #f5f5f4;
+
+    --muted: #292524;
+    --muted-foreground: #a8a29e;
+
+    --accent: #451a03;
+    --accent-foreground: #fde68a;
+
+    --destructive: #f87171;
+    --destructive-foreground: #0c0a09;
+
+    --border: #292524;
+    --input: #292524;
+    --ring: #f59e0b;
+
+    /* Sidebar dark */
+    --sidebar: #12100e;
+    --sidebar-foreground: #f5f5f4;
+    --sidebar-primary: #f59e0b;
+    --sidebar-primary-foreground: #0c0a09;
+    --sidebar-accent: #1c1917;
+    --sidebar-accent-foreground: #f5f5f4;
+    --sidebar-border: #292524;
+    --sidebar-ring: #f59e0b;
   }
 
   * {
-    box-sizing: border-box;
+    border-color: var(--border);
   }
 
   html {
@@ -34,159 +102,50 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 font-sans;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Inter', system-ui, sans-serif;
     font-size: 14px;
     line-height: 1.5;
   }
 
-  /* Focus ring — consistent across all interactive elements */
   :focus-visible {
-    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
-  }
-
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-transparent;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400;
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring);
   }
 }
 
 /* ============================================================
-   Component Layer — Reusable patterns
+   Custom Utilities & Scrollbar
    ============================================================ */
-@layer components {
-  /* App Shell */
-  .app-shell {
-    @apply flex h-screen overflow-hidden bg-slate-50;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: var(--sidebar-width);
-    @apply flex flex-col flex-shrink-0 bg-slate-900 text-slate-100 overflow-hidden;
-    transition: width var(--transition-slow);
-    box-shadow: var(--shadow-sidebar);
-  }
-
-  .sidebar-nav-item {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
-           text-slate-400 hover:text-slate-100 hover:bg-slate-800
-           transition-all duration-150 cursor-pointer select-none;
-  }
-
-  .sidebar-nav-item.active {
-    @apply text-white bg-primary-600;
-  }
-
-  /* Main content area */
-  .main-content {
-    @apply flex-1 flex flex-col overflow-hidden;
-  }
-
-  /* Topbar */
-  .topbar {
-    height: var(--topbar-height);
-    @apply flex items-center gap-4 px-6 bg-white border-b border-slate-200 flex-shrink-0;
-  }
-
-  /* Page area */
-  .page-area {
-    @apply flex-1 overflow-y-auto;
-  }
-
-  .page-container {
-    @apply max-w-7xl mx-auto px-6 py-6;
-  }
-
-  /* Cards */
-  .card {
-    @apply bg-white rounded-xl border border-slate-200;
-    box-shadow: var(--shadow-card);
-  }
-
-  .card-hover {
-    @apply card transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
-  }
-
-  /* Stat card */
-  .stat-card {
-    @apply card p-5;
-  }
-
-  /* Divider */
-  .divider {
-    @apply border-t border-slate-200;
-  }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #a8a29e;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #78716c;
 }
 
-/* ============================================================
-   Utility Layer — Extra helpers
-   ============================================================ */
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* Truncate text with 2 lines */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-/* ============================================================
-   Animation keyframes
-   ============================================================ */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(16px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
+/* Shimmer animation for loading states */
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
+  0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-.animate-fade-in {
-  animation: fadeIn 200ms ease forwards;
-}
-
-.animate-slide-in-right {
-  animation: slideInRight 200ms ease forwards;
-}
-
-/* Skeleton shimmer */
-.skeleton {
+.skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    theme('colors.slate.100') 25%,
-    theme('colors.slate.200') 50%,
-    theme('colors.slate.100') 75%
+    var(--muted) 25%,
+    var(--border) 50%,
+    var(--muted) 75%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
-  @apply rounded-md;
 }

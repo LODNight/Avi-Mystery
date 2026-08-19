@@ -2,8 +2,8 @@
 
 > **Cập nhật lần cuối:** 19/08/2026  
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM  
-> **Tổng số Test Suites:** 8 files  
-> **Tổng số Test Cases:** 37 passed / 0 failed  
+> **Tổng số Test Suites:** 9 files  
+> **Tổng số Test Cases:** 39 passed / 0 failed  
 
 ---
 
@@ -11,18 +11,23 @@
 
 | File Test | Loại Test | Số Test Cases | Kết quả | Thời gian chạy |
 |---|---|---|---|---|
-| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 231ms |
-| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 341ms |
-| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 449ms |
-| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 123ms |
-| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 199ms |
-| `src/services/mock/mockMissionService.test.js` | Unit Test | 4 | `PASS` | 1234ms |
+| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 161ms |
+| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 190ms |
+| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 310ms |
+| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 367ms |
+| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 159ms |
+| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 172ms |
+| `src/services/mock/mockMissionService.test.js` | Unit Test | 4 | `PASS` | 1249ms |
 | `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1558ms |
 | `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1881ms |
 
 ---
 
 ## 2. Chi Tiết Các Test Case Đã Thực Hiện
+
+### 🟢 `MissionIntroPage.test.jsx`
+- `[PASS]` Render thông tin hồ sơ vụ án, bối cảnh (story), mục tiêu (objective) và điểm thưởng XP sau khi load thành công.
+- `[PASS]` Hiển thị `ErrorState` khi vụ án không tồn tại hoặc dịch vụ gặp lỗi.
 
 ### 🟢 `LearningMapPage.test.jsx`
 - `[PASS]` Render bản đồ học tập và danh sách bài học vụ án theo node-tree sau khi load dữ liệu thành công.

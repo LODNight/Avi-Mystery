@@ -9,8 +9,8 @@
 
 * **Sprint Hiện Tại:** Sprint 2 — Course & Learning Map
 * **Sprint Goal:** Phát triển các trang danh sách khóa học, chi tiết lộ trình học tập, cấu trúc chương và bản đồ học tập dạng node cho người học.
-* **Step Vừa Hoàn Thành:** Step 2.3 — Trang Bản đồ học tập (`LearningMapPage.jsx`) thuộc khu vực Learner (`LRN`).
-* **Trạng Thái Sprint:** Đang triển khai (Hoàn thành Step 2.1, 2.2 & 2.3).
+* **Step Vừa Hoàn Thành:** Step 2.4 — Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage.jsx`) thuộc khu vực Learner (`LRN`).
+* **Trạng Thái Sprint:** **HOÀN THÀNH (DONE - 4/4 Steps)**.
 
 ---
 
@@ -18,10 +18,10 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner (`LRN`)** | `Primary` | Trang Danh sách Khóa học (`/courses`), Trang Chi tiết Khóa học (`/courses/:slug`), Bản đồ học tập Learning Map (`/map`), Trang Giới thiệu Nhiệm vụ | `IN_PROGRESS` (Step 2.1, 2.2, 2.3 completed; Step 2.4 pending) |
+| **Learner (`LRN`)** | `Primary` | Trang Danh sách Khóa học (`/courses`), Trang Chi tiết Khóa học (`/courses/:slug`), Bản đồ học tập Learning Map (`/map`), Trang Giới thiệu Nhiệm vụ (`/missions/:missionId`) | `DONE` (Hoàn thành Step 2.1, 2.2, 2.3, 2.4) |
 | **Admin (`ADM`)** | `None` | Giữ nguyên App Shell và màn hình tổng quan đã xây dựng từ Sprint 1 | `NO_CHANGE` |
 | **Shared (`SHR`)** | `Supporting` | Tái sử dụng các UI components (`Badge`, `Skeleton`, `EmptyState`, `ErrorState`), bổ sung định dạng thời gian và nhãn công cụ | `DONE` |
-| **Backend (`BE`)** | `Supporting` | Sử dụng `mockCourseService` (`getCourses`, `getCourse`, `getChaptersByCourse`) và `mockMissionService` (`getMissionsByChapter`) | `DONE` |
+| **Backend (`BE`)** | `Supporting` | Sử dụng `mockCourseService` (`getCourses`, `getCourse`, `getChaptersByCourse`) và `mockMissionService` (`getMissionsByChapter`, `getMission`) | `DONE` |
 
 ---
 
@@ -42,7 +42,7 @@
 | `LRN-COURSE-001` | `LRN` | Course | Trang Danh sách Khóa học & Bộ lọc Search/Tool/Difficulty | Sprint 2 | `DONE` | Pass | `src/pages/learner/CoursesPage.jsx` |
 | `LRN-COURSE-002` | `LRN` | Course | Trang Chi tiết Khóa học & Accordion Chương học (`/courses/:slug`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/CourseDetailPage.jsx` |
 | `LRN-MAP-001` | `LRN` | Map | Bản đồ học tập dạng Node/Tree (`LearningMapPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/LearningMapPage.jsx` |
-| `LRN-MISSION-001` | `LRN` | Mission | Trang Giới thiệu & Nhận Nhiệm vụ vụ án | Sprint 2 | `TODO` | Missing | `src/pages/learner/MissionIntroPage.jsx` |
+| `LRN-MISSION-001` | `LRN` | Mission | Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/MissionIntroPage.jsx` |
 
 ---
 
@@ -52,8 +52,7 @@
   - `LRN-COURSE-001`: Trang Danh sách khóa học có bộ lọc từ khóa, công cụ Excel/SQL và độ khó.
   - `LRN-COURSE-002`: Trang Chi tiết khóa học với tổng quan vụ án, accordion chương học và danh sách nhiệm vụ.
   - `LRN-MAP-001`: Trang Bản đồ học tập cây node nhiệm vụ tương tác, chuyển đổi lộ trình khóa học, tính toán chỉ số XP và badge bài tiếp theo.
-  - Test suites tự động cho `CoursesPage`, `CourseDetailPage`, và `LearningMapPage` đạt tỷ lệ Pass 100% (37/37 tests pass).
-* **Phần chưa hoàn thành (Thuộc Step 2.4):**
-  - `LRN-MISSION-001`: Trang Giới thiệu chi tiết vụ án trước khi nộp bài.
+  - `LRN-MISSION-001`: Trang Giới thiệu chi tiết vụ án (Detective Briefing) với bối cảnh vụ án, mục tiêu, dataset metadata và nút bấm bắt đầu làm bài.
+  - Test suites tự động đạt tỷ lệ Pass 100% (39/39 tests pass trên 9 files).
 * **Blockers:** Không có.
-* **Điều kiện đóng Sprint 2:** CHƯA ĐỦ ĐIỀU KIỆN (Cần hoàn thành `LRN-MISSION-001` ở Step 2.4).
+* **Điều kiện đóng Sprint 2:** **ĐÃ ĐỦ ĐIỀU KIỆN ĐÓNG SPRINT 2**. Toàn bộ 4 user stories đã đạt Acceptance Criteria & Pass test suites.

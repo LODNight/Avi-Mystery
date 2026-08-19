@@ -12,12 +12,13 @@ import { LearnerLayout } from '../layouts/LearnerLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
 import { PageLoader, PageSkeleton } from '../../components/ui/Skeleton.jsx';
 
-// Pages (lazy không cần thiết cho MVP)
+// Pages
 import { LoginPage, RegisterPage } from '../../features/auth/LoginPage.jsx';
 import { DashboardPage } from '../../pages/learner/DashboardPage.jsx';
 import { CoursesPage } from '../../pages/learner/CoursesPage.jsx';
 import { CourseDetailPage } from '../../pages/learner/CourseDetailPage.jsx';
 import { LearningMapPage } from '../../pages/learner/LearningMapPage.jsx';
+import { MissionIntroPage } from '../../pages/learner/MissionIntroPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
 
@@ -93,10 +94,10 @@ export function AppRouter() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
-          {/* Placeholder routes — sẽ implement ở sprint tiếp theo */}
           <Route path="/map" element={<LearningMapPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:slug" element={<CourseDetailPage />} />
+          <Route path="/missions/:missionId" element={<MissionIntroPage />} />
           <Route path="/practice" element={<PlaceholderPage title="Luyện tập" />} />
           <Route path="/achievements" element={<PlaceholderPage title="Thành tựu" />} />
           <Route path="/profile" element={<PlaceholderPage title="Hồ sơ" />} />

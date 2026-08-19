@@ -30,7 +30,7 @@
 | `LRN-COURSE-001` | Trang Danh sách Khóa học & Bộ lọc (`/courses`) | `LRN` | `High` | `DONE` | Hiển thị danh sách khóa học Excel/SQL, lọc theo từ khóa, công cụ & độ khó |
 | `LRN-COURSE-002` | Trang Chi tiết Khóa học (`/courses/:slug`) | `LRN` | `High` | `DONE` | Hiển thị thông tin khóa học, accordion chương học & danh sách bài học |
 | `LRN-MAP-001` | Xây dựng Component & Trang Learning Map (`/map`) | `LRN` | `High` | `DONE` | Bản đồ học tập hiển thị các node nhiệm vụ có kết nối trực quan |
-| `LRN-MISSION-001` | Trang Giới thiệu & Nhận Nhiệm vụ vụ án | `LRN` | `Medium` | `TODO` | Bối cảnh vụ án, mục tiêu và điểm thưởng XP trước khi làm bài |
+| `LRN-MISSION-001` | Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`/missions/:missionId`) | `LRN` | `Medium` | `DONE` | Bối cảnh vụ án, mục tiêu và điểm thưởng XP trước khi làm bài |
 
 ---
 

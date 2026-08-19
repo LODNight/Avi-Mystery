@@ -28,7 +28,7 @@
 
 ---
 
-## 🟡 Sprint 2 — Course & Learning Map (ĐANG THỰC HIỆN)
+## 🟢 Sprint 2 — Course & Learning Map (HOÀN THÀNH)
 
 * **Sprint Goal:** Xây dựng luồng khám phá lộ trình học tập, danh sách khóa học, cấu trúc chương và bản đồ học tập dạng Node cho Người học.
 * **Primary Focus Area:** `LRN` (Learner App)
@@ -38,11 +38,11 @@
   * Trang Danh sách Khóa học (`/courses`) kèm ô tìm kiếm, lọc theo công cụ Excel/SQL và độ khó (`LRN-COURSE-001`) — **DONE**.
   * Trang Chi tiết Khóa học (`/courses/:slug`) hiển thị tổng quan khóa học, Accordion chương học & danh sách bài học vụ án (`LRN-COURSE-002`) — **DONE**.
   * Bản đồ học tập dạng Node/Tree (`LearningMapPage` `/map`) với các vị trí vụ án (`LRN-MAP-001`) — **DONE**.
-  * Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage`) (`LRN-MISSION-001`) — **TODO**.
+  * Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage` `/missions/:missionId`) (`LRN-MISSION-001`) — **DONE**.
 * **Admin Features:** Giữ nguyên giao diện Admin Overview từ Sprint 1 (không thay đổi).
 * **Shared / Backend Features:**
   * Bổ sung định dạng thời gian `formatDuration`, nhãn độ khó `difficultyLabel`, nhãn công cụ `toolLabel` vào `src/utils/format.js`.
-  * `mockCourseService` & `mockMissionService` phục vụ lấy danh sách và chi tiết.
+  * `mockCourseService` & `mockMissionService` phục vụ lấy danh sách và chi tiết (`getMissionsByChapter`, `getMission`).
 * **Out of Scope:** Trình soạn thảo công thức Excel, trình soạn câu lệnh SQL, quản lý khóa học Admin.
 * **Exit Criteria:**
   * Toàn bộ 4 tính năng `LRN-COURSE-001`, `LRN-COURSE-002`, `LRN-MAP-001`, `LRN-MISSION-001` được triển khai đầy đủ code và Pass 100% Unit/Component Tests.
@@ -50,7 +50,7 @@
 
 ---
 
-## ⚪ Sprint 3 — Excel Vertical Slice
+## 🟡 Sprint 3 — Excel Vertical Slice (SẮP THỰC HIỆN)
 
 * **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
 * **Primary Focus Area:** `LRN` (Learner App - Excel Workspace) & `SHR` (Excel Answer Checker)

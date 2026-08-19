@@ -34,6 +34,16 @@
 
 ---
 
+## Sprint 3 — Excel Vertical Slice Tasks
+
+| Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
+|---|---|---|---|---|---|
+| `SHR-EXCEL-CHECKER-001` | Bộ chấm điểm công thức Excel Answer Checker (`excelChecker.js`) | `SHR` | `High` | `DONE` | Chuẩn hóa cú pháp công thức, phân tích ô tính & chấm điểm tự động |
+| `LRN-EXCEL-001` | Trang làm bài Excel Workspace & Spreadsheet Grid (`/practice`) | `LRN` | `High` | `TODO` | Giao diện bảng tính interactive, Formula Bar & Cell Selector |
+| `BE-SUB-001` | Mock Submission Service & Xử lý nộp bài | `BE` | `Medium` | `TODO` | Service ghi nhận lượt nộp bài, tính XP thưởng và kết quả pass/fail |
+
+---
+
 ## Technical Debts & Refactoring Backlog
 
 | Task ID | Mô tả Debt | Area | Mức ảnh hưởng | Ưu tiên | Trạng thái |

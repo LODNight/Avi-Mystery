@@ -2,8 +2,8 @@
 
 > **Cập nhật lần cuối:** 19/08/2026  
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM  
-> **Tổng số Test Suites:** 9 files  
-> **Tổng số Test Cases:** 39 passed / 0 failed  
+> **Tổng số Test Suites:** 10 files  
+> **Tổng số Test Cases:** 52 passed / 0 failed  
 
 ---
 
@@ -11,19 +11,33 @@
 
 | File Test | Loại Test | Số Test Cases | Kết quả | Thời gian chạy |
 |---|---|---|---|---|
-| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 161ms |
-| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 190ms |
-| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 310ms |
-| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 367ms |
-| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 159ms |
-| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 172ms |
-| `src/services/mock/mockMissionService.test.js` | Unit Test | 4 | `PASS` | 1249ms |
-| `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1558ms |
-| `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1881ms |
+| `src/utils/excelChecker.test.js` | Unit Test | 13 | `PASS` | 12ms |
+| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 179ms |
+| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 238ms |
+| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 354ms |
+| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 479ms |
+| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 133ms |
+| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 182ms |
+| `src/services/mock/mockMissionService.test.js` | Unit Test | 4 | `PASS` | 1248ms |
+| `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1554ms |
+| `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1879ms |
 
 ---
 
 ## 2. Chi Tiết Các Test Case Đã Thực Hiện
+
+### 🟢 `excelChecker.test.js` (Mới)
+- `[PASS]` Tự động bổ sung dấu `=` nếu thiếu khi chuẩn hóa công thức Excel.
+- `[PASS]` Chuyển đổi toàn bộ tên hàm Excel phổ biến sang chữ hoa (`SUM`, `SUMIF`, `MAX`, `MIN`, `AVERAGE`).
+- `[PASS]` Xử lý an toàn với đầu vào rỗng hoặc không hợp lệ.
+- `[PASS]` Phân tích chính xác tọa độ ô (`parseCellAddress`).
+- `[PASS]` Mở rộng dải ô (`expandCellRange`) từ chuỗi dạng `"B2:B5"` hoặc `"A1:B2"`.
+- `[PASS]` Tính toán chính xác giá trị thử nghiệm cho hàm `SUM`, `AVERAGE`, `MAX`, `MIN`.
+- `[PASS]` Kiểm tra và xác nhận câu trả lời đúng khi công thức khớp `expectedFormula`.
+- `[PASS]` Xác nhận công thức đúng không phân biệt hoa thường hoặc thiếu dấu `=`.
+- `[PASS]` Hỗ trợ so sánh với mảng danh sách công thức mẫu tương đương.
+- `[PASS]` Đánh giá và trả về phản hồi chuẩn đoán khi người học nhập sai công thức hoặc sai dải ô.
+- `[PASS]` Cung cấp hướng dẫn sửa lỗi khi thiếu dấu ngoặc đơn `()`.
 
 ### 🟢 `MissionIntroPage.test.jsx`
 - `[PASS]` Render thông tin hồ sơ vụ án, bối cảnh (story), mục tiêu (objective) và điểm thưởng XP sau khi load thành công.
@@ -45,38 +59,6 @@
 - `[PASS]` Lọc danh sách theo công cụ Excel / SQL.
 - `[PASS]` Lọc danh sách theo độ khó.
 - `[PASS]` Hiển thị `EmptyState` khi không tìm thấy khóa học phù hợp với bộ lọc.
-
-### 🟢 `mockAuthService.test.js`
-- `[PASS]` `login` thành công với email và password hợp lệ (trả về safeUser không chứa password).
-- `[PASS]` `login` thất bại khi nhập sai password.
-- `[PASS]` `register` thành công với user mới và lưu session tự động.
-- `[PASS]` `register` thất bại khi đăng ký email đã tồn tại.
-- `[PASS]` `logout` xóa thông tin session khỏi LocalStorage.
-
-### 🟢 `mockCourseService.test.js`
-- `[PASS]` `getCourses` trả về danh sách toàn bộ khóa học.
-- `[PASS]` `getCourses` lọc chính xác khóa học theo trạng thái (`published`).
-- `[PASS]` `getCourse` lấy chi tiết khóa học bằng ID hoặc Slug.
-- `[PASS]` `getCourse` trả về thông báo lỗi khi truy cập khóa học không tồn tại.
-- `[PASS]` `getChaptersByCourse` lấy danh sách các chương thuộc về khóa học tương ứng.
-
-### 🟢 `mockMissionService.test.js`
-- `[PASS]` `getMissionsByChapter` lấy danh sách nhiệm vụ đã xuất bản theo Chapter ID.
-- `[PASS]` `getMission` lấy chi tiết nhiệm vụ theo Mission ID.
-- `[PASS]` `getMission` trả về lỗi khi Mission ID không hợp lệ.
-- `[PASS]` `getRecommendedMissions` gợi ý tối đa 3 nhiệm vụ cho người học trên Dashboard.
-
-### 🟢 `EmptyState.test.jsx`
-- `[PASS]` Render đúng `title` và `description` của EmptyState.
-- `[PASS]` Kích hoạt callback function khi bấm nút action.
-- `[PASS]` ErrorState hiển thị tiêu chuẩn báo lỗi kèm nút "Thử lại".
-- `[PASS]` ProgressBar gán chuẩn các thuộc tính ARIA (`aria-valuenow="75"`).
-- `[PASS]` ProgressBar clamp chính xác các giá trị nằm ngoài vùng [0, 100].
-
-### 🟢 `Skeleton.test.jsx`
-- `[PASS]` Skeleton render class animate-pulse đúng tiêu chuẩn design system.
-- `[PASS]` SkeletonCard render layout geometry chính xác.
-- `[PASS]` DashboardSkeleton gán thuộc tính `aria-busy="true"` chuẩn Accessibility.
 
 ---
 

@@ -44,25 +44,23 @@
   * Bổ sung định dạng thời gian `formatDuration`, nhãn độ khó `difficultyLabel`, nhãn công cụ `toolLabel` vào `src/utils/format.js`.
   * `mockCourseService` & `mockMissionService` phục vụ lấy danh sách và chi tiết (`getMissionsByChapter`, `getMission`).
 * **Out of Scope:** Trình soạn thảo công thức Excel, trình soạn câu lệnh SQL, quản lý khóa học Admin.
-* **Exit Criteria:**
-  * Toàn bộ 4 tính năng `LRN-COURSE-001`, `LRN-COURSE-002`, `LRN-MAP-001`, `LRN-MISSION-001` được triển khai đầy đủ code và Pass 100% Unit/Component Tests.
-  * Cập nhật Feature Coverage Matrix trong `PROJECT_STATUS.md`.
+* **Exit Criteria:** Toàn bộ 4 tính năng `LRN-COURSE-001`, `LRN-COURSE-002`, `LRN-MAP-001`, `LRN-MISSION-001` được triển khai đầy đủ code và Pass 100% Unit/Component Tests.
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice (SẮP THỰC HIỆN)
+## 🟡 Sprint 3 — Excel Vertical Slice (ĐANG THỰC HIỆN)
 
 * **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
 * **Primary Focus Area:** `LRN` (Learner App - Excel Workspace) & `SHR` (Excel Answer Checker)
 * **Supporting Focus Area:** `BE` (Mock Submission Service)
 * **Modules Affected:** Excel Workspace, Submission Checker
 * **Learner Features:**
-  * Spreadsheet Grid tương tác & Formula Bar (`LRN-EXCEL-001`).
-  * Thanh công cụ tương tác: Run, Submit, Reset, Hint (`LRN-EXCEL-002`).
+  * Spreadsheet Grid tương tác & Formula Bar (`LRN-EXCEL-001`) — **IN_PROGRESS**.
+  * Thanh công cụ tương tác: Run, Submit, Reset, Hint (`LRN-EXCEL-002`) — **TODO**.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
 * **Shared / Backend Features:**
-  * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`).
-  * Mock Submission Service xử lý nộp bài (`BE-SUB-001`).
+  * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
+  * Mock Submission Service xử lý nộp bài (`BE-SUB-001`) — **TODO**.
 * **Out of Scope:** SQL Sandbox, Chỉnh sửa bài tập Admin.
 * **Exit Criteria:** 1 nhiệm vụ Excel mẫu chạy hoàn chỉnh từ A đến Z kèm test tự động.
 

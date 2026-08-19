@@ -36,7 +36,58 @@ export function SkeletonCard({ className = '' }) {
         <Skeleton className="h-4 w-20 rounded-md" />
         <Skeleton className="h-4 w-12 rounded-md" />
       </div>
-      <Skeleton className="h-2 w-full rounded-full" />
+      <Skeleton className="h-1.5 w-full rounded-full" />
+    </div>
+  );
+}
+
+/**
+ * MissionCardSkeleton — Thẻ Nhiệm vụ đề xuất skeleton (bảo toàn hình học layout)
+ */
+export function MissionCardSkeleton({ className = '' }) {
+  return (
+    <div
+      className={`flex items-center justify-between rounded-2xl border border-border bg-card p-4 animate-pulse ${className}`}
+      aria-hidden="true"
+    >
+      <div className="flex items-center gap-3.5 min-w-0">
+        <Skeleton className="size-10 rounded-xl shrink-0" />
+        <div className="space-y-2 min-w-0">
+          <Skeleton className="h-4 w-36 sm:w-48 rounded-md" />
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-3.5 w-12 rounded" />
+            <Skeleton className="h-3.5 w-16 rounded" />
+          </div>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 shrink-0">
+        <Skeleton className="h-4 w-14 rounded-md" />
+        <Skeleton className="size-4 rounded shrink-0" />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * AdminCourseCardSkeleton — Thẻ quản lý khóa học Admin skeleton
+ */
+export function AdminCourseCardSkeleton({ className = '' }) {
+  return (
+    <div
+      className={`rounded-2xl border border-border bg-card p-4 flex items-center justify-between animate-pulse ${className}`}
+      aria-hidden="true"
+    >
+      <div className="flex items-center gap-4 min-w-0">
+        <Skeleton className="size-12 rounded-2xl shrink-0" />
+        <div className="space-y-2 min-w-0">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-36 sm:w-48 rounded-md" />
+            <Skeleton className="h-4 w-16 rounded-full" />
+          </div>
+          <Skeleton className="h-3.5 w-44 rounded-md" />
+        </div>
+      </div>
+      <Skeleton className="size-4 rounded shrink-0" />
     </div>
   );
 }
@@ -70,7 +121,12 @@ export function StatCardSkeleton({ count = 4 }) {
  */
 export function DashboardSkeleton() {
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in" aria-label="Đang tải dữ liệu...">
+    <div
+      className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in"
+      role="region"
+      aria-label="Đang tải dữ liệu..."
+      aria-busy="true"
+    >
       {/* Header Skeleton */}
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div className="space-y-2">
@@ -130,7 +186,12 @@ export function DashboardSkeleton() {
  */
 export function PageSkeleton() {
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-6 animate-fade-in p-1" aria-label="Đang tải trang...">
+    <div
+      className="mx-auto flex max-w-7xl flex-col gap-6 animate-fade-in p-1"
+      role="region"
+      aria-label="Đang tải trang..."
+      aria-busy="true"
+    >
       <div className="space-y-2">
         <Skeleton className="h-4 w-32 rounded-md" />
         <Skeleton className="h-8 w-64 rounded-xl" />
@@ -180,7 +241,12 @@ export function Spinner({ size = 20, className = '' }) {
  */
 export function PageLoader() {
   return (
-    <div className="flex items-center justify-center h-full min-h-64" role="status" aria-label="Đang tải">
+    <div
+      className="flex items-center justify-center h-full min-h-64"
+      role="status"
+      aria-label="Đang tải"
+      aria-busy="true"
+    >
       <div className="flex flex-col items-center gap-3">
         <Spinner size={32} />
         <p className="text-sm font-medium text-muted-foreground">Đang tải bố cục...</p>

@@ -19,7 +19,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
 import { missionService, courseService } from '../../services/index.js';
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
-import { SkeletonCard, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
+import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 
 export function DashboardPage() {
@@ -188,7 +188,7 @@ export function DashboardPage() {
       </section>
 
       {/* ── Section 4: Active Courses ── */}
-      <section>
+      <section aria-busy={courses.loading ? "true" : undefined}>
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -220,7 +220,7 @@ export function DashboardPage() {
       </section>
 
       {/* ── Section 5: Recommended Missions ── */}
-      <section>
+      <section aria-busy={recommended.loading ? "true" : undefined}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -231,8 +231,9 @@ export function DashboardPage() {
         </div>
 
         {recommended.loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-16 w-full rounded-2xl" count={3} />
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MissionCardSkeleton />
+            <MissionCardSkeleton />
           </div>
         ) : recommended.error ? (
           <ErrorState message={recommended.error} />

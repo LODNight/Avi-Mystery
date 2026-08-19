@@ -82,6 +82,8 @@ Chuẩn hóa trạng thái bất đồng bộ cho mọi màn hình:
 Phong cách mong muốn:
 
 - Hiện đại, đơn giản, dễ sử dụng với người mới.
+- Theme vàng nâu, tạo cảm giác trinh thám.
+- Được chọn màu sắc giao diện sáng/tối
 - Mang cảm giác học tập như đang khám phá bản đồ và hoàn thành nhiệm vụ.
 - Có yếu tố game hóa nhưng không biến giao diện thành game fantasy quá rối.
 - Ưu tiên cảm giác “data laboratory”, “mission control” và “investigation board”.

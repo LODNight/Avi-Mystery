@@ -1,10 +1,11 @@
 import React from 'react';
+import { Skeleton } from './Skeleton.jsx';
 
 /**
  * Card — container cơ bản.
- * Props: padding ('none' | 'sm' | 'md' | 'lg'), hover (boolean)
+ * Props: padding ('none' | 'sm' | 'md' | 'lg'), hover (boolean), loading (boolean)
  */
-export function Card({ children, padding = 'md', hover = false, className = '', ...props }) {
+export function Card({ children, padding = 'md', hover = false, loading = false, className = '', ...props }) {
   const paddings = {
     none: '',
     sm:   'p-4',
@@ -13,9 +14,11 @@ export function Card({ children, padding = 'md', hover = false, className = '', 
   };
   return (
     <div
+      aria-busy={loading ? 'true' : undefined}
       className={[
-        'bg-white rounded-xl border border-slate-200',
-        hover ? 'transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer' : '',
+        'bg-card rounded-2xl border border-border',
+        hover && !loading ? 'transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer hover:border-primary/40' : '',
+        loading ? 'animate-pulse' : '',
         paddings[padding] ?? paddings.md,
         className,
       ]
@@ -23,7 +26,15 @@ export function Card({ children, padding = 'md', hover = false, className = '', 
         .join(' ')}
       {...props}
     >
-      {children}
+      {loading ? (
+        <div className="space-y-3" aria-hidden="true">
+          <Skeleton className="h-5 w-1/2 rounded-md" />
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-3/4 rounded-md" />
+        </div>
+      ) : (
+        children
+      )}
     </div>
   );
 }

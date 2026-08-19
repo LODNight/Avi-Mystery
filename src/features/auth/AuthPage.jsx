@@ -347,7 +347,7 @@ export function AuthPage({ initialMode = 'login' }) {
 
               {/* ── FORM: LOGIN ── */}
               {mode === 'login' ? (
-                <form onSubmit={handleLoginSubmit} noValidate className="space-y-4">
+                <form onSubmit={handleLoginSubmit} noValidate aria-busy={submitting ? 'true' : undefined} className="space-y-4">
                   <Input
                     id="login-email"
                     label="Địa chỉ Email"
@@ -402,7 +402,7 @@ export function AuthPage({ initialMode = 'login' }) {
                 </form>
               ) : (
                 /* ── FORM: REGISTER ── */
-                <form onSubmit={handleRegisterSubmit} noValidate className="space-y-4">
+                <form onSubmit={handleRegisterSubmit} noValidate aria-busy={submitting ? 'true' : undefined} className="space-y-4">
                   <Input
                     id="register-name"
                     label="Họ và tên nhà điều tra"

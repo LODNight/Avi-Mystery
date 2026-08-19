@@ -52,6 +52,7 @@ export function Button({
     <button
       type={type}
       disabled={disabled || loading}
+      aria-busy={loading ? 'true' : undefined}
       className={[
         base,
         variants[variant] ?? variants.primary,

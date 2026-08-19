@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useAsync } from '../../hooks/useAsync.js';
 import { courseService } from '../../services/index.js';
-import { SkeletonCard } from '../../components/ui/Skeleton.jsx';
+import { AdminCourseCardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDate, difficultyLabel, toolLabel } from '../../utils/format.js';
 
@@ -105,7 +105,7 @@ export function AdminOverviewPage() {
       {/* Main Grid */}
       <section className="grid gap-6 lg:grid-cols-3">
         {/* Course List (2 Cols) */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4" aria-busy={courses.loading ? "true" : undefined}>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-bold text-foreground">Khóa học hiện có</h3>
             <Link to="/admin/courses" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
@@ -114,9 +114,9 @@ export function AdminOverviewPage() {
           </div>
 
           {courses.loading ? (
-            <div className="space-y-3">
-              <SkeletonCard />
-              <SkeletonCard />
+            <div className="space-y-3" aria-busy="true">
+              <AdminCourseCardSkeleton />
+              <AdminCourseCardSkeleton />
             </div>
           ) : courses.error ? (
             <ErrorState message={courses.error} onRetry={() => courses.execute(() => courseService.getCourses())} />

@@ -14,9 +14,12 @@ import {
   PanelLeft,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Settings,
   Database,
   Layers,
+  Globe,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
@@ -28,7 +31,16 @@ const adminNav = [
   { label: 'Quản lý Dataset', to: '/admin/datasets', icon: Database },
   { label: 'Học viên', to: '/admin/learners', icon: Users },
   { label: 'Phân tích', to: '/admin/analytics', icon: BarChart3 },
-  { label: 'Cài đặt', to: '/admin/settings', icon: Settings },
+  {
+    label: 'Cài đặt',
+    to: '/admin/settings',
+    icon: Settings,
+    children: [
+      { label: 'Quản lý trang & Bảo trì', to: '/admin/settings?tab=pages', icon: Globe },
+      { label: 'Cấu hình hệ thống', to: '/admin/settings?tab=system', icon: Settings },
+      { label: 'Bảo mật & Phân quyền', to: '/admin/settings?tab=security', icon: ShieldCheck },
+    ],
+  },
 ];
 
 export function AdminLayout({ children }) {
@@ -44,6 +56,13 @@ export function AdminLayout({ children }) {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const isSettingsActive = location.pathname.startsWith('/admin/settings') || location.pathname.startsWith('/admin/pages');
+  const [settingsOpen, setSettingsOpen] = useState(isSettingsActive);
+
+  useEffect(() => {
+    if (isSettingsActive) setSettingsOpen(true);
+  }, [location.pathname]);
 
   useEffect(() => {
     localStorage.setItem('avi_admin_sidebar_collapsed', collapsed ? 'true' : 'false');
@@ -145,26 +164,97 @@ export function AdminLayout({ children }) {
               Quản lý
             </p>
           )}
-          {adminNav.map(({ label, to, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={() => setMobileOpen(false)}
-              title={collapsed && !mobileOpen ? label : undefined}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-xl transition-all ${
-                  collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
-                } ${
-                  isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                }`
-              }
-            >
-              <Icon className="size-[18px] shrink-0" />
-              {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
-            </NavLink>
-          ))}
+          {adminNav.map((item) => {
+            const Icon = item.icon;
+            const hasChildren = Boolean(item.children?.length);
+            const isItemActive = hasChildren
+              ? isSettingsActive
+              : location.pathname === item.to;
+
+            if (hasChildren) {
+              return (
+                <div key={item.to} className="flex flex-col gap-1">
+                  <div className="flex items-center justify-between">
+                    <NavLink
+                      to={item.to}
+                      onClick={() => {
+                        setSettingsOpen((prev) => !prev);
+                      }}
+                      title={collapsed && !mobileOpen ? item.label : undefined}
+                      className={`flex-1 flex items-center justify-between gap-3 rounded-xl transition-all ${
+                        collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                      } ${
+                        isItemActive
+                          ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Icon className="size-[18px] shrink-0" />
+                        {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+                      </div>
+                      {(!collapsed || mobileOpen) && (
+                        <ChevronDown
+                          className={`size-4 transition-transform duration-200 ${
+                            settingsOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                      )}
+                    </NavLink>
+                  </div>
+
+                  {/* Dropdown Sub-menu Items */}
+                  {settingsOpen && (!collapsed || mobileOpen) && (
+                    <div className="ml-4 pl-3 border-l border-sidebar-border flex flex-col gap-1 my-1 animate-fade-in">
+                      {item.children.map((child) => {
+                        const ChildIcon = child.icon;
+                        const isChildActive =
+                          location.search.includes(child.to.split('?')[1]) ||
+                          (location.pathname === '/admin/pages' && child.to.includes('tab=pages'));
+
+                        return (
+                          <Link
+                            key={child.to}
+                            to={child.to}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                              isChildActive
+                                ? 'bg-primary/15 text-primary font-bold'
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                            }`}
+                          >
+                            <ChildIcon className="size-3.5 shrink-0" />
+                            <span className="truncate">{child.label}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileOpen(false)}
+                title={collapsed && !mobileOpen ? item.label : undefined}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-xl transition-all ${
+                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                  } ${
+                    isActive
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                  }`
+                }
+              >
+                <Icon className="size-[18px] shrink-0" />
+                {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+              </NavLink>
+            );
+          })}
 
           <div className="my-3 h-px bg-sidebar-border" />
 
@@ -185,6 +275,7 @@ export function AdminLayout({ children }) {
           </button>
         </nav>
       </aside>
+
 
       {/* ── Main Content Area ── */}
       <div

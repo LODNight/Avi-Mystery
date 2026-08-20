@@ -20,9 +20,15 @@ import {
   ChevronLeft,
   Sparkles,
   Dumbbell,
+  AlertTriangle,
+  Info,
+  Wrench,
+  Eye,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
+import { usePageStatus } from '../../hooks/usePageStatus.js';
+import { UnderMaintenancePage } from '../../pages/learner/UnderMaintenancePage.jsx';
 import { formatXP } from '../../utils/format.js';
 
 const learnerNav = [
@@ -45,8 +51,15 @@ export function LearnerLayout({ children }) {
 
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { getPageStatus, adminBypass, toggleAdminBypass } = usePageStatus();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const currentPageStatus = getPageStatus(location.pathname);
+  const isMaintenance = currentPageStatus?.status === 'maintenance';
+  const isNotice = currentPageStatus?.status === 'notice';
+  const isAdminUser = user?.role === 'admin';
+  const shouldBlockLearner = isMaintenance && (!isAdminUser || !adminBypass);
 
   useEffect(() => {
     localStorage.setItem('avi_sidebar_collapsed', collapsed ? 'true' : 'false');
@@ -156,26 +169,43 @@ export function LearnerLayout({ children }) {
               Học tập
             </p>
           )}
-          {learnerNav.map(({ label, to, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={() => setMobileOpen(false)}
-              title={collapsed && !mobileOpen ? label : undefined}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-xl transition-all ${
-                  collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
-                } ${
-                  isActive
-                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                }`
-              }
-            >
-              <Icon className="size-[18px] shrink-0" />
-              {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
-            </NavLink>
-          ))}
+          {learnerNav.map(({ label, to, icon: Icon }) => {
+            const navStatus = getPageStatus(to);
+            const isItemMaintenance = navStatus?.status === 'maintenance';
+            const isItemNotice = navStatus?.status === 'notice';
+
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                onClick={() => setMobileOpen(false)}
+                title={collapsed && !mobileOpen ? `${label}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
+                className={({ isActive }) =>
+                  `flex items-center justify-between gap-2 rounded-xl transition-all ${
+                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                  } ${
+                    isActive
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
+                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                  }`
+                }
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <Icon className="size-[18px] shrink-0" />
+                  {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
+                </div>
+
+                {(!collapsed || mobileOpen) && isItemMaintenance && (
+                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
+                    Bảo trì
+                  </span>
+                )}
+                {(!collapsed || mobileOpen) && !isItemMaintenance && isItemNotice && (
+                  <span className="size-2 rounded-full bg-amber-500 shrink-0 animate-ping" title="Có thông báo mới" />
+                )}
+              </NavLink>
+            );
+          })}
 
           <div className="my-3 h-px bg-sidebar-border" />
 
@@ -277,7 +307,7 @@ export function LearnerLayout({ children }) {
             </button>
 
             {/* Admin preview switcher */}
-            {user?.role === 'admin' && (
+            {isAdminUser && (
               <Link
                 to="/admin"
                 className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted lg:flex"
@@ -297,9 +327,41 @@ export function LearnerLayout({ children }) {
           </div>
         </header>
 
+        {/* Banners Area */}
+        {/* Admin Bypass Banner indicator */}
+        {isMaintenance && isAdminUser && adminBypass && (
+          <div className="bg-amber-500/15 border-b border-amber-500/30 px-5 py-2.5 text-amber-600 dark:text-amber-400 text-xs font-semibold flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Eye className="size-4 shrink-0" />
+              <span>Chế độ Xem với quyền Admin: Trang này đang ở trạng thái BẢO TRÌ đối với Học viên thường.</span>
+            </div>
+            <button
+              onClick={toggleAdminBypass}
+              className="underline text-xs font-bold hover:text-foreground shrink-0"
+            >
+              Tắt xem trước
+            </button>
+          </div>
+        )}
+
+        {/* Learner Notice Banner */}
+        {!shouldBlockLearner && isNotice && currentPageStatus?.noticeMessage && (
+          <div className="bg-blue-500/10 border-b border-blue-500/20 px-5 py-2.5 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center gap-2">
+            <Info className="size-4 shrink-0" />
+            <span><strong>Thông báo:</strong> {currentPageStatus.noticeMessage}</span>
+          </div>
+        )}
+
         {/* Page Content Container */}
-        <main className="flex-1 p-5 sm:p-8">{children}</main>
+        <main className="flex-1 p-5 sm:p-8">
+          {shouldBlockLearner ? (
+            <UnderMaintenancePage pageConfig={currentPageStatus} />
+          ) : (
+            children
+          )}
+        </main>
       </div>
     </div>
   );
 }
+

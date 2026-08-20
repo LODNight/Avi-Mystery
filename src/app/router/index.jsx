@@ -20,7 +20,11 @@ import { CourseDetailPage } from '../../pages/learner/CourseDetailPage.jsx';
 import { LearningMapPage } from '../../pages/learner/LearningMapPage.jsx';
 import { MissionIntroPage } from '../../pages/learner/MissionIntroPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
+import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
+import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
 import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
+
+
 
 /* ─────────────────── Route Guards ─────────────────── */
 
@@ -112,13 +116,14 @@ export function AppRouter() {
           }
         >
           <Route path="/admin" element={<AdminOverviewPage />} />
+          <Route path="/admin/pages" element={<AdminPageStatusPage />} />
           <Route path="/admin/courses" element={<PlaceholderPage title="Quản lý khóa học" />} />
           <Route path="/admin/chapters" element={<PlaceholderPage title="Quản lý chương học" />} />
           <Route path="/admin/missions" element={<PlaceholderPage title="Quản lý nhiệm vụ" />} />
           <Route path="/admin/datasets" element={<PlaceholderPage title="Quản lý Dataset" />} />
           <Route path="/admin/learners" element={<PlaceholderPage title="Quản lý học viên" />} />
           <Route path="/admin/analytics" element={<PlaceholderPage title="Phân tích" />} />
-          <Route path="/admin/settings" element={<PlaceholderPage title="Cài đặt" />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
 
         {/* 404 */}

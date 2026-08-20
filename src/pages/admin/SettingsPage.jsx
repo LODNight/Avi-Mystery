@@ -1,0 +1,250 @@
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import {
+  Globe,
+  Settings,
+  ShieldCheck,
+  CheckCircle2,
+  Moon,
+  Sun,
+  Eye,
+  Sliders,
+  Save,
+  RotateCcw,
+  Bell,
+  Lock,
+} from 'lucide-react';
+import { AdminPageStatusPage } from './PageStatusPage.jsx';
+import { usePageStatus } from '../../hooks/usePageStatus.js';
+import { useTheme } from '../../app/providers/ThemeProvider.jsx';
+
+export function AdminSettingsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTabFromUrl = searchParams.get('tab') || 'pages';
+  const [activeTab, setActiveTab] = useState(activeTabFromUrl);
+
+  const { adminBypass, toggleAdminBypass } = usePageStatus();
+  const { theme, toggleTheme } = useTheme();
+
+  const [toastMessage, setToastMessage] = useState('');
+
+  // Sync tab with URL search param
+  useEffect(() => {
+    const currentTab = searchParams.get('tab');
+    if (currentTab && currentTab !== activeTab) {
+      setActiveTab(currentTab);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    setSearchParams({ tab: tabId });
+  };
+
+  const showToast = (msg) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 3000);
+  };
+
+  return (
+    <div className="space-y-8 animate-fade-in pb-12">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-foreground px-5 py-3 text-background shadow-2xl animate-bounce">
+          <CheckCircle2 className="size-5 text-emerald-400 shrink-0" />
+          <span className="text-sm font-semibold">{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            Quản trị & Cấu hình
+          </p>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            Cài đặt Hệ thống
+          </h2>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+            Quản lý trạng thái các trang, bảo trì, cấu hình nền tảng và phân quyền hệ thống DataQuest.
+          </p>
+        </div>
+      </div>
+
+      {/* Tabs Header Navigation */}
+      <div className="flex items-center gap-2 border-b border-border pb-1 overflow-x-auto">
+        <button
+          onClick={() => handleTabChange('pages')}
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'pages'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <Globe className="size-4 shrink-0" />
+          <span>Quản lý trạng thái trang & Bảo trì</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('system')}
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'system'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <Settings className="size-4 shrink-0" />
+          <span>Cấu hình chung</span>
+        </button>
+
+        <button
+          onClick={() => handleTabChange('security')}
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'security'
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <ShieldCheck className="size-4 shrink-0" />
+          <span>Bảo mật & Phân quyền</span>
+        </button>
+      </div>
+
+      {/* Tab Content 1: Page Status & Maintenance Manager */}
+      {activeTab === 'pages' && (
+        <div className="space-y-6">
+          <AdminPageStatusPage />
+        </div>
+      )}
+
+      {/* Tab Content 2: System Settings */}
+      {activeTab === 'system' && (
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+              <Sliders className="size-4 text-primary" />
+              Cấu hình Chế độ Xem trước & Hiển thị
+            </h3>
+
+            {/* Admin Maintenance Bypass Toggle */}
+            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-muted/40 border border-border">
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-foreground flex items-center gap-2">
+                  <Eye className="size-4 text-amber-500" />
+                  Bỏ qua Bảo trì dành cho Admin
+                </p>
+                <p className="text-xs text-muted-foreground max-w-md">
+                  Khi bật tính năng này, tài khoản Admin có thể vào xem bình thường các trang đang đặt trạng thái Bảo trì.
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  toggleAdminBypass();
+                  showToast(adminBypass ? 'Đã tắt chế độ xem trước Admin' : 'Đã bật chế độ xem trước Admin');
+                }}
+                className={`relative inline-flex h-7 w-13 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  adminBypass ? 'bg-amber-500' : 'bg-muted-foreground/30'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block size-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    adminBypass ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Dark Mode Toggle */}
+            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-muted/40 border border-border">
+              <div className="space-y-1">
+                <p className="text-sm font-bold text-foreground flex items-center gap-2">
+                  {theme === 'dark' ? <Moon className="size-4 text-amber-400" /> : <Sun className="size-4 text-amber-500" />}
+                  Giao diện Ứng dụng ({theme === 'dark' ? 'Chế độ Tối' : 'Chế độ Sáng'})
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Đổi tông màu chủ đạo Detective Amber (Gỗ tối / Cuộn giấy sáng).
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  toggleTheme();
+                  showToast('Đã đổi giao diện hệ thống');
+                }}
+                className="rounded-xl border border-border bg-card px-4 py-2 text-xs font-bold hover:bg-muted"
+              >
+                {theme === 'dark' ? 'Chuyển sang Sáng' : 'Chuyển sang Tối'}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-4">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+              <Bell className="size-4 text-primary" />
+              Thông báo Hệ thống
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              Quản lý kênh phát sóng thông báo khẩn cấp cho tất cả các nhà điều tra DataQuest.
+            </p>
+            <div className="space-y-3">
+              <label className="block text-xs font-semibold text-foreground">
+                Thông báo mặc định trên trang Tổng quan
+              </label>
+              <input
+                type="text"
+                defaultValue="Chào mừng bạn đến với Nền tảng Điều tra Dữ liệu AviMystery DataQuest!"
+                className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground focus:border-primary focus:outline-none"
+              />
+              <button
+                onClick={() => showToast('Đã lưu cấu hình thông báo')}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90"
+              >
+                <Save className="size-3.5" />
+                Lưu thay đổi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Content 3: Security & Roles */}
+      {activeTab === 'security' && (
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
+              <Lock className="size-4 text-primary" />
+              Phân quyền & Vai trò người dùng
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2">
+                <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  Vai trò: Admin
+                </span>
+                <h4 className="text-sm font-bold text-foreground">Quản trị viên Hệ thống</h4>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Toàn quyền chuyển trạng thái các trang</li>
+                  <li>Quản lý khóa học, chapter & mission</li>
+                  <li>Bỏ qua bảo trì để preview nội dung</li>
+                </ul>
+              </div>
+
+              <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2">
+                <span className="rounded-full bg-primary/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-primary">
+                  Vai trò: Learner
+                </span>
+                <h4 className="text-sm font-bold text-foreground">Nhà điều tra dữ liệu</h4>
+                <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                  <li>Truy cập học tập theo lộ trình</li>
+                  <li>Bị giới hạn khi trang chuyển Bảo trì</li>
+                  <li>Nhận thông báo cập nhật mới</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

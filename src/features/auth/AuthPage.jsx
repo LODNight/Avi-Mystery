@@ -164,7 +164,7 @@ export function AuthPage({ initialMode = 'login' }) {
                 avi<span className="text-primary">mystery</span>
               </p>
               <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">
-                DataQuest Platform
+                Avi-Mystery Platform
               </p>
             </div>
           </Link>
@@ -540,7 +540,7 @@ export function AuthPage({ initialMode = 'login' }) {
       {/* ── Footer ── */}
       <footer className="w-full border-t border-border/60 py-4 px-6 text-center text-xs text-muted-foreground">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 AviMystery DataQuest. Nền tảng học phân tích dữ liệu ứng dụng thực tế.</p>
+          <p>© 2026 Avi-Mystery. Nền tảng học phân tích dữ liệu ứng dụng thực tế.</p>
           <div className="flex items-center gap-4">
             <span className="hover:underline cursor-pointer">Bảo mật</span>
             <span className="hover:underline cursor-pointer">Điều khoản</span>

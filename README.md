@@ -1,6 +1,6 @@
-# DataQuest — Nền Tảng Luyện Tập Phân Tích Dữ Liệu Nông Nghiệp & Kinh Doanh
+# Avi-Mystery — Nền Tảng Luyện Tập Phân Tích Dữ Liệu Nông Nghiệp & Kinh Doanh
 
-> **DataQuest** là ứng dụng luyện tập phân tích dữ liệu theo phong cách **game hóa điều tra vụ án** (Gameified Data Analytics Investigation).  
+> **Avi-Mystery** là ứng dụng luyện tập phân tích dữ liệu theo phong cách **game hóa điều tra vụ án** (Gameified Data Analytics Investigation).  
 > Người học đóng vai trò là một **Nhà điều tra dữ liệu (Data Investigator)** giải quyết các tình huống kinh doanh & nông nghiệp thực tế bằng công thức **Excel** và câu lệnh **SQL**.
 
 ---

@@ -1,4 +1,4 @@
-# Trạng Thái Dự Án Avi-Farm (DataQuest)
+# Trạng Thái Dự Án Avi-Mystery
 
 > **Cập nhật lần cuối:** 20/08/2026  
 > **Người thực hiện:** Senior Frontend Developer, Software Architect & QA Lead

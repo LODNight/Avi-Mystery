@@ -1,4 +1,4 @@
-# Dự Án Avi-Farm (DataQuest) — Backlog
+# Dự Án Avi-Mystery — Backlog
 
 > **Quy tắc đặt mã Task:** `[AREA]-[MODULE]-[NUMBER]` (Ví dụ: `LRN-COURSE-001`, `ADM-MISSION-001`, `SHR-AUTH-001`, `BE-COURSE-001`).
 > **Quy tắc quản lý trạng thái:**

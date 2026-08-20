@@ -66,7 +66,7 @@ export function AdminSettingsPage() {
             Cài đặt Hệ thống
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Quản lý trạng thái các trang, bảo trì, cấu hình nền tảng và phân quyền hệ thống DataQuest.
+            Quản lý trạng thái các trang, bảo trì, cấu hình nền tảng và phân quyền hệ thống Avi-Mystery.
           </p>
         </div>
       </div>
@@ -185,7 +185,7 @@ export function AdminSettingsPage() {
               Thông báo Hệ thống
             </h3>
             <p className="text-xs text-muted-foreground">
-              Quản lý kênh phát sóng thông báo khẩn cấp cho tất cả các nhà điều tra DataQuest.
+              Quản lý kênh phát sóng thông báo khẩn cấp cho tất cả các nhà điều tra Avi-Mystery.
             </p>
             <div className="space-y-3">
               <label className="block text-xs font-semibold text-foreground">
@@ -193,7 +193,7 @@ export function AdminSettingsPage() {
               </label>
               <input
                 type="text"
-                defaultValue="Chào mừng bạn đến với Nền tảng Điều tra Dữ liệu AviMystery DataQuest!"
+                defaultValue="Chào mừng bạn đến với Nền tảng Điều tra Dữ liệu Avi-Mystery!"
                 className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground focus:border-primary focus:outline-none"
               />
               <button

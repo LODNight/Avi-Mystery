@@ -116,7 +116,7 @@ export function UnderMaintenancePage({ pageConfig, onBypass }) {
 
         {/* Footnote */}
         <p className="mt-8 font-mono text-xs text-muted-foreground">
-          Cần hỗ trợ gấp? Vui lòng liên hệ Admin qua kênh hỗ trợ kĩ thuật DataQuest.
+          Cần hỗ trợ gấp? Vui lòng liên hệ Admin qua kênh hỗ trợ kĩ thuật Avi-Mystery.
         </p>
       </div>
     </div>

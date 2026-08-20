@@ -100,7 +100,7 @@ export function LearnerLayout({ children }) {
             to="/dashboard"
             className="flex items-center gap-3 min-w-0"
             onClick={() => setMobileOpen(false)}
-            title="AviMystery DataQuest"
+            title="Avi-Mystery"
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
               <Zap className="size-5 fill-current" />

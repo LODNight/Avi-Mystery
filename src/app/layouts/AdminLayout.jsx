@@ -24,6 +24,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
 import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
+import { FEATURE_FLAGS } from '../../config/envConfig.js';
 
 const adminNav = [
   { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
@@ -111,9 +112,16 @@ export function AdminLayout({ children }) {
               <BrandLogoIcon className="size-5" />
             </span>
             {(!collapsed || mobileOpen) && (
-              <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
-                {brand.brandName} <span className="text-xs text-primary font-semibold">Admin</span>
-              </span>
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
+                  {brand.brandName} <span className="text-xs text-primary font-semibold">Admin</span>
+                </span>
+                {FEATURE_FLAGS.showDevBadge && (
+                  <span className="rounded-md bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                    DEV
+                  </span>
+                )}
+              </div>
             )}
           </Link>
 

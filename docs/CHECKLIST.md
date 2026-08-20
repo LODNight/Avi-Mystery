@@ -49,7 +49,7 @@
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice *(Đang thực hiện - 50%)*
+## 🟡 Sprint 3 — Excel Vertical Slice *(Đang thực hiện - 75%)*
 
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
@@ -63,11 +63,11 @@
 - [x] Đăng ký tuyến đường điều hướng chuẩn xác từ `MissionIntroPage`, `DashboardPage` & `LearningMapPage`
 - [x] Viết bộ test component `ExcelMissionPage.test.jsx` (100% pass, nâng tổng test lên 62/62)
 
-### 🔹 Step 3.2: Spreadsheet Grid Component & Formula Bar *(CẦN LÀM TIẾP THEO)*
-- [ ] Xây dựng component `SpreadsheetGrid.jsx` hỗ trợ hiển thị lưới ô A1, B1, C1...
-- [ ] Quản lý trạng thái ô đang chọn (Active Cell Selection: `selectedCell`, `highlightedCell`)
-- [ ] Xây dựng `FormulaBar.jsx` cho phép xem và nhập trực tiếp công thức Excel
-- [ ] Xử lý sự kiện chỉnh sửa ô dữ liệu được phép sửa (`editable: true`)
+### 🔹 Step 3.2: Spreadsheet Grid Component & Formula Bar *(HOÀN THÀNH)*
+- [x] Xây dựng component `SpreadsheetGrid.jsx` hỗ trợ hiển thị lưới ô A1, B1, C1...
+- [x] Quản lý trạng thái ô đang chọn (Active Cell Selection: `selectedCell`, `highlightedCell`)
+- [x] Xây dựng `FormulaBar.jsx` cho phép xem và nhập trực tiếp công thức Excel
+- [x] Xử lý sự kiện chỉnh sửa ô dữ liệu được phép sửa (`editable: true`) và tự động cập nhật phản hồi UI khi nhập công thức
 
 ### 🔹 Step 3.3: Thanh Công Cụ Thao Tác & Hệ Thống Gợi Ý *(CẦN LÀM TIẾP THEO)*
 - [ ] Nút Chạy thử công thức (`Run / Evaluate`) hiển thị kết quả tính toán ngay tại ô

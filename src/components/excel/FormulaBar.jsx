@@ -1,0 +1,87 @@
+import React from 'react';
+import { Check, Sparkles } from 'lucide-react';
+
+/**
+ * FormulaBar Component (LRN-EXCEL-002)
+ * Thanh nhập công thức chuẩn Excel cho màn hình không gian làm bài Excel Mission Workspace
+ *
+ * @param {Object} props
+ * @param {string} props.selectedCell - Tọa độ ô đang được chọn (ví dụ: 'E2')
+ * @param {string} props.formula - Chuỗi công thức hiện tại của ô chọn (ví dụ: '=C2*D2')
+ * @param {Function} props.onChange - Handler cập nhật công thức khi người dùng gõ
+ * @param {Function} [props.onSubmit] - Handler khi nhấn Enter hoặc nút Áp dụng
+ * @param {boolean} [props.isTargetCell] - Cờ xác định xem ô chọn có phải là ô mục tiêu của bài học hay không
+ * @param {boolean} [props.disabled] - Khóa nhập công thức
+ */
+export function FormulaBar({
+  selectedCell = 'A1',
+  formula = '',
+  onChange,
+  onSubmit,
+  isTargetCell = false,
+  disabled = false,
+}) {
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && onSubmit) {
+      e.preventDefault();
+      onSubmit(formula);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center rounded-2xl border border-border bg-card p-2.5 shadow-sm transition-all">
+      <div className="flex items-center gap-2">
+        {/* Cell Coordinate Name Box */}
+        <div
+          className={`flex items-center justify-center min-w-[3.5rem] px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-colors ${
+            isTargetCell
+              ? 'bg-amber-500 text-amber-950 shadow-sm shadow-amber-500/20 ring-1 ring-amber-400'
+              : 'bg-muted text-foreground'
+          }`}
+          title={isTargetCell ? 'Ô mục tiêu cần tính toán của vụ án' : `Ô ${selectedCell}`}
+        >
+          {isTargetCell && <Sparkles className="size-3 mr-1 fill-current shrink-0" />}
+          {selectedCell}
+        </div>
+
+        {/* Function Icon Indicator */}
+        <div className="flex items-center justify-center px-2 py-1 font-mono text-sm font-bold text-muted-foreground select-none">
+          fx
+        </div>
+
+        <div className="h-5 w-px bg-border hidden sm:block" />
+      </div>
+
+      {/* Formula Input Field */}
+      <div className="relative flex-1 flex items-center gap-2 mt-1 sm:mt-0">
+        <input
+          type="text"
+          value={formula}
+          onChange={(e) => onChange && onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+          placeholder={
+            isTargetCell
+              ? 'Nhập công thức bài làm (ví dụ: =C2*D2)...'
+              : 'Nhập công thức hoặc giá trị (ví dụ: =SUM(B2:B5))...'
+          }
+          className="w-full rounded-xl border border-border bg-background px-3.5 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all disabled:opacity-50"
+          aria-label="Thanh nhập công thức Excel"
+        />
+
+        {onSubmit && (
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={disabled || !formula.trim()}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+            title="Áp dụng công thức (Enter)"
+          >
+            <Check className="size-3.5" />
+            <span className="hidden sm:inline">Áp dụng</span>
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}

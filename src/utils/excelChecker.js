@@ -173,6 +173,28 @@ export function evaluateFormulaValue(formula, sheetData = {}) {
     return Number(expr);
   }
 
+  // 3. Đánh giá biểu thức toán học giữa các ô tính (Ví dụ: C2*D2, C2+D2, C2/10)
+  try {
+    // Tách và thay thế các địa chỉ ô tính (A1, B2, C10...) bằng giá trị số trong sheetData
+    const replacedExpr = expr.replace(/\b([A-Z]+[0-9]+)\b/gi, (match) => {
+      const addr = match.toUpperCase();
+      const val = sheetData[addr];
+      const num = Number(val);
+      return isNaN(num) ? '0' : String(num);
+    });
+
+    // An toàn: Chỉ cho phép chữ số, khoảng trắng và các toán tử +, -, *, /, (, ), .
+    if (/^[0-9\s\+\-\*\/\(\)\.]+$/.test(replacedExpr)) {
+      // eslint-disable-next-line no-new-func
+      const result = new Function(`"use strict"; return (${replacedExpr})`)();
+      if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+        return result;
+      }
+    }
+  } catch (_err) {
+    return null;
+  }
+
   return null;
 }
 

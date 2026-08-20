@@ -11,6 +11,14 @@ export function formatNumber(value) {
 }
 
 /**
+ * Format tiền tệ VNĐ: 150000 → "150.000 ₫"
+ */
+export function formatCurrency(amount) {
+  if (amount == null || isNaN(amount)) return '—';
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+}
+
+/**
  * Format XP: 720 → "720 XP"
  */
 export function formatXP(xp) {

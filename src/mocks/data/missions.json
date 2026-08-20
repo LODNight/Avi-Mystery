@@ -16,8 +16,8 @@
     "version": 1,
     "starterContent": {
       "targetSheet": "Sales",
-      "targetCell": "B15",
-      "hint": "Dùng hàm SUMIF để tính tổng theo điều kiện tháng"
+      "targetCell": "E2",
+      "hint": "Gõ công thức =C2*D2 để tính Thành tiền của đơn hàng ORD-001"
     }
   },
   {

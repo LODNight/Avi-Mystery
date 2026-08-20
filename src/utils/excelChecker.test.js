@@ -69,6 +69,13 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       expect(evaluateFormulaValue('=MAX(B2:B5)', sheetData)).toBe(40);
       expect(evaluateFormulaValue('=MIN(B2:B5)', sheetData)).toBe(10);
     });
+
+    it('tính toán phép nhân ô tính như =C2*D2 chính xác', () => {
+      const mathSheetData = { C2: 3, D2: 150000 };
+      expect(evaluateFormulaValue('=C2*D2', mathSheetData)).toBe(450000);
+      expect(evaluateFormulaValue('=C2 * D2', mathSheetData)).toBe(450000);
+      expect(evaluateFormulaValue('=C2 + D2', mathSheetData)).toBe(150003);
+    });
   });
 
   describe('checkExcelAnswer', () => {

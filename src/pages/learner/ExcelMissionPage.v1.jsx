@@ -8,9 +8,6 @@ import {
   Database,
   FileSpreadsheet,
   CheckCircle2,
-  ChevronDown,
-  FileText,
-  HelpCircle,
 } from 'lucide-react';
 import { mockMissionService } from '../../services/mock/mockMissionService.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
@@ -28,9 +25,6 @@ export function ExcelMissionPage() {
   const [error, setError] = useState(null);
   const [mission, setMission] = useState(null);
   const [dataset, setDataset] = useState(null);
-
-  // State quản lý việc ẩn/hiện Hồ sơ bối cảnh vụ án (Bản 2 Layout - Ưu tiên Bảng tính)
-  const [showBriefing, setShowBriefing] = useState(false);
 
   // State quản lý Bảng tính Excel Interactive (LRN-EXCEL-002)
   const [selectedCell, setSelectedCell] = useState('E2');
@@ -162,9 +156,14 @@ export function ExcelMissionPage() {
           <Skeleton className="h-10 w-48 rounded-xl" />
           <Skeleton className="h-10 w-32 rounded-xl" />
         </div>
-        <div className="space-y-4">
-          <Skeleton className="h-14 w-full rounded-2xl" />
-          <Skeleton className="h-[420px] w-full rounded-2xl" />
+        <div className="grid lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4 space-y-4">
+            <Skeleton className="h-64 w-full rounded-2xl" />
+            <Skeleton className="h-40 w-full rounded-2xl" />
+          </div>
+          <div className="lg:col-span-8 space-y-4">
+            <Skeleton className="h-96 w-full rounded-2xl" />
+          </div>
         </div>
       </div>
     );
@@ -184,7 +183,7 @@ export function ExcelMissionPage() {
   const starterCell = mission.starterContent?.targetCell || 'E2';
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12">
+    <div className="flex flex-col min-h-[calc(100vh-5rem)] space-y-6 animate-fade-in pb-12">
       {/* ── Top Bar Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
@@ -210,124 +209,112 @@ export function ExcelMissionPage() {
           </div>
         </div>
 
-        {/* Action Controls & Badges */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Toggle Briefing Button */}
-          <button
-            onClick={() => setShowBriefing(!showBriefing)}
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all shadow-sm"
-          >
-            <FileText className="size-4" />
-            <span>{showBriefing ? 'Ẩn hồ sơ vụ án' : 'Xem hồ sơ vụ án & bối cảnh'}</span>
-            <ChevronDown className={`size-4 transition-transform duration-200 ${showBriefing ? 'rotate-180' : ''}`} />
-          </button>
-
-          <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+        {/* Header Metadata Badges */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
             <Award className="size-4" />
             <span>+{mission.rewardXp || 100} XP</span>
           </div>
-          <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">
+          <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-semibold text-muted-foreground">
             <Clock className="size-3.5" />
             <span>{formatDuration(mission.estimatedDuration)}</span>
           </div>
         </div>
       </div>
 
-      {/* ── Compact Sticky Objective Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-xs shrink-0">
-            <Sparkles className="size-3.5 fill-current" /> Ô mục tiêu: {starterCell}
-          </span>
-          <p className="text-xs sm:text-sm font-semibold text-foreground">
-            {mission.objective}
-          </p>
-        </div>
-
-        <button
-          onClick={() => setShowBriefing(!showBriefing)}
-          className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto"
-        >
-          <HelpCircle className="size-3.5" />
-          <span>{showBriefing ? 'Thu gọn hồ sơ' : 'Chi tiết vụ án'}</span>
-        </button>
-      </div>
-
-      {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}
-      {showBriefing && (
-        <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-md space-y-5 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-border pb-3">
+      {/* ── Main Workspace Grid (Left Briefing Panel + Right Interactive Spreadsheet) ── */}
+      <div className="grid lg:grid-cols-12 gap-6 items-start">
+        
+        {/* ── LEFT PANEL: Mission Briefing & Story ── */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Mission Story Box */}
+          <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm space-y-4 relative overflow-hidden">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
               <Sparkles className="size-4 text-amber-500" />
-              <span>Hồ sơ bối cảnh & Yêu cầu điều tra</span>
-            </div>
-            <span className="rounded-lg bg-amber-500/20 px-2.5 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-              Mục tiêu: {starterCell}
-            </span>
-          </div>
-
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            {/* Story & Narrative */}
-            <div className="md:col-span-8 space-y-3">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                Câu chuyện trinh thám
-              </h3>
-              <p className="text-sm leading-relaxed text-foreground italic border-l-2 border-primary/50 pl-3.5 py-1 bg-muted/30 rounded-r-xl">
-                "{mission.story}"
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Hãy chọn ô <strong className="text-foreground font-mono">{starterCell}</strong> trên bảng tính phía dưới và nhập công thức thích hợp để giải quyết nghi vấn.
-              </p>
+              <span>Hồ sơ bối cảnh vụ án</span>
             </div>
 
-            {/* Dataset Metadata */}
-            {dataset && (
-              <div className="md:col-span-4 rounded-2xl border border-border bg-muted/20 p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                    <Database className="size-4 text-primary" />
-                    <span>Dữ liệu điều tra</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-muted-foreground">v{dataset.version}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{dataset.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Gồm {dataset.columns?.length || 0} cột & {dataset.rows?.length || 0} hàng dữ liệu
-                  </p>
-                </div>
+            <p className="text-sm leading-relaxed text-foreground italic border-l-2 border-primary/50 pl-3 py-1 bg-muted/30 rounded-r-xl">
+              "{mission.story}"
+            </p>
+
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-1.5">
+              <div className="flex items-center gap-2 text-xs font-bold text-primary">
+                <CheckCircle2 className="size-4" />
+                <span>Mục tiêu nhiệm vụ</span>
               </div>
-            )}
+              <p className="text-xs sm:text-sm font-semibold text-foreground">
+                {mission.objective}
+              </p>
+            </div>
           </div>
+
+          {/* Target Cell & Instruction Box */}
+          <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                Ô mục tiêu cần nhập
+              </span>
+              <span className="rounded-lg bg-amber-500/20 px-2.5 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                {starterCell}
+              </span>
+            </div>
+
+            <p className="text-xs text-muted-foreground">
+              Hãy chọn ô <strong className="text-foreground font-mono">{starterCell}</strong> trong bảng tính bên phải và nhập công thức phù hợp để hoàn thành yêu cầu.
+            </p>
+          </div>
+
+          {/* Dataset Info Card */}
+          {dataset && (
+            <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                  <Database className="size-4 text-primary" />
+                  <span>Tệp dữ liệu điều tra</span>
+                </div>
+                <span className="text-[11px] font-mono text-muted-foreground">
+                  v{dataset.version}
+                </span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">{dataset.name}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Gồm {dataset.columns?.length || 0} cột & {dataset.rows?.length || 0} hàng dữ liệu
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* ── Main Full-Width Interactive Excel Workspace (Trọng tâm Bảng tính) ── */}
-      <div className="space-y-4">
-        {/* Formula Bar Component */}
-        <FormulaBar
-          selectedCell={selectedCell}
-          formula={formulaInput}
-          onChange={handleFormulaChange}
-          onSubmit={handleFormulaSubmit}
-          isTargetCell={selectedCell === starterCell}
-        />
-
-        {/* Full Width Spreadsheet Grid Component */}
-        {dataset ? (
-          <SpreadsheetGrid
-            dataset={dataset}
+        {/* ── RIGHT PANEL: Interactive Spreadsheet Workspace Container (LRN-EXCEL-002) ── */}
+        <div className="lg:col-span-8 space-y-4">
+          {/* Formula Bar Component */}
+          <FormulaBar
             selectedCell={selectedCell}
-            onCellSelect={handleCellSelect}
-            targetCell={starterCell}
-            cellFormulas={cellFormulas}
-            cellValues={cellValues}
+            formula={formulaInput}
+            onChange={handleFormulaChange}
+            onSubmit={handleFormulaSubmit}
+            isTargetCell={selectedCell === starterCell}
           />
-        ) : (
-          <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">
-            <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
-          </div>
-        )}
+
+          {/* Interactive Spreadsheet Grid Component */}
+          {dataset ? (
+            <SpreadsheetGrid
+              dataset={dataset}
+              selectedCell={selectedCell}
+              onCellSelect={handleCellSelect}
+              targetCell={starterCell}
+              cellFormulas={cellFormulas}
+              cellValues={cellValues}
+            />
+          ) : (
+            <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">
+              <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );

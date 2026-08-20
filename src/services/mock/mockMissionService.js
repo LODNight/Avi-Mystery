@@ -1,4 +1,5 @@
 import missionsData from '../../mocks/data/missions.json';
+import datasetsData from '../../mocks/data/datasets.json';
 
 const DELAY = 300;
 function delay(ms = DELAY) {
@@ -23,6 +24,15 @@ export const mockMissionService = {
     return { data: mission, error: null };
   },
 
+  async getDataset(datasetId) {
+    await delay();
+    const dataset = datasetsData.find((d) => d.id === datasetId);
+    if (!dataset) {
+      return { data: null, error: `Không tìm thấy dataset "${datasetId}".` };
+    }
+    return { data: dataset, error: null };
+  },
+
   async getRecommendedMissions(_userId) {
     await delay();
     // Trả về 3 mission đầu tiên của khóa Excel (giả lập gợi ý)
@@ -32,3 +42,4 @@ export const mockMissionService = {
     return { data: recommended, error: null };
   },
 };
+

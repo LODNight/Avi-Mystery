@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ds-001",
+    "name": "Bảng dữ liệu Doanh thu Bán hàng",
+    "version": 1,
+    "columns": [
+      { "key": "orderId", "label": "Mã đơn hàng", "excelColumn": "A", "dataType": "text", "editable": false },
+      { "key": "product", "label": "Sản phẩm", "excelColumn": "B", "dataType": "text", "editable": false },
+      { "key": "quantity", "label": "Số lượng", "excelColumn": "C", "dataType": "number", "editable": false },
+      { "key": "unitPrice", "label": "Đơn giá (VNĐ)", "excelColumn": "D", "dataType": "number", "editable": false },
+      { "key": "total", "label": "Thành tiền (VNĐ)", "excelColumn": "E", "dataType": "number", "editable": true }
+    ],
+    "rows": [
+      { "orderId": "ORD-001", "product": "Chuột máy tính không dây", "quantity": 3, "unitPrice": 150000, "total": null },
+      { "orderId": "ORD-002", "product": "Bàn phím cơ RGB", "quantity": 2, "unitPrice": 450000, "total": null },
+      { "orderId": "ORD-003", "product": "Màn hình 24 inch 144Hz", "quantity": 1, "unitPrice": 3200000, "total": null },
+      { "orderId": "ORD-004", "product": "Tai nghe Gaming Surround", "quantity": 5, "unitPrice": 250000, "total": null },
+      { "orderId": "ORD-005", "product": "Cáp sạc Type-C siêu bền", "quantity": 10, "unitPrice": 80000, "total": null }
+    ]
+  },
+  {
+    "id": "ds-002",
+    "name": "Bảng dữ liệu Khách hàng & Đơn hàng",
+    "version": 1,
+    "columns": [
+      { "key": "customerId", "label": "Mã KH", "excelColumn": "A", "dataType": "text", "editable": false },
+      { "key": "customerName", "label": "Họ và tên", "excelColumn": "B", "dataType": "text", "editable": false },
+      { "key": "spending", "label": "Tổng chi tiêu (VNĐ)", "excelColumn": "C", "dataType": "number", "editable": false },
+      { "key": "rank", "label": "Phân hạng", "excelColumn": "D", "dataType": "text", "editable": true }
+    ],
+    "rows": [
+      { "customerId": "KH-001", "customerName": "Nguyễn Văn An", "spending": 65000000, "rank": null },
+      { "customerId": "KH-002", "customerName": "Trần Thị Bình", "spending": 22000000, "rank": null },
+      { "customerId": "KH-003", "customerName": "Lê Hoàng Cường", "spending": 85000000, "rank": null },
+      { "customerId": "KH-004", "customerName": "Phạm Minh Đức", "spending": 15000000, "rank": null }
+    ]
+  }
+]

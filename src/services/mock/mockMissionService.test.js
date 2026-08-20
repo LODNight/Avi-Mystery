@@ -27,4 +27,19 @@ describe('mockMissionService Unit Tests', () => {
     expect(Array.isArray(res.data)).toBe(true);
     expect(res.data.length).toBeLessThanOrEqual(3);
   });
+
+  it('getDataset trả về thông tin dataset theo datasetId', async () => {
+    const res = await mockMissionService.getDataset('ds-001');
+    expect(res.error).toBeNull();
+    expect(res.data.id).toBe('ds-001');
+    expect(Array.isArray(res.data.columns)).toBe(true);
+    expect(Array.isArray(res.data.rows)).toBe(true);
+  });
+
+  it('getDataset trả về lỗi khi không tìm thấy datasetId', async () => {
+    const res = await mockMissionService.getDataset('invalid-ds-id');
+    expect(res.data).toBeNull();
+    expect(res.error).toContain('Không tìm thấy dataset');
+  });
 });
+

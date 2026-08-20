@@ -267,7 +267,7 @@ export function MissionIntroPage() {
         </div>
 
         <Link
-          to={`/practice?missionId=${mission.id}`}
+          to={`/missions/${mission.id}/workspace`}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-95 transition-all transform hover:-translate-y-0.5 shrink-0"
         >
           <Play className="size-4 fill-current" /> Bắt đầu điều tra ngay

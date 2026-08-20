@@ -99,16 +99,18 @@ npm run build
 ## 🧪 Kết Quả Kiểm Thử (Automated Test Report)
 
 Dự án hiện đạt **100% PASS** trên toàn bộ suite kiểm thử tự động:
-- **11 Test Files Passed**
-- **58 Test Cases Passed**
-- Kiểm thử bao phủ: Service contracts, UI Skeletons, Empty states, Filter logic, Route guards, Page Status maintenance interception và Excel Answer Checker.
+- **12 Test Files Passed**
+- **62 Test Cases Passed**
+- Kiểm thử bao phủ: Service contracts, UI Skeletons, Empty states, Filter logic, Route guards, Page Status maintenance interception, Excel Answer Checker và Excel Mission Shell.
 
 ---
 
 ## 🗺️ Lộ Trình Phát Triển (Roadmap Summary)
 
+Bảng tiến độ chi tiết theo dạng checkbox cho từng Sprint có thể xem tại tệp tài liệu: **[`docs/CHECKLIST.md`](./docs/CHECKLIST.md)**.
+
 - [x] **Sprint 1 — Foundation & Auth**: Khởi tạo App Shell, Design System Amber, Service Layer contract, Role Guards.
-- [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing.
-- [x] **Step 3.0 — Transition Audit & Page Status Manager**: Kiểm tra điều kiện gate Sprint 2, xây dựng Quản lý trạng thái trang Admin & bộ chấm công thức Excel Answer Checker.
-- [ ] **Sprint 3 — Excel Vertical Slice**: Phát triển giao diện không gian làm bài Excel Workspace interactive (`SpreadsheetGrid`, `FormulaBar`, `FormulaEngineAdapter`, `SubmissionService`).
+- [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing, Admin Page Status Manager.
+- [x] **Step 3.0 & 3.1 — Excel Mission Shell & Checker**: Kiểm tra gate Sprint 2, bộ chấm điểm `excelChecker.js` và màn hình làm bài Excel Mission Shell (`/missions/:missionId/workspace`).
+- [ ] **Sprint 3 (Tiếp) — Spreadsheet Grid & Engine**: Bảng tính tương tác `SpreadsheetGrid`, `FormulaBar`, `FormulaEngineAdapter` & `SubmissionService`.
 - [ ] **Sprint 4 — SQL Vertical Slice**: Trình soạn thảo câu lệnh SQL, Mock Database engine và bảng kết quả truy vấn.

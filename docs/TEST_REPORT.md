@@ -2,8 +2,8 @@
 
 > **Cập nhật lần cuối:** 20/08/2026  
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM  
-> **Tổng số Test Suites:** 11 files  
-> **Tổng số Test Cases:** 58 passed / 0 failed  
+> **Tổng số Test Suites:** 12 files  
+> **Tổng số Test Cases:** 62 passed / 0 failed  
 
 ---
 
@@ -11,17 +11,18 @@
 
 | File Test | Loại Test | Số Test Cases | Kết quả | Thời gian chạy |
 |---|---|---|---|---|
-| `src/tests/PageStatus.test.jsx` | Component & Service Test | 6 | `PASS` | 86ms |
-| `src/utils/excelChecker.test.js` | Unit Test | 13 | `PASS` | 12ms |
-| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 169ms |
-| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 197ms |
-| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 292ms |
-| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 380ms |
-| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 133ms |
-| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 182ms |
-| `src/services/mock/mockMissionService.test.js` | Unit Test | 4 | `PASS` | 1248ms |
-| `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1554ms |
-| `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1879ms |
+| `src/pages/learner/ExcelMissionPage.test.jsx` | Component Test | 2 | `PASS` | 985ms |
+| `src/services/mock/mockMissionService.test.js` | Unit Test | 6 | `PASS` | 1864ms |
+| `src/tests/PageStatus.test.jsx` | Component & Service Test | 6 | `PASS` | 45ms |
+| `src/utils/excelChecker.test.js` | Unit Test | 13 | `PASS` | 6ms |
+| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 71ms |
+| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 110ms |
+| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 157ms |
+| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 211ms |
+| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 90ms |
+| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 100ms |
+| `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1561ms |
+| `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1889ms |
 
 
 ---

@@ -326,7 +326,7 @@ function MissionNodeCard({
           </button>
         ) : (
           <Link
-            to={`/practice?missionId=${mission.id}`}
+            to={isCurrent ? `/missions/${mission.id}/workspace` : `/missions/${mission.id}`}
             className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               isCurrent
                 ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90'

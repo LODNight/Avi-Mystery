@@ -125,7 +125,12 @@ export function DashboardPage() {
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-3">
-                <p className="truncate font-semibold text-foreground">Vì sao doanh thu tháng 3 giảm?</p>
+                <Link
+                  to="/missions/mission-001"
+                  className="truncate font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                  Vì sao doanh thu tháng 3 giảm?
+                </Link>
                 <span className="shrink-0 font-mono text-xs font-bold text-primary">72%</span>
               </div>
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-background">
@@ -136,8 +141,8 @@ export function DashboardPage() {
               </p>
             </div>
             <Link
-              to="/courses"
-              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground hover:opacity-90"
+              to="/missions/mission-001/workspace"
+              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               aria-label="Tiếp tục vụ án"
             >
               <Play className="size-4 fill-current" />
@@ -270,7 +275,7 @@ function CourseCard({ course }) {
 
   return (
     <Link
-      to="/courses"
+      to={`/courses/${course.slug || course.id}`}
       className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
     >
       <div className="flex items-start justify-between">
@@ -299,7 +304,7 @@ function CourseCard({ course }) {
 function MissionCard({ mission }) {
   return (
     <Link
-      to="/practice"
+      to={`/missions/${mission.id}`}
       className="group flex items-center justify-between rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
     >
       <div className="flex items-center gap-3.5 min-w-0">

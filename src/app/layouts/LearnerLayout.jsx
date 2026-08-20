@@ -28,6 +28,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
 import { usePageStatus } from '../../hooks/usePageStatus.js';
+import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
 import { UnderMaintenancePage } from '../../pages/learner/UnderMaintenancePage.jsx';
 import { formatXP } from '../../utils/format.js';
 
@@ -52,6 +53,7 @@ export function LearnerLayout({ children }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { getPageStatus, adminBypass, toggleAdminBypass } = usePageStatus();
+  const { brand } = useBrand();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -100,14 +102,14 @@ export function LearnerLayout({ children }) {
             to="/dashboard"
             className="flex items-center gap-3 min-w-0"
             onClick={() => setMobileOpen(false)}
-            title="Avi-Mystery"
+            title={brand.brandName}
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <Zap className="size-5 fill-current" />
+              <BrandLogoIcon className="size-5" />
             </span>
             {(!collapsed || mobileOpen) && (
               <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
-                avi<span className="text-primary">mystery</span>
+                {brand.brandName}
               </span>
             )}
           </Link>

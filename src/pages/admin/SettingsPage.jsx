@@ -13,10 +13,13 @@ import {
   RotateCcw,
   Bell,
   Lock,
+  Sparkles,
+  Image as ImageIcon,
 } from 'lucide-react';
 import { AdminPageStatusPage } from './PageStatusPage.jsx';
 import { usePageStatus } from '../../hooks/usePageStatus.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
+import { useBrand, PRESET_LOGOS, BrandLogoIcon } from '../../app/providers/BrandProvider.jsx';
 
 export function AdminSettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,6 +28,13 @@ export function AdminSettingsPage() {
 
   const { adminBypass, toggleAdminBypass } = usePageStatus();
   const { theme, toggleTheme } = useTheme();
+  const { brand, updateBrand, resetBrand } = useBrand();
+
+  const [brandForm, setBrandForm] = useState({
+    brandName: brand.brandName,
+    brandTagline: brand.brandTagline,
+    brandLogo: brand.brandLogo,
+  });
 
   const [toastMessage, setToastMessage] = useState('');
 
@@ -36,6 +46,14 @@ export function AdminSettingsPage() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    setBrandForm({
+      brandName: brand.brandName,
+      brandTagline: brand.brandTagline,
+      brandLogo: brand.brandLogo,
+    });
+  }, [brand]);
+
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
     setSearchParams({ tab: tabId });
@@ -43,7 +61,13 @@ export function AdminSettingsPage() {
 
   const showToast = (msg) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(''), 3000);
+    setTimeout(() => setToastMessage(''), 4000);
+  };
+
+  const handleSaveBrand = (e) => {
+    e.preventDefault();
+    updateBrand(brandForm);
+    showToast('Đã lưu cấu hình Logo & Favicon thành công! Trình duyệt và giao diện đã tự động đồng bộ.');
   };
 
   return (
@@ -66,7 +90,7 @@ export function AdminSettingsPage() {
             Cài đặt Hệ thống
           </h2>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
-            Quản lý trạng thái các trang, bảo trì, cấu hình nền tảng và phân quyền hệ thống Avi-Mystery.
+            Quản lý trạng thái các trang, bảo trì, logo thương hiệu và phân quyền hệ thống Avi-Mystery.
           </p>
         </div>
       </div>
@@ -75,7 +99,7 @@ export function AdminSettingsPage() {
       <div className="flex items-center gap-2 border-b border-border pb-1 overflow-x-auto">
         <button
           onClick={() => handleTabChange('pages')}
-          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeTab === 'pages'
               ? 'bg-primary text-primary-foreground shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -87,19 +111,19 @@ export function AdminSettingsPage() {
 
         <button
           onClick={() => handleTabChange('system')}
-          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeTab === 'system'
               ? 'bg-primary text-primary-foreground shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
           <Settings className="size-4 shrink-0" />
-          <span>Cấu hình chung</span>
+          <span>Cấu hình chung & Logo Thương hiệu</span>
         </button>
 
         <button
           onClick={() => handleTabChange('security')}
-          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center gap-2 rounded-2xl px-4 py-2.5 text-xs sm:text-sm font-bold transition-all cursor-pointer ${
             activeTab === 'security'
               ? 'bg-primary text-primary-foreground shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -120,6 +144,147 @@ export function AdminSettingsPage() {
       {/* Tab Content 2: System Settings */}
       {activeTab === 'system' && (
         <div className="mx-auto max-w-4xl space-y-6">
+          {/* ── Brand & Logo Configuration Card ── */}
+          <form onSubmit={handleSaveBrand} className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Sparkles className="size-4 text-amber-500" />
+                Cấu hình Logo & Thương hiệu Trang (Dynamic Favicon)
+              </h3>
+              <span className="rounded-lg bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                Tự động đồng bộ Tab & App Logo
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Tên thương hiệu */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-foreground">
+                  Tên thương hiệu trang (Site Title)
+                </label>
+                <input
+                  type="text"
+                  value={brandForm.brandName}
+                  onChange={(e) => setBrandForm({ ...brandForm, brandName: e.target.value })}
+                  placeholder="Ví dụ: Avi-Mystery"
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-foreground focus:border-primary focus:outline-none"
+                  required
+                />
+              </div>
+
+              {/* Khẩu hiệu */}
+              <div className="space-y-2">
+                <label className="block text-xs font-bold text-foreground">
+                  Khẩu hiệu / Mô tả ngắn (Tagline)
+                </label>
+                <input
+                  type="text"
+                  value={brandForm.brandTagline}
+                  onChange={(e) => setBrandForm({ ...brandForm, brandTagline: e.target.value })}
+                  placeholder="Nền tảng học phân tích dữ liệu..."
+                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-xs text-foreground focus:border-primary focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {/* Chọn Logo Biểu Tượng & Dynamic Favicon */}
+            <div className="space-y-3">
+              <label className="block text-xs font-bold text-foreground">
+                Chọn biểu tượng Logo & Favicon tab trình duyệt
+              </label>
+              <p className="text-xs text-muted-foreground">
+                Biểu tượng bạn chọn bên dưới sẽ lập tức đổi biểu tượng logo trên ứng dụng và thẻ favicon góc trên trình duyệt.
+              </p>
+
+              {/* Preset Icon Selector Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                {PRESET_LOGOS.map((item) => {
+                  const Icon = item.icon;
+                  const isSelected = brandForm.brandLogo === item.id;
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setBrandForm({ ...brandForm, brandLogo: item.id })}
+                      className={`flex flex-col items-center justify-center gap-2 rounded-2xl border p-3.5 transition-all cursor-pointer ${
+                        isSelected
+                          ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-sm ring-2 ring-amber-500/30'
+                          : 'border-border bg-muted/20 text-muted-foreground hover:bg-muted hover:text-foreground'
+                      }`}
+                    >
+                      <div className="grid size-9 place-items-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                        <Icon className="size-5" />
+                      </div>
+                      <span className="text-[11px] font-bold text-center leading-tight">
+                        {item.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Custom Image URL input */}
+              <div className="pt-2 space-y-1.5">
+                <label className="block text-[11px] font-semibold text-muted-foreground">
+                  Hoặc nhập đường dẫn hình ảnh Custom Logo (URL image/png/svg)
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={PRESET_LOGOS.some((p) => p.id === brandForm.brandLogo) ? '' : brandForm.brandLogo}
+                    onChange={(e) => {
+                      if (e.target.value.trim()) {
+                        setBrandForm({ ...brandForm, brandLogo: e.target.value.trim() });
+                      }
+                    }}
+                    placeholder="https://example.com/custom-logo.svg"
+                    className="flex-1 rounded-xl border border-border bg-background px-3.5 py-2 text-xs text-foreground focus:border-primary focus:outline-none font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Live Preview Box */}
+            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+              <div className="flex items-center gap-3">
+                <div className="grid size-10 place-items-center rounded-xl bg-amber-500 text-amber-950 shadow-md">
+                  <BrandLogoIcon logoKey={brandForm.brandLogo} className="size-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                    Xem trước Logo & Favicon
+                  </p>
+                  <p className="text-sm font-bold text-foreground">
+                    {brandForm.brandName || 'Avi-Mystery'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    resetBrand();
+                    showToast('Đã khôi phục logo mặc định');
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold text-muted-foreground hover:bg-muted hover:text-foreground transition-all cursor-pointer"
+                >
+                  <RotateCcw className="size-3.5" />
+                  Mặc định
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90 transition-all cursor-pointer"
+                >
+                  <Save className="size-3.5" />
+                  Lưu cấu hình Logo
+                </button>
+              </div>
+            </div>
+          </form>
+
+          {/* ── Display Settings & Preview ── */}
           <div className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
               <Sliders className="size-4 text-primary" />
@@ -139,6 +304,7 @@ export function AdminSettingsPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => {
                   toggleAdminBypass();
                   showToast(adminBypass ? 'Đã tắt chế độ xem trước Admin' : 'Đã bật chế độ xem trước Admin');
@@ -168,11 +334,12 @@ export function AdminSettingsPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => {
                   toggleTheme();
                   showToast('Đã đổi giao diện hệ thống');
                 }}
-                className="rounded-xl border border-border bg-card px-4 py-2 text-xs font-bold hover:bg-muted"
+                className="rounded-xl border border-border bg-card px-4 py-2 text-xs font-bold hover:bg-muted cursor-pointer"
               >
                 {theme === 'dark' ? 'Chuyển sang Sáng' : 'Chuyển sang Tối'}
               </button>
@@ -197,8 +364,9 @@ export function AdminSettingsPage() {
                 className="w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs text-foreground focus:border-primary focus:outline-none"
               />
               <button
+                type="button"
                 onClick={() => showToast('Đã lưu cấu hình thông báo')}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90 cursor-pointer"
               >
                 <Save className="size-3.5" />
                 Lưu thay đổi

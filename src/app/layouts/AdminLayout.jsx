@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
+import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
 
 const adminNav = [
   { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
@@ -54,6 +55,7 @@ export function AdminLayout({ children }) {
 
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { brand } = useBrand();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -103,14 +105,14 @@ export function AdminLayout({ children }) {
             to="/admin"
             className="flex items-center gap-3 min-w-0"
             onClick={() => setMobileOpen(false)}
-            title="AviAdmin Workspace"
+            title={`${brand.brandName} Admin`}
           >
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <Zap className="size-5 fill-current" />
+              <BrandLogoIcon className="size-5" />
             </span>
             {(!collapsed || mobileOpen) && (
               <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
-                avi<span className="text-primary">admin</span>
+                {brand.brandName} <span className="text-xs text-primary font-semibold">Admin</span>
               </span>
             )}
           </Link>

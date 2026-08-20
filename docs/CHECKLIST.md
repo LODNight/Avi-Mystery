@@ -49,7 +49,7 @@
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice *(Đang thực hiện - 75%)*
+## 🟡 Sprint 3 — Excel Vertical Slice *(Đang thực hiện - 90%)*
 
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
@@ -69,11 +69,11 @@
 - [x] Xây dựng `FormulaBar.jsx` cho phép xem và nhập trực tiếp công thức Excel
 - [x] Xử lý sự kiện chỉnh sửa ô dữ liệu được phép sửa (`editable: true`) và tự động cập nhật phản hồi UI khi nhập công thức
 
-### 🔹 Step 3.3: Thanh Công Cụ Thao Tác & Hệ Thống Gợi Ý *(CẦN LÀM TIẾP THEO)*
-- [ ] Nút Chạy thử công thức (`Run / Evaluate`) hiển thị kết quả tính toán ngay tại ô
-- [ ] Nút Nộp bài (`Submit Answer`) để gửi bài làm sang bộ kiểm tra
-- [ ] Hệ thống Gợi ý từng bước (`Step-by-step Hints`) kèm trừ điểm XP
-- [ ] Nút Đặt lại dữ liệu ban đầu (`Reset Grid`)
+### 🔹 Step 3.3: Thanh Công Cụ Thao Tác & Hệ Thống Gợi Ý *(HOÀN THÀNH)*
+- [x] Nút Chạy thử công thức (`Run / Evaluate`) hiển thị kết quả tính toán ngay tại ô
+- [x] Nút Nộp bài (`Submit Answer`) để gửi bài làm sang bộ kiểm tra
+- [x] Hệ thống Gợi ý từng bước (`Step-by-step Hints`) kèm trừ điểm XP
+- [x] Nút Đặt lại dữ liệu ban đầu (`Reset Grid`)
 
 ### 🔹 Step 3.4: Mock Submission Service & Popup Kết Quả *(CẦN LÀM TIẾP THEO)*
 - [ ] Xây dựng `mockSubmissionService.js` xử lý nộp bài bất đồng bộ

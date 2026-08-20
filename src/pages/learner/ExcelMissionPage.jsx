@@ -11,6 +11,7 @@ import {
   ChevronDown,
   FileText,
   HelpCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { mockMissionService } from '../../services/mock/mockMissionService.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
@@ -18,6 +19,8 @@ import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDuration } from '../../utils/format.js';
 import { FormulaBar } from '../../components/excel/FormulaBar.jsx';
 import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
+import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
+import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { evaluateFormulaValue } from '../../utils/excelChecker.js';
 
 export function ExcelMissionPage() {
@@ -29,8 +32,15 @@ export function ExcelMissionPage() {
   const [mission, setMission] = useState(null);
   const [dataset, setDataset] = useState(null);
 
-  // State quản lý việc ẩn/hiện Hồ sơ bối cảnh vụ án (Bản 2 Layout - Ưu tiên Bảng tính)
+  // State quản lý việc ẩn/hiện Hồ sơ bối cảnh vụ án & Bảng gợi ý (Step 3.3)
   const [showBriefing, setShowBriefing] = useState(false);
+  const [showHintPanel, setShowHintPanel] = useState(false);
+  const [hintsUnlockedCount, setHintsUnlockedCount] = useState(0);
+
+  // State quản lý phản hồi thông báo (Feedback Toast)
+  const [feedbackToast, setFeedbackToast] = useState(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // State quản lý Bảng tính Excel Interactive (LRN-EXCEL-002)
   const [selectedCell, setSelectedCell] = useState('E2');
@@ -90,6 +100,14 @@ export function ExcelMissionPage() {
     };
   }, [missionId]);
 
+  // Xử lý thông báo tạm thời (Toast Notification)
+  const showNotification = (type, message) => {
+    setFeedbackToast({ type, message });
+    setTimeout(() => {
+      setFeedbackToast(null);
+    }, 4000);
+  };
+
   // Xử lý khi chọn một ô tính trên bảng
   const handleCellSelect = (cellAddr) => {
     setSelectedCell(cellAddr);
@@ -142,7 +160,7 @@ export function ExcelMissionPage() {
       typeof targetFormula === 'string' && targetFormula.trim()
         ? targetFormula
         : formulaInput;
-    if (!formulaToUse || !formulaToUse.trim()) return;
+    if (!formulaToUse || !formulaToUse.trim()) return null;
 
     const sheetData = getSheetDataMap();
     const computed = evaluateFormulaValue(formulaToUse, sheetData);
@@ -153,6 +171,63 @@ export function ExcelMissionPage() {
         [selectedCell]: computed,
       }));
     }
+    return computed;
+  };
+
+  // ── Step 3.3 Action Toolbar Handlers ──
+
+  // 1. Chạy thử công thức (Run / Evaluate)
+  const handleRunFormula = () => {
+    setIsEvaluating(true);
+    const computed = handleFormulaSubmit();
+    setTimeout(() => {
+      setIsEvaluating(false);
+      if (computed !== null && computed !== undefined) {
+        showNotification('success', `Đã chạy thử công thức thành công trên ô ${selectedCell}! Kết quả: ${computed}`);
+      } else if (!formulaInput || !formulaInput.startsWith('=')) {
+        showNotification('warning', `Vui lòng nhập công thức bắt đầu bằng dấu "=" vào ô ${selectedCell}.`);
+      } else {
+        showNotification('error', `Công thức "${formulaInput}" tại ô ${selectedCell} không hợp lệ.`);
+      }
+    }, 200);
+  };
+
+  // 2. Đặt lại bảng tính (Reset Grid)
+  const handleResetGrid = () => {
+    setCellFormulas({});
+    setCellValues({});
+    setFormulaInput('');
+    const starterCell = mission?.starterContent?.targetCell || 'E2';
+    setSelectedCell(starterCell);
+    showNotification('info', 'Đã đặt lại toàn bộ bảng tính về trạng thái ban đầu.');
+  };
+
+  // 3. Mở gợi ý cấp tiếp theo (Progressive Hints)
+  const handleUnlockNextHint = () => {
+    setHintsUnlockedCount((prev) => prev + 1);
+  };
+
+  // 4. Nộp bài vụ án (Submit Answer)
+  const handleSubmitAnswer = () => {
+    setIsSubmitting(true);
+    const computed = handleFormulaSubmit();
+
+    setTimeout(() => {
+      setIsSubmitting(false);
+      const starterCell = mission?.starterContent?.targetCell || 'E2';
+      const userFormula = cellFormulas[starterCell] || formulaInput;
+
+      if (!userFormula) {
+        showNotification('warning', `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`);
+        return;
+      }
+
+      if (computed !== null && computed !== undefined) {
+        showNotification('success', `Đã nộp bài làm thành công! Ô ${starterCell} có kết quả: ${computed}.`);
+      } else {
+        showNotification('error', `Kết quả nộp bài tại ô ${starterCell} chưa chính xác.`);
+      }
+    }, 400);
   };
 
   if (loading) {
@@ -182,6 +257,8 @@ export function ExcelMissionPage() {
   }
 
   const starterCell = mission.starterContent?.targetCell || 'E2';
+  const hintsData = mission.starterContent?.hints || mission.starterContent?.hint;
+  const netXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12">
@@ -215,16 +292,20 @@ export function ExcelMissionPage() {
           {/* Toggle Briefing Button */}
           <button
             onClick={() => setShowBriefing(!showBriefing)}
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer"
           >
             <FileText className="size-4" />
             <span>{showBriefing ? 'Ẩn hồ sơ vụ án' : 'Xem hồ sơ vụ án & bối cảnh'}</span>
             <ChevronDown className={`size-4 transition-transform duration-200 ${showBriefing ? 'rotate-180' : ''}`} />
           </button>
 
+          {/* XP Badge */}
           <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
             <Award className="size-4" />
-            <span>+{mission.rewardXp || 100} XP</span>
+            <span>+{netXp} XP</span>
+            {hintsUnlockedCount > 0 && (
+              <span className="text-[10px] text-rose-500 font-semibold">(-{hintsUnlockedCount * 15})</span>
+            )}
           </div>
           <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">
             <Clock className="size-3.5" />
@@ -232,6 +313,32 @@ export function ExcelMissionPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Feedback Toast Notification ── */}
+      {feedbackToast && (
+        <div
+          className={`flex items-center justify-between gap-3 rounded-2xl border p-4 text-xs sm:text-sm font-semibold shadow-md animate-fade-in ${
+            feedbackToast.type === 'success'
+              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+              : feedbackToast.type === 'warning'
+              ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+              : feedbackToast.type === 'error'
+              ? 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+              : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <AlertCircle className="size-4 shrink-0" />
+            <span>{feedbackToast.message}</span>
+          </div>
+          <button
+            onClick={() => setFeedbackToast(null)}
+            className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
+          >
+            Đóng
+          </button>
+        </div>
+      )}
 
       {/* ── Compact Sticky Objective Bar ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm">
@@ -246,7 +353,7 @@ export function ExcelMissionPage() {
 
         <button
           onClick={() => setShowBriefing(!showBriefing)}
-          className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto"
+          className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto cursor-pointer"
         >
           <HelpCircle className="size-3.5" />
           <span>{showBriefing ? 'Thu gọn hồ sơ' : 'Chi tiết vụ án'}</span>
@@ -302,6 +409,18 @@ export function ExcelMissionPage() {
         </div>
       )}
 
+      {/* ── Progressive Hint Drawer (Step 3.3) ── */}
+      {showHintPanel && (
+        <HintPanel
+          hints={hintsData}
+          hintsUnlockedCount={hintsUnlockedCount}
+          onUnlockNextHint={handleUnlockNextHint}
+          baseXp={mission.rewardXp || 100}
+          penaltyPerHint={15}
+          onClose={() => setShowHintPanel(false)}
+        />
+      )}
+
       {/* ── Main Full-Width Interactive Excel Workspace (Trọng tâm Bảng tính) ── */}
       <div className="space-y-4">
         {/* Formula Bar Component */}
@@ -311,6 +430,18 @@ export function ExcelMissionPage() {
           onChange={handleFormulaChange}
           onSubmit={handleFormulaSubmit}
           isTargetCell={selectedCell === starterCell}
+        />
+
+        {/* Action Toolbar Component (Step 3.3) */}
+        <ActionToolbar
+          onRun={handleRunFormula}
+          onSubmit={handleSubmitAnswer}
+          onReset={handleResetGrid}
+          onToggleHint={() => setShowHintPanel(!showHintPanel)}
+          hintCount={3}
+          hintsUnlockedCount={hintsUnlockedCount}
+          isEvaluating={isEvaluating}
+          isSubmitting={isSubmitting}
         />
 
         {/* Full Width Spreadsheet Grid Component */}

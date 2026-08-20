@@ -50,6 +50,34 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     }, { timeout: 3000 });
   });
 
+  it('bật/tắt thanh gợi ý và thực hiện đặt lại bảng tính qua ActionToolbar (Step 3.3)', async () => {
+    render(
+      <MemoryRouter initialEntries={['/missions/mission-001/workspace']}>
+        <Routes>
+          <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText(/Vì sao doanh thu tháng 3 giảm\?/i)).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    // Bấm mở bảng Gợi ý
+    const hintBtn = screen.getByRole('button', { name: /Gợi ý/i });
+    fireEvent.click(hintBtn);
+
+    expect(screen.getByText(/Hệ thống Gợi ý Trinh thám/i)).toBeInTheDocument();
+
+    // Bấm Đặt lại
+    const resetBtn = screen.getByRole('button', { name: /Đặt lại/i });
+    fireEvent.click(resetBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Đã đặt lại toàn bộ bảng tính/i)).toBeInTheDocument();
+    }, { timeout: 3000 });
+  });
+
   it('hiển thị ErrorState khi không tìm thấy missionId', async () => {
     render(
       <MemoryRouter initialEntries={['/missions/invalid-id/workspace']}>

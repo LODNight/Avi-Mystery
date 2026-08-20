@@ -123,10 +123,10 @@ export function CourseDetailPage() {
       ? 'warning'
       : 'danger';
 
-  // Calculate total XP available in course
-  const totalXp = Object.values(missionsByChapter)
-    .flat()
-    .reduce((sum, m) => sum + (m.rewardXp || 0), 0);
+  // Calculate total XP available in course and get first mission ID
+  const allMissions = Object.values(missionsByChapter).flat();
+  const totalXp = allMissions.reduce((sum, m) => sum + (m.rewardXp || 0), 0);
+  const firstMissionId = allMissions[0]?.id || 'mission-001';
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
@@ -197,7 +197,7 @@ export function CourseDetailPage() {
               <div className="h-full w-0 rounded-full bg-primary" />
             </div>
             <Link
-              to={`/practice?courseId=${course.id}`}
+              to={`/missions/${firstMissionId}`}
               className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-bold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
             >
               <Play className="size-4 fill-current" /> Bắt đầu khóa học
@@ -291,9 +291,6 @@ export function CourseDetailPage() {
 
 /* ── Mission List Item Sub-component ── */
 function MissionListItem({ mission, index }) {
-  // Giả định bài đầu tiên luôn available, các bài sau tạm unlock để thử nghiệm
-  const isAvailable = true;
-
   return (
     <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md">
       <div className="flex items-center gap-3.5 min-w-0">
@@ -301,9 +298,12 @@ function MissionListItem({ mission, index }) {
           {index}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-bold text-sm text-foreground">
+          <Link
+            to={`/missions/${mission.id}`}
+            className="truncate font-bold text-sm text-foreground hover:text-primary transition-colors block"
+          >
             {mission.title}
-          </p>
+          </Link>
           <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
             {mission.objective}
           </p>
@@ -319,9 +319,9 @@ function MissionListItem({ mission, index }) {
         </span>
 
         <Link
-          to={`/practice?missionId=${mission.id}`}
+          to={`/missions/${mission.id}`}
           className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-          title="Làm bài vụ án"
+          title="Xem hồ sơ vụ án & bắt đầu làm bài"
         >
           <Play className="size-4 fill-current" />
         </Link>

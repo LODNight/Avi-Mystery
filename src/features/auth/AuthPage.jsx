@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
 import { isAdmin } from '../../constants/roles.js';
+import { FEATURE_FLAGS } from '../../config/envConfig.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
 
@@ -312,19 +313,24 @@ export function AuthPage({ initialMode = 'login' }) {
                 </p>
               </div>
 
-              {/* Demo Account Pills (Chỉ hiện khi ở tab Đăng nhập) */}
-              {mode === 'login' && (
-                <div className="mb-6 rounded-2xl border border-border/80 bg-muted/40 p-3.5">
-                  <p className="text-[11px] font-mono uppercase tracking-wider font-bold text-muted-foreground mb-2">
-                    Tài khoản Demo thử nhanh:
-                  </p>
+              {/* Demo Account Pills (Chỉ hiện khi ở tab Đăng nhập và trên môi trường DEV) */}
+              {mode === 'login' && FEATURE_FLAGS.enableDevShortcuts && (
+                <div className="mb-6 rounded-2xl border border-border/80 bg-muted/40 p-3.5 animate-fade-in">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-[11px] font-mono uppercase tracking-wider font-bold text-muted-foreground">
+                      Tài khoản Demo thử nhanh:
+                    </p>
+                    <span className="rounded-md bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase text-amber-600 dark:text-amber-400">
+                      DEV ONLY
+                    </span>
+                  </div>
                   <div className="flex flex-col sm:flex-row gap-2">
                     {DEMO_ACCOUNTS.map((acc) => (
                       <button
                         key={acc.email}
                         type="button"
                         onClick={() => fillDemo(acc)}
-                        className="flex-1 flex items-center justify-between gap-1 text-xs bg-card hover:border-primary/50 text-foreground border border-border rounded-xl px-3 py-2 transition-all shadow-sm"
+                        className="flex-1 flex items-center justify-between gap-1 text-xs bg-card hover:border-primary/50 text-foreground border border-border rounded-xl px-3 py-2 transition-all shadow-sm cursor-pointer"
                       >
                         <span className="font-medium truncate">{acc.label}</span>
                         <ChevronRight className="size-3 text-primary shrink-0" />

@@ -55,7 +55,7 @@
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
 - [x] Xây dựng bộ chấm công thức `excelChecker.js` (Chuẩn hóa công thức, so sánh kết quả & hàm tính toán SUM, AVERAGE, MIN, MAX)
-- [x] Viết bộ test unit cho `excelChecker.test.js` (hiện có 14 test)
+- [x] Viết bộ test unit cho `excelChecker.test.js` (hiện có 26 test, gồm structured formula diagnostics)
 
 ### 🔹 Step 3.1: Excel Mission Shell & Kết Nối Dataset *(HOÀN THÀNH)*
 - [x] Khởi tạo tệp mock dataset `datasets.json` cho vụ án Sales Orders & Customers
@@ -84,7 +84,7 @@
 - [x] Service error có Retry và không làm mất answer
 - [x] Chặn double submit, replay theo `clientAttemptId` và cleanup an toàn khi unmount
 - [x] Chỉ trả `potentialXp`; Submission không trực tiếp cập nhật XP/level
-- [x] Targeted suite 31/31 và full regression 101/101 tests pass
+- [x] Submission targeted 31/31; formula diagnostics targeted 55/55; full regression 118/118 tests pass
 
 ---
 

@@ -3,8 +3,10 @@ import {
   normalizeFormula,
   parseCellAddress,
   expandCellRange,
+  analyzeExcelFormula,
   evaluateFormulaValue,
   checkExcelAnswer,
+  EXCEL_FORMULA_ERROR_CODES,
 } from './excelChecker.js';
 
 describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
@@ -78,11 +80,51 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
     });
   });
 
+  describe('analyzeExcelFormula', () => {
+    const sheetData = { B2: 10, B3: 0, C2: 3, D2: 150000, A2: 'text' };
+
+    it('không coi dấu "=" đơn lẻ là kết quả 0 hợp lệ', () => {
+      const result = analyzeExcelFormula('=', sheetData);
+
+      expect(result.valid).toBe(false);
+      expect(result.value).toBeNull();
+      expect(result.errorCode).toBe(EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION);
+      expect(evaluateFormulaValue('=', sheetData)).toBeNull();
+    });
+
+    it.each([
+      ['C2*D2', EXCEL_FORMULA_ERROR_CODES.MISSING_EQUALS],
+      ['=SUM(B2:B3', EXCEL_FORMULA_ERROR_CODES.UNBALANCED_PARENTHESES],
+      ['=MEDIAN(B2:B3)', EXCEL_FORMULA_ERROR_CODES.UNSUPPORTED_FUNCTION],
+      ['=SUM(B2:)', EXCEL_FORMULA_ERROR_CODES.INVALID_RANGE],
+      ['=C2^D2', EXCEL_FORMULA_ERROR_CODES.INVALID_CHARACTER],
+      ['=C2**D2', EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX],
+      ['=Z99+1', EXCEL_FORMULA_ERROR_CODES.REFERENCE_NOT_FOUND],
+      ['=A2+1', EXCEL_FORMULA_ERROR_CODES.NON_NUMERIC_REFERENCE],
+      ['=B2/B3', EXCEL_FORMULA_ERROR_CODES.DIVISION_BY_ZERO],
+    ])('trả diagnostic ổn định cho %s', (formula, errorCode) => {
+      const result = analyzeExcelFormula(formula, sheetData);
+
+      expect(result.valid).toBe(false);
+      expect(result.errorCode).toBe(errorCode);
+      expect(result.message).toBeTruthy();
+    });
+
+    it('trả value và diagnostic success cho công thức hợp lệ', () => {
+      expect(analyzeExcelFormula('=C2*D2', sheetData)).toMatchObject({
+        valid: true,
+        value: 450000,
+        errorCode: null,
+      });
+    });
+  });
+
   describe('checkExcelAnswer', () => {
     it('xác nhận công thức đúng khi nhập chuẩn khớp expectedFormula', () => {
       const result = checkExcelAnswer({
         userFormula: '=SUM(B2:B5)',
         expectedFormula: '=SUM(B2:B5)',
+        sheetData: { B2: 10, B3: 20, B4: 30, B5: 40 },
       });
 
       expect(result.isCorrect).toBe(true);
@@ -90,10 +132,11 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       expect(result.feedback).toContain('Chính xác');
     });
 
-    it('xác nhận công thức đúng ngay cả khi nhập chữ thường hoặc thiếu dấu "="', () => {
+    it('xác nhận công thức đúng khi nhập chữ thường nhưng vẫn có dấu "="', () => {
       const result = checkExcelAnswer({
-        userFormula: 'sum(b2:b5)',
+        userFormula: '=sum(b2:b5)',
         expectedFormula: '=SUM(B2:B5)',
+        sheetData: { B2: 10, B3: 20, B4: 30, B5: 40 },
       });
 
       expect(result.isCorrect).toBe(true);
@@ -104,6 +147,7 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       const result = checkExcelAnswer({
         userFormula: '=SUM(B2:B5)',
         expectedFormula: ['=SUM(B2:B5)', '=SUM(B2, B3, B4, B5)'],
+        sheetData: { B2: 10, B3: 20, B4: 30, B5: 40 },
       });
 
       expect(result.isCorrect).toBe(true);
@@ -113,11 +157,12 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       const result = checkExcelAnswer({
         userFormula: '=SUM(B2:B10)',
         expectedFormula: '=SUM(B2:B5)',
+        sheetData: { B2: 10, B3: 20, B4: 30, B5: 40 },
       });
 
       expect(result.isCorrect).toBe(false);
       expect(result.score).toBe(0);
-      expect(result.feedback).toContain('chưa chính xác');
+      expect(result.feedbackCode).toBe('INCORRECT_ANSWER');
     });
 
     it('báo lỗi chi tiết khi công thức bỏ qua dấu ngoặc', () => {
@@ -128,6 +173,18 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
 
       expect(result.isCorrect).toBe(false);
       expect(result.feedback).toContain('ngoặc');
+      expect(result.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX);
+    });
+
+    it('trả cùng diagnostic code cho dấu "=" đơn lẻ', () => {
+      const result = checkExcelAnswer({
+        userFormula: '=',
+        expectedFormula: '=C2*D2',
+        sheetData: { C2: 3, D2: 150000 },
+      });
+
+      expect(result.isCorrect).toBe(false);
+      expect(result.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION);
     });
   });
 });

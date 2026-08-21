@@ -182,9 +182,9 @@ export function createMockSubmissionService({
               ? isOfficialSubmit
                 ? SUBMISSION_FEEDBACK_CODES.CORRECT_ANSWER
                 : SUBMISSION_FEEDBACK_CODES.RUN_CORRECT
-              : isOfficialSubmit
+              : checkResult.feedbackCode || (isOfficialSubmit
                 ? SUBMISSION_FEEDBACK_CODES.INCORRECT_ANSWER
-                : SUBMISSION_FEEDBACK_CODES.RUN_INCORRECT,
+                : SUBMISSION_FEEDBACK_CODES.RUN_INCORRECT),
             feedback: checkResult.feedback,
           },
           error: null,

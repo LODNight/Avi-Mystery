@@ -81,6 +81,25 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     }, { timeout: 3000 });
   });
 
+  it('không hiển thị toast notification thành công khi bấm Chạy thử công thức hợp lệ mà thay kết quả vào ô', async () => {
+    renderMissionPage();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Vì sao doanh thu tháng 3 giảm\?/i)).toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    const input = screen.getByRole('textbox', { name: /Thanh nhập công thức Excel/i });
+    fireEvent.change(input, { target: { value: '=C2*D2' } });
+
+    const runBtn = screen.getByRole('button', { name: /Chạy thử công thức/i });
+    fireEvent.click(runBtn);
+
+    await waitFor(() => {
+      expect(screen.getAllByText((content) => content.includes('450')).length).toBeGreaterThan(0);
+    });
+    expect(screen.queryByText(/chạy thử công thức thành công/i)).not.toBeInTheDocument();
+  });
+
   it('bật/tắt thanh gợi ý và thực hiện đặt lại bảng tính qua ActionToolbar (Step 3.3)', async () => {
     renderMissionPage();
 
@@ -149,8 +168,36 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Nộp bài vụ án/i }));
 
-    expect(screen.getByRole('status')).toHaveTextContent(/chưa nhập công thức/i);
+    expect(screen.getByRole('alert')).toHaveTextContent(/vui lòng nhập công thức Excel/i);
     expect(submitMock).not.toHaveBeenCalled();
+  });
+
+  it('hiển thị lỗi cú pháp khi chỉ nhập "=" và không báo Run thành công', async () => {
+    renderMissionPage();
+    await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
+    const input = screen.getByRole('textbox', { name: /Thanh nhập công thức Excel/i });
+
+    fireEvent.change(input, { target: { value: '=' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Chạy thử công thức/i }));
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent(/đi kèm một biểu thức/i);
+    });
+    expect(screen.queryByText(/chạy thử công thức thành công/i)).not.toBeInTheDocument();
+  });
+
+  it('chặn Submit khi công thức sai cú pháp và dùng cùng diagnostic message', async () => {
+    renderMissionPage();
+    await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
+    const input = screen.getByRole('textbox', { name: /Thanh nhập công thức Excel/i });
+
+    fireEvent.change(input, { target: { value: '=C2**D2' } });
+    fireEvent.click(screen.getByRole('button', { name: /Nộp bài vụ án/i }));
+
+    expect(screen.getAllByText(/thứ tự toán tử/i).length).toBeGreaterThan(0);
+    expect(submitMock).not.toHaveBeenCalled();
+    expect(input).toHaveValue('=C2**D2');
   });
 
   it('incorrect answer hiển thị inline, giữ answer và không mở modal', async () => {
@@ -174,7 +221,7 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Nộp bài vụ án/i }));
 
-    await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent(/chưa chính xác/i));
+    await waitFor(() => expect(screen.getByText(/Công thức chưa chính xác/i)).toBeInTheDocument());
     expect(input).toHaveValue('=C2+D2');
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });

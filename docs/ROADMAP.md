@@ -68,7 +68,7 @@
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** **ĐẠT** — shared contract; đúng/sai/service error/retry rõ ràng; không double submit; giữ answer khi sai; Submission không trực tiếp trao XP; 101/101 regression tests pass.
+* **Exit Criteria:** **ĐẠT** — shared contract; structured formula diagnostics; đúng/sai/service error/retry rõ ràng; không double submit; giữ answer khi sai; Submission không trực tiếp trao XP; 118/118 regression tests pass.
 
 ---
 

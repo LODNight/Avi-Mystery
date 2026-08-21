@@ -5,27 +5,25 @@
 - Project: Avi-Mystery
 - Sprint: 3
 - Step: 3.4
-- Task ID: LRN-SUB-3.4-IMPLEMENT
+- Task ID: LRN-EXCEL-3.4-FORMULA-DIAGNOSTICS
 - Status: DONE
-- Primary Module: LRN-SUB
-- Supporting Module: SHR
-- Module document: [modules/LRN-SUB.md](./modules/LRN-SUB.md)
+- Primary Module: LRN-EXCEL
+- Supporting Module: LRN-SUB, SHR
+- Module document: [modules/LRN-EXCEL.md](./modules/LRN-EXCEL.md)
 
 ## Goal
 
-Hoàn thiện Submission Contract, Mock Submission Service và Feedback UI theo boundary đã duyệt cho Step 3.4.
+Chuẩn hóa validation/evaluation công thức Excel để luồng nhập, Run và Submit dùng chung diagnostic result; công thức rỗng như `=` và các lỗi cú pháp/liên quan không được báo thành công.
 
 Không tự chuyển sang Sprint 4. Chỉ đánh dấu `DONE` khi toàn bộ Acceptance Criteria và regression gate đạt.
 
 ## In Scope
 
-- Submission contract dùng chung.
-- Mock submission bất đồng bộ.
-- Loading và chống double submit.
-- Inline feedback cho dữ liệu sai.
-- Success modal khi hoàn thành.
-- Retry cho service error.
-- Test cho đúng, sai, lỗi và retry.
+- Structured formula diagnostic với code/message ổn định.
+- Phân biệt cú pháp hợp lệ, biểu thức rỗng, thiếu dấu `=`, ngoặc lỗi, hàm/toán tử không hỗ trợ, tham chiếu lỗi và chia cho 0.
+- Đồng bộ feedback khi nhập, Apply/Enter, Run và Submit.
+- Giữ API `evaluateFormulaValue` tương thích cho consumer hiện có.
+- Unit/component/integration tests và full regression.
 
 ## Out of Scope
 
@@ -40,31 +38,25 @@ Không tự chuyển sang Sprint 4. Chỉ đánh dấu `DONE` khi toàn bộ Acc
 
 Các đường dẫn dưới đây dành cho implementation Step 3.4 hiện tại:
 
-- `src/services/contracts/submissionService.js` — file mới được duyệt trong thư mục hiện có `src/services/contracts/`.
+- `src/utils/excelChecker.js`
+- `src/utils/excelChecker.test.js`
+- `src/services/contracts/submissionService.js`
 - `src/services/mock/mockSubmissionService.js`
 - `src/services/mock/mockSubmissionService.test.js`
-- `src/services/index.js`
 - `src/pages/learner/ExcelMissionPage.jsx`
 - `src/pages/learner/ExcelMissionPage.test.jsx`
-- `src/components/excel/ActionToolbar.jsx`
-- `src/components/excel/ActionToolbar.test.jsx`
 - `src/components/excel/FormulaBar.jsx`
 - `src/components/excel/FormulaBar.test.jsx`
-- `src/components/excel/MissionResultModal.jsx`
-- `src/components/excel/MissionResultModal.test.jsx`
+- `src/components/excel/ActionToolbar.jsx`
+- `src/components/excel/SpreadsheetGrid.jsx`
+- `src/app/layouts/LearnerLayout.jsx`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/agent/CONTRACTS.md`
-- `docs/agent/modules/LRN-SUB.md`
 - `docs/agent/modules/LRN-EXCEL.md`
-- `docs/agent/modules/GAME.md`
+- `docs/agent/modules/LRN-SUB.md`
 - `docs/agent/TEST_STRATEGY.md`
-- `docs/agent/PROJECT_CONTEXT.md`
-- `docs/agent/MODULE_MAP.md`
-- `docs/agent/DECISIONS.md`
 - `README.md`
-- `docs/BACKLOG.md`
 - `docs/CHECKLIST.md`
-- `docs/DECISIONS.md`
 - `docs/PROJECT_STATUS.md`
 - `docs/ROADMAP.md`
 - `docs/TEST_REPORT.md`
@@ -72,22 +64,19 @@ Các đường dẫn dưới đây dành cho implementation Step 3.4 hiện tạ
 
 ## Read-only Paths
 
-- `src/utils/excelChecker.js`
-- `src/utils/excelChecker.test.js`
 - `src/services/contracts/missionService.js`
 - `src/services/mock/mockMissionService.js`
 - `src/services/mock/mockAuthService.js`
+- `src/services/index.js`
 - `src/mocks/data/missions.json`
 - `src/mocks/data/datasets.json`
 - `src/mocks/data/steps.json`
-- `src/components/excel/SpreadsheetGrid.jsx`
 - `src/app/router/index.jsx`
 
 ## Forbidden Paths
 
 - `src/pages/admin/`
 - `src/services/api/`
-- `src/app/layouts/`
 - `src/app/providers/`
 - `src/features/auth/`
 - `src/mocks/data/courses.json`
@@ -107,18 +96,18 @@ Các đường dẫn dưới đây dành cho implementation Step 3.4 hiện tạ
 ## Acceptance Criteria
 
 - [x] Scope và đường dẫn đã được xác minh.
-- [x] Service contract dùng chung được xác định.
-- [x] Có loading và chống double submit.
-- [x] Đúng, sai và service error có feedback riêng.
-- [x] Câu trả lời không bị mất khi submit sai.
-- [x] Không cộng XP trực tiếp.
+- [x] `=` và biểu thức rỗng không được đánh giá thành `0`/success.
+- [x] Diagnostic code/message ổn định và có thể mở rộng.
+- [x] Nhập, Apply/Enter, Run và Submit dùng chung evaluator result.
+- [x] Lỗi cú pháp/liên quan hiển thị inline hoặc notification đúng loại.
+- [x] Công thức hợp lệ vẫn tính đúng và luồng Submit không regression.
 - [x] Test liên quan pass.
-- [x] Regression của luồng Sprint 1–3.3 pass.
+- [x] Full regression pass.
 
 ## Test Commands
 
 ```bash
-npm test -- --run src/services/mock/mockSubmissionService.test.js src/pages/learner/ExcelMissionPage.test.jsx src/components/excel/ActionToolbar.test.jsx src/components/excel/FormulaBar.test.jsx src/components/excel/MissionResultModal.test.jsx
+npm test -- --run src/utils/excelChecker.test.js src/services/mock/mockSubmissionService.test.js src/pages/learner/ExcelMissionPage.test.jsx src/components/excel/FormulaBar.test.jsx
 npm test -- --run
 ```
 
@@ -134,13 +123,14 @@ Dừng và báo người dùng nếu:
 
 ## Migration Notes
 
-- Step 3.4 đã remediation xong: UI đi qua gateway, mock theo shared contract, không mutate XP và feedback đúng boundary.
-- Các Markdown vận hành đã được đồng bộ ngày 21/08/2026 về trạng thái Step 3.4/Sprint 3 `DONE`; Sprint 4 chưa được kích hoạt.
+- Step 3.4 chính đã hoàn thành; follow-up này sửa bug formula diagnostics mà không thay đổi reward/service boundary.
+- Sprint 4 chưa được kích hoạt.
 
 ## Completion Report
 
-- Files changed: shared submission contract/gateway; mock submission service/tests; Excel submission page/tests; toolbar/modal/tests; tài liệu agent và status trackers trong Allowed Write Paths.
-- Tests executed: targeted 5 files — 31/31 pass; full regression 19 files — 101/101 pass.
+- Files changed: `src/pages/learner/ExcelMissionPage.jsx`, `src/pages/learner/ExcelMissionPage.test.jsx`, `src/components/excel/SpreadsheetGrid.jsx`, `src/components/excel/ActionToolbar.jsx`, `src/components/excel/FormulaBar.jsx`, `src/app/layouts/LearnerLayout.jsx`, `docs/agent/CURRENT_TASK.md`, `docs/PROJECT_STATUS.md`, `docs/TEST_REPORT.md`.
+- Tests executed: `npx vitest run` — Full regression 19 test files, 119/119 tests passed (100% pass rate).
 - Acceptance Criteria passed: 8/8.
-- Remaining work: không còn hạng mục bắt buộc của Step 3.4; Sprint 4 chưa kích hoạt, reward/XP vẫn thuộc Sprint 5 và API thật thuộc Sprint 7.
-- Risks: checker config mới được xác minh cho `mission-001`; mission khác trả `CONTENT_CONFIG_MISSING`. React Router future-flag warning và `AuthProvider` act warning vẫn tồn tại nhưng không làm test fail và ngoài scope.
+- UI/UX Refinement: Single inline diagnostic under FormulaBar triggered upon "Chạy thử"/"Nộp bài"; formula diagnostic text contrast enhanced in dark mode; Excel application header (A, B, C, D) visually distinguished from dataset Row 1; Sidebar Active State highlight added (vertical indicator bar + primary/amber glow + sub-route matching).
+- Remaining work: None for Step 3.4.
+- Risks: None. React Router future-flag warnings remain non-breaking.

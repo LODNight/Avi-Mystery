@@ -65,6 +65,7 @@ XP mutation/leveling/streak/achievement, SQL engine, Admin Content Builder, API 
 - Chặn double submit ở UI và giữ service idempotency-ready.
 - Giữ answer sau incorrect/service error; feedback sai dùng inline, modal ưu tiên completion.
 - Component không giữ expected answer; mock/API cùng public interface.
+- Formula diagnostic code từ LRN-EXCEL được giữ nguyên trong `feedbackCode` để Run/Submit nhất quán.
 
 ## Required Test Coverage
 

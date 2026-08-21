@@ -22,7 +22,7 @@ import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
 import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
-import { evaluateFormulaValue } from '../../utils/excelChecker.js';
+import { analyzeExcelFormula } from '../../utils/excelChecker.js';
 
 function createClientAttemptId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
@@ -60,6 +60,7 @@ export function ExcelMissionPage() {
   // State quản lý Bảng tính Excel Interactive (LRN-EXCEL-002)
   const [selectedCell, setSelectedCell] = useState('E2');
   const [formulaInput, setFormulaInput] = useState('');
+  const [formulaDiagnostic, setFormulaDiagnostic] = useState(null);
   const [cellFormulas, setCellFormulas] = useState({});
   const [cellValues, setCellValues] = useState({});
 
@@ -138,6 +139,7 @@ export function ExcelMissionPage() {
   const handleCellSelect = (cellAddr) => {
     setSelectedCell(cellAddr);
     setFormulaInput(cellFormulas[cellAddr] || '');
+    setFormulaDiagnostic(null);
   };
 
   // Trích xuất dữ liệu gốc của sheet để phục vụ tính toán công thức
@@ -169,17 +171,29 @@ export function ExcelMissionPage() {
       [selectedCell]: newFormula,
     }));
 
-    // Tự động tính toán giá trị nếu công thức bắt đầu bằng '='
-    if (newFormula.trim().startsWith('=')) {
-      const sheetData = getSheetDataMap();
-      const computed = evaluateFormulaValue(newFormula, sheetData);
-      if (computed !== null) {
-        setCellValues((prev) => ({
-          ...prev,
-          [selectedCell]: computed,
-        }));
-      }
+    if (!newFormula.trim()) {
+      setFormulaDiagnostic(null);
+      setCellValues((prev) => {
+        const next = { ...prev };
+        delete next[selectedCell];
+        return next;
+      });
+      return;
     }
+
+    // ── Tạm thời comment kiểm tra diagnostic theo từng ký tự nhập vào ──
+    // Chỉ hiển thị thông báo lỗi inline khi người dùng nhấn "Chạy thử" hoặc "Nộp bài"
+    /*
+    const diagnostic = analyzeExcelFormula(newFormula, getSheetDataMap());
+    setFormulaDiagnostic(diagnostic);
+    setCellValues((prev) => {
+      const next = { ...prev };
+      if (diagnostic.valid) next[selectedCell] = diagnostic.value;
+      else delete next[selectedCell];
+      return next;
+    });
+    */
+    setFormulaDiagnostic(null);
   };
 
   // Xử lý khi nhấn nút Áp dụng hoặc phím Enter
@@ -188,18 +202,15 @@ export function ExcelMissionPage() {
       typeof targetFormula === 'string' && targetFormula.trim()
         ? targetFormula
         : formulaInput;
-    if (!formulaToUse || !formulaToUse.trim()) return null;
-
-    const sheetData = getSheetDataMap();
-    const computed = evaluateFormulaValue(formulaToUse, sheetData);
-
-    if (computed !== null) {
-      setCellValues((prev) => ({
-        ...prev,
-        [selectedCell]: computed,
-      }));
-    }
-    return computed;
+    const diagnostic = analyzeExcelFormula(formulaToUse, getSheetDataMap());
+    setFormulaDiagnostic(diagnostic);
+    setCellValues((prev) => {
+      const next = { ...prev };
+      if (diagnostic.valid) next[selectedCell] = diagnostic.value;
+      else delete next[selectedCell];
+      return next;
+    });
+    return diagnostic;
   };
 
   // ── Step 3.3 Action Toolbar Handlers ──
@@ -207,16 +218,10 @@ export function ExcelMissionPage() {
   // 1. Chạy thử công thức (Run / Evaluate)
   const handleRunFormula = () => {
     setIsEvaluating(true);
-    const computed = handleFormulaSubmit();
+    handleFormulaSubmit();
     setTimeout(() => {
       setIsEvaluating(false);
-      if (computed !== null && computed !== undefined) {
-        showNotification('success', `Đã chạy thử công thức thành công trên ô ${selectedCell}! Kết quả: ${computed}`);
-      } else if (!formulaInput || !formulaInput.startsWith('=')) {
-        showNotification('warning', `Vui lòng nhập công thức bắt đầu bằng dấu "=" vào ô ${selectedCell}.`);
-      } else {
-        showNotification('error', `Công thức "${formulaInput}" tại ô ${selectedCell} không hợp lệ.`);
-      }
+
     }, 200);
   };
 
@@ -225,6 +230,7 @@ export function ExcelMissionPage() {
     setCellFormulas({});
     setCellValues({});
     setFormulaInput('');
+    setFormulaDiagnostic(null);
     setSubmissionFeedback(null);
     setSubmissionError(null);
     setSubmissionResult(null);
@@ -246,11 +252,10 @@ export function ExcelMissionPage() {
     const starterCell = mission?.starterContent?.targetCell || 'E2';
     const userFormula = cellFormulas[starterCell] || formulaInput;
 
-    if (!userFormula || !userFormula.trim()) {
-      setSubmissionFeedback({
-        type: 'validation',
-        message: `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`,
-      });
+    const diagnostic = analyzeExcelFormula(userFormula, getSheetDataMap());
+    if (!diagnostic.valid) {
+      setFormulaDiagnostic(diagnostic);
+      setSubmissionFeedback(null);
       return;
     }
 
@@ -258,7 +263,7 @@ export function ExcelMissionPage() {
     setIsSubmitting(true);
     setSubmissionFeedback(null);
     setSubmissionError(null);
-    handleFormulaSubmit();
+    handleFormulaSubmit(userFormula);
 
     try {
       const sheetData = getSheetDataMap();
@@ -385,8 +390,8 @@ export function ExcelMissionPage() {
         </div>
       </div>
 
-      {/* ── Feedback Toast Notification ── */}
-      {feedbackToast && (
+
+      {/*
         <div
           className={`flex items-center justify-between gap-3 rounded-2xl border p-4 text-xs sm:text-sm font-semibold shadow-md animate-fade-in ${
             feedbackToast.type === 'success'
@@ -409,31 +414,32 @@ export function ExcelMissionPage() {
             Đóng
           </button>
         </div>
-      )}
+      */}
 
-      {/* ── Compact Sticky Objective Bar ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 shadow-sm">
-        <div className="flex items-center gap-2.5">
-          <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-xs shrink-0">
-            <Sparkles className="size-3.5 fill-current" /> Ô mục tiêu: {starterCell}
-          </span>
-          <p className="text-xs sm:text-sm font-semibold text-foreground">
-            {mission.objective}
-          </p>
+      {/* ── Nhóm 1: Mục tiêu vụ án (1) & Thanh thao tác hành động (3) ── */}
+      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-2.5 space-y-2.5 shadow-xs">
+        {/* 1. Compact Sticky Objective Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-xs shrink-0">
+              <Sparkles className="size-3.5 fill-current" /> Ô mục tiêu: {starterCell}
+            </span>
+            <p className="text-xs sm:text-sm font-semibold text-foreground">
+              {mission.objective}
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowBriefing(!showBriefing)}
+            className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto cursor-pointer"
+          >
+            <HelpCircle className="size-3.5" />
+            <span>{showBriefing ? 'Thu gọn hồ sơ' : 'Chi tiết vụ án'}</span>
+          </button>
         </div>
 
-        <button
-          onClick={() => setShowBriefing(!showBriefing)}
-          className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto cursor-pointer"
-        >
-          <HelpCircle className="size-3.5" />
-          <span>{showBriefing ? 'Thu gọn hồ sơ' : 'Chi tiết vụ án'}</span>
-        </button>
-      </div>
 
-      {/* ── Primary Interactive Controls: Action Toolbar & Formula Bar (Ngay phía dưới Mục tiêu) ── */}
-      <div className="space-y-3">
-        {/* Action Toolbar Component (Thanh thao tác Nộp bài, Chạy thử công thức nằm trên) */}
+        {/* 3. Action Toolbar Component (Thao tác Nộp bài, Chạy thử...) */}
         <ActionToolbar
           onRun={handleRunFormula}
           onSubmit={handleSubmitAnswer}
@@ -444,6 +450,84 @@ export function ExcelMissionPage() {
           isEvaluating={isEvaluating}
           isSubmitting={isSubmitting}
         />
+      </div>
+
+      {/* ── Nhóm 2: Thông báo phản hồi (2) & Thanh nhập công thức (4) ── */}
+      <div className="space-y-2.5">
+        {/* 2. Khu vực hiển thị thông báo (Luôn nằm phía trên Thanh nhập công thức 4) */}
+        {(feedbackToast || submissionFeedback || submissionError) && (
+          <div className="space-y-2 animate-fade-in" role="region" aria-label="Thông báo hệ thống">
+            {feedbackToast && (
+              <div
+                className={`flex items-center justify-between gap-3 rounded-xl border p-3 text-xs sm:text-sm font-semibold shadow-xs ${feedbackToast.type === 'success'
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                    : feedbackToast.type === 'warning'
+                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                      : feedbackToast.type === 'error'
+                        ? 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+                        : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300'
+                  }`}
+              >
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="size-4 shrink-0" />
+                  <span>{feedbackToast.message}</span>
+                </div>
+                <button
+                  onClick={() => setFeedbackToast(null)}
+                  className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
+                >
+                  Đóng
+                </button>
+              </div>
+            )}
+
+            {submissionFeedback && (
+              <div
+                role="status"
+                className={`flex items-start gap-2 rounded-xl border px-3.5 py-3 text-sm font-semibold ${submissionFeedback.type === 'validation'
+                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                    : 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+                  }`}
+              >
+                <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                <span>{submissionFeedback.message}</span>
+              </div>
+            )}
+
+            {submissionError && (
+              <div
+                role="alert"
+                className="flex flex-col gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-sm font-semibold text-rose-700 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                  <span>{submissionError.message}</span>
+                </div>
+                {submissionError.retryable && (
+                  <button
+                    type="button"
+                    onClick={handleSubmitAnswer}
+                    disabled={isSubmitting}
+                    className="shrink-0 rounded-lg border border-current px-3 py-1.5 text-xs font-bold hover:bg-rose-500/10 disabled:opacity-50"
+                  >
+                    Thử nộp lại
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+
+
+
+
+
+
+
+
+
+
 
         {/* Formula Bar Component (Thanh nhập công thức kết nối liền kề với Bảng tính phía dưới) */}
         <FormulaBar
@@ -452,43 +536,11 @@ export function ExcelMissionPage() {
           onChange={handleFormulaChange}
           onSubmit={handleFormulaSubmit}
           isTargetCell={selectedCell === starterCell}
+          diagnostic={formulaDiagnostic}
+          disabled={isSubmitting}
         />
 
-        {submissionFeedback && (
-          <div
-            role="status"
-            className={`flex items-start gap-2 rounded-xl border px-3.5 py-3 text-sm font-semibold ${
-              submissionFeedback.type === 'validation'
-                ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                : 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
-            }`}
-          >
-            <AlertCircle className="mt-0.5 size-4 shrink-0" />
-            <span>{submissionFeedback.message}</span>
-          </div>
-        )}
 
-        {submissionError && (
-          <div
-            role="alert"
-            className="flex flex-col gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-sm font-semibold text-rose-700 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div className="flex items-start gap-2">
-              <AlertCircle className="mt-0.5 size-4 shrink-0" />
-              <span>{submissionError.message}</span>
-            </div>
-            {submissionError.retryable && (
-              <button
-                type="button"
-                onClick={handleSubmitAnswer}
-                disabled={isSubmitting}
-                className="shrink-0 rounded-lg border border-current px-3 py-1.5 text-xs font-bold hover:bg-rose-500/10 disabled:opacity-50"
-              >
-                Thử nộp lại
-              </button>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}

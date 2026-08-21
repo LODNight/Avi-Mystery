@@ -98,6 +98,18 @@ describe('mockSubmissionService Unit Tests (Step 3.4)', () => {
     expect(res.error.retryable).toBe(false);
   });
 
+  it('trả formula diagnostic code thay vì coi dấu "=" là kết quả hợp lệ', async () => {
+    const service = createMockSubmissionService({ delayMs: 0 });
+    const res = await service.submit(makeRequest({
+      answer: { formula: '=', sheetData: { C2: 3, D2: 150000 } },
+    }));
+
+    expect(res.error).toBeNull();
+    expect(res.data.isCorrect).toBe(false);
+    expect(res.data.feedbackCode).toBe('FORMULA_EMPTY_EXPRESSION');
+    expect(res.data.feedback).toMatch(/đi kèm một biểu thức/i);
+  });
+
   it('trả stable error khi không tìm thấy mission', async () => {
     const service = createMockSubmissionService({ delayMs: 0 });
     const res = await service.submit(makeRequest({ missionId: 'invalid-mission' }));

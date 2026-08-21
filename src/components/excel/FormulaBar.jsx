@@ -12,6 +12,7 @@ import { Check, Sparkles } from 'lucide-react';
  * @param {Function} [props.onSubmit] - Handler khi nhấn Enter hoặc nút Áp dụng
  * @param {boolean} [props.isTargetCell] - Cờ xác định xem ô chọn có phải là ô mục tiêu của bài học hay không
  * @param {boolean} [props.disabled] - Khóa nhập công thức
+ * @param {{valid: boolean, errorCode: string|null, message: string}|null} [props.diagnostic]
  */
 export function FormulaBar({
   selectedCell = 'A1',
@@ -20,6 +21,7 @@ export function FormulaBar({
   onSubmit,
   isTargetCell = false,
   disabled = false,
+  diagnostic = null,
 }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && onSubmit) {
@@ -53,33 +55,55 @@ export function FormulaBar({
       </div>
 
       {/* Formula Input Field */}
-      <div className="relative flex-1 flex items-center gap-2 mt-1 sm:mt-0">
-        <input
-          type="text"
-          value={formula}
-          onChange={(e) => onChange && onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={disabled}
-          placeholder={
-            isTargetCell
-              ? 'Nhập công thức bài làm (ví dụ: =C2*D2)...'
-              : 'Nhập công thức hoặc giá trị (ví dụ: =SUM(B2:B5))...'
-          }
-          className="w-full rounded-xl border border-border bg-background px-3.5 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-all disabled:opacity-50"
-          aria-label="Thanh nhập công thức Excel"
-        />
+      <div className="relative flex-1 mt-1 sm:mt-0">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={formula}
+            onChange={(e) => onChange && onChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            placeholder={
+              isTargetCell
+                ? 'Nhập công thức bài làm (ví dụ: =C2*D2)...'
+                : 'Nhập công thức hoặc giá trị (ví dụ: =SUM(B2:B5))...'
+            }
+            className={`w-full rounded-xl border bg-background px-3.5 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 transition-all disabled:opacity-50 ${
+              diagnostic && !diagnostic.valid
+                ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
+                : 'border-border focus:border-primary focus:ring-primary'
+            }`}
+            aria-label="Thanh nhập công thức Excel"
+            aria-invalid={diagnostic ? !diagnostic.valid : undefined}
+            aria-describedby={diagnostic ? 'formula-diagnostic' : undefined}
+          />
 
-        {onSubmit && (
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={disabled || !formula.trim()}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-            title="Áp dụng công thức (Enter)"
+          {onSubmit && (
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={disabled || !formula.trim()}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              title="Áp dụng công thức (Enter)"
+            >
+              <Check className="size-3.5" />
+              <span className="hidden sm:inline">Áp dụng</span>
+            </button>
+          )}
+        </div>
+
+        {diagnostic && (
+          <p
+            id="formula-diagnostic"
+            role={diagnostic.valid ? 'status' : 'alert'}
+            className={`mt-1.5 px-1 text-[11px] font-semibold ${
+              diagnostic.valid
+                ? 'text-emerald-600 dark:text-emerald-300 font-bold'
+                : 'text-rose-600 dark:text-rose-300 font-bold'
+            }`}
           >
-            <Check className="size-3.5" />
-            <span className="hidden sm:inline">Áp dụng</span>
-          </button>
+            {diagnostic.message}
+          </p>
         )}
       </div>
     </div>

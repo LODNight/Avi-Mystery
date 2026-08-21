@@ -66,7 +66,8 @@ Không ghi pass nếu command chưa thực sự chạy trong lần làm việc �
 
 ## Last Verified — Step 3.4
 
-- Targeted command: 5 test files, 31/31 tests passed.
-- Full regression: 19 test files, 101/101 tests passed.
+- Submission targeted command: 5 test files, 31/31 tests passed.
+- Formula diagnostics follow-up: 4 test files, 55/55 tests passed.
+- Full regression: 19 test files, 118/118 tests passed.
 - Covered: structured errors, retry, timeout, duplicate/replay identity, double submit, unmount in flight, answer retention, success-only modal và no-XP-mutation.
 - Non-failing warnings: React Router v7 future flags và `AuthProvider` act warning trong `PageStatus.test.jsx`.

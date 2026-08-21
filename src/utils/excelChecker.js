@@ -3,6 +3,58 @@
  * Bộ công cụ kiểm tra & chấm điểm công thức Excel cho Learner App
  */
 
+export const EXCEL_FORMULA_ERROR_CODES = Object.freeze({
+  REQUIRED: 'FORMULA_REQUIRED',
+  MISSING_EQUALS: 'FORMULA_MISSING_EQUALS',
+  EMPTY_EXPRESSION: 'FORMULA_EMPTY_EXPRESSION',
+  UNBALANCED_PARENTHESES: 'FORMULA_UNBALANCED_PARENTHESES',
+  UNSUPPORTED_FUNCTION: 'FORMULA_UNSUPPORTED_FUNCTION',
+  INVALID_RANGE: 'FORMULA_INVALID_RANGE',
+  INVALID_CHARACTER: 'FORMULA_INVALID_CHARACTER',
+  INVALID_SYNTAX: 'FORMULA_INVALID_SYNTAX',
+  REFERENCE_NOT_FOUND: 'FORMULA_REFERENCE_NOT_FOUND',
+  NON_NUMERIC_REFERENCE: 'FORMULA_NON_NUMERIC_REFERENCE',
+  DIVISION_BY_ZERO: 'FORMULA_DIVISION_BY_ZERO',
+});
+
+const SUPPORTED_AGGREGATE_FUNCTIONS = Object.freeze([
+  'SUM',
+  'AVERAGE',
+  'MAX',
+  'MIN',
+  'COUNT',
+]);
+
+function formulaError(code, message, normalizedFormula = '') {
+  return {
+    valid: false,
+    value: null,
+    normalizedFormula,
+    errorCode: code,
+    message,
+  };
+}
+
+function formulaSuccess(value, normalizedFormula) {
+  return {
+    valid: true,
+    value,
+    normalizedFormula,
+    errorCode: null,
+    message: `Cú pháp hợp lệ. Kết quả: ${value}.`,
+  };
+}
+
+function hasBalancedParentheses(expression) {
+  let depth = 0;
+  for (const char of expression) {
+    if (char === '(') depth += 1;
+    if (char === ')') depth -= 1;
+    if (depth < 0) return false;
+  }
+  return depth === 0;
+}
+
 /**
  * Chuẩn hóa công thức Excel nhập vào từ người học:
  * 1. Trim khoảng trắng đầu/cuối.
@@ -129,73 +181,215 @@ export function expandCellRange(rangeStr) {
  * @param {Object} sheetData - Object chứa dữ liệu dạng { 'B2': 100, 'B3': 200 }
  * @returns {any} Giá trị tính toán được hoặc NaN/null
  */
-export function evaluateFormulaValue(formula, sheetData = {}) {
-  const norm = normalizeFormula(formula);
-  if (!norm.startsWith('=')) return null;
+export function analyzeExcelFormula(formula, sheetData = {}) {
+  if (typeof formula !== 'string' || !formula.trim()) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.REQUIRED,
+      'Vui lòng nhập công thức Excel.'
+    );
+  }
 
-  const expr = norm.slice(1);
+  const trimmedFormula = formula.trim();
+  if (!trimmedFormula.startsWith('=')) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.MISSING_EQUALS,
+      'Công thức Excel phải bắt đầu bằng dấu "=".'
+    );
+  }
 
-  // Match hàm đơn giản: SUM(B2:B5), MAX(E2:E10), AVERAGE(C1:C4)
-  const simpleFuncMatch = expr.match(/^(SUM|AVERAGE|MAX|MIN|COUNT)\(([^)]+)\)$/i);
-  if (simpleFuncMatch) {
-    const funcName = simpleFuncMatch[1].toUpperCase();
-    const rangeArg = simpleFuncMatch[2];
+  const normalizedFormula = normalizeFormula(trimmedFormula);
+  const expression = normalizedFormula.slice(1).trim();
+  if (!expression) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION,
+      'Dấu "=" phải đi kèm một biểu thức, ví dụ =C2*D2.',
+      normalizedFormula
+    );
+  }
 
-    const cellAddresses = expandCellRange(rangeArg);
-    const values = cellAddresses
-      .map((addr) => {
-        const val = sheetData[addr];
-        const num = Number(val);
-        return isNaN(num) ? null : num;
-      })
-      .filter((v) => v !== null);
+  if (!hasBalancedParentheses(expression)) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.UNBALANCED_PARENTHESES,
+      'Dấu ngoặc trong công thức chưa cân bằng.',
+      normalizedFormula
+    );
+  }
 
-    if (values.length === 0) return 0;
+  const functionMatch = expression.match(/^([A-Z][A-Z0-9.]*)\((.*)\)$/i);
+  if (functionMatch) {
+    const functionName = functionMatch[1].toUpperCase();
+    const rangeArgument = functionMatch[2].trim();
 
-    switch (funcName) {
-      case 'SUM':
-        return values.reduce((a, b) => a + b, 0);
-      case 'AVERAGE':
-        return values.reduce((a, b) => a + b, 0) / values.length;
-      case 'MAX':
-        return Math.max(...values);
-      case 'MIN':
-        return Math.min(...values);
-      case 'COUNT':
-        return values.length;
-      default:
-        return null;
+    if (!SUPPORTED_AGGREGATE_FUNCTIONS.includes(functionName)) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.UNSUPPORTED_FUNCTION,
+        `Hàm ${functionName} chưa được hỗ trợ. Hiện hỗ trợ: ${SUPPORTED_AGGREGATE_FUNCTIONS.join(', ')}.`,
+        normalizedFormula
+      );
     }
-  }
 
-  // Nếu là công thức chứa giá trị trực tiếp hoặc biểu thức số đơn giản
-  if (!isNaN(Number(expr))) {
-    return Number(expr);
-  }
+    if (!/^[A-Z]+[1-9][0-9]*(?::[A-Z]+[1-9][0-9]*)?$/i.test(rangeArgument)) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.INVALID_RANGE,
+        'Đối số hàm phải là một ô hoặc dải ô hợp lệ, ví dụ B2:B5.',
+        normalizedFormula
+      );
+    }
 
-  // 3. Đánh giá biểu thức toán học giữa các ô tính (Ví dụ: C2*D2, C2+D2, C2/10)
-  try {
-    // Tách và thay thế các địa chỉ ô tính (A1, B2, C10...) bằng giá trị số trong sheetData
-    const replacedExpr = expr.replace(/\b([A-Z]+[0-9]+)\b/gi, (match) => {
-      const addr = match.toUpperCase();
-      const val = sheetData[addr];
-      const num = Number(val);
-      return isNaN(num) ? '0' : String(num);
-    });
+    const cellAddresses = expandCellRange(rangeArgument);
+    if (cellAddresses.length === 0) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.INVALID_RANGE,
+        'Không thể xác định dải ô trong công thức.',
+        normalizedFormula
+      );
+    }
 
-    // An toàn: Chỉ cho phép chữ số, khoảng trắng và các toán tử +, -, *, /, (, ), .
-    if (/^[0-9\s\+\-\*\/\(\)\.]+$/.test(replacedExpr)) {
-      // eslint-disable-next-line no-new-func
-      const result = new Function(`"use strict"; return (${replacedExpr})`)();
-      if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
-        return result;
+    const values = [];
+    for (const address of cellAddresses) {
+      const rawValue = sheetData[address];
+      if (rawValue === undefined || rawValue === null || rawValue === '') continue;
+      const numericValue = Number(rawValue);
+      if (Number.isNaN(numericValue)) {
+        if (functionName === 'COUNT') continue;
+        return formulaError(
+          EXCEL_FORMULA_ERROR_CODES.NON_NUMERIC_REFERENCE,
+          `Ô ${address} không chứa giá trị số phù hợp với hàm ${functionName}.`,
+          normalizedFormula
+        );
       }
+      values.push(numericValue);
     }
-  } catch (_err) {
-    return null;
+
+    if (functionName !== 'COUNT' && values.length === 0) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.NON_NUMERIC_REFERENCE,
+        'Dải ô không có giá trị số để tính toán.',
+        normalizedFormula
+      );
+    }
+
+    let result;
+    switch (functionName) {
+      case 'SUM':
+        result = values.reduce((total, value) => total + value, 0);
+        break;
+      case 'AVERAGE':
+        result = values.reduce((total, value) => total + value, 0) / values.length;
+        break;
+      case 'MAX':
+        result = Math.max(...values);
+        break;
+      case 'MIN':
+        result = Math.min(...values);
+        break;
+      case 'COUNT':
+        result = values.length;
+        break;
+      default:
+        result = null;
+    }
+    return formulaSuccess(result, normalizedFormula);
   }
 
-  return null;
+  if (/[A-Z][A-Z0-9.]*\s*\(/i.test(expression)) {
+    const functionName = expression.match(/([A-Z][A-Z0-9.]*)\s*\(/i)?.[1]?.toUpperCase();
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.UNSUPPORTED_FUNCTION,
+      `Hàm ${functionName || 'này'} chưa được hỗ trợ hoặc có cú pháp không hợp lệ.`,
+      normalizedFormula
+    );
+  }
+
+  if (/^[A-Z][A-Z0-9.]*\s+[A-Z]+[1-9][0-9]*(?::[A-Z]+[1-9][0-9]*)?$/i.test(expression)) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX,
+      'Cú pháp hàm Excel cần dấu ngoặc, ví dụ =SUM(B2:B5).',
+      normalizedFormula
+    );
+  }
+
+  if (/[^A-Z0-9\s+\-*/().]/i.test(expression)) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.INVALID_CHARACTER,
+      'Công thức chứa ký tự hoặc toán tử chưa được hỗ trợ.',
+      normalizedFormula
+    );
+  }
+
+  if (/\*\*|\/\/|\+\+|--|[+\-*/]\s*$/.test(expression)) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX,
+      'Thứ tự toán tử trong công thức không hợp lệ.',
+      normalizedFormula
+    );
+  }
+
+  let referenceError = null;
+  const replacedExpression = expression.replace(/\b([A-Z]+[1-9][0-9]*)\b/gi, (match) => {
+    const address = match.toUpperCase();
+    if (!Object.prototype.hasOwnProperty.call(sheetData, address)) {
+      referenceError = formulaError(
+        EXCEL_FORMULA_ERROR_CODES.REFERENCE_NOT_FOUND,
+        `Không tìm thấy ô tham chiếu ${address} trong bảng dữ liệu.`,
+        normalizedFormula
+      );
+      return '0';
+    }
+
+    const numericValue = Number(sheetData[address]);
+    if (Number.isNaN(numericValue)) {
+      referenceError = formulaError(
+        EXCEL_FORMULA_ERROR_CODES.NON_NUMERIC_REFERENCE,
+        `Ô ${address} không chứa giá trị số để tính toán.`,
+        normalizedFormula
+      );
+      return '0';
+    }
+    return String(numericValue);
+  });
+
+  if (referenceError) return referenceError;
+
+  if (!/^[0-9\s+\-*/().]+$/.test(replacedExpression)) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX,
+      'Cú pháp công thức không hợp lệ hoặc chưa được hỗ trợ.',
+      normalizedFormula
+    );
+  }
+
+  try {
+    // Chuỗi đã bị giới hạn chỉ còn số, ngoặc và toán tử số học ở trên.
+    // eslint-disable-next-line no-new-func
+    const result = new Function(`"use strict"; return (${replacedExpression})`)();
+    if (typeof result !== 'number' || Number.isNaN(result)) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX,
+        'Không thể tính kết quả từ cú pháp công thức này.',
+        normalizedFormula
+      );
+    }
+    if (!Number.isFinite(result)) {
+      return formulaError(
+        EXCEL_FORMULA_ERROR_CODES.DIVISION_BY_ZERO,
+        'Công thức phát sinh lỗi chia cho 0.',
+        normalizedFormula
+      );
+    }
+    return formulaSuccess(result, normalizedFormula);
+  } catch (_error) {
+    return formulaError(
+      EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX,
+      'Cú pháp công thức không hợp lệ. Hãy kiểm tra toán tử và dấu ngoặc.',
+      normalizedFormula
+    );
+  }
+}
+
+export function evaluateFormulaValue(formula, sheetData = {}) {
+  const diagnostic = analyzeExcelFormula(formula, sheetData);
+  return diagnostic.valid ? diagnostic.value : null;
 }
 
 /**
@@ -219,11 +413,22 @@ export function checkExcelAnswer({
       isCorrect: false,
       score: 0,
       userFormulaNormalized: '',
+      feedbackCode: EXCEL_FORMULA_ERROR_CODES.REQUIRED,
       feedback: 'Vui lòng nhập công thức Excel vào ô tính bài làm.',
     };
   }
 
   const userNorm = normalizeFormula(userFormula);
+  const diagnostic = analyzeExcelFormula(userFormula, sheetData);
+  if (!diagnostic.valid) {
+    return {
+      isCorrect: false,
+      score: 0,
+      userFormulaNormalized: diagnostic.normalizedFormula,
+      feedbackCode: diagnostic.errorCode,
+      feedback: diagnostic.message,
+    };
+  }
 
   // Chuyển expectedFormula thành mảng danh sách các công thức chấp nhận được
   const expectedFormulasList = Array.isArray(expectedFormula)
@@ -244,36 +449,29 @@ export function checkExcelAnswer({
       isCorrect: true,
       score: 100,
       userFormulaNormalized: userNorm,
+      feedbackCode: 'CORRECT_ANSWER',
       feedback: 'Chính xác! Công thức của bạn hoàn toàn hợp lệ và chính xác.',
     };
   }
 
   // 2. Nếu không khớp chuỗi công thức chính xác, kiểm tra giá trị tính toán (Calculated Value Check)
   if (expectedValue !== undefined && expectedValue !== null) {
-    const computedVal = evaluateFormulaValue(userNorm, sheetData);
-    if (computedVal !== null && Number(computedVal) === Number(expectedValue)) {
+    if (Number(diagnostic.value) === Number(expectedValue)) {
       return {
         isCorrect: true,
         score: 100,
         userFormulaNormalized: userNorm,
+        feedbackCode: 'CORRECT_ANSWER',
         feedback: 'Chính xác! Kết quả tính toán của công thức đạt yêu cầu.',
       };
     }
-  }
-
-  // 3. Phân tích lỗi sai phổ biến để phản hồi hướng dẫn (Diagnostic Feedback)
-  let feedback = 'Công thức chưa chính xác. Vui lòng kiểm tra lại tên hàm và dải ô chọn.';
-
-  if (!userFormula.trim().startsWith('=')) {
-    feedback = 'Công thức Excel phải bắt đầu bằng dấu "=" (Ví dụ: =SUM(B2:B10)).';
-  } else if (!userNorm.includes('(') || !userNorm.includes(')')) {
-    feedback = 'Thiếu dấu ngoặc đơn () trong cú pháp hàm Excel.';
   }
 
   return {
     isCorrect: false,
     score: 0,
     userFormulaNormalized: userNorm,
-    feedback,
+    feedbackCode: 'INCORRECT_ANSWER',
+    feedback: 'Công thức hợp lệ nhưng chưa cho ra đáp án yêu cầu. Hãy kiểm tra lại phép tính và các ô tham chiếu.',
   };
 }

@@ -53,6 +53,14 @@ Mọi adapter trả envelope `{ data, error }`. Khi thành công, `error` là `n
 
 Canonical codes ổn định giữa mock/API: `VALIDATION_ERROR`, `MISSION_NOT_FOUND`, `CONTENT_CONFIG_MISSING`, `UNSUPPORTED_TOOL`, `SERVICE_UNAVAILABLE`, `TIMEOUT`, `DUPLICATE_ATTEMPT`. Message hiển thị có thể thay đổi; UI branch theo code, không parse message. `SERVICE_UNAVAILABLE` và `TIMEOUT` là retryable trong mock Step 3.4.
 
+## Excel Formula Diagnostics
+
+Nhập, Apply/Enter, Run và Submit dùng chung `analyzeExcelFormula(formula, sheetData)`. Result có shape `{ valid, value, normalizedFormula, errorCode, message }`; `evaluateFormulaValue` giữ compatibility bằng cách trả value hoặc `null`.
+
+Stable formula codes: `FORMULA_REQUIRED`, `FORMULA_MISSING_EQUALS`, `FORMULA_EMPTY_EXPRESSION`, `FORMULA_UNBALANCED_PARENTHESES`, `FORMULA_UNSUPPORTED_FUNCTION`, `FORMULA_INVALID_RANGE`, `FORMULA_INVALID_CHARACTER`, `FORMULA_INVALID_SYNTAX`, `FORMULA_REFERENCE_NOT_FOUND`, `FORMULA_NON_NUMERIC_REFERENCE`, `FORMULA_DIVISION_BY_ZERO`.
+
+Khi evaluator trả lỗi, Submission Result dùng chính formula code làm `feedbackCode`; UI hiển thị `message` nhưng không suy luận loại lỗi bằng cách parse message.
+
 ## Idempotency
 
 - `clientAttemptId` nhận diện một hành động submit phía client; cùng ID không được tạo nhiều attempt/reward.

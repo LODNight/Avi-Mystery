@@ -20,7 +20,7 @@ Không điều phối generic submission attempt, không lưu/trao XP, không tr
 
 - `ExcelMissionPage` tại route `/missions/:missionId/workspace`.
 - `FormulaBar`, `SpreadsheetGrid`, `ActionToolbar`, `HintPanel`, `MissionResultModal`.
-- `normalizeFormula`, `evaluateFormulaValue`, `checkExcelAnswer` từ `excelChecker.js`.
+- `normalizeFormula`, `analyzeExcelFormula`, `evaluateFormulaValue`, `checkExcelAnswer` và `EXCEL_FORMULA_ERROR_CODES` từ `excelChecker.js`.
 
 ## Dependencies
 
@@ -60,11 +60,11 @@ Formula normalization/value/error, grid selection/edit/reset, run/hint states, t
 
 ## Definition of Done
 
-- [ ] Acceptance Criteria đạt.
-- [ ] Test module pass.
-- [ ] Regression liên quan pass.
-- [ ] Không sửa ngoài scope.
-- [ ] Documentation được cập nhật nếu contract thay đổi.
+- [x] Acceptance Criteria của formula diagnostics đạt.
+- [x] Test module pass.
+- [x] Regression liên quan pass.
+- [x] Không sửa ngoài scope.
+- [x] Documentation được cập nhật theo diagnostic contract.
 
 ## Known Risks
 
@@ -72,4 +72,4 @@ Formula normalization/value/error, grid selection/edit/reset, run/hint states, t
 
 ## Open Questions
 
-Workbook multi-sheet state, evaluator capability đầy đủ và boundary tách page/controller: TBD.
+Workbook multi-sheet state, cú pháp Excel nâng cao và boundary tách page/controller: TBD. Cú pháp mới phải mở rộng analyzer/error catalog thay vì thêm validation riêng trong UI.

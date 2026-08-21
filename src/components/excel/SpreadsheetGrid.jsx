@@ -89,25 +89,20 @@ export function SpreadsheetGrid({
         </div>
       )}
       <table className="w-full border-collapse font-mono text-xs select-none">
-        {/* Header hàng tên Cột Excel (Corner Cell + A, B, C, D...) */}
+        {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
         <thead>
-          <tr className="bg-muted/80 text-muted-foreground border-b border-border">
-            <th className="w-10 border-r border-border p-2 text-center text-[10px] font-bold uppercase tracking-wider">
+          <tr className="bg-slate-200/90 dark:bg-zinc-900 text-foreground border-b-2 border-border/80">
+            <th className="w-10 border-r border-border p-2 text-center text-[10px] font-bold uppercase tracking-wider bg-slate-300/80 dark:bg-zinc-950 text-muted-foreground">
               #
             </th>
-            {colLetters.map((letter, idx) => (
+            {colLetters.map((letter) => (
               <th
                 key={letter}
-                className="border-r border-border p-2.5 text-center font-bold text-foreground last:border-r-0 min-w-[110px]"
+                className="border-r border-border py-1.5 px-3 text-center font-extrabold text-foreground last:border-r-0 min-w-[100px] text-xs bg-slate-200/90 dark:bg-zinc-900"
               >
-                <div className="flex items-center justify-center gap-1">
-                  <span className="rounded bg-background px-1.5 py-0.5 text-[10px] font-extrabold text-amber-600 dark:text-amber-400">
-                    {letter}
-                  </span>
-                  <span className="truncate font-sans font-medium text-xs text-muted-foreground">
-                    {columns[idx]?.label || columns[idx]?.name}
-                  </span>
-                </div>
+                <span className="rounded bg-amber-500/20 dark:bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                  {letter}
+                </span>
               </th>
             ))}
           </tr>
@@ -115,19 +110,22 @@ export function SpreadsheetGrid({
 
         <tbody>
           {/* Hàng 1: Dòng Tiêu đề Tên Cột Trong Dataset (Header Row 1) */}
-          <tr className="border-b border-border bg-muted/40 text-muted-foreground font-semibold">
-            <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/60 text-muted-foreground">
+          <tr className="border-b border-border bg-background dark:bg-card/30 text-foreground font-semibold">
+            <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
               1
             </td>
             {columns.map((col, cIdx) => {
               const cellAddr = `${colLetters[cIdx]}1`;
               const isSelected = selectedCell === cellAddr;
+              const isNumeric = col.type === 'currency' || col.type === 'number' || col.dataType === 'currency' || col.dataType === 'number' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount'].includes(col.key);
 
               return (
                 <td
                   key={cellAddr}
                   onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                  className={`border-r border-border p-2.5 text-center font-sans font-bold text-foreground transition-all cursor-pointer last:border-r-0 ${
+                  className={`border-r border-border px-3 py-2 font-sans font-bold text-foreground transition-all cursor-pointer last:border-r-0 ${
+                    isNumeric ? 'text-right' : 'text-left'
+                  } ${
                     isSelected
                       ? 'bg-primary/10 ring-2 ring-primary ring-inset'
                       : 'hover:bg-muted/60'
@@ -160,19 +158,19 @@ export function SpreadsheetGrid({
                   const isTarget = cellAddr === targetCell;
                   const editable = isCellEditable(cellAddr);
                   const rawVal = row[col.key];
+                  const colType = col.dataType || col.type;
+                  const isNumeric = colType === 'currency' || colType === 'number' || colType === 'integer' || colType === 'float' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
 
                   return (
                     <td
                       key={cellAddr}
                       onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                      className={`relative border-r border-border/80 p-2.5 transition-all cursor-pointer last:border-r-0 ${
-                        col.type === 'currency' || col.type === 'number'
-                          ? 'text-right'
-                          : 'text-left'
+                      className={`relative border-r border-border/80 px-3 py-2 transition-all cursor-pointer last:border-r-0 ${
+                        isNumeric ? 'text-right' : 'text-left'
                       } ${
                         isTarget
                           ? isSelected
-                            ? 'bg-amber-500/20 ring-2 ring-amber-500 shadow-sm'
+                            ? 'bg-amber-500/20 ring-2 ring-amber-500 shadow-xs'
                             : 'bg-amber-500/10 border-amber-400/80 ring-1 ring-amber-400/40'
                           : isSelected
                           ? 'bg-primary/10 ring-2 ring-primary ring-inset'
@@ -181,9 +179,9 @@ export function SpreadsheetGrid({
                           : 'hover:bg-muted/40'
                       }`}
                     >
-                      {/* Target Cell Badge Indicator */}
+                      {/* Target Cell Badge Indicator - Positioned neatly inside the cell */}
                       {isTarget && (
-                        <div className="absolute -top-1.5 -right-1.5 z-10 flex items-center gap-0.5 rounded-full bg-amber-500 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-sm">
+                        <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
                           <Sparkles className="size-2.5 fill-current" />
                           <span>Mục tiêu</span>
                         </div>

@@ -183,6 +183,10 @@ export function LearnerLayout({ children }) {
             const navStatus = getPageStatus(to);
             const isItemMaintenance = navStatus?.status === 'maintenance';
             const isItemNotice = navStatus?.status === 'notice';
+            const isPathActive =
+              location.pathname === to ||
+              (to === '/map' && location.pathname.startsWith('/missions')) ||
+              (to !== '/dashboard' && location.pathname.startsWith(to));
 
             return (
               <NavLink
@@ -190,18 +194,18 @@ export function LearnerLayout({ children }) {
                 to={to}
                 onClick={() => setMobileOpen(false)}
                 title={collapsed && !mobileOpen ? `${label}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
-                className={({ isActive }) =>
-                  `flex items-center justify-between gap-2 rounded-xl transition-all ${
-                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                className={
+                  `relative flex items-center justify-between gap-2 rounded-xl transition-all ${
+                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-3 text-sm'
                   } ${
-                    isActive
-                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    isPathActive
+                      ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold border-l-4 border-primary dark:border-amber-400 shadow-xs'
+                      : 'text-sidebar-foreground/75 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
                   }`
                 }
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <Icon className="size-[18px] shrink-0" />
+                  <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary dark:text-amber-400' : ''}`} />
                   {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
                 </div>
 

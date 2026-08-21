@@ -223,7 +223,7 @@ Việc trao XP cần idempotency để một Submission không thể nhận thư
 - [x] Đúng, sai và lỗi đều có feedback.
 - [x] Không double submit.
 - [x] Không cộng XP trực tiếp.
-- [x] Targeted 31/31 và regression 101/101 tests pass.
+- [x] Submission targeted 31/31; formula diagnostics targeted 55/55; regression 118/118 tests pass.
 - [x] Mission hoàn thành được thể hiện rõ.
 
 ---

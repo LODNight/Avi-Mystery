@@ -34,7 +34,7 @@ export function ActionToolbar({
           type="button"
           onClick={onRun}
           disabled={isEvaluating || isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto"
           title="Chạy thử công thức trên ô tính hiện tại"
         >
           <Play className={`size-3.5 ${isEvaluating ? 'animate-spin' : 'fill-current'}`} />

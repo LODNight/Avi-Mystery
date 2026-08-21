@@ -59,5 +59,5 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 
 * **Đã hoàn thành:** shared contract/gateway, async mock, structured errors, retry, double-submit/replay guard, unmount cleanup, answer retention, inline incorrect/error và accessible success modal.
 * **Boundary:** Submission trả `potentialXp` nhưng không cập nhật XP/level; reward thuộc Progress Sprint 5.
-* **Validation:** 5 targeted files với 31/31 tests và full regression 19 files với 101/101 tests pass.
+* **Validation:** Submission targeted 31/31; formula diagnostics & UI/UX refinement follow-up targeted 55/55; full regression 19 files với 119/119 tests pass.
 * **Tiếp theo:** chỉ chuẩn bị Sprint 4 sau khi một Current Task mới được người dùng kích hoạt.

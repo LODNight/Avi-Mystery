@@ -11,6 +11,7 @@ Không là nơi chứa code chưa biết đặt đâu; không sở hữu feature
 ## Current Status
 
 - Existing
+- Learner UI foundation stabilization: Planned for Step 3.5
 - Related Sprint: Xuyên suốt
 - Verified Paths: `src/services/contracts/`; `src/services/index.js`; `src/components/ui/`; `src/hooks/`; `src/utils/`; `src/mocks/`; shared providers/layout/router tại `src/app/`
 
@@ -32,6 +33,8 @@ Platform/library dependencies và stable domain primitives only. SHR không ph�
 - `src/hooks/`
 - `src/utils/`
 - `src/mocks/`
+- `src/app/layouts/`
+- `src/app/router/`
 
 ## Read-only Paths
 
@@ -66,7 +69,7 @@ Contract compatibility, adapter parity, UI primitive accessibility, hook cleanup
 
 ## Known Risks
 
-`src/services/index.js` mới gateway auth/course/mission; submission chưa export. Một số UI import mock adapter trực tiếp. `src/utils/excelChecker.js` mang tên shared nhưng logic feature-specific.
+Submission đã export qua gateway và Excel Mission không import mock adapter trực tiếp. Learner Sidebar active-state logic hiện chưa có route-boundary test; Step 3.5 phải phân biệt shared layout/primitives với component chỉ dùng cho Excel. `src/utils/excelChecker.js` vẫn là logic feature-specific dù nằm trong `utils`.
 
 ## Open Questions
 

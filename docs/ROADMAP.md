@@ -50,7 +50,7 @@
 
 ---
 
-## 🟢 Sprint 3 — Excel Vertical Slice (HOÀN THÀNH)
+## 🟡 Sprint 3 — Excel Vertical Slice (CORE DONE — UI STABILIZATION PENDING)
 
 * **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
 * **Primary Focus Area hiện tại:** `LRN-SUB` (Submission & Feedback)
@@ -62,13 +62,101 @@
   * Step 3.2 — Spreadsheet Grid và Formula Bar — **DONE**.
   * Step 3.3 — Run, Reset, Hint và Action Toolbar — **DONE**.
   * Step 3.4 — Submission contract, async flow và feedback — **DONE**.
+  * Step 3.4E — Submission UI Stabilization — **READY**.
+  * Step 3.5 — Learner UI Foundation & Stabilization — **PLANNED**.
+  * Step 3.6 — Light Mode Refinement & Accessibility — **PLANNED**.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
 * **Shared / Backend Features:**
   * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** **ĐẠT** — shared contract; structured formula diagnostics; đúng/sai/service error/retry rõ ràng; không double submit; giữ answer khi sai; Submission không trực tiếp trao XP; 118/118 regression tests pass.
+* **Exit Criteria:** Core technical gate đã đạt. Sprint chỉ đóng lại sau Step 3.4E, Step 3.5, Step 3.6 và regression Sprint 1–3; Sprint 4 vẫn chưa kích hoạt.
+
+### Step 3.4E — Submission UI Stabilization
+
+- [ ] Xác minh Run/Submit loading và double-submit guard.
+- [ ] Xác minh inline validation/incorrect/service error/Retry.
+- [ ] Xác minh success modal, focus, Escape và responsive submission area.
+- [ ] Giữ answer khi sai/lỗi và giữ wording `potentialXp` là phần thưởng dự kiến.
+- [ ] Bổ sung regression test còn thiếu; không mở rộng sang Learner UI redesign.
+
+### Step 3.5 — Learner UI Foundation & Stabilization
+
+#### Step 3.5A — UI Audit & Component Inventory
+
+- [ ] Kiểm kê màn hình và component hiện tại.
+- [ ] Phân loại feature component và shared component.
+- [ ] Xác định component trùng lặp.
+- [ ] Xác định regression risk.
+- [ ] Chốt phạm vi được phép refactor.
+
+#### Step 3.5B — Shared UI Components
+
+- [ ] Chuẩn hóa Button.
+- [ ] Chuẩn hóa Modal/Dialog.
+- [ ] Chuẩn hóa Card, Form và feedback state.
+- [ ] Chuẩn hóa loading, empty và error state.
+- [ ] Không thay đổi business logic.
+
+#### Step 3.5C — Learner Layout & Navigation
+
+- [ ] Chuẩn hóa Header/Sidebar.
+- [ ] Chuẩn hóa Mission layout.
+- [ ] Kiểm tra navigation.
+- [ ] Không xây route thuộc Sprint tương lai.
+
+#### Step 3.5D — Responsive & Accessibility
+
+- [ ] Kiểm tra desktop, tablet và mobile cơ bản.
+- [ ] Kiểm tra keyboard navigation và focus management.
+- [ ] Không dùng màu sắc làm dấu hiệu duy nhất.
+
+#### Step 3.5E — Regression & User Test Readiness
+
+- [ ] Regression test Sprint 1–3.4.
+- [ ] Kiểm tra learner happy path, loading, error và retry.
+- [ ] Tổng hợp feedback nhưng không tự mở rộng scope.
+
+### Step 3.6 — Light Mode Refinement & Accessibility
+
+#### Step 3.6A — Light Mode Audit & Theme Tokens
+- [ ] Kiểm kê các màn hình Learner sử dụng Light Mode.
+- [ ] Xác định màu đang hard-code.
+- [ ] Chuẩn hóa token cho background, surface, border và text.
+- [ ] Xác định visual baseline của Dark Mode.
+- [ ] Không chỉnh Dark Mode nếu không có regression.
+
+#### Step 3.6B — Background, Cards & Visual Hierarchy
+- [ ] Nền hệ thống sử dụng xám cực nhạt.
+- [ ] Card sử dụng nền trắng.
+- [ ] Chuẩn hóa border hoặc shadow.
+- [ ] Phân biệt rõ page, section và card.
+- [ ] Không lạm dụng drop shadow.
+- [ ] Kiểm tra giao diện desktop và mobile.
+
+#### Step 3.6C — Secondary Action Buttons
+- [ ] Sử dụng màu xám hoặc outline trung tính cho Chạy thử, Gợi ý, Đặt lại.
+- [ ] Nút Nộp bài vẫn là primary action.
+- [ ] Có default, hover, active và disabled state.
+- [ ] Có `focus-visible` khi dùng bàn phím.
+- [ ] Không chỉ dùng màu để biểu thị trạng thái.
+- [ ] Không thay đổi logic của nút.
+
+#### Step 3.6D — Excel Workspace Light Mode
+- [ ] Formula Bar: Tăng khả năng nhận biết input, border rõ hơn trên nền trắng, hover/focus/error state.
+- [ ] Data Table: Header xám trung tính, tăng độ đọc text, phân biệt cell states, kiểm tra grid line.
+- [ ] Không thay đổi formula evaluator hoặc worksheet state.
+
+#### Step 3.6E — Streak Visual Balance
+- [ ] Giảm saturation của màu cam, không để Streak cạnh tranh với nút Nộp bài.
+- [ ] Ưu tiên nền trắng/xám và viền cam, giữ icon và nội dung dễ nhận biết.
+- [ ] Không xây streak logic, không trao XP, không đánh dấu Sprint 5 đã bắt đầu.
+
+#### Step 3.6F — Accessibility & Theme Regression
+- [ ] Kiểm tra text contrast, component contrast, keyboard focus.
+- [ ] Regression test Dark Mode, Submission flow trên desktop & mobile.
+- [ ] Chuẩn bị Vercel Preview để người dùng thử.
 
 ---
 
@@ -77,12 +165,6 @@
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
 * **Supporting Focus Area:** `SHR` và `LRN-SUB`
-* **Modules Affected:** SQL Workspace, SQL Engine, Submission Contract
-* **Learner Features:** Code Editor SQL syntax highlighting, Schema Browser & SQL Result Viewer.
-* **Admin Features:** Chưa thay đổi trong Sprint này.
-* **Shared Features:** SQL Engine adapter/Worker, result checker và integration với generic submission contract.
-* **Out of Scope:** Quản lý datasets backend PostgreSQL thật.
-* **Exit Criteria:** 1 nhiệm vụ SQL mẫu chạy hoàn chỉnh từ A đến Z kèm test tự động.
 
 ---
 
@@ -90,7 +172,6 @@
 
 * **Sprint Goal:** Tích hợp cơ chế game hóa (XP, Leveling, Unlock Bài mới, Phạt Hint) để tạo động lực cho Người học.
 * **Primary Focus Area:** `GAME` (Progress & Profile)
-* **Supporting Focus Area:** `SHR` và `LRN-SUB`; backend authority chỉ đến Sprint 7.
 
 ---
 

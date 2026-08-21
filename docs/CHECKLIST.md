@@ -50,7 +50,7 @@
 
 ---
 
-## 🟢 Sprint 3 — Excel Vertical Slice *(Hoàn thành 100%)*
+## 🟡 Sprint 3 — Excel Vertical Slice *(Core hoàn thành — UI stabilization pending)*
 
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
@@ -84,7 +84,29 @@
 - [x] Service error có Retry và không làm mất answer
 - [x] Chặn double submit, replay theo `clientAttemptId` và cleanup an toàn khi unmount
 - [x] Chỉ trả `potentialXp`; Submission không trực tiếp cập nhật XP/level
-- [x] Submission targeted 31/31; formula diagnostics targeted 55/55; full regression 118/118 tests pass
+- [x] Submission/formula core tests pass; audit working tree regression 120/120 tests pass
+
+### 🔹 Step 3.4E: Submission UI Stabilization *(HOÀN THÀNH 100%)*
+- [x] Xác minh Run/Submit loading, disabled và chống double submit
+- [x] Xác minh inline validation/incorrect/service error và Retry
+- [x] Xác minh success modal, keyboard/focus và responsive submission area
+- [x] Giữ answer khi sai/lỗi và wording phần thưởng dự kiến
+- [x] Chạy targeted test và regression trước khi đóng Step
+
+### 🔹 Step 3.5: Learner UI Foundation & Stabilization *(PLANNED)*
+- [ ] Step 3.5A — UI Audit & Component Inventory
+- [ ] Step 3.5B — Shared UI Components
+- [ ] Step 3.5C — Learner Layout & Navigation
+- [ ] Step 3.5D — Responsive & Accessibility
+- [ ] Step 3.5E — Regression & User Test Readiness
+
+### 🔹 Step 3.6: Light Mode Refinement & Accessibility *(PLANNED)*
+- [ ] Step 3.6A — Light Mode Audit & Theme Tokens
+- [ ] Step 3.6B — Background, Cards & Visual Hierarchy
+- [ ] Step 3.6C — Secondary Action Buttons
+- [ ] Step 3.6D — Excel Workspace Light Mode (Formula Bar & Data Table)
+- [ ] Step 3.6E — Streak Visual Balance
+- [ ] Step 3.6F — Accessibility & Theme Regression
 
 ---
 

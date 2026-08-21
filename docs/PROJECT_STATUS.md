@@ -9,9 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 3 — Excel Vertical Slice
 * **Sprint Goal:** Hoàn thiện một Excel learning vertical slice với workspace, evaluator, submission orchestration và feedback có boundary ổn định.
-* **Step đã hoàn thành:** Step 3.0–3.4.
-* **Step vừa đóng:** Step 3.4 — Submission & Feedback (`LRN-SUB`).
-* **Trạng thái Sprint:** `DONE`; Sprint 4 chưa được kích hoạt.
+* **Step đã hoàn thành:** Step 3.0–3.4 core.
+* **Step hiện tại:** Step 3.4E — Submission UI Stabilization (`READY`).
+* **Step kế tiếp đã lên kế hoạch:** Step 3.5 — Learner UI Foundation & Stabilization.
+* **Trạng thái Sprint:** `IN_PROGRESS — UI STABILIZATION`; Sprint 4 chưa được kích hoạt.
 
 ---
 
@@ -19,10 +20,10 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Workspace, Spreadsheet Grid, Formula Bar, Run/Reset/Hint | `DONE` |
-| **Submission (`LRN-SUB`)** | `Primary` | Shared contract, mock orchestration, feedback, retry và async guards | `DONE` |
+| **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Workspace core `DONE`; Hint/Grid/Mission UI stabilization | `PARTIAL / Step 3.5` |
+| **Submission (`LRN-SUB`)** | `Primary` | Core `DONE`; feedback/responsive/a11y stabilization | `READY / Step 3.4E` |
 | **Admin (`ADM`)** | `None` | Giữ nguyên App Shell, Quản lý trạng thái trang trong Cài đặt | `NO_CHANGE` |
-| **Shared (`SHR`)** | `Supporting` | Contract/gateway và Excel Answer Checker | `DONE` cho Sprint 3 |
+| **Shared (`SHR`)** | `Supporting` | Contract/gateway `DONE`; Learner layout/shared UI audit | `PLANNED / Step 3.5` |
 | **Backend (`BE`)** | `None` | FastAPI/PostgreSQL/API integration | `PLANNED` cho Sprint 7 |
 
 ---
@@ -51,7 +52,9 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `SHR-AUDIT-003` | `SHR` | Audit | Step 3.0 Transition Audit và Excel checker | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.test.js` |
 | `LRN-EXCEL-001` | `LRN-EXCEL` | Mission | Step 3.1 Excel Mission Shell (`/missions/:missionId/workspace`) | Sprint 3 | `DONE` | Pass | `src/pages/learner/ExcelMissionPage.test.jsx` |
 | `LRN-EXCEL-002` | `LRN-EXCEL` | Workspace | Step 3.2 Grid/Formula Bar và Step 3.3 Toolbar/Hints | Sprint 3 | `DONE` | Pass | `src/components/excel/*.test.jsx` |
-| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | 31 targeted; 101 regression pass | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
+| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | Core targeted pass; current regression 120/120 | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
+| `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `READY` | Existing suite pass; stabilization gate pending | `docs/agent/UI_CHANGE_INVENTORY.md` |
+| `SHR-3.5` | `SHR` | UI Foundation | Shared UI, Learner layout/navigation, responsive/a11y | Sprint 3 | `PLANNED` | Audit evidence only | `docs/agent/UI_CHANGE_INVENTORY.md` |
 
 ---
 
@@ -59,5 +62,5 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 
 * **Đã hoàn thành:** shared contract/gateway, async mock, structured errors, retry, double-submit/replay guard, unmount cleanup, answer retention, inline incorrect/error và accessible success modal.
 * **Boundary:** Submission trả `potentialXp` nhưng không cập nhật XP/level; reward thuộc Progress Sprint 5.
-* **Validation:** Submission targeted 31/31; formula diagnostics & UI/UX refinement follow-up targeted 55/55; full regression 19 files với 119/119 tests pass.
-* **Tiếp theo:** chỉ chuẩn bị Sprint 4 sau khi một Current Task mới được người dùng kích hoạt.
+* **Audit validation:** current working tree full regression 19 files với 120/120 tests pass; test pass không tự chứng minh visual/responsive coverage.
+* **Tiếp theo:** Step 3.4E → Step 3.5 → regression Sprint 1–3. Chỉ sau đó mới xem xét một Current Task Sprint 4 do người dùng kích hoạt.

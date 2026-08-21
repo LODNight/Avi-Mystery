@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles, Lightbulb, X } from 'lucide-react';
 
 /**
  * FormulaBar Component (LRN-EXCEL-002)
@@ -13,6 +13,8 @@ import { Check, Sparkles } from 'lucide-react';
  * @param {boolean} [props.isTargetCell] - Cờ xác định xem ô chọn có phải là ô mục tiêu của bài học hay không
  * @param {boolean} [props.disabled] - Khóa nhập công thức
  * @param {{valid: boolean, errorCode: string|null, message: string}|null} [props.diagnostic]
+ * @param {string|null} [props.activeHint] - Gợi ý nội tuyến đã mở khóa hiển thị ngay dưới FormulaBar
+ * @param {Function} [props.onClearActiveHint] - Callback ẩn gợi ý nội tuyến
  */
 export function FormulaBar({
   selectedCell = 'A1',
@@ -22,6 +24,8 @@ export function FormulaBar({
   isTargetCell = false,
   disabled = false,
   diagnostic = null,
+  activeHint = null,
+  onClearActiveHint,
 }) {
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && onSubmit) {
@@ -104,6 +108,27 @@ export function FormulaBar({
           >
             {diagnostic.message}
           </p>
+        )}
+
+        {/* Inline Active Unlocked Hint Helper (Solution 1) */}
+        {activeHint && (
+          <div className="mt-2 flex items-center justify-between gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs text-amber-700 dark:text-amber-300 font-semibold animate-fade-in shadow-xs">
+            <div className="flex items-center gap-2 min-w-0">
+              <Lightbulb className="size-4 text-amber-500 fill-amber-500/20 shrink-0" />
+              <span className="truncate"><strong>Gợi ý:</strong> {activeHint}</span>
+            </div>
+            {onClearActiveHint && (
+              <button
+                type="button"
+                onClick={onClearActiveHint}
+                className="grid size-5 place-items-center rounded hover:bg-amber-500/20 opacity-70 hover:opacity-100 transition-opacity shrink-0 cursor-pointer"
+                title="Ẩn gợi ý nội tuyến"
+                aria-label="Ẩn gợi ý nội tuyến"
+              >
+                <X className="size-3.5" />
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

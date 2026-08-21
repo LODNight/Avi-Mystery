@@ -78,4 +78,22 @@ describe('FormulaBar Component Tests (LRN-EXCEL-002)', () => {
     expect(screen.getByRole('textbox')).toHaveAttribute('aria-invalid', 'false');
     expect(screen.getByRole('status')).toHaveTextContent(/cú pháp hợp lệ/i);
   });
+
+  it('hiển thị gợi ý nội tuyến (activeHint) bên dưới FormulaBar và cho phép ẩn', () => {
+    const handleClear = vi.fn();
+    render(
+      <FormulaBar
+        selectedCell="E2"
+        formula="=C2"
+        activeHint="Sử dụng phép nhân (*) giữa C2 và D2."
+        onClearActiveHint={handleClear}
+      />
+    );
+
+    expect(screen.getByText(/Sử dụng phép nhân \(\*\) giữa C2 và D2/i)).toBeInTheDocument();
+    const hideBtn = screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i });
+    fireEvent.click(hideBtn);
+
+    expect(handleClear).toHaveBeenCalledTimes(1);
+  });
 });

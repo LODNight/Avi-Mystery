@@ -68,6 +68,7 @@ Không ghi pass nếu command chưa thực sự chạy trong lần làm việc �
 
 - Submission targeted command: 5 test files, 31/31 tests passed.
 - Formula diagnostics follow-up: 4 test files, 55/55 tests passed.
-- Full regression: 19 test files, 118/118 tests passed.
+- UI plan alignment audit: 19 test files, 120/120 tests passed trên working tree hiện tại.
 - Covered: structured errors, retry, timeout, duplicate/replay identity, double submit, unmount in flight, answer retention, success-only modal và no-XP-mutation.
 - Non-failing warnings: React Router v7 future flags và `AuthProvider` act warning trong `PageStatus.test.jsx`.
+- Giới hạn: suite hiện tại không thay thế visual regression, viewport test hoặc user test cho Step 3.4E/3.5.

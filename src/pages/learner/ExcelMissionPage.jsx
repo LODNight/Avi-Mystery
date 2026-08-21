@@ -42,6 +42,7 @@ export function ExcelMissionPage() {
   const [showBriefing, setShowBriefing] = useState(false);
   const [showHintPanel, setShowHintPanel] = useState(false);
   const [hintsUnlockedCount, setHintsUnlockedCount] = useState(0);
+  const [activeUnlockedHint, setActiveUnlockedHint] = useState(null);
 
   // State quản lý phản hồi thông báo (Feedback Toast)
   const [feedbackToast, setFeedbackToast] = useState(null);
@@ -240,9 +241,28 @@ export function ExcelMissionPage() {
     showNotification('info', 'Đã đặt lại toàn bộ bảng tính về trạng thái ban đầu.');
   };
 
-  // 3. Mở gợi ý cấp tiếp theo (Progressive Hints)
+  // 3. Mở gợi ý cấp tiếp theo (Progressive Hints & Solution 1: Inline Hint)
   const handleUnlockNextHint = () => {
-    setHintsUnlockedCount((prev) => prev + 1);
+    const nextCount = hintsUnlockedCount + 1;
+    setHintsUnlockedCount(nextCount);
+
+    const missionHints = mission?.hints || hintsData;
+    const normalizedHints = Array.isArray(missionHints) && missionHints.length > 0
+      ? missionHints
+      : typeof missionHints === 'string' && missionHints.trim()
+      ? [
+          'Hãy xác định các ô chứa thông tin Số lượng và Đơn giá của mặt hàng.',
+          'Sử dụng phép nhân (*) trong Excel giữa cột Số lượng (C) và Đơn giá (D).',
+          missionHints,
+        ]
+      : [
+          'Xác định thông tin dữ liệu đầu vào trong bảng tính.',
+          'Sử dụng phép tính Excel phù hợp (phép cộng +, trừ -, nhân *, chia /).',
+          'Cú pháp công thức Excel bắt đầu bằng dấu "=".',
+        ];
+
+    const newlyUnlockedHintText = normalizedHints[nextCount - 1] || normalizedHints[0];
+    setActiveUnlockedHint(newlyUnlockedHintText);
   };
 
   // 4. Nộp bài vụ án (Submit Answer - Step 3.4)
@@ -537,10 +557,10 @@ export function ExcelMissionPage() {
           onSubmit={handleFormulaSubmit}
           isTargetCell={selectedCell === starterCell}
           diagnostic={formulaDiagnostic}
+          activeHint={activeUnlockedHint}
+          onClearActiveHint={() => setActiveUnlockedHint(null)}
           disabled={isSubmitting}
         />
-
-
       </div>
 
       {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}
@@ -592,16 +612,21 @@ export function ExcelMissionPage() {
         </div>
       )}
 
-      {/* ── Progressive Hint Drawer (Step 3.3) ── */}
+      {/* ── Progressive Hint Side Drawer (Non-modal / No dark backdrop overlay) ── */}
       {showHintPanel && (
-        <HintPanel
-          hints={hintsData}
-          hintsUnlockedCount={hintsUnlockedCount}
-          onUnlockNextHint={handleUnlockNextHint}
-          baseXp={mission.rewardXp || 100}
-          penaltyPerHint={15}
-          onClose={() => setShowHintPanel(false)}
-        />
+        <aside
+          aria-label="Khung gợi ý"
+          className="fixed bottom-0 right-0 top-20 z-40 w-full sm:w-[400px] max-w-full bg-card/95 backdrop-blur-md border-l border-amber-500/30 shadow-2xl p-4 sm:p-5 overflow-y-auto animate-in slide-in-from-right duration-300"
+        >
+          <HintPanel
+            hints={hintsData}
+            hintsUnlockedCount={hintsUnlockedCount}
+            onUnlockNextHint={handleUnlockNextHint}
+            baseXp={mission.rewardXp || 100}
+            penaltyPerHint={15}
+            onClose={() => setShowHintPanel(false)}
+          />
+        </aside>
       )}
 
       {/* ── Full Width Spreadsheet Grid Component ── */}

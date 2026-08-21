@@ -4,6 +4,7 @@
 > Các ID `BE-*` của Sprint 1–2 là legacy IDs cho frontend mock adapters; ownership mới dùng [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md), trong đó `BE` dành cho Backend API Sprint 7.
 > **Quy tắc quản lý trạng thái:**
 > - `TODO`: Chưa bắt đầu.
+> - `READY`: Đã chốt scope và có thể bắt đầu khi người dùng yêu cầu.
 > - `IN_PROGRESS`: Đang thực hiện trong Sprint hiện tại.
 > - `PARTIAL`: Đã có code nhưng chưa đạt contract hoặc Acceptance Criteria hiện hành.
 > - `BLOCKED`: Đang bị tắc nghẽn do phụ thuộc.
@@ -43,7 +44,9 @@
 | `SHR-EXCEL-CHECKER-001` | Bộ chấm điểm công thức Excel Answer Checker (`excelChecker.js`) | `SHR` | `High` | `DONE` | Chuẩn hóa cú pháp công thức, phân tích ô tính & chấm điểm tự động |
 | `LRN-EXCEL-001` | Excel Mission Shell (`/missions/:missionId/workspace`) | `LRN-EXCEL` | `High` | `DONE` | Mission/dataset loading và learner workspace |
 | `LRN-EXCEL-002` | Spreadsheet Grid, Formula Bar và Toolbar | `LRN-EXCEL` | `High` | `DONE` | Cell state, formula input, Run/Reset/Hint và component tests |
-| `LRN-SUB-3.4` | Submission Contract & Feedback Flow | `LRN-SUB` | `High` | `DONE` | Shared contract/gateway; async mock; structured error/retry; duplicate/replay guard; inline feedback; success modal; không mutate XP; 31 targeted và 101 regression tests pass |
+| `LRN-SUB-3.4` | Submission Contract & Feedback Flow | `LRN-SUB` | `High` | `DONE` | Shared contract/gateway; async mock; structured error/retry; duplicate/replay guard; inline feedback; success modal; không mutate XP |
+| `LRN-SUB-3.4E` | Submission UI Stabilization | `LRN-SUB` | `High` | `READY` | Current Task đã chọn; xác minh feedback/loading/retry/modal/responsive/a11y; không mở rộng sang toàn bộ Learner UI |
+| `SHR-3.5` | Learner UI Foundation & Stabilization | `SHR` | `High` | `TODO` | UI inventory, shared primitives, Learner layout/navigation, Mission layout, responsive/a11y và regression |
 
 Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đúng ownership. Backend thật vẫn thuộc Sprint 7.
 

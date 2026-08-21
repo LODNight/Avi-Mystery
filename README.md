@@ -102,7 +102,7 @@ npm run build
 Lần xác minh gần nhất ngày **21/08/2026** đạt:
 
 - **19 Test Files Passed**
-- **118 Test Cases Passed**
+- **120 Test Cases Passed**
 - Bao phủ service mocks, shared UI, route/page status, course/map/mission flow, Excel evaluator, submission contract/gateway, async guards và feedback UI.
 
 Chi tiết và cảnh báo test được ghi tại **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**.

@@ -13,6 +13,7 @@ Không điều phối generic submission attempt, không lưu/trao XP, không tr
 ## Current Status
 
 - Existing
+- UI stabilization candidates: Partial; planned for Step 3.5
 - Related Sprint: 1–3
 - Verified Paths: `src/components/excel/`; `src/pages/learner/ExcelMissionPage.jsx`; `src/pages/learner/ExcelMissionPage.test.jsx`; `src/utils/excelChecker.js`; `src/utils/excelChecker.test.js`
 
@@ -68,8 +69,8 @@ Formula normalization/value/error, grid selection/edit/reset, run/hint states, t
 
 ## Known Risks
 
-`ExcelMissionPage.jsx` vẫn chứa Excel state và submission orchestration ở cấp page nhưng đã gọi service qua gateway; thay đổi sau này cần tránh làm vỡ Sprint 1–3.4.
+`ExcelMissionPage.jsx` vẫn chứa Excel state, submission orchestration và inline hint state ở cấp page. Working tree có Hint side drawer/inline hint nhưng integration coverage chưa đủ; reset hoặc mission change có thể giữ hint stale. Thay đổi Step 3.5 phải tránh làm vỡ Sprint 1–3.4.
 
 ## Open Questions
 
-Workbook multi-sheet state, cú pháp Excel nâng cao và boundary tách page/controller: TBD. Cú pháp mới phải mở rộng analyzer/error catalog thay vì thêm validation riêng trong UI.
+Workbook multi-sheet state, cú pháp Excel nâng cao và boundary tách page/controller: TBD. Inline hint vẫn thuộc LRN-EXCEL cho đến khi có consumer thứ hai; không tự promote sang SHR.

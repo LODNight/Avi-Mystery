@@ -3,7 +3,7 @@
 > **Cập nhật lần cuối:** 21/08/2026
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM
 > **Tổng số Test Suites:** 19 files
-> **Tổng số Test Cases:** 119 passed / 0 failed
+> **Tổng số Test Cases:** 120 passed / 0 failed
 
 ---
 
@@ -20,7 +20,7 @@
 | `src/components/ui/Skeleton.test.jsx` | 7 | `PASS` |
 | `src/components/ui/EmptyState.test.jsx` | 5 | `PASS` |
 | `src/components/excel/SpreadsheetGrid.test.jsx` | 4 | `PASS` |
-| `src/components/excel/FormulaBar.test.jsx` | 6 | `PASS` |
+| `src/components/excel/FormulaBar.test.jsx` | 7 | `PASS` |
 | `src/components/excel/ActionToolbar.test.jsx` | 3 | `PASS` |
 | `src/components/excel/HintPanel.test.jsx` | 3 | `PASS` |
 | `src/components/excel/MissionResultModal.test.jsx` | 4 | `PASS` |
@@ -43,6 +43,7 @@
 - Step 3.4 đã cover service error/retry, timeout, duplicate/replay attempt, double submit, unmount in-flight, gateway boundary, answer retention, modal accessibility và xác nhận không mutate XP.
 - Formula diagnostics cover biểu thức rỗng `=`, thiếu dấu `=`, ngoặc, hàm/range, ký tự/toán tử, tham chiếu, dữ liệu không phải số, chia cho 0 và đồng bộ nhập/Run/Submit.
 - UI/UX Refinement: Chạy thử trigger inline error, chuẩn hóa A,B,C... headers, căn phải cột số/tiền tệ, CTA hierarchy.
+- Audit gap: current suite chưa cover đầy đủ Hint drawer responsive/focus, unlock-to-inline-hint integration hoặc Learner Sidebar route boundary.
 
 ---
 
@@ -58,7 +59,7 @@ Kết quả Step 3.4:
 
 - Submission targeted suite: 5 files, 31/31 tests pass.
 - Formula diagnostics targeted suite: 4 files, 55/55 tests pass.
-- Full regression: 19 files, 119/119 tests pass.
+- UI plan alignment audit: full regression 19 files, 120/120 tests pass.
 
 Máy xác minh ngày 21/08/2026 có global npm bị thiếu `npm-cli.js`; suite đã được chạy bằng local executable mà không cài package:
 

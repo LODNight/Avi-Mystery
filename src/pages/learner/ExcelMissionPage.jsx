@@ -14,6 +14,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { mockMissionService } from '../../services/mock/mockMissionService.js';
+import { mockAuthService } from '../../services/mock/mockAuthService.js';
+import { mockSubmissionService } from '../../services/mock/mockSubmissionService.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDuration } from '../../utils/format.js';
@@ -21,6 +23,7 @@ import { FormulaBar } from '../../components/excel/FormulaBar.jsx';
 import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
 import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
+import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
 import { evaluateFormulaValue } from '../../utils/excelChecker.js';
 
 export function ExcelMissionPage() {
@@ -41,6 +44,10 @@ export function ExcelMissionPage() {
   const [feedbackToast, setFeedbackToast] = useState(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // State quản lý Popup Kết quả nộp bài (Step 3.4)
+  const [submissionResult, setSubmissionResult] = useState(null);
+  const [showResultModal, setShowResultModal] = useState(false);
 
   // State quản lý Bảng tính Excel Interactive (LRN-EXCEL-002)
   const [selectedCell, setSelectedCell] = useState('E2');
@@ -207,27 +214,44 @@ export function ExcelMissionPage() {
     setHintsUnlockedCount((prev) => prev + 1);
   };
 
-  // 4. Nộp bài vụ án (Submit Answer)
-  const handleSubmitAnswer = () => {
+  // 4. Nộp bài vụ án (Submit Answer - Step 3.4)
+  const handleSubmitAnswer = async () => {
+    const starterCell = mission?.starterContent?.targetCell || 'E2';
+    const userFormula = cellFormulas[starterCell] || formulaInput;
+
+    if (!userFormula || !userFormula.trim()) {
+      showNotification('warning', `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`);
+      return;
+    }
+
     setIsSubmitting(true);
-    const computed = handleFormulaSubmit();
+    handleFormulaSubmit();
 
-    setTimeout(() => {
+    try {
+      const currentUser = await mockAuthService.getCurrentUser();
+      const sheetData = getSheetDataMap();
+
+      const res = await mockSubmissionService.submitExcelMission({
+        userId: currentUser?.data?.id || 'guest',
+        missionId,
+        userFormula,
+        sheetData,
+        hintsUnlockedCount,
+      });
+
       setIsSubmitting(false);
-      const starterCell = mission?.starterContent?.targetCell || 'E2';
-      const userFormula = cellFormulas[starterCell] || formulaInput;
 
-      if (!userFormula) {
-        showNotification('warning', `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`);
-        return;
-      }
-
-      if (computed !== null && computed !== undefined) {
-        showNotification('success', `Đã nộp bài làm thành công! Ô ${starterCell} có kết quả: ${computed}.`);
+      if (res.data) {
+        setSubmissionResult(res.data);
+        setShowResultModal(true);
       } else {
-        showNotification('error', `Kết quả nộp bài tại ô ${starterCell} chưa chính xác.`);
+        showNotification('error', res.error || 'Có lỗi xảy ra khi nộp bài.');
       }
-    }, 400);
+    } catch (_err) {
+      console.error('[ERROR handleSubmitAnswer]', _err);
+      setIsSubmitting(false);
+      showNotification('error', 'Không thể kết nối đến hệ thống nộp bài.');
+    }
   };
 
   if (loading) {
@@ -360,6 +384,30 @@ export function ExcelMissionPage() {
         </button>
       </div>
 
+      {/* ── Primary Interactive Controls: Action Toolbar & Formula Bar (Ngay phía dưới Mục tiêu) ── */}
+      <div className="space-y-3">
+        {/* Action Toolbar Component (Thanh thao tác Nộp bài, Chạy thử công thức nằm trên) */}
+        <ActionToolbar
+          onRun={handleRunFormula}
+          onSubmit={handleSubmitAnswer}
+          onReset={handleResetGrid}
+          onToggleHint={() => setShowHintPanel(!showHintPanel)}
+          hintCount={3}
+          hintsUnlockedCount={hintsUnlockedCount}
+          isEvaluating={isEvaluating}
+          isSubmitting={isSubmitting}
+        />
+
+        {/* Formula Bar Component (Thanh nhập công thức kết nối liền kề với Bảng tính phía dưới) */}
+        <FormulaBar
+          selectedCell={selectedCell}
+          formula={formulaInput}
+          onChange={handleFormulaChange}
+          onSubmit={handleFormulaSubmit}
+          isTargetCell={selectedCell === starterCell}
+        />
+      </div>
+
       {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}
       {showBriefing && (
         <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-md space-y-5 animate-fade-in">
@@ -421,45 +469,35 @@ export function ExcelMissionPage() {
         />
       )}
 
-      {/* ── Main Full-Width Interactive Excel Workspace (Trọng tâm Bảng tính) ── */}
-      <div className="space-y-4">
-        {/* Formula Bar Component */}
-        <FormulaBar
+      {/* ── Full Width Spreadsheet Grid Component ── */}
+      {dataset ? (
+        <SpreadsheetGrid
+          dataset={dataset}
           selectedCell={selectedCell}
-          formula={formulaInput}
-          onChange={handleFormulaChange}
-          onSubmit={handleFormulaSubmit}
-          isTargetCell={selectedCell === starterCell}
+          onCellSelect={handleCellSelect}
+          targetCell={starterCell}
+          cellFormulas={cellFormulas}
+          cellValues={cellValues}
         />
+      ) : (
+        <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">
+          <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
+        </div>
+      )}
 
-        {/* Action Toolbar Component (Step 3.3) */}
-        <ActionToolbar
-          onRun={handleRunFormula}
-          onSubmit={handleSubmitAnswer}
-          onReset={handleResetGrid}
-          onToggleHint={() => setShowHintPanel(!showHintPanel)}
-          hintCount={3}
-          hintsUnlockedCount={hintsUnlockedCount}
-          isEvaluating={isEvaluating}
-          isSubmitting={isSubmitting}
-        />
-
-        {/* Full Width Spreadsheet Grid Component */}
-        {dataset ? (
-          <SpreadsheetGrid
-            dataset={dataset}
-            selectedCell={selectedCell}
-            onCellSelect={handleCellSelect}
-            targetCell={starterCell}
-            cellFormulas={cellFormulas}
-            cellValues={cellValues}
-          />
-        ) : (
-          <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">
-            <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
-          </div>
-        )}
-      </div>
+      {/* ── Mission Result Modal Popup (Step 3.4) ── */}
+      <MissionResultModal
+        isOpen={showResultModal}
+        result={submissionResult}
+        onClose={() => setShowResultModal(false)}
+        onNextMission={() => {
+          setShowResultModal(false);
+          navigate('/map');
+        }}
+        onRetry={() => {
+          setShowResultModal(false);
+        }}
+      />
     </div>
   );
 }

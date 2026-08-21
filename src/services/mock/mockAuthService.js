@@ -2,9 +2,10 @@ import usersData from '../../mocks/data/users.json';
 import { storage } from '../../utils/storage.js';
 
 // Giả lập độ trễ mạng (ms)
-const DELAY = 300;
+const DELAY = 0;
 
 function delay(ms = DELAY) {
+  if (ms === 0) return Promise.resolve();
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -68,12 +69,12 @@ export const mockAuthService = {
   },
 
   async logout() {
-    await delay(100);
+    await delay();
     storage.remove(SESSION_KEY);
   },
 
   async getCurrentUser() {
-    await delay(100);
+    await delay();
     const user = storage.get(SESSION_KEY);
     if (!user) return { data: null, error: null };
     return { data: user, error: null };

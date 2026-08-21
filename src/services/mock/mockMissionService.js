@@ -1,8 +1,9 @@
 import missionsData from '../../mocks/data/missions.json';
 import datasetsData from '../../mocks/data/datasets.json';
 
-const DELAY = 300;
+const DELAY = 0;
 function delay(ms = DELAY) {
+  if (ms === 0) return Promise.resolve();
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 

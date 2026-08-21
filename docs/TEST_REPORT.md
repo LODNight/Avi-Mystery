@@ -1,80 +1,70 @@
 # Báo Cáo Kiểm Thử Tự Động (Test Report)
 
-> **Cập nhật lần cuối:** 20/08/2026  
-> **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM  
-> **Tổng số Test Suites:** 12 files  
-> **Tổng số Test Cases:** 62 passed / 0 failed  
+> **Cập nhật lần cuối:** 21/08/2026
+> **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM
+> **Tổng số Test Suites:** 19 files
+> **Tổng số Test Cases:** 101 passed / 0 failed
 
 ---
 
 ## 1. Kết Quả Chạy Kiểm Thử Tự Động
 
-| File Test | Loại Test | Số Test Cases | Kết quả | Thời gian chạy |
-|---|---|---|---|---|
-| `src/pages/learner/ExcelMissionPage.test.jsx` | Component Test | 2 | `PASS` | 985ms |
-| `src/services/mock/mockMissionService.test.js` | Unit Test | 6 | `PASS` | 1864ms |
-| `src/tests/PageStatus.test.jsx` | Component & Service Test | 6 | `PASS` | 45ms |
-| `src/utils/excelChecker.test.js` | Unit Test | 13 | `PASS` | 6ms |
-| `src/pages/learner/MissionIntroPage.test.jsx` | Component Test | 2 | `PASS` | 71ms |
-| `src/pages/learner/LearningMapPage.test.jsx` | Component Test | 3 | `PASS` | 110ms |
-| `src/pages/learner/CourseDetailPage.test.jsx` | Component Test | 3 | `PASS` | 157ms |
-| `src/pages/learner/CoursesPage.test.jsx` | Component Test | 5 | `PASS` | 211ms |
-| `src/components/ui/Skeleton.test.jsx` | Component Test | 7 | `PASS` | 90ms |
-| `src/components/ui/EmptyState.test.jsx` | Component Test | 5 | `PASS` | 100ms |
-| `src/services/mock/mockCourseService.test.js` | Unit Test | 5 | `PASS` | 1561ms |
-| `src/services/mock/mockAuthService.test.js` | Unit Test | 5 | `PASS` | 1889ms |
+| File Test | Số Test Cases | Kết quả |
+|---|---:|---|
+| `src/utils/excelChecker.test.js` | 14 | `PASS` |
+| `src/services/mock/mockAuthService.test.js` | 5 | `PASS` |
+| `src/services/mock/mockCourseService.test.js` | 5 | `PASS` |
+| `src/services/mock/mockMissionService.test.js` | 6 | `PASS` |
+| `src/services/mock/mockSubmissionService.test.js` | 10 | `PASS` |
+| `src/app/providers/BrandProvider.test.jsx` | 2 | `PASS` |
+| `src/components/ui/Skeleton.test.jsx` | 7 | `PASS` |
+| `src/components/ui/EmptyState.test.jsx` | 5 | `PASS` |
+| `src/components/excel/SpreadsheetGrid.test.jsx` | 4 | `PASS` |
+| `src/components/excel/FormulaBar.test.jsx` | 4 | `PASS` |
+| `src/components/excel/ActionToolbar.test.jsx` | 3 | `PASS` |
+| `src/components/excel/HintPanel.test.jsx` | 3 | `PASS` |
+| `src/components/excel/MissionResultModal.test.jsx` | 4 | `PASS` |
+| `src/pages/learner/CoursesPage.test.jsx` | 5 | `PASS` |
+| `src/pages/learner/CourseDetailPage.test.jsx` | 3 | `PASS` |
+| `src/pages/learner/LearningMapPage.test.jsx` | 3 | `PASS` |
+| `src/pages/learner/MissionIntroPage.test.jsx` | 2 | `PASS` |
+| `src/pages/learner/ExcelMissionPage.test.jsx` | 10 | `PASS` |
+| `src/tests/PageStatus.test.jsx` | 6 | `PASS` |
 
 
 ---
 
-## 2. Chi Tiết Các Test Case Đã Thực Hiện
+## 2. Coverage Summary
 
-### 🟢 `excelChecker.test.js` (Mới)
-- `[PASS]` Tự động bổ sung dấu `=` nếu thiếu khi chuẩn hóa công thức Excel.
-- `[PASS]` Chuyển đổi toàn bộ tên hàm Excel phổ biến sang chữ hoa (`SUM`, `SUMIF`, `MAX`, `MIN`, `AVERAGE`).
-- `[PASS]` Xử lý an toàn với đầu vào rỗng hoặc không hợp lệ.
-- `[PASS]` Phân tích chính xác tọa độ ô (`parseCellAddress`).
-- `[PASS]` Mở rộng dải ô (`expandCellRange`) từ chuỗi dạng `"B2:B5"` hoặc `"A1:B2"`.
-- `[PASS]` Tính toán chính xác giá trị thử nghiệm cho hàm `SUM`, `AVERAGE`, `MAX`, `MIN`.
-- `[PASS]` Kiểm tra và xác nhận câu trả lời đúng khi công thức khớp `expectedFormula`.
-- `[PASS]` Xác nhận công thức đúng không phân biệt hoa thường hoặc thiếu dấu `=`.
-- `[PASS]` Hỗ trợ so sánh với mảng danh sách công thức mẫu tương đương.
-- `[PASS]` Đánh giá và trả về phản hồi chuẩn đoán khi người học nhập sai công thức hoặc sai dải ô.
-- `[PASS]` Cung cấp hướng dẫn sửa lỗi khi thiếu dấu ngoặc đơn `()`.
-
-### 🟢 `MissionIntroPage.test.jsx`
-- `[PASS]` Render thông tin hồ sơ vụ án, bối cảnh (story), mục tiêu (objective) và điểm thưởng XP sau khi load thành công.
-- `[PASS]` Hiển thị `ErrorState` khi vụ án không tồn tại hoặc dịch vụ gặp lỗi.
-
-### 🟢 `LearningMapPage.test.jsx`
-- `[PASS]` Render bản đồ học tập và danh sách bài học vụ án theo node-tree sau khi load dữ liệu thành công.
-- `[PASS]` Đổi khóa học mượt mà bằng selector dropdown và tải lại sơ đồ chương tương ứng.
-- `[PASS]` Hiển thị `ErrorState` kèm nút thử lại khi dịch vụ gặp lỗi.
-
-### 🟢 `CourseDetailPage.test.jsx`
-- `[PASS]` Render thông tin chi tiết khóa học, nhãn công cụ, độ khó và danh sách chương.
-- `[PASS]` Mở/đóng các chương trong Accordion để xem bài học vụ án.
-- `[PASS]` Hiển thị trạng thái khóa học không tồn tại.
-
-### 🟢 `CoursesPage.test.jsx`
-- `[PASS]` Render danh sách toàn bộ khóa học công bố (`published`).
-- `[PASS]` Lọc danh sách theo từ khóa tìm kiếm.
-- `[PASS]` Lọc danh sách theo công cụ Excel / SQL.
-- `[PASS]` Lọc danh sách theo độ khó.
-- `[PASS]` Hiển thị `EmptyState` khi không tìm thấy khóa học phù hợp với bộ lọc.
+- Service mocks: auth, course, mission và submission contract/error/idempotency behavior.
+- Shared UI/providers: skeleton, empty/error state, brand và page status.
+- Learner flow: courses, course detail, learning map, mission intro và Excel workspace.
+- Excel: evaluator, spreadsheet grid, Formula Bar, toolbar, hints và result modal.
+- Step 3.4 đã cover service error/retry, timeout, duplicate/replay attempt, double submit, unmount in-flight, gateway boundary, answer retention, modal accessibility và xác nhận không mutate XP.
 
 ---
 
 ## 3. Lệnh Chạy Kiểm Thử
 
-Để chạy lại toàn bộ test suite bất kỳ lúc nào:
+Command chuẩn từ `package.json`:
 
 ```bash
-npx vitest run
+npm test -- --run
 ```
 
-Hoặc chạy giao diện kiểm thử trực quan:
+Kết quả Step 3.4:
+
+- Targeted suite: 5 files, 31/31 tests pass.
+- Full regression: 19 files, 101/101 tests pass.
+
+Máy xác minh ngày 21/08/2026 có global npm bị thiếu `npm-cli.js`; suite đã được chạy bằng local executable mà không cài package:
 
 ```bash
-npm run test:ui
+node ./node_modules/vitest/vitest.mjs run
 ```
+
+## 4. Warnings
+
+- React Router v6 phát cảnh báo future flags cho v7.
+- `PageStatus.test.jsx` phát một cảnh báo state update trong `AuthProvider` chưa được bọc `act(...)`.
+- Hai cảnh báo trên không làm test fail và nằm ngoài phạm vi Step 3.4.

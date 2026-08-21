@@ -1,16 +1,17 @@
 # Trạng Thái Dự Án Avi-Mystery
 
-> **Cập nhật lần cuối:** 20/08/2026  
-> **Người thực hiện:** Senior Frontend Developer, Software Architect & QA Lead
+> **Cập nhật lần cuối:** 21/08/2026
+> **Nguồn trạng thái task:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md)
 
 ---
 
 ## 1. Tổng Quan Tiến Độ Sprint 3
 
 * **Sprint Hiện Tại:** Sprint 3 — Excel Vertical Slice
-* **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ hiển thị bảng tính, chọn ô, nhập công thức, tính toán qua Formula Engine Adapter, kiểm tra câu trả lời và tự động tính điểm.
-* **Step Vừa Hoàn Thành:** Step 3.1 — Excel Mission Shell (`LRN-EXCEL-001`).
-* **Trạng Thái Sprint:** Đang triển khai (Hoàn thành Step 3.1 Excel Mission Shell, chuẩn bị chuyển sang Step 3.2 Spreadsheet Grid & Formula Bar).
+* **Sprint Goal:** Hoàn thiện một Excel learning vertical slice với workspace, evaluator, submission orchestration và feedback có boundary ổn định.
+* **Step đã hoàn thành:** Step 3.0–3.4.
+* **Step vừa đóng:** Step 3.4 — Submission & Feedback (`LRN-SUB`).
+* **Trạng thái Sprint:** `DONE`; Sprint 4 chưa được kích hoạt.
 
 ---
 
@@ -18,14 +19,17 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner (`LRN`)** | `Primary` | Trang làm bài Excel Workspace (`/missions/:missionId/workspace`), Spreadsheet Grid & Formula Bar | `IN_PROGRESS` (Step 3.1 Shell Done) |
+| **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Workspace, Spreadsheet Grid, Formula Bar, Run/Reset/Hint | `DONE` |
+| **Submission (`LRN-SUB`)** | `Primary` | Shared contract, mock orchestration, feedback, retry và async guards | `DONE` |
 | **Admin (`ADM`)** | `None` | Giữ nguyên App Shell, Quản lý trạng thái trang trong Cài đặt | `NO_CHANGE` |
-| **Shared (`SHR`)** | `Primary` | Formula Engine Adapter & Excel Answer Checker (`excelChecker.js`) | `DONE` (Checker ready) |
-| **Backend (`BE`)** | `Supporting` | Mock Dataset Service & Submission Service | `IN_PROGRESS` (`getDataset` Done) |
+| **Shared (`SHR`)** | `Supporting` | Contract/gateway và Excel Answer Checker | `DONE` cho Sprint 3 |
+| **Backend (`BE`)** | `None` | FastAPI/PostgreSQL/API integration | `PLANNED` cho Sprint 7 |
 
 ---
 
 ## 3. Feature Coverage Matrix
+
+Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; không có nghĩa backend FastAPI đã tồn tại. Ownership hiện hành nằm tại [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md).
 
 | ID | Area | Module | Feature | Sprint | Status | Test | Evidence |
 |---|---|---|---|---|---|---|---|
@@ -44,20 +48,16 @@
 | `LRN-MAP-001` | `LRN` | Map | Bản đồ học tập dạng Node/Tree (`LearningMapPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/LearningMapPage.jsx` |
 | `LRN-MISSION-001` | `LRN` | Mission | Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/MissionIntroPage.jsx` |
 | `SHR-EXCEL-CHECKER-001` | `SHR` | Excel | Bộ chấm điểm công thức Excel Answer Checker (`excelChecker.js`) | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.js` |
-| `SHR-AUDIT-003` | `SHR` | Audit | Step 3.0 Transition Audit (Kiểm tra điều kiện gate Sprint 2) | Sprint 3 | `DONE` | Pass | 58/58 tests passed across 11 test suites |
-| `LRN-EXCEL-001` | `LRN` | Mission | Step 3.1 Excel Mission Shell (`ExcelMissionPage.jsx` `/missions/:missionId/workspace`) | Sprint 3 | `DONE` | Pass | 62/62 tests passed across 12 test suites |
+| `SHR-AUDIT-003` | `SHR` | Audit | Step 3.0 Transition Audit và Excel checker | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.test.js` |
+| `LRN-EXCEL-001` | `LRN-EXCEL` | Mission | Step 3.1 Excel Mission Shell (`/missions/:missionId/workspace`) | Sprint 3 | `DONE` | Pass | `src/pages/learner/ExcelMissionPage.test.jsx` |
+| `LRN-EXCEL-002` | `LRN-EXCEL` | Workspace | Step 3.2 Grid/Formula Bar và Step 3.3 Toolbar/Hints | Sprint 3 | `DONE` | Pass | `src/components/excel/*.test.jsx` |
+| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | 31 targeted; 101 regression pass | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
 
 ---
 
-## 4. Kết Luận Tiến Độ Step 3.1 (Excel Mission Shell)
+## 4. Step 3.4 Completion Summary
 
-* **Phần đã hoàn thành:** 
-  - Khởi tạo tệp mock dataset `src/mocks/data/datasets.json` cho vụ án Sales Orders & Customers.
-  - Bổ sung `getDataset(datasetId)` vào `mockMissionService.js` kèm bộ test unit 100% pass.
-  - Xây dựng component `ExcelMissionPage.jsx` với giao diện hai cột (Hồ sơ vụ án MissionPanel & Không gian bảng tính Spreadsheet Workspace).
-  - Đăng ký route `/missions/:missionId/workspace` trong AppRouter được bảo vệ bởi RBAC guards (`RequireAuth`, `RequireLearner`).
-  - Liên kết nút "Bắt đầu điều tra ngay" từ `MissionIntroPage` tới không gian làm bài Excel Workspace.
-  - Viết bộ test component `ExcelMissionPage.test.jsx` với 100% test cases pass.
-* **Kế hoạch Step tiếp theo:** Step 3.2 — Spreadsheet Grid & Formula Bar (`LRN-EXCEL-002`).
-
-
+* **Đã hoàn thành:** shared contract/gateway, async mock, structured errors, retry, double-submit/replay guard, unmount cleanup, answer retention, inline incorrect/error và accessible success modal.
+* **Boundary:** Submission trả `potentialXp` nhưng không cập nhật XP/level; reward thuộc Progress Sprint 5.
+* **Validation:** 5 targeted files với 31/31 tests và full regression 19 files với 101/101 tests pass.
+* **Tiếp theo:** chỉ chuẩn bị Sprint 4 sau khi một Current Task mới được người dùng kích hoạt.

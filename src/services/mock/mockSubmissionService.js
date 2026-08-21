@@ -1,121 +1,223 @@
 import missionsData from '../../mocks/data/missions.json';
 import { checkExcelAnswer } from '../../utils/excelChecker.js';
 import { storage } from '../../utils/storage.js';
+import {
+  SUBMISSION_ERROR_CODES,
+  SUBMISSION_FEEDBACK_CODES,
+  SUBMISSION_MODES,
+  SUBMISSION_TOOLS,
+} from '../contracts/submissionService.js';
 
-const DELAY = 0;
-function delay(ms = DELAY) {
-  if (ms === 0) return Promise.resolve();
+const SUBMISSIONS_KEY = 'submission_history';
+const DEFAULT_DELAY_MS = 25;
+
+export const MOCK_SUBMISSION_FAILURES = Object.freeze({
+  SERVICE_ERROR: 'service_error',
+  TIMEOUT: 'timeout',
+});
+
+// MVP Step 3.4 supports one verified Excel vertical slice. Missions without a
+// checker config fail explicitly instead of silently using another mission's answer.
+const EXCEL_CHECKER_CONFIG = Object.freeze({
+  'mission-001': Object.freeze({
+    expectedFormula: Object.freeze(['=C2*D2', '=D2*C2', '=PRODUCT(C2,D2)']),
+    expectedValue: 450000,
+  }),
+});
+
+function delay(ms) {
+  if (ms <= 0) return Promise.resolve();
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const SUBMISSIONS_KEY = 'submission_history';
-const SESSION_KEY = 'session';
+function errorEnvelope(code, message, retryable = false) {
+  return {
+    data: null,
+    error: { code, message, retryable },
+  };
+}
 
-export const mockSubmissionService = {
-  /**
-   * Chấm điểm bài nộp Excel Mission
-   * @param {Object} params
-   * @param {string} [params.userId] - Mã người dùng
-   * @param {string} params.missionId - Mã vụ án bài học
-   * @param {string} params.userFormula - Công thức do người học nhập
-   * @param {Object} [params.sheetData={}] - Dữ liệu bảng tính
-   * @param {number} [params.hintsUnlockedCount=0] - Số gợi ý đã mở khóa
-   */
-  async submitExcelMission({ userId, missionId, userFormula, sheetData = {}, hintsUnlockedCount = 0 }) {
-    await delay();
+function validateRequest(request) {
+  if (!request || typeof request !== 'object') {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+      'Yêu cầu nộp bài không hợp lệ.'
+    );
+  }
 
-    const mission = missionsData.find((m) => m.id === missionId);
-    if (!mission) {
-      return { data: null, error: `Không tìm thấy bài học "${missionId}".` };
-    }
-    const starterContent = mission.starterContent || {};
+  if (!Object.values(SUBMISSION_MODES).includes(request.mode)) {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+      'Submission mode phải là "run" hoặc "submit".'
+    );
+  }
 
-    // Xác định expected formula & expected value từ mission metadata
-    let expectedFormula = starterContent.expectedFormula || '=C2*D2';
-    if (missionId === 'mission-001') {
-      expectedFormula = ['=C2*D2', '=D2*C2', '=PRODUCT(C2,D2)'];
-    }
-    const expectedValue = starterContent.expectedValue !== undefined ? starterContent.expectedValue : 450000;
+  if (!request.missionId || typeof request.missionId !== 'string') {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+      'missionId là bắt buộc.'
+    );
+  }
 
-    // Chấm điểm công thức bằng excelChecker
-    const checkResult = checkExcelAnswer({
-      userFormula,
-      expectedFormula,
-      expectedValue,
-      sheetData,
-    });
+  if (!request.clientAttemptId || typeof request.clientAttemptId !== 'string') {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+      'clientAttemptId là bắt buộc.'
+    );
+  }
 
-    const isCorrect = checkResult.isCorrect;
-    const baseXp = mission.rewardXp || 100;
-    const hintPenalty = hintsUnlockedCount * 15;
-    const netXp = isCorrect ? Math.max(0, baseXp - hintPenalty) : 0;
+  if (request.tool !== SUBMISSION_TOOLS.EXCEL) {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.UNSUPPORTED_TOOL,
+      `Công cụ "${request.tool || 'unknown'}" chưa được hỗ trợ trong Step 3.4.`
+    );
+  }
 
-    let userLevelUp = false;
-    let updatedUser = null;
+  if (
+    !request.answer ||
+    typeof request.answer !== 'object' ||
+    typeof request.answer.formula !== 'string' ||
+    !request.answer.formula.trim()
+  ) {
+    return errorEnvelope(
+      SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+      'Vui lòng nhập công thức Excel trước khi nộp bài.'
+    );
+  }
 
-    if (isCorrect) {
-      // Cập nhật XP người dùng trong LocalStorage Session
-      const currentUser = storage.get(SESSION_KEY);
-      if (currentUser) {
-        const newXp = (currentUser.xp || 0) + netXp;
-        let newLevel = currentUser.level || 1;
-        let xpNext = currentUser.xpToNextLevel || 1000;
+  return null;
+}
 
-        if (newXp >= xpNext) {
-          newLevel += 1;
-          xpNext = newLevel * 1000;
-          userLevelUp = true;
-        }
+/**
+ * Factory exposes deterministic delay/failure seams for tests while keeping the
+ * public adapter interface identical to the future API client.
+ */
+export function createMockSubmissionService({
+  delayMs = DEFAULT_DELAY_MS,
+  failureMode = null,
+} = {}) {
+  const inFlightAttemptIds = new Set();
+  const completedResponses = new Map();
 
-        updatedUser = {
-          ...currentUser,
-          xp: newXp,
-          level: newLevel,
-          xpToNextLevel: xpNext,
-        };
+  return {
+    async submit(request) {
+      const validationError = validateRequest(request);
+      if (validationError) return validationError;
 
-        storage.set(SESSION_KEY, updatedUser);
+      const { clientAttemptId } = request;
+      if (completedResponses.has(clientAttemptId)) {
+        return completedResponses.get(clientAttemptId);
       }
 
-      // Lưu lịch sử bài nộp
-      const submissions = storage.get(SUBMISSIONS_KEY) || [];
-      const newSubmission = {
-        id: `sub-${Date.now()}`,
-        userId: userId || currentUser?.id || 'guest',
-        missionId,
-        userFormula,
-        isCorrect: true,
-        netXp,
-        submittedAt: new Date().toISOString(),
-      };
-      submissions.push(newSubmission);
-      storage.set(SUBMISSIONS_KEY, submissions);
-    }
+      if (inFlightAttemptIds.has(clientAttemptId)) {
+        return errorEnvelope(
+          SUBMISSION_ERROR_CODES.DUPLICATE_ATTEMPT,
+          'Lượt nộp bài này đang được xử lý.',
+          false
+        );
+      }
 
-    return {
-      data: {
-        isCorrect,
-        score: checkResult.score,
-        netXp,
-        baseXp,
-        hintPenalty,
-        userLevelUp,
-        updatedUser,
-        feedback: checkResult.feedback,
-        userFormulaNormalized: checkResult.userFormulaNormalized,
-        missionTitle: mission.title,
-      },
-      error: null,
-    };
-  },
+      inFlightAttemptIds.add(clientAttemptId);
 
-  /**
-   * Lấy lịch sử nộp bài của người dùng
-   */
-  async getSubmissionHistory(userId) {
-    await delay(100);
-    const submissions = storage.get(SUBMISSIONS_KEY) || [];
-    const userSubs = submissions.filter((s) => s.userId === userId);
-    return { data: userSubs, error: null };
-  },
-};
+      try {
+        await delay(delayMs);
+
+        if (failureMode === MOCK_SUBMISSION_FAILURES.SERVICE_ERROR) {
+          return errorEnvelope(
+            SUBMISSION_ERROR_CODES.SERVICE_UNAVAILABLE,
+            'Dịch vụ nộp bài tạm thời không khả dụng.',
+            true
+          );
+        }
+
+        if (failureMode === MOCK_SUBMISSION_FAILURES.TIMEOUT) {
+          return errorEnvelope(
+            SUBMISSION_ERROR_CODES.TIMEOUT,
+            'Yêu cầu nộp bài đã hết thời gian chờ.',
+            true
+          );
+        }
+
+        const mission = missionsData.find((item) => item.id === request.missionId);
+        if (!mission) {
+          return errorEnvelope(
+            SUBMISSION_ERROR_CODES.MISSION_NOT_FOUND,
+            `Không tìm thấy bài học "${request.missionId}".`
+          );
+        }
+
+        const checkerConfig = EXCEL_CHECKER_CONFIG[request.missionId];
+        if (!checkerConfig) {
+          return errorEnvelope(
+            SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
+            `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+          );
+        }
+
+        const checkResult = checkExcelAnswer({
+          userFormula: request.answer.formula,
+          expectedFormula: checkerConfig.expectedFormula,
+          expectedValue: checkerConfig.expectedValue,
+          sheetData: request.answer.sheetData || {},
+        });
+
+        const isOfficialSubmit = request.mode === SUBMISSION_MODES.SUBMIT;
+        const isCompleted = isOfficialSubmit && checkResult.isCorrect;
+        const hintsUsed = Math.max(0, Number(request.hintsUsed) || 0);
+        const hintPenalty = hintsUsed * 15;
+        const potentialXp = isCompleted
+          ? Math.max(0, (mission.rewardXp || 0) - hintPenalty)
+          : 0;
+        const attemptId = `attempt-${clientAttemptId}`;
+
+        const response = {
+          data: {
+            attemptId,
+            isCorrect: checkResult.isCorrect,
+            score: checkResult.score,
+            stepCompleted: isCompleted,
+            missionCompleted: isCompleted,
+            potentialXp,
+            feedbackCode: checkResult.isCorrect
+              ? isOfficialSubmit
+                ? SUBMISSION_FEEDBACK_CODES.CORRECT_ANSWER
+                : SUBMISSION_FEEDBACK_CODES.RUN_CORRECT
+              : isOfficialSubmit
+                ? SUBMISSION_FEEDBACK_CODES.INCORRECT_ANSWER
+                : SUBMISSION_FEEDBACK_CODES.RUN_INCORRECT,
+            feedback: checkResult.feedback,
+          },
+          error: null,
+        };
+
+        if (isOfficialSubmit) {
+          const submissions = storage.get(SUBMISSIONS_KEY) || [];
+          submissions.push({
+            attemptId,
+            clientAttemptId,
+            missionId: request.missionId,
+            stepId: request.stepId || null,
+            tool: request.tool,
+            mode: request.mode,
+            isCorrect: checkResult.isCorrect,
+            score: checkResult.score,
+            submittedAt: new Date().toISOString(),
+          });
+          storage.set(SUBMISSIONS_KEY, submissions);
+        }
+
+        completedResponses.set(clientAttemptId, response);
+        return response;
+      } finally {
+        inFlightAttemptIds.delete(clientAttemptId);
+      }
+    },
+
+    async getSubmissionHistory() {
+      await delay(delayMs);
+      return { data: storage.get(SUBMISSIONS_KEY) || [], error: null };
+    },
+  };
+}
+
+export const mockSubmissionService = createMockSubmissionService();

@@ -63,6 +63,8 @@ describe('ActionToolbar Component Tests (Step 3.3)', () => {
     );
 
     expect(screen.getByRole('button', { name: /Chạy thử công thức/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Đang chấm điểm/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /Gợi ý/i })).toBeDisabled();
     expect(screen.getByRole('button', { name: /Đặt lại/i })).toBeDisabled();
     expect(screen.getByText(/Đang chấm điểm/i)).toBeInTheDocument();
   });

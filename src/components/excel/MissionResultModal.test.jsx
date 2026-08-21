@@ -1,17 +1,33 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MissionResultModal } from './MissionResultModal.jsx';
 
 describe('MissionResultModal Component Tests (Step 3.4)', () => {
   it('không render khi isOpen = false', () => {
     const { container } = render(
-      <MissionResultModal isOpen={false} result={{ isCorrect: true }} onClose={vi.fn()} />
+      <MissionResultModal
+        isOpen={false}
+        result={{ isCorrect: true, missionCompleted: true }}
+        onClose={vi.fn()}
+      />
     );
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('hiển thị popup Phá Án Thành Công với điểm XP khi kết quả đúng', () => {
+  it('không render modal cho incorrect answer', () => {
+    render(
+      <MissionResultModal
+        isOpen={true}
+        result={{ isCorrect: false, missionCompleted: false, feedback: 'Chưa đúng' }}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('hiển thị success modal với potentialXp chưa được trao', () => {
     const handleClose = vi.fn();
     const handleNext = vi.fn();
 
@@ -20,51 +36,62 @@ describe('MissionResultModal Component Tests (Step 3.4)', () => {
         isOpen={true}
         result={{
           isCorrect: true,
-          netXp: 85,
-          baseXp: 100,
-          hintPenalty: 15,
-          userLevelUp: true,
-          updatedUser: { level: 2 },
+          stepCompleted: true,
+          missionCompleted: true,
+          potentialXp: 85,
           feedback: 'Công thức hoàn toàn chính xác!',
-          missionTitle: 'Vì sao doanh thu tháng 3 giảm?',
         }}
+        missionTitle="Vì sao doanh thu tháng 3 giảm?"
         onClose={handleClose}
         onNextMission={handleNext}
       />
     );
 
     expect(screen.getByText(/Chúc Mừng Trinh Thám!/i)).toBeInTheDocument();
-    expect(screen.getByText('+85 XP')).toBeInTheDocument();
-    expect(screen.getByText(/THĂNG CẤP MỚI! Bạn đã đạt Cấp 2/i)).toBeInTheDocument();
+    expect(screen.getByText(/Phần thưởng dự kiến: \+85 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/XP chưa được trao trong Step 3.4/i)).toBeInTheDocument();
     expect(screen.getByText('Công thức hoàn toàn chính xác!')).toBeInTheDocument();
+    expect(screen.queryByText(/THĂNG CẤP/i)).not.toBeInTheDocument();
 
-    // Bấm nút bài học tiếp theo
-    fireEvent.click(screen.getByRole('button', { name: /Bài học tiếp theo/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Về bản đồ học tập/i }));
     expect(handleNext).toHaveBeenCalledTimes(1);
   });
 
-  it('hiển thị popup Chưa Thể Phá Án khi công thức nhập sai', () => {
-    const handleRetry = vi.fn();
+  it('focus dialog, đóng bằng Escape và trả focus về trigger', async () => {
+    const handleClose = vi.fn();
+    const result = {
+      isCorrect: true,
+      stepCompleted: true,
+      missionCompleted: true,
+      potentialXp: 100,
+      feedback: 'Chính xác',
+    };
+    const { rerender } = render(
+      <>
+        <button type="button">Nộp bài</button>
+        <MissionResultModal isOpen={false} result={result} onClose={handleClose} />
+      </>
+    );
+    const trigger = screen.getByRole('button', { name: /Nộp bài/i });
+    trigger.focus();
 
-    render(
-      <MissionResultModal
-        isOpen={true}
-        result={{
-          isCorrect: false,
-          netXp: 0,
-          feedback: 'Công thức Excel phải bắt đầu bằng dấu "="',
-          missionTitle: 'Vì sao doanh thu tháng 3 giảm?',
-        }}
-        onClose={vi.fn()}
-        onRetry={handleRetry}
-      />
+    rerender(
+      <>
+        <button type="button">Nộp bài</button>
+        <MissionResultModal isOpen={true} result={result} onClose={handleClose} />
+      </>
     );
 
-    expect(screen.getByText(/Chưa Thể Phá Án/i)).toBeInTheDocument();
-    expect(screen.getByText('Công thức Excel phải bắt đầu bằng dấu "="')).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('dialog')).toHaveFocus());
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(handleClose).toHaveBeenCalledTimes(1);
 
-    // Bấm nút thử lại
-    fireEvent.click(screen.getByRole('button', { name: /Thử lại công thức/i }));
-    expect(handleRetry).toHaveBeenCalledTimes(1);
+    rerender(
+      <>
+        <button type="button">Nộp bài</button>
+        <MissionResultModal isOpen={false} result={result} onClose={handleClose} />
+      </>
+    );
+    await waitFor(() => expect(screen.getByRole('button', { name: /Nộp bài/i })).toHaveFocus());
   });
 });

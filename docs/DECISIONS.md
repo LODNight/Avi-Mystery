@@ -4,7 +4,7 @@
 
 ## ADR-001: Lựa Chọn Stack Frontend (React + Vite + Tailwind CSS + Vitest)
 
-* **Bối cảnh:** Dự án Avi-Farm (DataQuest) đòi hỏi giao diện học tập tương tác cao, mượt mà và linh hoạt trong thiết kế game hóa.
+* **Bối cảnh:** Dự án Avi-Mystery đòi hỏi giao diện học tập tương tác cao, mượt mà và linh hoạt trong thiết kế game hóa.
 * **Quyết định:**
   - Sử dụng React 18 & Vite cho tốc độ build và Hot Module Replacement (HMR) cực nhanh.
   - Sử dụng Vanilla Tailwind CSS 3 cho Design System phong cách Detective Amber.
@@ -21,6 +21,7 @@
   - Triển khai **Mock Adapters** trả về cấu trúc dữ liệu chuẩn domain models kèm giả lập độ trễ mạng (`delay(300ms)`).
   - Cung cấp cổng chuyển đổi tập trung `src/services/index.js` điều khiển bằng biến `USE_MOCK`.
 * **Lý do:** Cho phép đổi sang kết nối API Backend thật (`USE_MOCK = false`) mà **không cần sửa bất kỳ file JSX UI nào**.
+* **Compliance hiện tại:** Step 3.4 đã tuân thủ quyết định: `ExcelMissionPage.jsx` gọi `missionService`/`submissionService` qua gateway; shared submission contract và mock adapter dùng cùng public interface. API thật vẫn thuộc Sprint 7.
 
 ---
 
@@ -41,3 +42,9 @@
   - Sử dụng Skeleton loaders giữ nguyên khung bố cục (Layout Geometry) thay vì Spinner xoay đơn điệu.
   - Gắn thuộc tính `aria-busy="true"` vào vùng container đang thực hiện fetch dữ liệu.
 * **Lý do:** Đạt tiêu chuẩn Accessibility (a11y) và chống giật giật giao diện (Layout Shift).
+
+---
+
+## Agent-facing Decisions
+
+Các quyết định scope/contract mới hơn — gồm Submission không trao XP, inline feedback và quy tắc module Planned — được duy trì tại [`agent/DECISIONS.md`](./agent/DECISIONS.md). File này giữ lịch sử kiến trúc; `agent/CURRENT_TASK.md` giữ trạng thái task hiện tại.

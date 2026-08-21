@@ -1,7 +1,9 @@
-# Lộ Trình Phát Triển Dự Án Avi-Farm (DataQuest)
+# Lộ Trình Phát Triển Dự Án Avi-Mystery
 
 > **Định hướng chiến lược:** Phát triển dự án theo mô hình Vertical Slice & Iterative Sprints. Ưu tiên hoàn thiện các luồng nghiệp vụ lõi (Excel & SQL practice, Game progress) trước khi tích hợp Backend thật và mở rộng tính năng nâng cao.
 > Các khu vực hệ thống bao gồm: `LRN` (Learner App), `ADM` (Admin App), `SHR` (Shared UI/Logic), `BE` (Backend & Mock Services).
+>
+> **Nguồn trạng thái thực thi:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Roadmap chỉ mô tả thứ tự và mục tiêu; không cho phép agent tự chuyển Sprint/Step.
 
 ---
 
@@ -48,33 +50,37 @@
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice (ĐANG THỰC HIỆN)
+## 🟢 Sprint 3 — Excel Vertical Slice (HOÀN THÀNH)
 
 * **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
-* **Primary Focus Area:** `LRN` (Learner App - Excel Workspace) & `SHR` (Excel Answer Checker)
-* **Supporting Focus Area:** `BE` (Mock Submission Service)
-* **Modules Affected:** Excel Workspace, Submission Checker
+* **Primary Focus Area hiện tại:** `LRN-SUB` (Submission & Feedback)
+* **Supporting Focus Area:** `SHR` (contract/gateway, mặc định read-only ngoài path được duyệt)
+* **Modules Affected:** `LRN-EXCEL`, `LRN-SUB`, `SHR`
 * **Learner Features:**
-  * Spreadsheet Grid tương tác & Formula Bar (`LRN-EXCEL-001`) — **IN_PROGRESS**.
-  * Thanh công cụ tương tác: Run, Submit, Reset, Hint (`LRN-EXCEL-002`) — **TODO**.
+  * Step 3.0 — Transition audit và Excel Answer Checker — **DONE**.
+  * Step 3.1 — Excel Mission Shell và dataset — **DONE**.
+  * Step 3.2 — Spreadsheet Grid và Formula Bar — **DONE**.
+  * Step 3.3 — Run, Reset, Hint và Action Toolbar — **DONE**.
+  * Step 3.4 — Submission contract, async flow và feedback — **DONE**.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
 * **Shared / Backend Features:**
   * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
-  * Mock Submission Service xử lý nộp bài (`BE-SUB-001`) — **TODO**.
-* **Out of Scope:** SQL Sandbox, Chỉnh sửa bài tập Admin.
-* **Exit Criteria:** 1 nhiệm vụ Excel mẫu chạy hoàn chỉnh từ A đến Z kèm test tự động.
+  * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
+  * Submission contract dùng chung và gateway export — **DONE**.
+* **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
+* **Exit Criteria:** **ĐẠT** — shared contract; đúng/sai/service error/retry rõ ràng; không double submit; giữ answer khi sai; Submission không trực tiếp trao XP; 101/101 regression tests pass.
 
 ---
 
-## ⚪ Sprint 4 — SQL Vertical Slice
+## ⚪ Sprint 4 — SQL Vertical Slice (CHƯA KÍCH HOẠT)
 
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser và tự động kiểm tra kết quả truy vấn.
-* **Primary Focus Area:** `LRN` (Learner App - SQL Workspace) & `SHR` (SQL Result Checker)
-* **Supporting Focus Area:** `BE` (In-Browser SQL Sandbox Engine)
-* **Modules Affected:** SQL Workspace, SQL Engine
+* **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
+* **Supporting Focus Area:** `SHR` và `LRN-SUB`
+* **Modules Affected:** SQL Workspace, SQL Engine, Submission Contract
 * **Learner Features:** Code Editor SQL syntax highlighting, Schema Browser & SQL Result Viewer.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
-* **Shared / Backend Features:** SQL Engine (WebAssembly SQLite) & SQL Result Checker.
+* **Shared Features:** SQL Engine adapter/Worker, result checker và integration với generic submission contract.
 * **Out of Scope:** Quản lý datasets backend PostgreSQL thật.
 * **Exit Criteria:** 1 nhiệm vụ SQL mẫu chạy hoàn chỉnh từ A đến Z kèm test tự động.
 
@@ -83,8 +89,8 @@
 ## ⚪ Sprint 5 — Game Progress System
 
 * **Sprint Goal:** Tích hợp cơ chế game hóa (XP, Leveling, Unlock Bài mới, Phạt Hint) để tạo động lực cho Người học.
-* **Primary Focus Area:** `LRN` (Progress & Profile)
-* **Supporting Focus Area:** `BE` (User Progress Service)
+* **Primary Focus Area:** `GAME` (Progress & Profile)
+* **Supporting Focus Area:** `SHR` và `LRN-SUB`; backend authority chỉ đến Sprint 7.
 
 ---
 
@@ -105,4 +111,4 @@
 ## ⚪ Sprint 8 — Analytics, Hardening & Launch
 
 * **Sprint Goal:** Tối ưu hóa hiệu năng, bảo mật, báo cáo Admin Analytics và phát hành sản phẩm.
-* **Primary Focus Area:** `SHR` & `ADM`
+* **Primary Focus Area:** `ANL`, hỗ trợ bởi `ADM`, frontend và `BE`.

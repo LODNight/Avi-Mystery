@@ -1,7 +1,8 @@
 # Bảng Theo Dõi Tiến Độ Chi Tiết Theoừng Step — Avi-Mystery
 
-> **Cập nhật lần cuối:** 20/08/2026  
+> **Cập nhật lần cuối:** 21/08/2026
 > **Mô tả:** Bảng danh mục công việc chi tiết chia theo từng Step cho toàn bộ 8 Sprint của dự án **Avi-Mystery**.
+> **Nguồn trạng thái task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md).
 
 ---
 
@@ -45,23 +46,23 @@
 
 ### 🔹 Step 2.4: Đổi Tên Thương Hiệu & Kiểm Thử Toàn Hệ Thống
 - [x] Đổi tên thương hiệu dự án từ DataQuest thành **Avi-Mystery** trên toàn hệ thống UI, CSS & Tài liệu
-- [x] Cập nhật bộ test suite đảm bảo 100% test pass (58/58 test cases)
+- [x] Cập nhật bộ test suite và xác minh regression tại thời điểm hoàn thành Sprint 2
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice *(Đang thực hiện - 90%)*
+## 🟢 Sprint 3 — Excel Vertical Slice *(Hoàn thành 100%)*
 
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
 - [x] Xây dựng bộ chấm công thức `excelChecker.js` (Chuẩn hóa công thức, so sánh kết quả & hàm tính toán SUM, AVERAGE, MIN, MAX)
-- [x] Viết bộ test unit cho `excelChecker.test.js` (13/13 tests pass)
+- [x] Viết bộ test unit cho `excelChecker.test.js` (hiện có 14 test)
 
 ### 🔹 Step 3.1: Excel Mission Shell & Kết Nối Dataset *(HOÀN THÀNH)*
 - [x] Khởi tạo tệp mock dataset `datasets.json` cho vụ án Sales Orders & Customers
 - [x] Bổ sung `getDataset(datasetId)` vào `mockMissionService.js` kèm bộ test unit
 - [x] Xây dựng Màn hình `ExcelMissionPage.jsx` (`/missions/:missionId/workspace`) với Hồ sơ vụ án & Bảng xem trước dữ liệu (Dataset Preview Table)
 - [x] Đăng ký tuyến đường điều hướng chuẩn xác từ `MissionIntroPage`, `DashboardPage` & `LearningMapPage`
-- [x] Viết bộ test component `ExcelMissionPage.test.jsx` (100% pass, nâng tổng test lên 62/62)
+- [x] Viết bộ test component cho `ExcelMissionPage.jsx`
 
 ### 🔹 Step 3.2: Spreadsheet Grid Component & Formula Bar *(HOÀN THÀNH)*
 - [x] Xây dựng component `SpreadsheetGrid.jsx` hỗ trợ hiển thị lưới ô A1, B1, C1...
@@ -72,17 +73,22 @@
 ### 🔹 Step 3.3: Thanh Công Cụ Thao Tác & Hệ Thống Gợi Ý *(HOÀN THÀNH)*
 - [x] Nút Chạy thử công thức (`Run / Evaluate`) hiển thị kết quả tính toán ngay tại ô
 - [x] Nút Nộp bài (`Submit Answer`) để gửi bài làm sang bộ kiểm tra
-- [x] Hệ thống Gợi ý từng bước (`Step-by-step Hints`) kèm trừ điểm XP
+- [x] Hệ thống Gợi ý từng bước (`Step-by-step Hints`) hiển thị mức giảm phần thưởng dự kiến; chưa trao XP
 - [x] Nút Đặt lại dữ liệu ban đầu (`Reset Grid`)
 
-### 🔹 Step 3.4: Mock Submission Service & Popup Kết Quả *(HOÀN THÀNH)*
-- [x] Xây dựng `mockSubmissionService.js` xử lý nộp bài bất đồng bộ
-- [x] Popup thông báo kết quả Đúng/Sai (`Success/Failure Result Modal`)
-- [x] Tự động cộng điểm thưởng XP vào tài khoản học viên khi hoàn thành bài học thành công
+### 🔹 Step 3.4: Submission & Feedback *(HOÀN THÀNH)*
+- [x] Tạo shared `submissionService` contract và export qua service gateway
+- [x] Mock và API placeholder giữ cùng public interface; UI không import mock adapter trực tiếp
+- [x] Phân biệt `run` và `submit`; component không giữ expected answer
+- [x] Incorrect/validation dùng inline feedback; success modal chỉ cho completion
+- [x] Service error có Retry và không làm mất answer
+- [x] Chặn double submit, replay theo `clientAttemptId` và cleanup an toàn khi unmount
+- [x] Chỉ trả `potentialXp`; Submission không trực tiếp cập nhật XP/level
+- [x] Targeted suite 31/31 và full regression 101/101 tests pass
 
 ---
 
-## ⚪ Sprint 4 — SQL Vertical Slice *(Sắp thực hiện)*
+## ⚪ Sprint 4 — SQL Vertical Slice *(Chưa kích hoạt)*
 
 ### 🔹 Step 4.1: In-Browser SQL Engine & Schema Browser
 - [ ] Tích hợp trình quản lý SQL WebAssembly (SQLite) chạy trực tiếp trên trình duyệt

@@ -1,9 +1,11 @@
 # Dự Án Avi-Mystery — Backlog
 
 > **Quy tắc đặt mã Task:** `[AREA]-[MODULE]-[NUMBER]` (Ví dụ: `LRN-COURSE-001`, `ADM-MISSION-001`, `SHR-AUTH-001`, `BE-COURSE-001`).
+> Các ID `BE-*` của Sprint 1–2 là legacy IDs cho frontend mock adapters; ownership mới dùng [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md), trong đó `BE` dành cho Backend API Sprint 7.
 > **Quy tắc quản lý trạng thái:**
 > - `TODO`: Chưa bắt đầu.
 > - `IN_PROGRESS`: Đang thực hiện trong Sprint hiện tại.
+> - `PARTIAL`: Đã có code nhưng chưa đạt contract hoặc Acceptance Criteria hiện hành.
 > - `BLOCKED`: Đang bị tắc nghẽn do phụ thuộc.
 > - `DONE`: Đã hoàn thành và pass đầy đủ Acceptance Criteria & Test.
 
@@ -39,8 +41,11 @@
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
 | `SHR-EXCEL-CHECKER-001` | Bộ chấm điểm công thức Excel Answer Checker (`excelChecker.js`) | `SHR` | `High` | `DONE` | Chuẩn hóa cú pháp công thức, phân tích ô tính & chấm điểm tự động |
-| `LRN-EXCEL-001` | Trang làm bài Excel Workspace & Spreadsheet Grid (`/practice`) | `LRN` | `High` | `TODO` | Giao diện bảng tính interactive, Formula Bar & Cell Selector |
-| `BE-SUB-001` | Mock Submission Service & Xử lý nộp bài | `BE` | `Medium` | `TODO` | Service ghi nhận lượt nộp bài, tính XP thưởng và kết quả pass/fail |
+| `LRN-EXCEL-001` | Excel Mission Shell (`/missions/:missionId/workspace`) | `LRN-EXCEL` | `High` | `DONE` | Mission/dataset loading và learner workspace |
+| `LRN-EXCEL-002` | Spreadsheet Grid, Formula Bar và Toolbar | `LRN-EXCEL` | `High` | `DONE` | Cell state, formula input, Run/Reset/Hint và component tests |
+| `LRN-SUB-3.4` | Submission Contract & Feedback Flow | `LRN-SUB` | `High` | `DONE` | Shared contract/gateway; async mock; structured error/retry; duplicate/replay guard; inline feedback; success modal; không mutate XP; 31 targeted và 101 regression tests pass |
+
+Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đúng ownership. Backend thật vẫn thuộc Sprint 7.
 
 ---
 

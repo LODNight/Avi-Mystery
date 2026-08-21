@@ -47,7 +47,7 @@ export function ActionToolbar({
           onClick={onSubmit}
           disabled={isSubmitting}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md disabled:opacity-50 cursor-pointer w-full sm:w-auto"
-          title="Nộp kết quả bài làm để chấm điểm và nhận thưởng XP"
+          title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
         >
           {isSubmitting ? (
             <>
@@ -69,7 +69,8 @@ export function ActionToolbar({
         <button
           type="button"
           onClick={onToggleHint}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all shadow-xs cursor-pointer w-full sm:w-auto relative"
+          disabled={isSubmitting}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto relative"
           title="Xem gợi ý từng bước giải quyết vụ án"
         >
           <Lightbulb className="size-3.5 fill-amber-500/20" />

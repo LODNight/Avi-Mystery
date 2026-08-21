@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,9 +13,7 @@ import {
   HelpCircle,
   AlertCircle,
 } from 'lucide-react';
-import { mockMissionService } from '../../services/mock/mockMissionService.js';
-import { mockAuthService } from '../../services/mock/mockAuthService.js';
-import { mockSubmissionService } from '../../services/mock/mockSubmissionService.js';
+import { missionService, submissionService } from '../../services/index.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDuration } from '../../utils/format.js';
@@ -25,6 +23,11 @@ import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
 import { evaluateFormulaValue } from '../../utils/excelChecker.js';
+
+function createClientAttemptId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `client-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
 
 export function ExcelMissionPage() {
   const { missionId } = useParams();
@@ -44,6 +47,11 @@ export function ExcelMissionPage() {
   const [feedbackToast, setFeedbackToast] = useState(null);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionFeedback, setSubmissionFeedback] = useState(null);
+  const [submissionError, setSubmissionError] = useState(null);
+  const isMountedRef = useRef(true);
+  const submitInFlightRef = useRef(false);
+  const notificationTimerRef = useRef(null);
 
   // State quản lý Popup Kết quả nộp bài (Step 3.4)
   const [submissionResult, setSubmissionResult] = useState(null);
@@ -56,6 +64,16 @@ export function ExcelMissionPage() {
   const [cellValues, setCellValues] = useState({});
 
   useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (notificationTimerRef.current) {
+        clearTimeout(notificationTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
 
     async function loadMissionAndDataset() {
@@ -63,7 +81,7 @@ export function ExcelMissionPage() {
       setError(null);
 
       try {
-        const missionRes = await mockMissionService.getMission(missionId);
+        const missionRes = await missionService.getMission(missionId);
         if (!isMounted) return;
 
         if (missionRes.error || !missionRes.data) {
@@ -80,7 +98,7 @@ export function ExcelMissionPage() {
 
         // Load Dataset
         if (loadedMission.datasetId) {
-          const datasetRes = await mockMissionService.getDataset(loadedMission.datasetId);
+          const datasetRes = await missionService.getDataset(loadedMission.datasetId);
           if (!isMounted) return;
 
           if (datasetRes.error || !datasetRes.data) {
@@ -110,8 +128,9 @@ export function ExcelMissionPage() {
   // Xử lý thông báo tạm thời (Toast Notification)
   const showNotification = (type, message) => {
     setFeedbackToast({ type, message });
-    setTimeout(() => {
-      setFeedbackToast(null);
+    if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
+    notificationTimerRef.current = setTimeout(() => {
+      if (isMountedRef.current) setFeedbackToast(null);
     }, 4000);
   };
 
@@ -142,6 +161,8 @@ export function ExcelMissionPage() {
   // Xử lý khi gõ công thức vào FormulaBar
   const handleFormulaChange = (newFormula) => {
     setFormulaInput(newFormula);
+    setSubmissionFeedback(null);
+    setSubmissionError(null);
 
     setCellFormulas((prev) => ({
       ...prev,
@@ -204,6 +225,10 @@ export function ExcelMissionPage() {
     setCellFormulas({});
     setCellValues({});
     setFormulaInput('');
+    setSubmissionFeedback(null);
+    setSubmissionError(null);
+    setSubmissionResult(null);
+    setShowResultModal(false);
     const starterCell = mission?.starterContent?.targetCell || 'E2';
     setSelectedCell(starterCell);
     showNotification('info', 'Đã đặt lại toàn bộ bảng tính về trạng thái ban đầu.');
@@ -216,41 +241,63 @@ export function ExcelMissionPage() {
 
   // 4. Nộp bài vụ án (Submit Answer - Step 3.4)
   const handleSubmitAnswer = async () => {
+    if (submitInFlightRef.current) return;
+
     const starterCell = mission?.starterContent?.targetCell || 'E2';
     const userFormula = cellFormulas[starterCell] || formulaInput;
 
     if (!userFormula || !userFormula.trim()) {
-      showNotification('warning', `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`);
+      setSubmissionFeedback({
+        type: 'validation',
+        message: `Bạn chưa nhập công thức tính cho ô mục tiêu ${starterCell}.`,
+      });
       return;
     }
 
+    submitInFlightRef.current = true;
     setIsSubmitting(true);
+    setSubmissionFeedback(null);
+    setSubmissionError(null);
     handleFormulaSubmit();
 
     try {
-      const currentUser = await mockAuthService.getCurrentUser();
       const sheetData = getSheetDataMap();
 
-      const res = await mockSubmissionService.submitExcelMission({
-        userId: currentUser?.data?.id || 'guest',
+      const res = await submissionService.submit({
+        mode: 'submit',
         missionId,
-        userFormula,
-        sheetData,
-        hintsUnlockedCount,
+        tool: mission?.tool || 'excel',
+        answer: { formula: userFormula, sheetData },
+        hintsUsed: hintsUnlockedCount,
+        clientAttemptId: createClientAttemptId(),
       });
 
-      setIsSubmitting(false);
+      if (!isMountedRef.current) return;
 
-      if (res.data) {
+      if (res.error) {
+        setSubmissionError(res.error);
+        return;
+      }
+
+      if (res.data?.isCorrect && (res.data.stepCompleted || res.data.missionCompleted)) {
         setSubmissionResult(res.data);
         setShowResultModal(true);
       } else {
-        showNotification('error', res.error || 'Có lỗi xảy ra khi nộp bài.');
+        setSubmissionFeedback({
+          type: 'incorrect',
+          message: res.data?.feedback || 'Câu trả lời chưa chính xác. Hãy kiểm tra và thử lại.',
+        });
       }
-    } catch (_err) {
-      console.error('[ERROR handleSubmitAnswer]', _err);
-      setIsSubmitting(false);
-      showNotification('error', 'Không thể kết nối đến hệ thống nộp bài.');
+    } catch (submitError) {
+      if (!isMountedRef.current) return;
+      setSubmissionError({
+        code: 'SERVICE_UNAVAILABLE',
+        message: submitError?.message || 'Không thể kết nối đến hệ thống nộp bài.',
+        retryable: true,
+      });
+    } finally {
+      submitInFlightRef.current = false;
+      if (isMountedRef.current) setIsSubmitting(false);
     }
   };
 
@@ -282,7 +329,7 @@ export function ExcelMissionPage() {
 
   const starterCell = mission.starterContent?.targetCell || 'E2';
   const hintsData = mission.starterContent?.hints || mission.starterContent?.hint;
-  const netXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
+  const potentialXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12">
@@ -323,10 +370,10 @@ export function ExcelMissionPage() {
             <ChevronDown className={`size-4 transition-transform duration-200 ${showBriefing ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* XP Badge */}
+          {/* Potential XP preview; Submission does not award XP in Sprint 3.4. */}
           <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
             <Award className="size-4" />
-            <span>+{netXp} XP</span>
+            <span>Dự kiến +{potentialXp} XP</span>
             {hintsUnlockedCount > 0 && (
               <span className="text-[10px] text-rose-500 font-semibold">(-{hintsUnlockedCount * 15})</span>
             )}
@@ -406,6 +453,42 @@ export function ExcelMissionPage() {
           onSubmit={handleFormulaSubmit}
           isTargetCell={selectedCell === starterCell}
         />
+
+        {submissionFeedback && (
+          <div
+            role="status"
+            className={`flex items-start gap-2 rounded-xl border px-3.5 py-3 text-sm font-semibold ${
+              submissionFeedback.type === 'validation'
+                ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                : 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+            }`}
+          >
+            <AlertCircle className="mt-0.5 size-4 shrink-0" />
+            <span>{submissionFeedback.message}</span>
+          </div>
+        )}
+
+        {submissionError && (
+          <div
+            role="alert"
+            className="flex flex-col gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-sm font-semibold text-rose-700 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-2">
+              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <span>{submissionError.message}</span>
+            </div>
+            {submissionError.retryable && (
+              <button
+                type="button"
+                onClick={handleSubmitAnswer}
+                disabled={isSubmitting}
+                className="shrink-0 rounded-lg border border-current px-3 py-1.5 text-xs font-bold hover:bg-rose-500/10 disabled:opacity-50"
+              >
+                Thử nộp lại
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}
@@ -489,13 +572,11 @@ export function ExcelMissionPage() {
       <MissionResultModal
         isOpen={showResultModal}
         result={submissionResult}
+        missionTitle={mission.title}
         onClose={() => setShowResultModal(false)}
         onNextMission={() => {
           setShowResultModal(false);
           navigate('/map');
-        }}
-        onRetry={() => {
-          setShowResultModal(false);
         }}
       />
     </div>

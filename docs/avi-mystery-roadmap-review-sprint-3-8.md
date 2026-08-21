@@ -1,5 +1,7 @@
 # Avi-Mystery — Phân tích và băm nhỏ Roadmap Sprint 3.4 đến Sprint 8
 
+> **Vai trò tài liệu:** tài liệu phân tích/reference, không phải status tracker. Trạng thái task nằm tại [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Tại ngày 21/08/2026, Step 3.4 đã `DONE`; Sprint 4 chưa được kích hoạt.
+
 ## 0. Checklist đổi tên dự án sang Avi-Mystery
 
 Phân biệt hai loại tên:
@@ -85,13 +87,13 @@ Ba phần này không nên hoàn thành cùng một task vì chúng thuộc ba l
 
 ### Step 3.4A — Submission Contract `[P0]`
 
-- [ ] Chốt request contract dùng chung cho các loại nhiệm vụ.
-- [ ] Chốt response contract dùng chung.
-- [ ] Phân biệt `mode: run` và `mode: submit`.
-- [ ] Có `submissionId` hoặc `attemptId` giả lập.
-- [ ] Có error code ổn định.
-- [ ] Có `potentialXp`, nhưng chưa trao XP.
-- [ ] Component không biết đáp án đúng.
+- [x] Chốt request contract dùng chung cho các loại nhiệm vụ.
+- [x] Chốt response contract dùng chung.
+- [x] Phân biệt `mode: run` và `mode: submit`.
+- [x] Có `attemptId` giả lập.
+- [x] Có error code ổn định.
+- [x] Có `potentialXp`, nhưng chưa trao XP.
+- [x] Component không biết đáp án đúng.
 
 Request đề xuất:
 
@@ -127,17 +129,17 @@ Response đề xuất:
 
 ### Step 3.4B — Mock Submission Service `[P0]`
 
-- [ ] Tạo `submissionService` contract dùng chung.
-- [ ] Tạo `mockSubmissionService` implement contract.
-- [ ] Hỗ trợ artificial delay.
-- [ ] Hỗ trợ success response.
-- [ ] Hỗ trợ incorrect response.
-- [ ] Hỗ trợ validation error.
-- [ ] Hỗ trợ server error giả lập.
-- [ ] Hỗ trợ timeout giả lập nếu cần test.
-- [ ] Chặn double submit trong thời gian request đang chạy.
-- [ ] Không đọc mock JSON trực tiếp từ component.
-- [ ] Không cộng XP trong service này.
+- [x] Tạo `submissionService` contract dùng chung.
+- [x] Tạo `mockSubmissionService` implement contract.
+- [x] Hỗ trợ artificial delay.
+- [x] Hỗ trợ success response.
+- [x] Hỗ trợ incorrect response.
+- [x] Hỗ trợ validation error.
+- [x] Hỗ trợ server error giả lập.
+- [x] Hỗ trợ timeout giả lập.
+- [x] Chặn duplicate attempt trong thời gian request đang chạy.
+- [x] Không đọc mock JSON trực tiếp từ component.
+- [x] Không cộng XP trong service này.
 
 Không nên tạo sau này:
 
@@ -156,13 +158,13 @@ submissionService
 
 ### Step 3.4C — Feedback UI `[P0]`
 
-- [ ] Loading state khi Submit.
-- [ ] Disable Submit khi đang xử lý.
-- [ ] Inline validation cho câu trả lời rỗng hoặc sai cú pháp.
-- [ ] Inline feedback khi câu trả lời sai.
-- [ ] Success Modal khi Step hoặc Mission hoàn thành.
-- [ ] Retry khi service error.
-- [ ] Không đóng mất câu trả lời của người học khi submit sai.
+- [x] Loading state khi Submit.
+- [x] Disable Submit khi đang xử lý.
+- [x] Inline validation cho câu trả lời rỗng.
+- [x] Inline feedback khi câu trả lời sai.
+- [x] Success Modal khi Step hoặc Mission hoàn thành.
+- [x] Retry khi service error.
+- [x] Không làm mất câu trả lời của người học khi submit sai.
 
 Khuyến nghị UX:
 
@@ -179,25 +181,24 @@ Failure Modal xuất hiện sau mọi lần sai sẽ làm gián đoạn quá tr�
 
 Nếu sử dụng modal:
 
-- [ ] Dùng semantic dialog.
-- [ ] Quản lý focus.
-- [ ] Đóng được bằng Escape nếu phù hợp.
-- [ ] Không cho tương tác với nền khi modal mở.
-- [ ] Trả focus về nút Submit sau khi đóng.
-- [ ] Không dùng màu làm dấu hiệu đúng/sai duy nhất.
+- [x] Dùng semantic dialog.
+- [x] Quản lý focus.
+- [x] Đóng được bằng Escape.
+- [x] Trả focus về nút Submit sau khi đóng.
+- [x] Không dùng màu làm dấu hiệu đúng/sai duy nhất.
 
 ### Step 3.4D — Attempt State và Integration Test `[P0]`
 
-- [ ] Ghi nhận `attemptCount` mock.
-- [ ] Giữ câu trả lời khi submit sai.
-- [ ] Reset chỉ phục hồi starter state.
-- [ ] Submit đúng cập nhật `missionCompleted` mock.
-- [ ] Run không cập nhật completion.
-- [ ] Unmount component trong lúc request không tạo state update lỗi.
-- [ ] Test double click Submit.
-- [ ] Test Retry.
-- [ ] Test service rejection.
-- [ ] Regression test Sprint 1–3.3.
+- [x] Ghi nhận attempt identity/history mock.
+- [x] Giữ câu trả lời khi submit sai.
+- [x] Reset chỉ phục hồi starter state.
+- [x] Submit đúng trả `missionCompleted`.
+- [x] Run không cập nhật completion/history.
+- [x] Unmount component trong lúc request không tạo state update lỗi.
+- [x] Test double click Submit.
+- [x] Test Retry.
+- [x] Test service error/timeout.
+- [x] Regression test Sprint 1–3.3.
 
 ## XP nên xử lý thế nào ở Sprint 3.4?
 
@@ -217,13 +218,13 @@ Việc trao XP cần idempotency để một Submission không thể nhận thư
 
 ## Điều kiện đóng Step 3.4
 
-- [ ] Có service contract dùng chung.
-- [ ] Async mock hoạt động.
-- [ ] Đúng, sai và lỗi đều có feedback.
-- [ ] Không double submit.
-- [ ] Không cộng XP trực tiếp.
-- [ ] Test pass.
-- [ ] Mission hoàn thành được thể hiện rõ.
+- [x] Có service contract dùng chung.
+- [x] Async mock hoạt động.
+- [x] Đúng, sai và lỗi đều có feedback.
+- [x] Không double submit.
+- [x] Không cộng XP trực tiếp.
+- [x] Targeted 31/31 và regression 101/101 tests pass.
+- [x] Mission hoàn thành được thể hiện rõ.
 
 ---
 

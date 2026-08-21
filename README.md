@@ -8,7 +8,7 @@
 ## 🌟 Tính Năng Nổi Bật
 
 ### 🕵️ Learner Application (Dành cho Người học)
-- **Bảng điều khiển Học tập (Learner Dashboard)**: Theo dõi tiến trình học tập, tổng điểm kinh nghiệm (XP), nhiệm vụ đang làm dở và bảng xếp hạng.
+- **Bảng điều khiển Học tập (Learner Dashboard)**: Hiển thị tổng quan mock về XP, nhiệm vụ và bảng xếp hạng; Progress domain chính thức thuộc Sprint 5.
 - **Danh sách Khóa học (`/courses`)**: Tìm kiếm và lọc khóa học theo từ khóa, công cụ (Excel / SQL) và độ khó (Easy, Medium, Hard).
 - **Chi tiết Khóa học (`/courses/:slug`)**: Xem thông tin tổng quan khóa học, cấu trúc chương học Accordion và danh sách bài học vụ án.
 - **Bản đồ Học tập (`/map`)**: Bản đồ tiến trình dạng Node/Tree tương tác, kiểm soát trạng thái nhiệm vụ (`locked`, `available`, `in_progress`, `completed`).
@@ -16,7 +16,7 @@
 - **Màn hình Bảo trì Tự động (`UnderMaintenancePage`)**: Tự động chuyển hướng và chặn truy cập khi trang đang ở chế độ bảo trì do Admin thiết lập.
 
 ### 🛡️ Admin Application (Dành cho Quản trị viên)
-- **Tổng quan Admin (`/admin`)**: Bảng thống kê tổng học viên, tỷ lệ hoàn thành, nhiệm vụ xuất bản và cảnh báo bài tập có tỷ lệ sai cao.
+- **Tổng quan Admin (`/admin`)**: Giao diện tổng quan với dữ liệu hiện tại; Admin Analytics chính thức thuộc Sprint 8.
 - **Cài đặt & Quản lý Trang (`/admin/settings?tab=pages`)**: 
   - Điều khiển trạng thái thời gian thực của toàn bộ trang Learner (`Active`, `Maintenance`, `Notice`).
   - Cấu hình thông điệp bảo trì, lý do và thời gian dự kiến khôi phục.
@@ -55,13 +55,14 @@ Avi-Mystery/
 │   │   ├── providers/          # ThemeProvider, PageStatusProvider, AuthProvider
 │   │   └── router/             # Cấu hình AppRouter & RBAC Route Guards
 │   ├── components/
+│   │   ├── excel/              # Grid, Formula Bar, toolbar, hints và result modal
 │   │   └── ui/                 # Component UI tái sử dụng (Button, Card, Skeleton, EmptyState)
 │   ├── hooks/                  # Custom hooks (useAuth, useTheme, usePageStatus, useAsync)
 │   ├── mocks/                  # Mock JSON data (courses, chapters, missions, steps, datasets)
 │   ├── pages/
 │   │   ├── admin/              # OverviewPage, SettingsPage, PageStatusPage
-│   │   └── learner/            # DashboardPage, CoursesPage, CourseDetailPage, LearningMapPage, MissionIntroPage
-│   ├── services/               # Service Layer (mockAuthService, mockCourseService, pageStatusService)
+│   │   └── learner/            # Dashboard, course/map/mission và Excel workspace
+│   ├── services/               # Contracts, mock adapters, API stubs và service gateway
 │   ├── tests/                  # Automated Vitest test suites
 │   └── utils/                  # Excel Answer Checker (excelChecker.js) & format utilities
 ├── package.json
@@ -98,10 +99,13 @@ npm run build
 
 ## 🧪 Kết Quả Kiểm Thử (Automated Test Report)
 
-Dự án hiện đạt **100% PASS** trên toàn bộ suite kiểm thử tự động:
-- **12 Test Files Passed**
-- **62 Test Cases Passed**
-- Kiểm thử bao phủ: Service contracts, UI Skeletons, Empty states, Filter logic, Route guards, Page Status maintenance interception, Excel Answer Checker và Excel Mission Shell.
+Lần xác minh gần nhất ngày **21/08/2026** đạt:
+
+- **19 Test Files Passed**
+- **101 Test Cases Passed**
+- Bao phủ service mocks, shared UI, route/page status, course/map/mission flow, Excel evaluator, submission contract/gateway, async guards và feedback UI.
+
+Chi tiết và cảnh báo test được ghi tại **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**.
 
 ---
 
@@ -111,6 +115,8 @@ Bảng tiến độ chi tiết theo dạng checkbox cho từng Sprint có thể 
 
 - [x] **Sprint 1 — Foundation & Auth**: Khởi tạo App Shell, Design System Amber, Service Layer contract, Role Guards.
 - [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing, Admin Page Status Manager.
-- [x] **Step 3.0 & 3.1 — Excel Mission Shell & Checker**: Kiểm tra gate Sprint 2, bộ chấm điểm `excelChecker.js` và màn hình làm bài Excel Mission Shell (`/missions/:missionId/workspace`).
-- [ ] **Sprint 3 (Tiếp) — Spreadsheet Grid & Engine**: Bảng tính tương tác `SpreadsheetGrid`, `FormulaBar`, `FormulaEngineAdapter` & `SubmissionService`.
+- [x] **Step 3.0–3.3 — Excel Workspace**: Checker, mission shell, spreadsheet grid, Formula Bar, Run/Reset/Hint và toolbar đã có code/test.
+- [x] **Step 3.4 — Submission & Feedback**: Shared contract/gateway, mock async/idempotency-ready, inline feedback/retry, double-submit guard, success modal và boundary không trao XP đã hoàn thành.
 - [ ] **Sprint 4 — SQL Vertical Slice**: Trình soạn thảo câu lệnh SQL, Mock Database engine và bảng kết quả truy vấn.
+
+Trạng thái task duy nhất dành cho agent nằm tại **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**; roadmap không tự kích hoạt Sprint/Step tiếp theo.

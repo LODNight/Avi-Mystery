@@ -75,10 +75,10 @@
 - [x] Hệ thống Gợi ý từng bước (`Step-by-step Hints`) kèm trừ điểm XP
 - [x] Nút Đặt lại dữ liệu ban đầu (`Reset Grid`)
 
-### 🔹 Step 3.4: Mock Submission Service & Popup Kết Quả *(CẦN LÀM TIẾP THEO)*
-- [ ] Xây dựng `mockSubmissionService.js` xử lý nộp bài bất đồng bộ
-- [ ] Popup thông báo kết quả Đúng/Sai (`Success/Failure Result Modal`)
-- [ ] Tự động cộng điểm thưởng XP vào tài khoản học viên khi hoàn thành bài học thành công
+### 🔹 Step 3.4: Mock Submission Service & Popup Kết Quả *(HOÀN THÀNH)*
+- [x] Xây dựng `mockSubmissionService.js` xử lý nộp bài bất đồng bộ
+- [x] Popup thông báo kết quả Đúng/Sai (`Success/Failure Result Modal`)
+- [x] Tự động cộng điểm thưởng XP vào tài khoản học viên khi hoàn thành bài học thành công
 
 ---
 

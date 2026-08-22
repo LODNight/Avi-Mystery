@@ -117,6 +117,6 @@ Bảng tiến độ chi tiết theo dạng checkbox cho từng Sprint có thể 
 - [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing, Admin Page Status Manager.
 - [x] **Step 3.0–3.3 — Excel Workspace**: Checker, mission shell, spreadsheet grid, Formula Bar, Run/Reset/Hint và toolbar đã có code/test.
 - [x] **Step 3.4 — Submission & Feedback**: Shared contract/gateway, mock async/idempotency-ready, inline feedback/retry, double-submit guard, success modal và boundary không trao XP đã hoàn thành.
-- [ ] **Sprint 4 — SQL Vertical Slice**: Trình soạn thảo câu lệnh SQL, Mock Database engine và bảng kết quả truy vấn.
+- [ ] **Sprint 4 — SQL Vertical Slice**: Step 4.0 Technical Spike/Contract đã `DONE` (SQL unit 11/11, full regression 144/144, dev/build/preview Worker+WASM pass); Step 4.1A chưa được kích hoạt.
 
 Trạng thái task duy nhất dành cho agent nằm tại **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**; roadmap không tự kích hoạt Sprint/Step tiếp theo.

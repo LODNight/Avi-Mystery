@@ -29,7 +29,7 @@ Mock Service và API Client phải giữ cùng public interface để Sprint 7 k
 
 ## Intentionally Deferred
 
-- SQL browser engine và SQL learner workspace: Sprint 4.
+- SQL learner workspace: Sprint 4; Step 4.0 engine/Worker spike đã có, product UI/route vẫn deferred đến các Step sau.
 - XP/level/streak/achievement domain hoàn chỉnh: Sprint 5.
 - Admin Content Builder: Sprint 6.
 - FastAPI, PostgreSQL, authentication/persistence phía server và API migration: Sprint 7.
@@ -38,6 +38,6 @@ Mock Service và API Client phải giữ cùng public interface để Sprint 7 k
 
 ## Documentation Status
 
-Ngày 22/08/2026, Step 3.0–3.6G đã `DONE`. Gate cuối xác minh targeted 73/73, full regression 133/133, production build và Browser check mobile/tablet/desktop, Light/Dark, formula error, focus/Escape đều pass. Sprint 4 đã sẵn sàng để người dùng kích hoạt nhưng vẫn `CHƯA KÍCH HOẠT`. [CURRENT_TASK.md](./CURRENT_TASK.md) là nguồn trạng thái duy nhất cho agent.
+Ngày 22/08/2026, Step 3.0–4.0 đã `DONE`. Step 4.0 chốt `sql.js@1.14.2`, Worker/WASM, contracts, policy và recovery; chưa có SQL product UI/route. Step 4.1A chưa được kích hoạt. [CURRENT_TASK.md](./CURRENT_TASK.md) là nguồn trạng thái duy nhất cho agent.
 
 Các file prompt/reference (`dataquest-project-prompts.md`, `docs/avi-mystery-codex-agent-md-generator.md`, `docs/avi-mystery-roadmap-review-sprint-3-8.md`) không phải status tracker.

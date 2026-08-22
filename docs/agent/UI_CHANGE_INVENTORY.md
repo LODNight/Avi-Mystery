@@ -49,7 +49,7 @@ Các mục trên đã được xác minh và Step 3.4E đã hoàn thành. Submis
 - `/profile`, `/achievements`: Early Prototype cho Sprint 5; chưa có Game Progress domain.
 - Admin course/chapter/mission/dataset placeholders: Early Prototype cho Sprint 6; chưa có Content Builder.
 - `/admin/analytics`: Early Prototype cho Sprint 8; chưa có analytics implementation.
-- Không phát hiện SQL learner UI trong audit; Sprint 4 vẫn chưa kích hoạt.
+- Không có SQL learner UI; Step 4.0 chỉ thêm engine/Worker và browser harness cô lập, không thêm product route/navigation.
 
 ## Business Flow Verification
 
@@ -68,4 +68,4 @@ Các mục trên đã được xác minh và Step 3.4E đã hoàn thành. Submis
 
 - Wording dùng “Phần thưởng dự kiến”.
 - Inline hint tiếp tục thuộc `LRN-EXCEL`; chỉ promote khi có consumer thứ hai.
-- Sprint 4 chỉ được kích hoạt bằng Current Task mới theo yêu cầu người dùng.
+- Step 4.0 đã đạt gate; Sprint 4 product implementation chỉ bắt đầu khi người dùng kích hoạt Step tiếp theo với Current Task mới.

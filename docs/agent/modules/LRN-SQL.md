@@ -10,13 +10,20 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 
 ## Current Status
 
-- IN_PROGRESS — Step 4.1: In-Browser SQL Engine & Schema Browser
+- DONE — Step 4.0: Technical Spike & SQL Contracts
 - Related Sprint: 4
 - Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/pages/learner/SqlMissionPage.jsx`
 
-## Public Interfaces
+## Proposed Public Interfaces
 
-TBD. Engine adapter/Worker boundary, result-set evaluator và integration với generic submission contract.
+- `sqlEngine.initialize()`
+- `sqlEngine.loadDataset(dataset)`
+- `sqlEngine.getSchema()`
+- `sqlEngine.execute(query, options)`
+- `sqlEngine.reset()`
+- `sqlEngine.dispose()`
+
+Execution trả envelope ổn định chứa `columns`, `rows`, `rowCount`, `truncated`, `executionMs`, `errorCode` và `message`. Engine/Dataset/Execution baseline đã được Step 4.0 xác minh; Mission/Checker/Submission proposal được triển khai ở các Step tương ứng.
 
 ## Dependencies
 
@@ -26,9 +33,11 @@ Chỉ SHR contracts/UI/utilities và LRN-SUB public interface. Shared không đ�
 
 - `src/components/sql/`
 - `src/utils/sql/`
+- `src/workers/sql/`
 - `src/pages/learner/SqlMissionPage.jsx`
+- `src/pages/learner/SqlMissionPage.test.jsx`
 - `src/services/mock/mockSqlService.js`
-- `src/mocks/data/sqlMissions.json`
+- `src/mocks/data/sql/`
 
 ## Read-only Paths
 
@@ -40,31 +49,37 @@ Chỉ SHR contracts/UI/utilities và LRN-SUB public interface. Shared không đ�
 
 ## Forbidden Scope
 
-Mọi source change khi Current Task vẫn là Sprint 3.4; backend query execution; XP/progress; Admin Content Builder.
+Backend query execution, XP/progress mutation, Admin Content Builder, Python sandbox, OPFS persistence trong MVP và thay đổi Excel evaluator.
 
 ## Domain Rules
 
 - SQL chạy trong browser ở MVP Sprint 4; không gửi query lên backend.
-- Worker/engine cần timeout, row limit, reset database và stable error mapping.
+- SQLite là dialect MVP; database nhỏ chạy in-memory và được dựng lại từ deterministic seed.
+- Worker/engine cần timeout, row limit, reset database, dispose và stable error mapping.
+- Timeout cứng phải có recovery strategy; không giả định `setTimeout` có thể ngắt WASM đang chạy đồng bộ.
+- User query chỉ được đọc dữ liệu; internal schema query tách khỏi user-query policy.
 - SQL evaluator không trao XP và không bypass Submission Contract.
-- Query policy/security phải được chốt trước implementation.
+- Query policy phía browser là UX protection, không phải security boundary cho reward/backend.
 
 ## Required Test Coverage
 
-Engine isolation, allowed/read-only query policy, timeout, max rows, reset, syntax/runtime error mapping, deterministic result comparison và submission modes.
+Fake adapter unit tests; Worker/WASM browser integration; engine isolation; read-only policy; timeout/recovery; max rows; reset/dispose; syntax/runtime mapping; deterministic result comparison; submission modes; production asset loading và full Excel regression.
 
 ## Definition of Done
 
-- [ ] Acceptance Criteria đạt.
-- [ ] Test module pass.
-- [ ] Regression liên quan pass.
-- [ ] Không sửa ngoài scope.
-- [ ] Documentation được cập nhật nếu contract thay đổi.
+- [x] Step 4.0 decision/contracts pass trước implementation.
+- [ ] Mỗi Step 4.1A–4.8 đạt Acceptance Criteria riêng.
+- [ ] Một SQL Mission chạy end-to-end mà không mutate XP.
+- [ ] Security/resource/browser/build và full regression gates pass.
+- [ ] Không sửa ngoài scope; contract changes được ghi rõ.
 
 ## Known Risks
 
-Không có SQL dependency/package hoặc Worker architecture; thêm package cần approval riêng.
+- `sql.js@1.14.2` và spike source đã có; product route/UI vẫn chưa tồn tại theo boundary Step 4.0.
+- JSDOM không đại diện đầy đủ cho Worker/WASM; cần browser integration riêng.
+- Read-only parsing, hard timeout/recovery và result equivalence (`NULL`, duplicate, order, tolerance) là các vùng risk cao.
+- Editor dependency và route integration có thể làm tăng bundle hoặc ảnh hưởng Excel nếu không lazy-load/test boundary.
 
 ## Open Questions
 
-SQLite/WASM library, editor library, Worker protocol, schema format và canonical result comparison: TBD.
+Step 4.0 đã chốt engine package/version, Worker protocol, WASM asset path, schema format và error catalog. Canonical result comparison được giữ cho Step 4.6. CodeMirror/syntax highlighting là dependency gate riêng; controlled textarea là fallback MVP.

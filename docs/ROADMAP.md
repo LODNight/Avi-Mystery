@@ -72,7 +72,7 @@
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 đã sẵn sàng để người dùng kích hoạt.
+* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 Step 4.0 cũng đã hoàn thành; Step 4.1A chưa kích hoạt.
 
 ### Step 3.4E — Submission UI Stabilization (HOÀN THÀNH)
 
@@ -170,15 +170,26 @@
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN)
+## 🟡 Sprint 4 — SQL Vertical Slice (PLANNING GATE)
 
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
 * **Supporting Focus Area:** `SHR` và `LRN-SUB`
+* **Execution rule:** Step 4.0 phải hoàn thành trước mọi product implementation; mỗi Step có một Primary Module và Current Task riêng.
 * **Sub-Steps:**
-  - **Step 4.1:** In-Browser SQL Engine & Schema Browser — **IN_PROGRESS**
-  - **Step 4.2:** SQL Code Editor & Result Viewer — **PLANNED**
-  - **Step 4.3:** SQL Result Evaluator & Submission — **PLANNED**
+  - **Step 4.0:** Technical Spike & SQL Contracts — **DONE**; `sql.js@1.14.2`, SQL unit 11/11, regression 144/144 và dev/build/preview Worker+WASM pass
+  - **Step 4.1A:** WASM Packaging & Worker Transport — **PLANNED**
+  - **Step 4.1B:** Database Lifecycle, Seed, Reset & Schema API — **PLANNED**
+  - **Step 4.1C:** Read-only Query Policy, Timeout & Row Limit — **PLANNED**
+  - **Step 4.2:** Schema Browser — **PLANNED**
+  - **Step 4.3:** SQL Mission Shell, Loader & Route — **PLANNED**
+  - **Step 4.4:** SQL Editor MVP — **PLANNED**
+  - **Step 4.5:** Query Execution & Result Viewer — **PLANNED**
+  - **Step 4.6:** SQL Result Checker — **PLANNED**
+  - **Step 4.7:** Submission Integration — **PLANNED**; Primary Module dự kiến `LRN-SUB`
+  - **Step 4.8:** Security, Browser, Deployment & Regression Gate — **PLANNED**
+* **MVP Boundary:** SQLite dialect, database in-memory, Worker bắt buộc, không OPFS, không backend execution, không XP mutation. Editor dùng controlled textarea trước; syntax highlighting/CodeMirror chỉ được nâng lên P0 khi dependency spike pass.
+* **Sprint Exit Criteria:** một SQL Mission chạy xuyên suốt; engine không block UI; reset/dispose ổn định; user query read-only; checker xử lý order/`NULL`/duplicate/tolerance; Run khác Submit; production WASM và full Excel regression pass.
 
 ---
 

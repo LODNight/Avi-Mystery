@@ -61,6 +61,64 @@ Stable formula codes: `FORMULA_REQUIRED`, `FORMULA_MISSING_EQUALS`, `FORMULA_EMP
 
 Khi evaluator trả lỗi, Submission Result dùng chính formula code làm `feedbackCode`; UI hiển thị `message` nhưng không suy luận loại lỗi bằng cách parse message.
 
+## SQL Contracts — Step 4.0 Baseline
+
+Engine, Dataset, Execution Result, stable errors và Worker transport dưới đây đã được spike xác minh. Mission/checker/submission shape vẫn là proposal để Step 4.3, 4.6 và 4.7 triển khai mà không mở rộng UI/service trong Step 4.0.
+
+### SQL Engine / Worker
+
+Public engine interface: `initialize()`, `loadDataset(dataset)`, `getSchema()`, `execute(query, options)`, `reset()` và `dispose()`.
+
+Worker request dùng `{ id, action, payload }`; response dùng `{ id, ok: true, data }` hoặc `{ id, ok: false, error: { code, message, details, retryable } }`. Adapter giữ request correlation, timeout và Worker recovery; Worker sở hữu WASM/database.
+
+### SQL Mission / Dataset
+
+```js
+{
+  missionId: 'string',
+  tool: 'sql',
+  datasetId: 'string',
+  starterQuery: 'string',
+  checkerConfig: {
+    expectedColumns: ['string'],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    maxExecutionMs: 2000,
+    maxRows: 500,
+    requiredConstructs: [],
+    forbiddenConstructs: []
+  },
+  hints: []
+}
+```
+
+Dataset đã triển khai có shape `{ id, version, dialect: 'sqlite', tables: [{ name, columns, rows }] }`. Mỗi column có `{ name, type, primaryKey?, nullable? }`; identifier/type/row width được validate trước khi seed. Dataset phải deterministic và đủ metadata để reset database. Expected result/config nằm ở content/evaluator boundary, không nằm trong UI component.
+
+### SQL Execution Result
+
+```js
+{
+  columns: ['string'],
+  rows: [[]],
+  rowCount: 0,
+  truncated: false,
+  executionMs: 0,
+  errorCode: null,
+  message: null
+}
+```
+
+Stable errors: `SQL_ENGINE_NOT_READY`, `SQL_WASM_LOAD_FAILED`, `SQL_DATASET_INVALID`, `SQL_QUERY_REQUIRED`, `SQL_MULTIPLE_STATEMENTS`, `SQL_READ_ONLY_VIOLATION`, `SQL_SYNTAX_ERROR`, `SQL_RUNTIME_ERROR`, `SQL_TIMEOUT`, `SQL_RESULT_LIMIT_EXCEEDED`, `SQL_WORKER_TERMINATED`.
+
+`execute` chỉ nhận một statement bắt đầu bằng `SELECT`/`WITH`; mutation, DDL, `ATTACH`, `PRAGMA` và statement thứ hai bị chặn ở adapter và Worker. Default timeout 2000ms; timeout cứng terminate/recreate Worker rồi nạp lại seed. Default 500 rows, hard cap 5000; kết quả vượt limit trả rows đã cắt với `truncated: true` và `SQL_RESULT_LIMIT_EXCEEDED`.
+
+### SQL Submission Answer
+
+SQL dùng shared Submission Request với `tool: 'sql'` và answer proposal `{ query, executionResult? }`. Submission adapter/evaluator phải tự lấy expected config từ content boundary; client-provided execution result không được coi là authoritative khi backend Sprint 7 tồn tại.
+
+`run` chỉ execute/feedback; `submit` mới có thể trả completion và `potentialXp`. Không tạo SQL Submission Service riêng.
+
 ## Idempotency
 
 - `clientAttemptId` nhận diện một hành động submit phía client; cùng ID không được tạo nhiều attempt/reward.

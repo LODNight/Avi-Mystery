@@ -64,6 +64,19 @@ Không ghi pass nếu command chưa thực sự chạy trong lần làm việc �
 - Loading, empty/error states và accessibility hiện có.
 - Full command `npm test -- --run` pass hoặc mọi failure được báo rõ là ngoài scope.
 
+## Sprint 4 SQL Test Strategy
+
+1. **Pure unit:** query policy, result normalization/comparison, dataset validation và stable error mapping không cần WASM.
+2. **Adapter unit:** inject fake Worker/engine để test request correlation, timeout, cancel, reset, dispose và stale response.
+3. **Component:** Schema Browser, Editor, Result Viewer và feedback dùng fake adapter; không buộc JSDOM tải WASM.
+4. **Browser integration:** WASM init, real Worker, seed/schema/execute/reset/dispose, hard timeout recovery và mission change.
+5. **Production gate:** built asset URL/MIME, lazy loading, console/network error và deployment preview.
+6. **Regression:** full Sprint 1–3 suite sau mỗi Step có route/gateway/shared-contract change.
+
+Minimum SQL fixture matrix: `SELECT`, `WITH`, syntax/runtime error, mutation/DDL/PRAGMA/ATTACH, comments và multiple statements, timeout, result limit, `NULL`, duplicate rows, order true/false, column order, numeric tolerance, reset và Worker cleanup.
+
+Step 4.0 không được ghi pass chỉ bằng fake adapter; phải có ít nhất một Browser smoke test với WASM/Worker thật. Ngược lại, unit/component suite không phụ thuộc network hoặc browser WASM asset.
+
 ## Last Verified — Step 3.6G (22/08/2026)
 
 - Submission targeted command: 5 test files, 31/31 tests passed.
@@ -75,3 +88,12 @@ Không ghi pass nếu command chưa thực sự chạy trong lần làm việc �
 - Covered: structured errors, retry, timeout, duplicate/replay identity, double submit, unmount in flight, answer retention, success-only modal và no-XP-mutation.
 - Non-failing warnings: React Router v7 future flags và `AuthProvider` act warning trong `PageStatus.test.jsx`.
 - Giới hạn: chưa có framework visual regression/E2E. Global npm thiếu `npm-cli.js`; ESLint 9 chưa có `eslint.config.*`, nên lint project-level chưa khả dụng và phải được xử lý bằng task tooling riêng.
+
+## Last Verified — Step 4.0 (22/08/2026)
+
+- SQL pure/adapter unit: 3 files, 11/11 tests passed; fake Worker cover lifecycle, stable not-ready error và timeout recovery.
+- Full regression: 23 files, 144/144 tests passed; warning cũ gồm React Router v7 future flags và `AuthProvider` act warning.
+- Real browser Vite dev: WASM/Worker initialize, seed, schema, execute, syntax error, row limit, reset và dispose pass.
+- Production build/preview: pass; phát sinh module Worker riêng và `sql-wasm-browser` asset 658.41 kB, preview lifecycle pass.
+- Browser harness nằm tại `src/utils/sql/sql-spike.html`, không có product route/navigation và sẽ bỏ extra build entry khi SQL Workspace import adapter ở Step sau.
+- ESLint project-level chưa khả dụng vì thiếu `eslint.config.*`; không mở rộng tooling ngoài Step 4.0.

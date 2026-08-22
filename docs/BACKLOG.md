@@ -57,9 +57,17 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
-| `LRN-SQL-4.1-ENGINE` | In-Browser SQL Engine Adapter & Schema Browser | `LRN-SQL` | `High` | `IN_PROGRESS` | Tích hợp SQLite WASM / engine adapter & component Schema Browser |
-| `LRN-SQL-4.2-EDITOR` | SQL Code Editor & Result Viewer | `LRN-SQL` | `High` | `TODO` | Syntax highlighter, SQL editor UI & Query result table |
-| `LRN-SQL-4.3-SUB` | SQL Result Evaluator & Submission | `LRN-SQL` | `High` | `TODO` | Dynamic query dataset comparator & Submission contract integration |
+| `LRN-SQL-4.0-SPIKE` | Technical Spike & SQL Contracts | `LRN-SQL` | `Critical` | `DONE` | `sql.js@1.14.2`, Worker/WASM, contracts, policy và browser/build gate đã pass |
+| `LRN-SQL-4.1A-WORKER` | WASM Packaging & Worker Transport | `LRN-SQL` | `High` | `TODO` | Lazy load, request correlation, loading/error/dispose |
+| `LRN-SQL-4.1B-LIFECYCLE` | Database Lifecycle, Seed, Reset & Schema API | `LRN-SQL` | `High` | `TODO` | Deterministic seed, reset, cleanup và internal schema API |
+| `LRN-SQL-4.1C-POLICY` | Read-only Policy, Timeout & Row Limit | `LRN-SQL` | `Critical` | `TODO` | Single read-only statement, cancel/recovery và resource limits |
+| `LRN-SQL-4.2-SCHEMA` | Schema Browser | `LRN-SQL` | `High` | `TODO` | Accessible table/column metadata states |
+| `LRN-SQL-4.3-SHELL` | SQL Mission Shell, Loader & Route | `LRN-SQL` | `High` | `TODO` | Mission lifecycle và route regression |
+| `LRN-SQL-4.4-EDITOR` | SQL Editor MVP | `LRN-SQL` | `Medium` | `TODO` | Controlled editor; advanced CodeMirror features gated |
+| `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `TODO` | Run states, error mapping, result table và pagination |
+| `LRN-SQL-4.6-CHECKER` | SQL Result Checker | `LRN-SQL` | `Critical` | `TODO` | Order/NULL/duplicate/tolerance-aware comparator |
+| `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `TODO` | Dùng shared submission contract/gateway; không mutate XP |
+| `LRN-SQL-4.8-GATE` | Security, Browser, Deployment & Regression Gate | `LRN-SQL` | `Critical` | `TODO` | Policy/deploy/browser/Excel regression và SQL happy path |
 
 ---
 

@@ -1,6 +1,8 @@
 # Avi-Mystery — Phân tích và băm nhỏ Roadmap Sprint 3.4 đến Sprint 8
 
-> **Vai trò tài liệu:** tài liệu phân tích/reference, không phải status tracker. Trạng thái task nằm tại [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Tại ngày 21/08/2026, Step 3.4 đã `DONE`; Sprint 4 chưa được kích hoạt.
+> **Vai trò tài liệu:** tài liệu phân tích/reference, không phải status tracker. Trạng thái task nằm tại [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Tại ngày 22/08/2026, Sprint 3 và Step 4.0 Technical Spike/Contracts đã `DONE`; Step 4.1A chưa được kích hoạt, chưa triển khai product feature.
+
+> **Execution mapping hiện hành:** nội dung kỹ thuật Sprint 4 bên dưới được thực thi theo chuỗi `4.0 → 4.1A → 4.1B → 4.1C → 4.2 → 4.3 → 4.4 → 4.5 → 4.6 → 4.7 → 4.8` trong `docs/ROADMAP.md`. Các heading 4.1–4.6 cũ trong tài liệu reference chỉ còn là nhóm nội dung phân tích, không phải Current Task IDs.
 
 ## 0. Checklist đổi tên dự án sang Avi-Mystery
 
@@ -905,17 +907,16 @@ Không bắt buộc Dockerize Vite frontend nếu Vercel đã build và phục v
 
 # 11. Đầu việc tiếp theo được khuyến nghị
 
-Không bắt đầu Sprint 4 ngay. Hãy hoàn thành Step 3.4 theo thứ tự:
+Các gate Sprint 3 và Step 4.0 đã hoàn thành. Step kế tiếp theo roadmap là 4.1A, nhưng chưa được kích hoạt. Bằng chứng Step 4.0 gồm:
 
-1. Chốt generic Submission Contract.
-2. Tạo async `mockSubmissionService`.
-3. Tạo inline failure feedback và Mission Success Modal.
-4. Test double submit, error, retry và completion.
-5. Chỉ hiển thị `potentialXp`; chưa cộng XP thật.
-6. Chạy regression test Sprint 1–3.3.
-7. Cập nhật `PROJECT_STATUS.md`, `BACKLOG.md` và `TEST_REPORT.md`.
+1. Chốt engine package/version/license và SQLite dialect.
+2. Xác minh WASM/Worker trên Vite dev, production build và browser preview.
+3. Chốt mission/dataset/execution/checker contract proposal.
+4. Chốt read-only policy, timeout/cancel, row limit và worker recovery.
+5. Chứng minh seed/schema/execute/reset/dispose bằng spike nhỏ.
+6. Chạy full Sprint 1–3 regression; không tạo product route/UI.
 
-Sau khi các mục trên pass, mới mở Step 4.0 Technical Spike.
+Các mục trên đã pass; chỉ mở Step 4.1A khi Current Task được chuyển phạm vi rõ ràng.
 
 ---
 

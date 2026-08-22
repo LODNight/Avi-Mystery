@@ -55,3 +55,31 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Decision: Dùng catalog và `{ data, error }` payload trong [CONTRACTS.md](./CONTRACTS.md).
 - Consequences: API Sprint 7 phải map về cùng code/interface; message có thể thay đổi nhưng code không đổi tùy tiện.
 - Related modules: LRN-SUB, BE, SHR
+
+## ADR-AGT-007 — Sprint 4 bắt đầu bằng Technical Spike
+
+- Status: Accepted
+- Date: 2026-08-22
+- Context: Scope Step 4.1 cũ gộp package/WASM/Worker/policy/schema/UI/route trong khi contract và write paths chưa hợp lệ.
+- Decision: Step 4.0 là gate bắt buộc; product implementation chỉ bắt đầu từ Step 4.1A sau khi engine, Worker, contracts và policy được chốt.
+- Consequences: Roadmap Sprint 4 được tách thành Step 4.0–4.8; không tạo SQL UI/route trong Step 4.0.
+- Related modules: LRN-SQL, SHR, LRN-SUB
+
+## ADR-AGT-008 — SQL MVP dùng sql.js Worker và database in-memory
+
+- Status: Accepted
+- Date: 2026-08-22
+- Context: Query có thể block UI; database bài học nhỏ và cần reset xác định, không cần persistence thiết bị.
+- Decision: Dùng `sql.js@1.14.2` (MIT, zero runtime dependencies) với SQLite WASM trong dedicated module Worker. Database chạy in-memory, tạo lại từ deterministic JSON seed; OPFS nằm ngoài MVP Sprint 4.
+- Rationale: `sql.js` có API `Database` nhỏ, phù hợp seed/reset và Vite có thể đóng gói loader + WASM bằng asset URL. `@sqlite.org/sqlite-wasm` vẫn là lựa chọn mạnh khi cần SQLite Wasm APIs/OPFS sâu hơn, nhưng độ phức tạp Worker/persistence không mang lợi ích cho dataset học tập nhỏ của MVP.
+- Consequences: SQLite là dialect học tập của Sprint 4. Default query timeout là 2000ms; timeout cứng terminate/recreate Worker và nạp lại seed. Default result limit là 500 rows, hard cap 5000. Worker protocol dùng request ID; không dùng OPFS/CDN/backend execution.
+- Related modules: LRN-SQL
+
+## ADR-AGT-009 — SQL tái sử dụng Submission Contract
+
+- Status: Accepted
+- Date: 2026-08-22
+- Context: Tạo Submission Service riêng cho SQL sẽ phá gateway và idempotency boundary đã ổn định.
+- Decision: SQL Result Checker là evaluator riêng nhưng Submit đi qua shared `submissionService`; Step 4.7 dùng Primary Module `LRN-SUB`.
+- Consequences: `run` không complete, `submit` chỉ trả `potentialXp`, không mutate XP; contract changes cần path và Acceptance Criteria rõ.
+- Related modules: LRN-SQL, LRN-SUB, GAME, BE

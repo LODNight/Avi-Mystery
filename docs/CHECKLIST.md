@@ -118,19 +118,57 @@
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice *(ĐANG THỰC HIỆN)*
+## 🟡 Sprint 4 — SQL Vertical Slice *(TECHNICAL GATE PASS)*
 
-### 🔹 Step 4.1: In-Browser SQL Engine & Schema Browser *(IN_PROGRESS)*
-- [ ] Tích hợp trình quản lý SQL WebAssembly (SQLite / Mock Engine Adapter) chạy trực tiếp trên trình duyệt
-- [ ] Xây dựng Trình duyệt Cấu trúc Bảng (`Schema Browser`) hiển thị tên bảng, tên cột, kiểu dữ liệu & sample data
+### 🔹 Step 4.0: Technical Spike & SQL Contracts *(HOÀN THÀNH)*
+- [x] Chốt `sql.js@1.14.2` (MIT), SQLite dialect và in-memory lifecycle
+- [x] Xác minh Vite dev/build/production preview tải WASM và dedicated Worker
+- [x] Chốt engine, mission, dataset, execution result và checker config contracts
+- [x] Chốt read-only policy, hard timeout recovery, max rows, reset/dispose
+- [x] Deterministic seed chứng minh initialize/load/schema/execute/reset/dispose
+- [x] SQL unit 11/11, full regression 144/144; không xây product UI hoặc route
 
-### 🔹 Step 4.2: SQL Code Editor & Result Viewer
-- [ ] Xây dựng Trình soạn thảo cú pháp SQL (`SQL Code Editor`) với Tô màu cú pháp & gợi ý tự động
-- [ ] Xây dựng Bảng hiển thị Kết quả Truy vấn (`SQL Result Table`) hỗ trợ phân trang & đếm số dòng
+### 🔹 Step 4.1A: WASM Packaging & Worker Transport
+- [ ] Lazy-load WASM khi vào SQL flow; không tải ở Excel/dashboard
+- [ ] Worker request ID, loading/error, dispose và cleanup
 
-### 🔹 Step 4.3: SQL Result Evaluator & Submission
-- [ ] Xây dựng Bộ so sánh kết quả bảng truy vấn (`SQL Result Checker`)
-- [ ] Xây dựng Mock Submission Service cho các nhiệm vụ SQL
+### 🔹 Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
+- [ ] Load seed xác định; reset sạch theo mission
+- [ ] Internal schema query và statement/database cleanup
+
+### 🔹 Step 4.1C: Read-only Query Policy, Timeout & Row Limit
+- [ ] Chỉ một `SELECT`/`WITH`; chặn mutation/DDL/attach/pragma
+- [ ] Timeout bằng cancel/terminate + worker/database recovery; giới hạn result rows
+
+### 🔹 Step 4.2: Schema Browser
+- [ ] Table/column/type/PK/nullable; ẩn internal tables
+- [ ] Loading/empty/error, expand/collapse, copy identifier và keyboard navigation
+
+### 🔹 Step 4.3: SQL Mission Shell, Loader & Route
+- [ ] Mission/dataset loading, error/retry và lifecycle cleanup
+- [ ] Route/link không xung đột hoặc làm vỡ Excel workspace
+
+### 🔹 Step 4.4: SQL Editor MVP
+- [ ] Controlled editor, starter/reset query, Tab và Ctrl/Cmd+Enter
+- [ ] Accessible label và giữ query khi Run lỗi
+- [ ] Syntax highlighting/autocomplete/format chỉ thêm sau dependency gate
+
+### 🔹 Step 4.5: Query Execution & Result Viewer
+- [ ] Running/double-run guard và stable error mapping
+- [ ] Columns/rows/`NULL`/empty/time/count/truncation, scroll và pagination
+
+### 🔹 Step 4.6: SQL Result Checker
+- [ ] Column/row/value comparison; column order và result order tùy cấu hình
+- [ ] `NULL`, duplicate rows, numeric tolerance và query khác nhưng result đúng
+
+### 🔹 Step 4.7: Submission Integration
+- [ ] Dùng chung `submissionService`; không tạo SQL Submission Service riêng
+- [ ] Run không complete; Submit chỉ trả `potentialXp`; retry/double-submit/idempotency seam
+
+### 🔹 Step 4.8: Security, Browser, Deployment & Regression Gate
+- [ ] Test query policy, timeout, row limit, cleanup và mission change
+- [ ] Browser Light/Dark, mobile/tablet/desktop và production WASM
+- [ ] Full regression Excel/Sprint 1–3 và một SQL Mission end-to-end pass
 
 ---
 

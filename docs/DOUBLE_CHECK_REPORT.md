@@ -3,7 +3,7 @@
 > **Ngày thực hiện:** 22/08/2026
 > **Mục đích:** Kiểm tra đối chiếu toàn bộ mã nguồn & bộ test đã thực hiện so với danh mục công việc trong `docs/CHECKLIST.md` và `docs/agent/CURRENT_TASK.md`.
 
-> **Cập nhật Step 3.6G:** Các đề xuất cũ bên dưới đã được thực hiện. Baseline mới là 20 files, 133/133 tests pass; production build và Browser verification pass. Sprint 4 sẵn sàng nhưng chưa được kích hoạt.
+> **Cập nhật Step 4.0:** Technical Spike/Contracts đã `DONE`: `sql.js@1.14.2`, SQL unit 11/11, full regression 23 files với 144/144 tests, Vite dev/build/production preview Worker+WASM pass. Chưa có SQL product UI/route.
 
 ---
 
@@ -46,7 +46,7 @@
 ## 📌 2. Trạng Thái Các Đề Xuất Cũ
 
 1. Step 3.4E, 3.5, 3.6 và 3.6G đã hoàn thành và được đồng bộ trong checklist/status/roadmap.
-2. Sprint 4 chỉ chờ người dùng tạo hoặc cho phép kích hoạt Current Task mới.
+2. Step 4.0 đã `DONE`; Step 4.1A chưa được kích hoạt và product feature vẫn chưa được triển khai.
 
 ---
 

@@ -5,14 +5,14 @@
 
 ---
 
-## 1. Tổng Quan Tiến Độ Sprint 3
+## 1. Tổng Quan Tiến Độ Sprint 4
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–3.6G.
-* **Step hiện tại:** Step 4.1 — In-Browser SQL Engine & Schema Browser (`IN_PROGRESS`).
-* **Step kế tiếp đã lên kế hoạch:** Step 4.2 — SQL Code Editor & Result Viewer.
-* **Trạng thái Sprint:** `IN_PROGRESS — SPRINT 4 ACTIVATED`.
+* **Step đã hoàn thành:** Step 1.1–4.0.
+* **Step vừa hoàn thành:** Step 4.0 — Technical Spike & SQL Contracts (`DONE`).
+* **Step kế tiếp đã lên kế hoạch:** Step 4.1A — WASM Packaging & Worker Transport; chưa kích hoạt.
+* **Trạng thái Sprint:** `TECHNICAL GATE PASS — CHƯA IMPLEMENT PRODUCT FEATURE`.
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Client-side SQL Engine (WASM/Adapter), Schema Browser & SQL Workspace | `IN_PROGRESS / Step 4.1` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Technical spike, contracts và risk gates trước SQL Workspace | `DONE / Step 4.0` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
@@ -56,6 +56,7 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `DONE` | Pass | `docs/agent/UI_CHANGE_INVENTORY.md` |
 | `LRN-UI-3.6` | `LRN-EXCEL` | Light Mode Refinement | Standardized Light Mode design & accessibility | Sprint 3 | `DONE` | Pass | `src/styles/index.css`, `ActionToolbar.jsx`, `FormulaBar.jsx`, `SpreadsheetGrid.jsx`, `LearnerLayout.jsx` |
 | `LRN-EXCEL-3.6G` | `LRN-EXCEL` | Sprint Stabilization | Formula/global diagnostics, stale hint, route boundary, responsive/a11y verification | Sprint 3 | `DONE` | Pass (133/133) | `excelChecker*`, `ExcelMissionPage*`, `LearnerLayout*`, `HintPanel*` |
+| `LRN-SQL-4.0` | `LRN-SQL` | Technical Spike & Contracts | WASM/Worker/dialect/contracts/query-policy decision gate | Sprint 4 | `DONE` | Pass (11/11 SQL; 144/144 full) | `src/utils/sql/`, `src/workers/sql/`, `docs/agent/CURRENT_TASK.md` |
 
 ---
 
@@ -65,3 +66,11 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 * **Boundary:** Giữ nguyên Submission Contract, Evaluator logic, không trao XP hay kích hoạt logic game chưa tới lượt.
 * **Audit validation:** targeted 73/73, full regression 20/20 files với 133/133 tests, production build và Browser verification pass.
 * **Tooling note:** lint project-level chưa khả dụng vì repository chưa có `eslint.config.*`; global npm của máy xác minh thiếu `npm-cli.js`.
+
+## 5. Sprint 4 Planning Summary
+
+* **Current gate:** Step 4.0 `DONE`; có engine/Worker/seed/browser harness nhưng chưa có product UI/route SQL.
+* **Execution order:** 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8.
+* **Boundary:** `sql.js@1.14.2` SQLite in-memory trong Worker; không OPFS/backend/XP; Step 4.1A chưa kích hoạt.
+* **Verified:** SQL unit 11/11, full regression 144/144, Vite dev/build/production preview Worker+WASM pass.
+* **Remaining risks:** read-only policy cần hardening theo fixture matrix và canonical result equivalence vẫn thuộc Step 4.6.

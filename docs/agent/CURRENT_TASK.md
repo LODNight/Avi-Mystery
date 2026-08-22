@@ -4,59 +4,73 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.1
-- Task ID: LRN-SQL-4.1-ENGINE
-- Status: IN_PROGRESS
+- Step: 4.0
+- Task ID: LRN-SQL-4.0-TECHNICAL-SPIKE
+- Status: DONE
 - Primary Module: LRN-SQL
 - Supporting Modules:
   - SHR
-  - BE
 - Module document: [modules/LRN-SQL.md](./modules/LRN-SQL.md)
 
 ## Goal
 
-Khởi tạo hạ tầng cho Sprint 4 (SQL Vertical Slice): Tích hợp trình quản lý SQL WebAssembly (SQLite WASM / SQL engine adapter) chạy trực tiếp trên trình duyệt và xây dựng component Trình duyệt Cấu trúc Bảng (`Schema Browser`) hiển thị danh sách bảng, tên cột, kiểu dữ liệu và chỉ dẫn dataset SQL cho người học.
+Thực hiện Technical Spike bắt buộc trước implementation Sprint 4: chốt SQLite WASM library, cách Vite đóng gói WASM/Worker, dialect, SQL mission/dataset/execution/checker contracts, query policy và chiến lược timeout/reset/dispose.
 
-Không trao XP, không gửi SQL query lên Backend API thật, không làm sụp đổ các trang Excel Mission và Learner Shell hiện có.
+Step này chỉ tạo decision, contract proposal, fixture/spike tối thiểu và bằng chứng build/browser. Không xây SQL Workspace, Schema Browser, Editor, Result Viewer hoặc Submission flow.
 
 ## In Scope
 
-- Khởi tạo kiến trúc client-side SQL engine (WASM/adapter) và utility quản lý schema / mock SQLite database.
-- Phát triển component `Schema Browser` hiển thị danh sách bảng (Tables), danh sách cột (Columns) và dữ liệu mẫu (Sample data).
-- Xây dựng mock datasets cho bài tập SQL đầu tiên (ví dụ: `investigations`, `clues`, `suspects`).
-- Đăng ký route và layout cơ bản cho SQL Mission Workspace (`/missions/sql/:missionId/workspace` hoặc tương đương).
-- Viết unit test cho SQL engine adapter và `Schema Browser` component.
-- Cập nhật tài liệu tiến độ (`CURRENT_TASK.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `CHECKLIST.md`, `BACKLOG.md`).
+- So sánh `sql.js` và `@sqlite.org/sqlite-wasm` theo license, API, Worker, Vite và deployment.
+- Chốt SQLite dialect, in-memory lifecycle và không dùng OPFS trong MVP trừ khi spike chứng minh cần thiết.
+- Chốt interface engine: `initialize`, `loadDataset`, `getSchema`, `execute`, `reset`, `dispose`.
+- Chốt SQL Mission/Dataset contract, execution result/error codes và result checker config.
+- Chốt query policy: single statement, read-only, timeout/cancel, max rows và worker recovery.
+- Tạo spike/fixture nhỏ để xác minh WASM init, Worker message, seed/reset và production build nếu cần.
+- Ghi decision và cập nhật toàn bộ tài liệu Sprint 4 theo Step 4.0–4.8.
 
 ## Out of Scope
 
-- Backend API thật cho SQL execution (Backend thật thuộc Sprint 7).
-- SQL Evaluator nâng cao và Submission Contract integration (thuộc Step 4.3).
-- Chức năng trao XP / Streak thật (Game progress thuộc Sprint 5).
-- Python learning sandbox hay Admin Content Builder cho SQL.
+- Product route và SQL Mission Workspace.
+- Schema Browser, SQL Editor, Result Viewer và learner-facing UI.
+- SQL Result Checker hoặc Submission implementation.
+- Backend API, OPFS persistence, XP/Streak, Python sandbox và Admin Content Builder.
+- Autocomplete theo schema, format query, CSV export hoặc advanced editor features.
 
 ## Allowed Write Paths
 
-- `src/components/sql/`
 - `src/utils/sql/`
-- `src/pages/learner/SqlMissionPage.jsx`
-- `src/pages/learner/SqlMissionPage.test.jsx`
-- `src/services/mock/mockSqlService.js`
-- `src/services/mock/mockSqlService.test.js`
-- `src/mocks/data/sqlMissions.json`
+- `src/workers/sql/`
+- `src/mocks/data/sql/`
+- `package.json`
+- `package-lock.json`
+- `vite.config.js`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/agent/modules/LRN-SQL.md`
+- `docs/agent/CONTRACTS.md`
+- `docs/agent/DECISIONS.md`
+- `docs/agent/MODULE_MAP.md`
+- `docs/agent/PROJECT_CONTEXT.md`
+- `docs/agent/TEST_STRATEGY.md`
+- `docs/agent/UI_CHANGE_INVENTORY.md`
 - `docs/PROJECT_STATUS.md`
 - `docs/ROADMAP.md`
 - `docs/CHECKLIST.md`
 - `docs/BACKLOG.md`
 - `docs/TEST_REPORT.md`
+- `docs/DOUBLE_CHECK_REPORT.md`
+- `docs/avi-mystery-roadmap-review-sprint-3-8.md`
+- `README.md`
 
 ## Read-only Paths
 
+- `src/components/sql/`
+- `src/pages/learner/SqlMissionPage.jsx`
+- `src/services/mock/`
+- `src/services/index.js`
 - `src/components/excel/`
 - `src/utils/excelChecker.js`
 - `src/services/contracts/`
+- `src/app/router/`
 - `src/app/layouts/`
 - `src/components/ui/`
 
@@ -64,20 +78,36 @@ Không trao XP, không gửi SQL query lên Backend API thật, không làm sụ
 
 - `src/pages/admin/`
 - `src/services/api/`
-- `package.json`
+- `src/pages/learner/` ngoài path spike được khai báo
+- `src/components/` ngoài path spike được khai báo
 - `.git/`
 
 ## Acceptance Criteria
 
-- [ ] Client-side SQL engine / mock database adapter khởi tạo dữ liệu bài học thành công trong trình duyệt.
-- [ ] `Schema Browser` hiển thị trực quan các bảng, cột, kiểu dữ liệu và mẫu dữ liệu.
-- [ ] Route không bị xung đột với Excel Mission Workspace hiện có.
-- [ ] Pass 100% unit tests cho SQL engine adapter & Schema Browser.
-- [ ] Full regression tests Sprint 1–3 vẫn pass 100%.
+- [x] Có decision record cho engine library, version, license và lý do chọn.
+- [x] WASM/Worker spike chạy được ở Vite dev và production build mà không block main thread.
+- [x] SQL Mission, Dataset, Execution Result, stable errors và Checker config được chốt ở mức proposal.
+- [x] Query policy, timeout/cancel, row limit, reset/dispose và recovery strategy được chốt.
+- [x] Một seed nhỏ chứng minh initialize/load/schema/execute/reset/dispose khả thi.
+- [x] Test strategy tách unit fake adapter khỏi browser WASM integration.
+- [x] Không tạo product UI, route, Submission implementation hoặc thay đổi Excel behavior.
+- [x] Full regression Sprint 1–3 và production build vẫn pass.
+
+## Completion Evidence
+
+- Engine: `sql.js@1.14.2`, MIT, SQLite WASM in-memory trong dedicated module Worker.
+- Worker transport: request ID + action/payload; response success/error có correlation ổn định.
+- Policy: một `SELECT`/`WITH`, read-only, mặc định timeout 2000ms, mặc định 500 rows và hard cap 5000 rows.
+- Recovery: hard timeout terminate Worker, tạo Worker mới, khởi tạo WASM và nạp lại deterministic seed.
+- Browser harness cô lập: `src/utils/sql/sql-spike.html`; không có product route hoặc navigation.
+- SQL unit: 3 files, 11/11 tests pass; full regression: 23 files, 144/144 tests pass.
+- Vite dev và production preview đều pass real Worker/WASM lifecycle; production build phát sinh Worker + WASM asset riêng.
+- Lint chưa chạy được vì repository chưa có `eslint.config.*`; đây là tooling debt đã tồn tại, không phải regression của Step 4.0.
 
 ## Test Commands
 
 ```bash
 node ./node_modules/vitest/vitest.mjs run src/utils/sql/
 node ./node_modules/vitest/vitest.mjs run
+node ./node_modules/vite/bin/vite.js build
 ```

@@ -1,6 +1,6 @@
 # Trạng Thái Dự Án Avi-Mystery
 
-> **Cập nhật lần cuối:** 21/08/2026
+> **Cập nhật lần cuối:** 22/08/2026
 > **Nguồn trạng thái task:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md)
 
 ---
@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 3 — Excel Vertical Slice
 * **Sprint Goal:** Hoàn thiện một Excel learning vertical slice với workspace, evaluator, submission orchestration và feedback có boundary ổn định.
-* **Step đã hoàn thành:** Step 3.0–3.4 core.
-* **Step hiện tại:** Step 3.4E — Submission UI Stabilization (`READY`).
-* **Step kế tiếp đã lên kế hoạch:** Step 3.5 — Learner UI Foundation & Stabilization.
-* **Trạng thái Sprint:** `IN_PROGRESS — UI STABILIZATION`; Sprint 4 chưa được kích hoạt.
+* **Step đã hoàn thành:** Step 3.0–3.6.
+* **Step hiện tại:** Step 3.6 — Light Mode Refinement & Accessibility (`DONE`).
+* **Step kế tiếp đã lên kế hoạch:** Sprint 4 — SQL Vertical Slice.
+* **Trạng thái Sprint:** `DONE — SPRINT 3 COMPLETE`; Chuẩn bị kích hoạt Sprint 4.
 
 ---
 
@@ -20,10 +20,10 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Workspace core `DONE`; Hint/Grid/Mission UI stabilization | `PARTIAL / Step 3.5` |
-| **Submission (`LRN-SUB`)** | `Primary` | Core `DONE`; feedback/responsive/a11y stabilization | `READY / Step 3.4E` |
+| **Learner Excel (`LRN-EXCEL`)** | `Primary` | Workspace core `DONE`; Light Mode & Accessibility Refinement | `DONE / Step 3.6` |
+| **Submission (`LRN-SUB`)** | `Supporting` | Core `DONE`; feedback/responsive/a11y stabilization | `DONE / Step 3.4E` |
 | **Admin (`ADM`)** | `None` | Giữ nguyên App Shell, Quản lý trạng thái trang trong Cài đặt | `NO_CHANGE` |
-| **Shared (`SHR`)** | `Supporting` | Contract/gateway `DONE`; Learner layout/shared UI audit | `PLANNED / Step 3.5` |
+| **Shared (`SHR`)** | `Supporting` | Contract/gateway `DONE`; Learner layout/shared UI audit & Light Mode tokens | `DONE / Step 3.6` |
 | **Backend (`BE`)** | `None` | FastAPI/PostgreSQL/API integration | `PLANNED` cho Sprint 7 |
 
 ---
@@ -52,15 +52,14 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `SHR-AUDIT-003` | `SHR` | Audit | Step 3.0 Transition Audit và Excel checker | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.test.js` |
 | `LRN-EXCEL-001` | `LRN-EXCEL` | Mission | Step 3.1 Excel Mission Shell (`/missions/:missionId/workspace`) | Sprint 3 | `DONE` | Pass | `src/pages/learner/ExcelMissionPage.test.jsx` |
 | `LRN-EXCEL-002` | `LRN-EXCEL` | Workspace | Step 3.2 Grid/Formula Bar và Step 3.3 Toolbar/Hints | Sprint 3 | `DONE` | Pass | `src/components/excel/*.test.jsx` |
-| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | Core targeted pass; current regression 120/120 | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
-| `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `READY` | Existing suite pass; stabilization gate pending | `docs/agent/UI_CHANGE_INVENTORY.md` |
-| `SHR-3.5` | `SHR` | UI Foundation | Shared UI, Learner layout/navigation, responsive/a11y | Sprint 3 | `PLANNED` | Audit evidence only | `docs/agent/UI_CHANGE_INVENTORY.md` |
+| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | Pass | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
+| `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `DONE` | Pass | `docs/agent/UI_CHANGE_INVENTORY.md` |
+| `LRN-UI-3.6` | `LRN-EXCEL` | Light Mode Refinement | Standardized Light Mode design & accessibility | Sprint 3 | `DONE` | Pass (120/120) | `src/styles/index.css`, `ActionToolbar.jsx`, `FormulaBar.jsx`, `SpreadsheetGrid.jsx`, `LearnerLayout.jsx` |
 
 ---
 
-## 4. Step 3.4 Completion Summary
+## 4. Step 3.6 Completion Summary
 
-* **Đã hoàn thành:** shared contract/gateway, async mock, structured errors, retry, double-submit/replay guard, unmount cleanup, answer retention, inline incorrect/error và accessible success modal.
-* **Boundary:** Submission trả `potentialXp` nhưng không cập nhật XP/level; reward thuộc Progress Sprint 5.
-* **Audit validation:** current working tree full regression 19 files với 120/120 tests pass; test pass không tự chứng minh visual/responsive coverage.
-* **Tiếp theo:** Step 3.4E → Step 3.5 → regression Sprint 1–3. Chỉ sau đó mới xem xét một Current Task Sprint 4 do người dùng kích hoạt.
+* **Đã hoàn thành:** Tinh chỉnh theme tokens light mode, trung tính hóa các nút phụ ActionToolbar, nâng cao độ tương phản FormulaBar, làm sạch header và ô bảng SpreadsheetGrid, cân bằng Streak promo card trong Sidebar.
+* **Boundary:** Giữ nguyên Submission Contract, Evaluator logic, không trao XP hay kích hoạt logic game chưa tới lượt.
+* **Audit validation:** Current working tree full regression pass 19/19 test files với 120/120 unit & integration tests pass.

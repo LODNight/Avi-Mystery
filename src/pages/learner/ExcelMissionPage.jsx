@@ -22,7 +22,7 @@ import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
 import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
-import { analyzeExcelFormula } from '../../utils/excelChecker.js';
+import { analyzeExcelFormula, validateGlobalExcelMission } from '../../utils/excelChecker.js';
 
 function createClientAttemptId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
@@ -216,14 +216,32 @@ export function ExcelMissionPage() {
 
   // ── Step 3.3 Action Toolbar Handlers ──
 
-  // 1. Chạy thử công thức (Run / Evaluate)
+  // 1. Chạy thử công thức (Macro-action: Global Test Cases Pre-check Validator)
   const handleRunFormula = () => {
     setIsEvaluating(true);
     handleFormulaSubmit();
+
+    const starterCell = mission?.starterContent?.targetCell || 'E2';
+    const match = starterCell.match(/^([A-Z]+)([0-9]+)$/i);
+    let requiredRange = [starterCell];
+    if (match && dataset?.rows) {
+      const colLetter = match[1].toUpperCase();
+      const startRow = parseInt(match[2], 10);
+      requiredRange = dataset.rows.map((_, idx) => `${colLetter}${startRow + idx}`);
+    }
+
+    const validation = validateGlobalExcelMission({
+      cellFormulas,
+      cellValues,
+      starterCell,
+      requiredRange,
+      sheetData: getSheetDataMap(),
+    });
+
     setTimeout(() => {
       setIsEvaluating(false);
-
-    }, 200);
+      showNotification(validation.status, validation.message);
+    }, 250);
   };
 
   // 2. Đặt lại bảng tính (Reset Grid)
@@ -437,11 +455,11 @@ export function ExcelMissionPage() {
       */}
 
       {/* ── Nhóm 1: Mục tiêu vụ án (1) & Thanh thao tác hành động (3) ── */}
-      <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-2.5 space-y-2.5 shadow-xs">
+      <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-card p-3 space-y-3 shadow-xs">
         {/* 1. Compact Sticky Objective Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3.5 py-2.5 shadow-2xs">
           <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-xs shrink-0">
+            <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-2xs shrink-0">
               <Sparkles className="size-3.5 fill-current" /> Ô mục tiêu: {starterCell}
             </span>
             <p className="text-xs sm:text-sm font-semibold text-foreground">

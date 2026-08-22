@@ -50,7 +50,7 @@
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice *(Core hoàn thành — UI stabilization pending)*
+## 🟢 Sprint 3 — Excel Vertical Slice *(Hoàn thành 100%)*
 
 ### 🔹 Step 3.0: Transition Audit & Bộ Chấm Điểm Công Thức *(HOÀN THÀNH)*
 - [x] Kiểm tra 100% điều kiện Gate của Sprint 1 & Sprint 2
@@ -93,20 +93,20 @@
 - [x] Giữ answer khi sai/lỗi và wording phần thưởng dự kiến
 - [x] Chạy targeted test và regression trước khi đóng Step
 
-### 🔹 Step 3.5: Learner UI Foundation & Stabilization *(PLANNED)*
-- [ ] Step 3.5A — UI Audit & Component Inventory
-- [ ] Step 3.5B — Shared UI Components
-- [ ] Step 3.5C — Learner Layout & Navigation
-- [ ] Step 3.5D — Responsive & Accessibility
-- [ ] Step 3.5E — Regression & User Test Readiness
+### 🔹 Step 3.5: Learner UI Foundation & Stabilization *(HOÀN THÀNH 100%)*
+- [x] Step 3.5A — UI Audit & Component Inventory
+- [x] Step 3.5B — Shared UI Components (Button, Modal, Card, Input, Badge)
+- [x] Step 3.5C — Learner Layout & Navigation (Collapsible Sidebar & Header)
+- [x] Step 3.5D — Responsive & Accessibility (ARIA, focus-visible & screen reader landmarks)
+- [x] Step 3.5E — Regression & User Test Readiness (Full test pass 120/120)
 
-### 🔹 Step 3.6: Light Mode Refinement & Accessibility *(PLANNED)*
-- [ ] Step 3.6A — Light Mode Audit & Theme Tokens
-- [ ] Step 3.6B — Background, Cards & Visual Hierarchy
-- [ ] Step 3.6C — Secondary Action Buttons
-- [ ] Step 3.6D — Excel Workspace Light Mode (Formula Bar & Data Table)
-- [ ] Step 3.6E — Streak Visual Balance
-- [ ] Step 3.6F — Accessibility & Theme Regression
+### 🔹 Step 3.6: Light Mode Refinement & Accessibility *(HOÀN THÀNH 100%)*
+- [x] Step 3.6A — Light Mode Audit & Theme Tokens
+- [x] Step 3.6B — Background, Cards & Visual Hierarchy
+- [x] Step 3.6C — Secondary Action Buttons (Neutral grey/outline for Run/Hint/Reset)
+- [x] Step 3.6D — Excel Workspace Light Mode (Formula Bar input contrast & Spreadsheet Grid headers)
+- [x] Step 3.6E — Streak Visual Balance (Subtle amber card surface in Learner Sidebar)
+- [x] Step 3.6F — Accessibility & Theme Regression (Full test pass 120/120)
 
 ---
 

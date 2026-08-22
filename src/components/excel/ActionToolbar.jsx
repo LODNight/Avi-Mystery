@@ -26,27 +26,27 @@ export function ActionToolbar({
   isEvaluating = false,
 }) {
   return (
-    <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2.5 rounded-2xl border border-border bg-card p-3 shadow-sm">
+    <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2.5 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card p-3 shadow-sm">
       {/* ── Group 1: Core Action Buttons (Chạy thử & Nộp bài - Ưu tiên hàng đầu trên mobile) ── */}
       <div className="contents sm:flex sm:items-center gap-2">
-        {/* Nút Chạy thử công thức (Run / Evaluate) */}
+        {/* Nút Chạy thử công thức (Run / Evaluate - Neutral Secondary Button) */}
         <button
           type="button"
           onClick={onRun}
           disabled={isEvaluating || isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto"
-          title="Chạy thử công thức trên ô tính hiện tại"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-stone-100/90 text-stone-800 hover:bg-stone-200 hover:text-stone-950 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 dark:hover:border-stone-500 px-3.5 py-2 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-stone-500"
+          title="Kiểm duyệt cú pháp & toàn bộ dải ô bài làm vụ án"
         >
-          <Play className={`size-3.5 ${isEvaluating ? 'animate-spin' : 'fill-current'}`} />
+          <Play className={`size-3.5 ${isEvaluating ? 'animate-spin' : 'fill-stone-700 dark:fill-stone-200 text-stone-700 dark:text-stone-200'}`} />
           <span>{isEvaluating ? 'Đang tính...' : 'Chạy thử công thức'}</span>
         </button>
 
-        {/* Nút Nộp bài (Submit Answer) */}
+        {/* Nút Nộp bài (Submit Answer - Primary Action CTA) */}
         <button
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md disabled:opacity-50 cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
           title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
         >
           {isSubmitting ? (
@@ -65,30 +65,30 @@ export function ActionToolbar({
 
       {/* ── Group 2: Auxiliary Buttons (Gợi ý & Đặt lại) ── */}
       <div className="contents sm:flex sm:items-center gap-2">
-        {/* Nút Gợi ý từng bước (Progressive Hints) */}
+        {/* Nút Gợi ý từng bước (Progressive Hints - Neutral Secondary Button) */}
         <button
           type="button"
           onClick={onToggleHint}
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto relative"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-stone-100/90 text-stone-800 hover:bg-stone-200 hover:text-stone-950 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 dark:hover:border-stone-500 px-3.5 py-2 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer w-full sm:w-auto relative focus-visible:ring-2 focus-visible:ring-stone-500"
           title="Xem gợi ý từng bước giải quyết vụ án"
         >
-          <Lightbulb className="size-3.5 fill-amber-500/20" />
+          <Lightbulb className="size-3.5 text-amber-600 dark:text-amber-400 fill-amber-500/20" />
           <span>Gợi ý</span>
-          <span className="rounded-full bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] font-extrabold text-amber-700 dark:text-amber-300">
+          <span className="rounded-full bg-stone-200 text-stone-800 dark:bg-stone-700 dark:text-stone-100 border border-stone-300 dark:border-stone-500 px-2 py-0.5 font-mono text-[10px] font-extrabold">
             {hintsUnlockedCount}/{hintCount}
           </span>
         </button>
 
-        {/* Nút Đặt lại bảng tính (Reset Grid) */}
+        {/* Nút Đặt lại bảng tính (Reset Grid - Neutral Secondary Button) */}
         <button
           type="button"
           onClick={onReset}
           disabled={isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-muted/30 px-3.5 py-2 text-xs font-bold text-foreground hover:bg-muted transition-all shadow-xs disabled:opacity-50 cursor-pointer w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-stone-100/80 text-stone-700 hover:bg-stone-200 hover:text-stone-950 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-200 dark:hover:bg-stone-700 dark:hover:border-stone-500 px-3.5 py-2 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-stone-500"
           title="Xóa toàn bộ công thức đã nhập và đặt lại bảng về trạng thái ban đầu"
         >
-          <RotateCcw className="size-3.5 text-muted-foreground" />
+          <RotateCcw className="size-3.5 text-stone-600 dark:text-stone-300" />
           <span>Đặt lại</span>
         </button>
       </div>

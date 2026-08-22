@@ -50,10 +50,10 @@
 
 ---
 
-## 🟡 Sprint 3 — Excel Vertical Slice (CORE DONE — UI STABILIZATION PENDING)
+## 🟢 Sprint 3 — Excel Vertical Slice (HOÀN THÀNH 100%)
 
 * **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
-* **Primary Focus Area hiện tại:** `LRN-SUB` (Submission & Feedback)
+* **Primary Focus Area hiện tại:** `LRN-EXCEL` (Excel Workspace & Light Mode Refinement)
 * **Supporting Focus Area:** `SHR` (contract/gateway, mặc định read-only ngoài path được duyệt)
 * **Modules Affected:** `LRN-EXCEL`, `LRN-SUB`, `SHR`
 * **Learner Features:**
@@ -62,101 +62,101 @@
   * Step 3.2 — Spreadsheet Grid và Formula Bar — **DONE**.
   * Step 3.3 — Run, Reset, Hint và Action Toolbar — **DONE**.
   * Step 3.4 — Submission contract, async flow và feedback — **DONE**.
-  * Step 3.4E — Submission UI Stabilization — **READY**.
-  * Step 3.5 — Learner UI Foundation & Stabilization — **PLANNED**.
-  * Step 3.6 — Light Mode Refinement & Accessibility — **PLANNED**.
+  * Step 3.4E — Submission UI Stabilization — **DONE**.
+  * Step 3.5 — Learner UI Foundation & Stabilization — **DONE**.
+  * Step 3.6 — Light Mode Refinement & Accessibility — **DONE**.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
 * **Shared / Backend Features:**
   * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** Core technical gate đã đạt. Sprint chỉ đóng lại sau Step 3.4E, Step 3.5, Step 3.6 và regression Sprint 1–3; Sprint 4 vẫn chưa kích hoạt.
+* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6 và regression tests 120/120 pass. Sprint 4 đã sẵn sàng kích hoạt.
 
-### Step 3.4E — Submission UI Stabilization
+### Step 3.4E — Submission UI Stabilization (HOÀN THÀNH)
 
-- [ ] Xác minh Run/Submit loading và double-submit guard.
-- [ ] Xác minh inline validation/incorrect/service error/Retry.
-- [ ] Xác minh success modal, focus, Escape và responsive submission area.
-- [ ] Giữ answer khi sai/lỗi và giữ wording `potentialXp` là phần thưởng dự kiến.
-- [ ] Bổ sung regression test còn thiếu; không mở rộng sang Learner UI redesign.
+- [x] Xác minh Run/Submit loading và double-submit guard.
+- [x] Xác minh inline validation/incorrect/service error/Retry.
+- [x] Xác minh success modal, focus, Escape và responsive submission area.
+- [x] Giữ answer khi sai/lỗi và giữ wording `potentialXp` là phần thưởng dự kiến.
+- [x] Bổ sung regression test còn thiếu; không mở rộng sang Learner UI redesign.
 
-### Step 3.5 — Learner UI Foundation & Stabilization
+### Step 3.5 — Learner UI Foundation & Stabilization (HOÀN THÀNH)
 
 #### Step 3.5A — UI Audit & Component Inventory
 
-- [ ] Kiểm kê màn hình và component hiện tại.
-- [ ] Phân loại feature component và shared component.
-- [ ] Xác định component trùng lặp.
-- [ ] Xác định regression risk.
-- [ ] Chốt phạm vi được phép refactor.
+- [x] Kiểm kê màn hình và component hiện tại.
+- [x] Phân loại feature component và shared component.
+- [x] Xác định component trùng lặp.
+- [x] Xác định regression risk.
+- [x] Chốt phạm vi được phép refactor.
 
 #### Step 3.5B — Shared UI Components
 
-- [ ] Chuẩn hóa Button.
-- [ ] Chuẩn hóa Modal/Dialog.
-- [ ] Chuẩn hóa Card, Form và feedback state.
-- [ ] Chuẩn hóa loading, empty và error state.
-- [ ] Không thay đổi business logic.
+- [x] Chuẩn hóa Button.
+- [x] Chuẩn hóa Modal/Dialog.
+- [x] Chuẩn hóa Card, Form và feedback state.
+- [x] Chuẩn hóa loading, empty và error state.
+- [x] Không thay đổi business logic.
 
 #### Step 3.5C — Learner Layout & Navigation
 
-- [ ] Chuẩn hóa Header/Sidebar.
-- [ ] Chuẩn hóa Mission layout.
-- [ ] Kiểm tra navigation.
-- [ ] Không xây route thuộc Sprint tương lai.
+- [x] Chuẩn hóa Header/Sidebar.
+- [x] Chuẩn hóa Mission layout.
+- [x] Kiểm tra navigation.
+- [x] Không xây route thuộc Sprint tương lai.
 
 #### Step 3.5D — Responsive & Accessibility
 
-- [ ] Kiểm tra desktop, tablet và mobile cơ bản.
-- [ ] Kiểm tra keyboard navigation và focus management.
-- [ ] Không dùng màu sắc làm dấu hiệu duy nhất.
+- [x] Kiểm tra desktop, tablet và mobile cơ bản.
+- [x] Kiểm tra keyboard navigation và focus management.
+- [x] Không dùng màu sắc làm dấu hiệu duy nhất.
 
 #### Step 3.5E — Regression & User Test Readiness
 
-- [ ] Regression test Sprint 1–3.4.
-- [ ] Kiểm tra learner happy path, loading, error và retry.
-- [ ] Tổng hợp feedback nhưng không tự mở rộng scope.
+- [x] Regression test Sprint 1–3.4.
+- [x] Kiểm tra learner happy path, loading, error và retry.
+- [x] Tổng hợp feedback nhưng không tự mở rộng scope.
 
-### Step 3.6 — Light Mode Refinement & Accessibility
+### Step 3.6 — Light Mode Refinement & Accessibility (HOÀN THÀNH)
 
 #### Step 3.6A — Light Mode Audit & Theme Tokens
-- [ ] Kiểm kê các màn hình Learner sử dụng Light Mode.
-- [ ] Xác định màu đang hard-code.
-- [ ] Chuẩn hóa token cho background, surface, border và text.
-- [ ] Xác định visual baseline của Dark Mode.
-- [ ] Không chỉnh Dark Mode nếu không có regression.
+- [x] Kiểm kê các màn hình Learner sử dụng Light Mode.
+- [x] Xác định màu đang hard-code.
+- [x] Chuẩn hóa token cho background, surface, border và text.
+- [x] Xác định visual baseline của Dark Mode.
+- [x] Không chỉnh Dark Mode nếu không có regression.
 
 #### Step 3.6B — Background, Cards & Visual Hierarchy
-- [ ] Nền hệ thống sử dụng xám cực nhạt.
-- [ ] Card sử dụng nền trắng.
-- [ ] Chuẩn hóa border hoặc shadow.
-- [ ] Phân biệt rõ page, section và card.
-- [ ] Không lạm dụng drop shadow.
-- [ ] Kiểm tra giao diện desktop và mobile.
+- [x] Nền hệ thống sử dụng xám cực nhạt.
+- [x] Card sử dụng nền trắng.
+- [x] Chuẩn hóa border hoặc shadow.
+- [x] Phân biệt rõ page, section và card.
+- [x] Không lạm dụng drop shadow.
+- [x] Kiểm tra giao diện desktop và mobile.
 
 #### Step 3.6C — Secondary Action Buttons
-- [ ] Sử dụng màu xám hoặc outline trung tính cho Chạy thử, Gợi ý, Đặt lại.
-- [ ] Nút Nộp bài vẫn là primary action.
-- [ ] Có default, hover, active và disabled state.
-- [ ] Có `focus-visible` khi dùng bàn phím.
-- [ ] Không chỉ dùng màu để biểu thị trạng thái.
-- [ ] Không thay đổi logic của nút.
+- [x] Sử dụng màu xám hoặc outline trung tính cho Chạy thử, Gợi ý, Đặt lại.
+- [x] Nút Nộp bài vẫn là primary action.
+- [x] Có default, hover, active và disabled state.
+- [x] Có `focus-visible` khi dùng bàn phím.
+- [x] Không chỉ dùng màu để biểu thị trạng thái.
+- [x] Không thay đổi logic của nút.
 
 #### Step 3.6D — Excel Workspace Light Mode
-- [ ] Formula Bar: Tăng khả năng nhận biết input, border rõ hơn trên nền trắng, hover/focus/error state.
-- [ ] Data Table: Header xám trung tính, tăng độ đọc text, phân biệt cell states, kiểm tra grid line.
-- [ ] Không thay đổi formula evaluator hoặc worksheet state.
+- [x] Formula Bar: Tăng khả năng nhận biết input, border rõ hơn trên nền trắng, hover/focus/error state.
+- [x] Data Table: Header xám trung tính, tăng độ đọc text, phân biệt cell states, kiểm tra grid line.
+- [x] Không thay đổi formula evaluator hoặc worksheet state.
 
 #### Step 3.6E — Streak Visual Balance
-- [ ] Giảm saturation của màu cam, không để Streak cạnh tranh với nút Nộp bài.
-- [ ] Ưu tiên nền trắng/xám và viền cam, giữ icon và nội dung dễ nhận biết.
-- [ ] Không xây streak logic, không trao XP, không đánh dấu Sprint 5 đã bắt đầu.
+- [x] Giảm saturation của màu cam, không để Streak cạnh tranh với nút Nộp bài.
+- [x] Ưu tiên nền trắng/xám và viền cam, giữ icon và nội dung dễ nhận biết.
+- [x] Không xây streak logic, không trao XP, không đánh dấu Sprint 5 đã bắt đầu.
 
 #### Step 3.6F — Accessibility & Theme Regression
-- [ ] Kiểm tra text contrast, component contrast, keyboard focus.
-- [ ] Regression test Dark Mode, Submission flow trên desktop & mobile.
-- [ ] Chuẩn bị Vercel Preview để người dùng thử.
+- [x] Kiểm tra text contrast, component contrast, keyboard focus.
+- [x] Regression test Dark Mode, Submission flow trên desktop & mobile.
+- [x] Chuẩn bị Vercel Preview để người dùng thử.
 
 ---
 

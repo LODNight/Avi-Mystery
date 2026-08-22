@@ -35,14 +35,14 @@ export function FormulaBar({
   };
 
   return (
-    <div className="flex flex-col gap-1 sm:flex-row sm:items-center rounded-2xl border border-border bg-card p-2.5 shadow-sm transition-all">
+    <div className="flex flex-col gap-1 sm:flex-row sm:items-center rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card p-2.5 shadow-sm transition-all">
       <div className="flex items-center gap-2">
         {/* Cell Coordinate Name Box */}
         <div
           className={`flex items-center justify-center min-w-[3.5rem] px-3 py-1.5 rounded-xl font-mono text-xs font-bold transition-colors ${
             isTargetCell
               ? 'bg-amber-500 text-amber-950 shadow-sm shadow-amber-500/20 ring-1 ring-amber-400'
-              : 'bg-muted text-foreground'
+              : 'bg-stone-200/80 dark:bg-muted text-stone-800 dark:text-foreground border border-stone-300 dark:border-transparent'
           }`}
           title={isTargetCell ? 'Ô mục tiêu cần tính toán của vụ án' : `Ô ${selectedCell}`}
         >
@@ -51,11 +51,11 @@ export function FormulaBar({
         </div>
 
         {/* Function Icon Indicator */}
-        <div className="flex items-center justify-center px-2 py-1 font-mono text-sm font-bold text-muted-foreground select-none">
+        <div className="flex items-center justify-center px-2 py-1 font-mono text-sm font-bold text-stone-500 dark:text-muted-foreground select-none">
           fx
         </div>
 
-        <div className="h-5 w-px bg-border hidden sm:block" />
+        <div className="h-5 w-px bg-stone-300 dark:bg-border hidden sm:block" />
       </div>
 
       {/* Formula Input Field */}
@@ -72,10 +72,10 @@ export function FormulaBar({
                 ? 'Nhập công thức bài làm (ví dụ: =C2*D2)...'
                 : 'Nhập công thức hoặc giá trị (ví dụ: =SUM(B2:B5))...'
             }
-            className={`w-full rounded-xl border bg-background px-3.5 py-1.5 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 transition-all disabled:opacity-50 ${
+            className={`w-full rounded-xl border bg-white dark:bg-background px-3.5 py-1.5 text-xs font-mono text-stone-900 dark:text-foreground placeholder:text-stone-400 dark:placeholder:text-muted-foreground focus:outline-none focus:ring-2 transition-all disabled:opacity-50 ${
               diagnostic && !diagnostic.valid
                 ? 'border-rose-500 focus:border-rose-500 focus:ring-rose-500'
-                : 'border-border focus:border-primary focus:ring-primary'
+                : 'border-stone-300 dark:border-border focus:border-amber-600 focus:ring-amber-500/30 dark:focus:border-primary dark:focus:ring-primary'
             }`}
             aria-label="Thanh nhập công thức Excel"
             aria-invalid={diagnostic ? !diagnostic.valid : undefined}
@@ -87,8 +87,8 @@ export function FormulaBar({
               type="button"
               onClick={onSubmit}
               disabled={disabled || !formula.trim()}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-primary-foreground shadow-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
-              title="Áp dụng công thức (Enter)"
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-stone-700 bg-stone-800 text-white hover:bg-stone-900 dark:border-amber-500/40 dark:bg-amber-600 dark:text-stone-950 dark:hover:bg-amber-500 px-3.5 py-1.5 text-xs font-bold shadow-xs hover:shadow-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0 focus-visible:ring-2 focus-visible:ring-stone-500"
+              title="Tính toán và ghi nhận công thức cho ô tính hiện tại (Enter)"
             >
               <Check className="size-3.5" />
               <span className="hidden sm:inline">Áp dụng</span>

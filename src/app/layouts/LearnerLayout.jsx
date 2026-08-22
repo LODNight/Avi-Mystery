@@ -93,7 +93,7 @@ export function LearnerLayout({ children }) {
 
       {/* ── Sidebar ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar py-5 transition-all duration-300 ease-in-out lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-stone-200 dark:border-stone-800 bg-sidebar py-5 shadow-sm sm:shadow-md transition-all duration-300 ease-in-out lg:translate-x-0 ${
           collapsed ? 'w-20 px-3.5' : 'w-72 px-4'
         } ${mobileOpen ? 'translate-x-0 w-72 px-4' : '-translate-x-full'}`}
       >
@@ -240,22 +240,24 @@ export function LearnerLayout({ children }) {
           </button>
         </nav>
 
-        {/* Streak Promo Card */}
+        {/* Streak Promo Card - Subtle Surface with Amber Accent */}
         {(!collapsed || mobileOpen) ? (
-          <div className="mt-auto rounded-2xl bg-primary p-4 text-primary-foreground shadow-lg shadow-primary/10 animate-fade-in">
+          <div className="mt-auto rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-amber-500/25 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all">
             <div className="flex items-center justify-between">
-              <Sparkles className="size-5" />
-              <span className="rounded-full bg-primary-foreground/20 px-2 py-0.5 font-mono text-[10px] font-bold">
+              <div className="flex items-center gap-2">
+                <Sparkles className="size-4 text-amber-500 fill-amber-500/20" />
+                <span className="text-xs font-bold text-stone-800 dark:text-stone-100">Chuỗi học tập</span>
+              </div>
+              <span className="rounded-full border border-stone-200 dark:border-amber-500/30 bg-stone-100 dark:bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-300">
                 {formatXP(user?.xp || 0)}
               </span>
             </div>
-            <p className="mt-3 text-sm font-semibold">Giữ vững streak học tập</p>
-            <p className="mt-1 text-xs leading-5 opacity-80">
-              Hoàn thành 1 nhiệm vụ hôm nay để không gián đoạn tiến trình.
+            <p className="mt-2 text-xs leading-relaxed text-stone-600 dark:text-stone-300">
+              Hoàn thành 1 nhiệm vụ hôm nay để duy trì tiến trình.
             </p>
             <Link
               to="/dashboard"
-              className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold hover:underline"
+              className="mt-2.5 inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline transition-colors"
             >
               Vào nhiệm vụ <ChevronRight className="size-3" />
             </Link>
@@ -264,10 +266,10 @@ export function LearnerLayout({ children }) {
           <div className="mt-auto flex justify-center pt-2">
             <Link
               to="/dashboard"
-              className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-md hover:scale-105 transition-transform"
+              className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-amber-500/30 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500 hover:text-amber-400 transition-all"
               title={`XP: ${formatXP(user?.xp || 0)} · Giữ vững streak học tập`}
             >
-              <Sparkles className="size-5" />
+              <Sparkles className="size-4" />
             </Link>
           </div>
         )}
@@ -280,7 +282,7 @@ export function LearnerLayout({ children }) {
         }`}
       >
         {/* Sticky Header */}
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-background/80 px-5 backdrop-blur-md sm:px-8">
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 px-5 backdrop-blur-md sm:px-8 shadow-xs">
           <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             <button

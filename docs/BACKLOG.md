@@ -45,8 +45,9 @@
 | `LRN-EXCEL-001` | Excel Mission Shell (`/missions/:missionId/workspace`) | `LRN-EXCEL` | `High` | `DONE` | Mission/dataset loading và learner workspace |
 | `LRN-EXCEL-002` | Spreadsheet Grid, Formula Bar và Toolbar | `LRN-EXCEL` | `High` | `DONE` | Cell state, formula input, Run/Reset/Hint và component tests |
 | `LRN-SUB-3.4` | Submission Contract & Feedback Flow | `LRN-SUB` | `High` | `DONE` | Shared contract/gateway; async mock; structured error/retry; duplicate/replay guard; inline feedback; success modal; không mutate XP |
-| `LRN-SUB-3.4E` | Submission UI Stabilization | `LRN-SUB` | `High` | `READY` | Current Task đã chọn; xác minh feedback/loading/retry/modal/responsive/a11y; không mở rộng sang toàn bộ Learner UI |
-| `SHR-3.5` | Learner UI Foundation & Stabilization | `SHR` | `High` | `TODO` | UI inventory, shared primitives, Learner layout/navigation, Mission layout, responsive/a11y và regression |
+| `LRN-SUB-3.4E` | Submission UI Stabilization | `LRN-SUB` | `High` | `DONE` | Xác minh feedback/loading/retry/modal/responsive/a11y; hoàn thành gate 3.4E |
+| `SHR-3.5` | Learner UI Foundation & Stabilization | `SHR` | `High` | `DONE` | UI inventory, shared primitives, Learner layout/navigation, Mission layout, responsive/a11y và regression pass |
+| `LRN-UI-3.6` | Light Mode Refinement & Accessibility | `LRN-EXCEL` | `High` | `DONE` | Light mode theme tokens, secondary action buttons neutral tone, FormulaBar & SpreadsheetGrid contrast, Smart Visibility target cell badge |
 
 Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đúng ownership. Backend thật vẫn thuộc Sprint 7.
 

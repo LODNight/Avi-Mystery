@@ -46,13 +46,13 @@ describe('SpreadsheetGrid Component Tests (LRN-EXCEL-002)', () => {
     expect(handleCellSelect).toHaveBeenCalledWith('E2');
   });
 
-  it('hiển thị badge "Mục tiêu" và làm nổi bật Target Cell', () => {
+  it('hiển thị badge "Mục tiêu" khi ô target chưa có dữ liệu (Trạng thái 1)', () => {
     render(<SpreadsheetGrid dataset={mockDataset} selectedCell="E2" targetCell="E2" />);
 
     expect(screen.getByText('Mục tiêu')).toBeInTheDocument();
   });
 
-  it('hiển thị giá trị đã được tính toán từ công thức trong cellValues', () => {
+  it('ẩn chữ "Mục tiêu" và hiển thị giá trị kết quả rõ ràng khi đã có dữ liệu (Trạng thái 2 - Smart Visibility)', () => {
     const cellValues = { E2: 450000 };
     render(
       <SpreadsheetGrid
@@ -64,5 +64,6 @@ describe('SpreadsheetGrid Component Tests (LRN-EXCEL-002)', () => {
     );
 
     expect(screen.getByText('450.000 ₫')).toBeInTheDocument();
+    expect(screen.queryByText('Mục tiêu')).not.toBeInTheDocument();
   });
 });

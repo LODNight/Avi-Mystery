@@ -475,3 +475,75 @@ export function checkExcelAnswer({
     feedback: 'Công thức hợp lệ nhưng chưa cho ra đáp án yêu cầu. Hãy kiểm tra lại phép tính và các ô tham chiếu.',
   };
 }
+
+/**
+ * Kiểm tra toàn bộ điều kiện Vụ án (Global Pre-check / Test Cases Validator)
+ * Phục vụ cho nút "Chạy thử công thức" (Macro-action)
+ *
+ * @param {Object} options
+ * @param {Object} [options.cellFormulas] - Danh sách công thức do học viên đã nhập { 'E2': '=C2*D2', 'E3': '=C3*D3' }
+ * @param {Object} [options.cellValues] - Giá trị ô tính đã được tính toán { 'E2': 450000 }
+ * @param {string} [options.starterCell] - Ô tính mục tiêu khởi đầu (ví dụ 'E2')
+ * @param {string[]} [options.requiredRange] - Dải ô yêu cầu hoàn thành (ví dụ ['E2', 'E3', 'E4', 'E5', 'E6'])
+ * @param {Object} [options.sheetData] - Dữ liệu bảng tính hiện tại
+ * @returns {Object} { status: 'success'|'warning'|'error', title: string, message: string }
+ */
+export function validateGlobalExcelMission({
+  cellFormulas = {},
+  cellValues = {},
+  starterCell = 'E2',
+  requiredRange = [],
+  sheetData = {},
+}) {
+  const targetCellKey = (starterCell || 'E2').trim().toUpperCase();
+  const starterFormula = cellFormulas[targetCellKey];
+
+  // 1. Kiểm tra nếu chưa nhập công thức ở ô mục tiêu
+  if (!starterFormula || !starterFormula.trim()) {
+    return {
+      status: 'warning',
+      title: 'Chưa có công thức tại ô mục tiêu',
+      message: `Ô mục tiêu ${targetCellKey} chưa có công thức. Hãy chọn ô ${targetCellKey} và nhập công thức tính toán vào thanh fx.`,
+    };
+  }
+
+  // 2. Kiểm tra cú pháp của ô mục tiêu
+  const starterDiagnostic = analyzeExcelFormula(starterFormula, sheetData);
+  if (!starterDiagnostic.valid) {
+    return {
+      status: 'error',
+      title: 'Công thức chưa đúng cú pháp',
+      message: `Công thức tại ô ${targetCellKey} bị lỗi: ${starterDiagnostic.message}`,
+    };
+  }
+
+  // 3. Kiểm tra quét toàn bộ điều kiện Vụ án (Fill down / Complete Dataset Check)
+  if (Array.isArray(requiredRange) && requiredRange.length > 1) {
+    const missingCells = requiredRange.filter((cell) => {
+      const cellKey = cell.toUpperCase();
+      const hasFormula = Boolean(cellFormulas[cellKey] && cellFormulas[cellKey].trim());
+      const hasValue =
+        cellValues[cellKey] !== undefined &&
+        cellValues[cellKey] !== null &&
+        cellValues[cellKey] !== '';
+      return !hasFormula && !hasValue;
+    });
+
+    if (missingCells.length > 0) {
+      const filledCount = requiredRange.length - missingCells.length;
+      return {
+        status: 'warning',
+        title: 'Chưa áp dụng công thức cho toàn bộ bảng',
+        message: `Công thức ở ô ${targetCellKey} chính xác! Tuy nhiên, bạn mới hoàn thành ${filledCount}/${requiredRange.length} hàng. Các ô còn lại (${missingCells.slice(0, 3).join(', ')}${missingCells.length > 3 ? '...' : ''}) chưa có công thức. Hãy kéo (Fill down) hoặc điền công thức cho các ô còn lại!`,
+      };
+    }
+  }
+
+  // 4. Toàn bộ ô yêu cầu đã hợp lệ
+  return {
+    status: 'success',
+    title: 'Kiểm tra tổng thể thành công',
+    message: `Cú pháp tại ô ${targetCellKey} và dữ liệu toàn bảng đã hợp lệ! Bạn đã sẵn sàng bấm nút "Nộp bài vụ án".`,
+  };
+}
+

@@ -6,6 +6,7 @@ import {
   analyzeExcelFormula,
   evaluateFormulaValue,
   checkExcelAnswer,
+  validateGlobalExcelMission,
   EXCEL_FORMULA_ERROR_CODES,
 } from './excelChecker.js';
 
@@ -185,6 +186,57 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
 
       expect(result.isCorrect).toBe(false);
       expect(result.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION);
+    });
+  });
+
+  describe('validateGlobalExcelMission (Macro-Action Global Test Cases Validator)', () => {
+    const sheetData = { C2: 3, D2: 150000, C3: 2, D3: 450000 };
+
+    it('cảnh báo khi ô mục tiêu chưa có công thức', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: {},
+        starterCell: 'E2',
+        requiredRange: ['E2', 'E3', 'E4'],
+        sheetData,
+      });
+      expect(res.status).toBe('warning');
+      expect(res.message).toContain('Ô mục tiêu E2 chưa có công thức');
+    });
+
+    it('báo lỗi khi công thức tại ô mục tiêu sai cú pháp', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: { E2: '=C2*' },
+        starterCell: 'E2',
+        requiredRange: ['E2', 'E3', 'E4'],
+        sheetData,
+      });
+      expect(res.status).toBe('error');
+      expect(res.message).toContain('bị lỗi');
+    });
+
+    it('cảnh báo khi ô E2 đúng nhưng thiếu các hàng E3-E4 (Fill down check)', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: { E2: '=C2*D2' },
+        cellValues: { E2: 450000 },
+        starterCell: 'E2',
+        requiredRange: ['E2', 'E3', 'E4'],
+        sheetData,
+      });
+      expect(res.status).toBe('warning');
+      expect(res.message).toContain('chưa áp dụng công thức cho toàn bộ bảng');
+      expect(res.message).toContain('E3');
+    });
+
+    it('trả về success khi tất cả các ô trong requiredRange đã được hoàn thành', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: { E2: '=C2*D2', E3: '=C3*D3', E4: '=C4*D4' },
+        cellValues: { E2: 450000, E3: 900000, E4: 3200000 },
+        starterCell: 'E2',
+        requiredRange: ['E2', 'E3', 'E4'],
+        sheetData,
+      });
+      expect(res.status).toBe('success');
+      expect(res.message).toContain('Kiểm tra tổng thể thành công');
     });
   });
 });

@@ -75,15 +75,15 @@ export function SpreadsheetGrid({
   };
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
+    <div className="w-full overflow-x-auto rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card shadow-md">
       {/* Excel Sheet Title Bar */}
       {dataset.name && (
-        <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-2.5 text-xs font-semibold text-muted-foreground">
+        <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-stone-100/70 dark:bg-stone-900/60 px-4 py-2.5 text-xs font-semibold text-stone-600 dark:text-stone-400">
           <div className="flex items-center gap-2">
-            <Database className="size-3.5 text-primary" />
-            <span className="font-bold text-foreground">{dataset.name}</span>
+            <Database className="size-3.5 text-stone-600 dark:text-stone-300" />
+            <span className="font-bold text-stone-900 dark:text-stone-100">{dataset.name}</span>
           </div>
-          <span className="text-[10px] font-mono bg-background px-2 py-0.5 rounded border border-border">
+          <span className="text-[10px] font-mono bg-white dark:bg-stone-800 px-2 py-0.5 rounded border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 font-bold">
             {rows.length} hàng x {columns.length} cột
           </span>
         </div>
@@ -91,16 +91,16 @@ export function SpreadsheetGrid({
       <table className="w-full border-collapse font-mono text-xs select-none">
         {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
         <thead>
-          <tr className="bg-slate-200/90 dark:bg-zinc-900 text-foreground border-b-2 border-border/80">
-            <th className="w-10 border-r border-border p-2 text-center text-[10px] font-bold uppercase tracking-wider bg-slate-300/80 dark:bg-zinc-950 text-muted-foreground">
+          <tr className="bg-stone-200/90 dark:bg-stone-900 text-foreground border-b-2 border-stone-300 dark:border-stone-700">
+            <th className="w-10 border-r border-stone-300 dark:border-stone-700 p-2 text-center text-[10px] font-extrabold uppercase tracking-wider bg-stone-300/80 dark:bg-stone-950 text-stone-700 dark:text-stone-300">
               #
             </th>
             {colLetters.map((letter) => (
               <th
                 key={letter}
-                className="border-r border-border py-1.5 px-3 text-center font-extrabold text-foreground last:border-r-0 min-w-[100px] text-xs bg-slate-200/90 dark:bg-zinc-900"
+                className="border-r border-stone-300 dark:border-stone-700 py-1.5 px-3 text-center font-extrabold text-stone-800 dark:text-stone-200 last:border-r-0 min-w-[100px] text-xs bg-stone-200/90 dark:bg-stone-900"
               >
-                <span className="rounded bg-amber-500/20 dark:bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-700 dark:text-amber-300 border border-amber-500/30">
+                <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-2xs">
                   {letter}
                 </span>
               </th>
@@ -161,6 +161,11 @@ export function SpreadsheetGrid({
                   const colType = col.dataType || col.type;
                   const isNumeric = colType === 'currency' || colType === 'number' || colType === 'integer' || colType === 'float' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
 
+                  const hasCellData =
+                    (cellValues[cellAddr] !== undefined && cellValues[cellAddr] !== null) ||
+                    Boolean(cellFormulas[cellAddr] && cellFormulas[cellAddr].trim()) ||
+                    (rawVal !== null && rawVal !== undefined && rawVal !== '');
+
                   return (
                     <td
                       key={cellAddr}
@@ -179,12 +184,20 @@ export function SpreadsheetGrid({
                           : 'hover:bg-muted/40'
                       }`}
                     >
-                      {/* Target Cell Badge Indicator - Positioned neatly inside the cell */}
+                      {/* Smart Visibility Target Cell Badge Indicator */}
                       {isTarget && (
-                        <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
-                          <Sparkles className="size-2.5 fill-current" />
-                          <span>Mục tiêu</span>
-                        </div>
+                        !hasCellData ? (
+                          /* Trạng thái 1 (Ô trống): Hiển thị đầy đủ badge "✦ Mục tiêu" */
+                          <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
+                            <Sparkles className="size-2.5 fill-current" />
+                            <span>Mục tiêu</span>
+                          </div>
+                        ) : (
+                          /* Trạng thái 2 (Đã có dữ liệu): Ẩn chữ "Mục tiêu", giữ icon ✦ nhỏ góc trái để trả không gian hiển thị con số */
+                          <div className="absolute top-1 left-1.5 z-10 flex items-center text-amber-600 dark:text-amber-400 pointer-events-none" title="Ô mục tiêu vụ án">
+                            <Sparkles className="size-2.5 fill-amber-500/40" />
+                          </div>
+                        )
                       )}
 
                       {/* Editable Indicator Icon */}

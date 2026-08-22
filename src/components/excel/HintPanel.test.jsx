@@ -17,7 +17,7 @@ describe('HintPanel Component Tests (Step 3.3)', () => {
     );
 
     expect(screen.getByText(/Hệ thống Gợi ý Trinh thám/i)).toBeInTheDocument();
-    expect(screen.getByText(/Thưởng Net: 100 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Phần thưởng dự kiến: 100 XP/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1 \(-15 XP\)/i })).toBeInTheDocument();
   });
 
@@ -34,7 +34,7 @@ describe('HintPanel Component Tests (Step 3.3)', () => {
     );
 
     expect(screen.getByText('Gợi ý 1: Nhân 2 ô')).toBeInTheDocument();
-    expect(screen.getByText(/Thưởng Net: 85 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Phần thưởng dự kiến: 85 XP/i)).toBeInTheDocument();
     expect(screen.getAllByText(/\(-15 XP\)/i).length).toBeGreaterThan(0);
   });
 

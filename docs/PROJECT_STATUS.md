@@ -9,8 +9,8 @@
 
 * **Sprint Hiện Tại:** Sprint 3 — Excel Vertical Slice
 * **Sprint Goal:** Hoàn thiện một Excel learning vertical slice với workspace, evaluator, submission orchestration và feedback có boundary ổn định.
-* **Step đã hoàn thành:** Step 3.0–3.6.
-* **Step hiện tại:** Step 3.6 — Light Mode Refinement & Accessibility (`DONE`).
+* **Step đã hoàn thành:** Step 3.0–3.6G.
+* **Step hiện tại:** Step 3.6G — Sprint 3 Stabilization (`DONE`).
 * **Step kế tiếp đã lên kế hoạch:** Sprint 4 — SQL Vertical Slice.
 * **Trạng thái Sprint:** `DONE — SPRINT 3 COMPLETE`; Chuẩn bị kích hoạt Sprint 4.
 
@@ -54,7 +54,8 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `LRN-EXCEL-002` | `LRN-EXCEL` | Workspace | Step 3.2 Grid/Formula Bar và Step 3.3 Toolbar/Hints | Sprint 3 | `DONE` | Pass | `src/components/excel/*.test.jsx` |
 | `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | Pass | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
 | `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `DONE` | Pass | `docs/agent/UI_CHANGE_INVENTORY.md` |
-| `LRN-UI-3.6` | `LRN-EXCEL` | Light Mode Refinement | Standardized Light Mode design & accessibility | Sprint 3 | `DONE` | Pass (120/120) | `src/styles/index.css`, `ActionToolbar.jsx`, `FormulaBar.jsx`, `SpreadsheetGrid.jsx`, `LearnerLayout.jsx` |
+| `LRN-UI-3.6` | `LRN-EXCEL` | Light Mode Refinement | Standardized Light Mode design & accessibility | Sprint 3 | `DONE` | Pass | `src/styles/index.css`, `ActionToolbar.jsx`, `FormulaBar.jsx`, `SpreadsheetGrid.jsx`, `LearnerLayout.jsx` |
+| `LRN-EXCEL-3.6G` | `LRN-EXCEL` | Sprint Stabilization | Formula/global diagnostics, stale hint, route boundary, responsive/a11y verification | Sprint 3 | `DONE` | Pass (133/133) | `excelChecker*`, `ExcelMissionPage*`, `LearnerLayout*`, `HintPanel*` |
 
 ---
 
@@ -62,4 +63,5 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 
 * **Đã hoàn thành:** Tinh chỉnh theme tokens light mode, trung tính hóa các nút phụ ActionToolbar, nâng cao độ tương phản FormulaBar, làm sạch header và ô bảng SpreadsheetGrid, cân bằng Streak promo card trong Sidebar.
 * **Boundary:** Giữ nguyên Submission Contract, Evaluator logic, không trao XP hay kích hoạt logic game chưa tới lượt.
-* **Audit validation:** Current working tree full regression pass 19/19 test files với 120/120 unit & integration tests pass.
+* **Audit validation:** targeted 73/73, full regression 20/20 files với 133/133 tests, production build và Browser verification pass.
+* **Tooling note:** lint project-level chưa khả dụng vì repository chưa có `eslint.config.*`; global npm của máy xác minh thiếu `npm-cli.js`.

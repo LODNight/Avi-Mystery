@@ -64,11 +64,14 @@ Không ghi pass nếu command chưa thực sự chạy trong lần làm việc �
 - Loading, empty/error states và accessibility hiện có.
 - Full command `npm test -- --run` pass hoặc mọi failure được báo rõ là ngoài scope.
 
-## Last Verified — Step 3.4
+## Last Verified — Step 3.6G (22/08/2026)
 
 - Submission targeted command: 5 test files, 31/31 tests passed.
 - Formula diagnostics follow-up: 4 test files, 55/55 tests passed.
-- UI plan alignment audit: 19 test files, 120/120 tests passed trên working tree hiện tại.
+- Step 3.6G targeted: 8 test files, 73/73 tests passed.
+- Full regression: 20 test files, 133/133 tests passed.
+- Production build: 1621 modules transformed, build pass bằng local Vite executable.
+- Browser verification: 390/768/1440px, Light/Dark, dấu `=`, mobile CTA, hint focus/Escape/restore focus; không có console error.
 - Covered: structured errors, retry, timeout, duplicate/replay identity, double submit, unmount in flight, answer retention, success-only modal và no-XP-mutation.
 - Non-failing warnings: React Router v7 future flags và `AuthProvider` act warning trong `PageStatus.test.jsx`.
-- Giới hạn: suite hiện tại không thay thế visual regression, viewport test hoặc user test cho Step 3.4E/3.5.
+- Giới hạn: chưa có framework visual regression/E2E. Global npm thiếu `npm-cli.js`; ESLint 9 chưa có `eslint.config.*`, nên lint project-level chưa khả dụng và phải được xử lý bằng task tooling riêng.

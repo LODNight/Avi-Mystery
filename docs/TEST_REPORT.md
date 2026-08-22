@@ -1,9 +1,9 @@
 # Báo Cáo Kiểm Thử Tự Động (Test Report)
 
-> **Cập nhật lần cuối:** 21/08/2026
+> **Cập nhật lần cuối:** 22/08/2026
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM
-> **Tổng số Test Suites:** 19 files
-> **Tổng số Test Cases:** 120 passed / 0 failed
+> **Tổng số Test Suites:** 20 files
+> **Tổng số Test Cases:** 133 passed / 0 failed
 
 ---
 
@@ -11,7 +11,7 @@
 
 | File Test | Số Test Cases | Kết quả |
 |---|---:|---|
-| `src/utils/excelChecker.test.js` | 26 | `PASS` |
+| `src/utils/excelChecker.test.js` | 32 | `PASS` |
 | `src/services/mock/mockAuthService.test.js` | 5 | `PASS` |
 | `src/services/mock/mockCourseService.test.js` | 5 | `PASS` |
 | `src/services/mock/mockMissionService.test.js` | 6 | `PASS` |
@@ -21,14 +21,15 @@
 | `src/components/ui/EmptyState.test.jsx` | 5 | `PASS` |
 | `src/components/excel/SpreadsheetGrid.test.jsx` | 4 | `PASS` |
 | `src/components/excel/FormulaBar.test.jsx` | 7 | `PASS` |
-| `src/components/excel/ActionToolbar.test.jsx` | 3 | `PASS` |
+| `src/components/excel/ActionToolbar.test.jsx` | 4 | `PASS` |
 | `src/components/excel/HintPanel.test.jsx` | 3 | `PASS` |
 | `src/components/excel/MissionResultModal.test.jsx` | 4 | `PASS` |
 | `src/pages/learner/CoursesPage.test.jsx` | 5 | `PASS` |
 | `src/pages/learner/CourseDetailPage.test.jsx` | 3 | `PASS` |
 | `src/pages/learner/LearningMapPage.test.jsx` | 3 | `PASS` |
 | `src/pages/learner/MissionIntroPage.test.jsx` | 2 | `PASS` |
-| `src/pages/learner/ExcelMissionPage.test.jsx` | 13 | `PASS` |
+| `src/pages/learner/ExcelMissionPage.test.jsx` | 16 | `PASS` |
+| `src/app/layouts/LearnerLayout.test.jsx` | 3 | `PASS` |
 | `src/tests/PageStatus.test.jsx` | 6 | `PASS` |
 
 
@@ -43,7 +44,8 @@
 - Step 3.4 đã cover service error/retry, timeout, duplicate/replay attempt, double submit, unmount in-flight, gateway boundary, answer retention, modal accessibility và xác nhận không mutate XP.
 - Formula diagnostics cover biểu thức rỗng `=`, thiếu dấu `=`, ngoặc, hàm/range, ký tự/toán tử, tham chiếu, dữ liệu không phải số, chia cho 0 và đồng bộ nhập/Run/Submit.
 - UI/UX Refinement: Chạy thử trigger inline error, chuẩn hóa A,B,C... headers, căn phải cột số/tiền tệ, CTA hierarchy.
-- Audit gap: current suite chưa cover đầy đủ Hint drawer responsive/focus, unlock-to-inline-hint integration hoặc Learner Sidebar route boundary.
+- Step 3.6G cover Global Mission Validator, dấu `=`, required-range syntax, stale hint khi Reset/mission change, Hint drawer focus/Escape/restore focus và Learner Sidebar route boundary.
+- Browser verification bổ sung viewport 390/768/1440px, Light/Dark và console error check; repository vẫn chưa có framework visual regression/E2E.
 
 ---
 
@@ -55,11 +57,13 @@ Command chuẩn từ `package.json`:
 npm test -- --run
 ```
 
-Kết quả Step 3.4:
+Kết quả Step 3.6G:
 
 - Submission targeted suite: 5 files, 31/31 tests pass.
 - Formula diagnostics targeted suite: 4 files, 55/55 tests pass.
-- UI plan alignment audit: full regression 19 files, 120/120 tests pass.
+- Stabilization targeted suite: 8 files, 73/73 tests pass.
+- Full regression: 20 files, 133/133 tests pass.
+- Production build bằng local Vite: pass, 1621 modules transformed.
 
 Máy xác minh ngày 21/08/2026 có global npm bị thiếu `npm-cli.js`; suite đã được chạy bằng local executable mà không cài package:
 
@@ -71,4 +75,5 @@ node ./node_modules/vitest/vitest.mjs run
 
 - React Router v6 phát cảnh báo future flags cho v7.
 - `PageStatus.test.jsx` phát một cảnh báo state update trong `AuthProvider` chưa được bọc `act(...)`.
-- Hai cảnh báo trên không làm test fail và nằm ngoài phạm vi Step 3.4.
+- Hai cảnh báo trên không làm test fail và là technical debt ngoài phạm vi stabilization.
+- Global npm thiếu `npm-cli.js`; ESLint 9 không tìm thấy `eslint.config.*`, vì vậy lint project-level chưa khả dụng. Không cài package hoặc tự mở rộng config trong Step 3.6G.

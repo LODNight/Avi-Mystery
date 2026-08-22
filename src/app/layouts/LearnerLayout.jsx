@@ -42,6 +42,13 @@ const learnerNav = [
   { label: 'Hồ sơ', to: '/profile', icon: User },
 ];
 
+export function isLearnerNavPathActive(pathname, navPath) {
+  if (pathname === navPath) return true;
+  if (navPath === '/map' && /^\/missions(?:\/|$)/.test(pathname)) return true;
+  if (navPath === '/dashboard') return false;
+  return pathname.startsWith(`${navPath}/`);
+}
+
 export function LearnerLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
@@ -183,10 +190,7 @@ export function LearnerLayout({ children }) {
             const navStatus = getPageStatus(to);
             const isItemMaintenance = navStatus?.status === 'maintenance';
             const isItemNotice = navStatus?.status === 'notice';
-            const isPathActive =
-              location.pathname === to ||
-              (to === '/map' && location.pathname.startsWith('/missions')) ||
-              (to !== '/dashboard' && location.pathname.startsWith(to));
+            const isPathActive = isLearnerNavPathActive(location.pathname, to);
 
             return (
               <NavLink

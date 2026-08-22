@@ -1,6 +1,6 @@
 # Bảng Theo Dõi Tiến Độ Chi Tiết Theoừng Step — Avi-Mystery
 
-> **Cập nhật lần cuối:** 21/08/2026
+> **Cập nhật lần cuối:** 22/08/2026
 > **Mô tả:** Bảng danh mục công việc chi tiết chia theo từng Step cho toàn bộ 8 Sprint của dự án **Avi-Mystery**.
 > **Nguồn trạng thái task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md).
 
@@ -84,7 +84,7 @@
 - [x] Service error có Retry và không làm mất answer
 - [x] Chặn double submit, replay theo `clientAttemptId` và cleanup an toàn khi unmount
 - [x] Chỉ trả `potentialXp`; Submission không trực tiếp cập nhật XP/level
-- [x] Submission/formula core tests pass; audit working tree regression 120/120 tests pass
+- [x] Submission/formula core tests pass; stabilization regression 133/133 tests pass
 
 ### 🔹 Step 3.4E: Submission UI Stabilization *(HOÀN THÀNH 100%)*
 - [x] Xác minh Run/Submit loading, disabled và chống double submit
@@ -98,7 +98,7 @@
 - [x] Step 3.5B — Shared UI Components (Button, Modal, Card, Input, Badge)
 - [x] Step 3.5C — Learner Layout & Navigation (Collapsible Sidebar & Header)
 - [x] Step 3.5D — Responsive & Accessibility (ARIA, focus-visible & screen reader landmarks)
-- [x] Step 3.5E — Regression & User Test Readiness (Full test pass 120/120)
+- [x] Step 3.5E — Regression & User Test Readiness
 
 ### 🔹 Step 3.6: Light Mode Refinement & Accessibility *(HOÀN THÀNH 100%)*
 - [x] Step 3.6A — Light Mode Audit & Theme Tokens
@@ -106,7 +106,15 @@
 - [x] Step 3.6C — Secondary Action Buttons (Neutral grey/outline for Run/Hint/Reset)
 - [x] Step 3.6D — Excel Workspace Light Mode (Formula Bar input contrast & Spreadsheet Grid headers)
 - [x] Step 3.6E — Streak Visual Balance (Subtle amber card surface in Learner Sidebar)
-- [x] Step 3.6F — Accessibility & Theme Regression (Full test pass 120/120)
+- [x] Step 3.6F — Accessibility & Theme Regression
+
+### 🔹 Step 3.6G: Sprint 3 Stabilization Gate *(HOÀN THÀNH 100%)*
+- [x] Sửa và mở rộng Global Excel Mission Validator; giữ stable diagnostic code
+- [x] Xác minh dấu `=` hiển thị lỗi cú pháp trên Run, không báo success
+- [x] Xóa inline hint stale khi Reset hoặc đổi mission
+- [x] Chuẩn hóa “Phần thưởng dự kiến”, route boundary và mobile submit CTA
+- [x] Hint drawer hỗ trợ focus, Escape và restore focus
+- [x] Targeted 73/73, full regression 133/133, production build và Browser check pass
 
 ---
 

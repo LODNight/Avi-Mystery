@@ -38,6 +38,6 @@ Mock Service và API Client phải giữ cùng public interface để Sprint 7 k
 
 ## Documentation Status
 
-Ngày 21/08/2026, Step 3.0–3.4 core đã `DONE`; audit UI mở Step 3.4E `READY` và Step 3.5 `PLANNED`. Sprint 3 đang ở UI stabilization và Sprint 4 chưa được kích hoạt. [CURRENT_TASK.md](./CURRENT_TASK.md) vẫn là nguồn trạng thái duy nhất cho agent.
+Ngày 22/08/2026, Step 3.0–3.6G đã `DONE`. Gate cuối xác minh targeted 73/73, full regression 133/133, production build và Browser check mobile/tablet/desktop, Light/Dark, formula error, focus/Escape đều pass. Sprint 4 đã sẵn sàng để người dùng kích hoạt nhưng vẫn `CHƯA KÍCH HOẠT`. [CURRENT_TASK.md](./CURRENT_TASK.md) là nguồn trạng thái duy nhất cho agent.
 
 Các file prompt/reference (`dataquest-project-prompts.md`, `docs/avi-mystery-codex-agent-md-generator.md`, `docs/avi-mystery-roadmap-review-sprint-3-8.md`) không phải status tracker.

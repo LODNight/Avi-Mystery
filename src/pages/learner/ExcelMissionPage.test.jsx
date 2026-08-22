@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 
 const submitMock = vi.hoisted(() => vi.fn());
 
@@ -32,9 +32,19 @@ const successResponse = {
   error: null,
 };
 
-function renderMissionPage(missionId = 'mission-001') {
+function MissionNavigationProbe() {
+  const navigate = useNavigate();
+  return (
+    <button type="button" onClick={() => navigate('/missions/invalid-id/workspace')}>
+      Đổi mission kiểm thử
+    </button>
+  );
+}
+
+function renderMissionPage(missionId = 'mission-001', withNavigationProbe = false) {
   return render(
     <MemoryRouter initialEntries={[`/missions/${missionId}/workspace`]}>
+      {withNavigationProbe && <MissionNavigationProbe />}
       <Routes>
         <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
       </Routes>
@@ -120,6 +130,45 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     await waitFor(() => {
       expect(screen.getByText(/Đã đặt lại toàn bộ bảng tính/i)).toBeInTheDocument();
     }, { timeout: 3000 });
+  });
+
+  it('xóa gợi ý nội tuyến khi đặt lại bảng tính', async () => {
+    renderMissionPage();
+    await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /^Gợi ý/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1/i }));
+    expect(screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Đặt lại/i }));
+    expect(screen.queryByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).not.toBeInTheDocument();
+  });
+
+  it('đưa focus vào drawer gợi ý, đóng bằng Escape và trả focus về nút mở', async () => {
+    renderMissionPage();
+    await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
+
+    const hintButton = screen.getByRole('button', { name: /^Gợi ý/i });
+    fireEvent.click(hintButton);
+    const closeButton = screen.getByRole('button', { name: /Đóng bảng gợi ý/i });
+    expect(closeButton).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('complementary', { name: /Khung gợi ý/i })).not.toBeInTheDocument();
+    expect(hintButton).toHaveFocus();
+  });
+
+  it('xóa state gợi ý cũ khi route chuyển sang mission khác', async () => {
+    renderMissionPage('mission-001', true);
+    await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
+
+    fireEvent.click(screen.getByRole('button', { name: /^Gợi ý/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1/i }));
+    expect(screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Đổi mission kiểm thử/i }));
+    await screen.findByText(/Không tìm thấy mission "invalid-id"/i);
+    expect(screen.queryByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).not.toBeInTheDocument();
   });
 
   it('hiển thị ErrorState khi không tìm thấy missionId', async () => {

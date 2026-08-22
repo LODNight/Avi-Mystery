@@ -68,4 +68,17 @@ describe('ActionToolbar Component Tests (Step 3.3)', () => {
     expect(screen.getByRole('button', { name: /Đặt lại/i })).toBeDisabled();
     expect(screen.getByText(/Đang chấm điểm/i)).toBeInTheDocument();
   });
+
+  it('giữ accessible name ổn định khi nhãn submit thay đổi theo viewport', () => {
+    render(
+      <ActionToolbar
+        onRun={vi.fn()}
+        onSubmit={vi.fn()}
+        onReset={vi.fn()}
+        onToggleHint={vi.fn()}
+      />
+    );
+
+    expect(screen.getByRole('button', { name: 'Nộp bài vụ án' })).toBeInTheDocument();
+  });
 });

@@ -14,6 +14,7 @@ import { Play, Send, RotateCcw, Lightbulb, CheckCircle2 } from 'lucide-react';
  * @param {number} [props.hintsUnlockedCount=0] - Số gợi ý đã mở khóa
  * @param {boolean} [props.isSubmitting=false] - Trạng thái đang nộp bài
  * @param {boolean} [props.isEvaluating=false] - Trạng thái đang chạy tính toán
+ * @param {React.RefObject<HTMLButtonElement>} [props.hintButtonRef] - Ref phục hồi focus sau khi đóng drawer
  */
 export function ActionToolbar({
   onRun,
@@ -24,6 +25,7 @@ export function ActionToolbar({
   hintsUnlockedCount = 0,
   isSubmitting = false,
   isEvaluating = false,
+  hintButtonRef,
 }) {
   return (
     <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between gap-2.5 rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card p-3 shadow-sm">
@@ -46,18 +48,20 @@ export function ActionToolbar({
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
+          aria-label={isSubmitting ? 'Đang chấm điểm' : 'Nộp bài vụ án'}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
           title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
         >
           {isSubmitting ? (
             <>
               <div className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span>Đang chấm điểm...</span>
+              <span aria-hidden="true">Đang chấm điểm...</span>
             </>
           ) : (
             <>
               <Send className="size-3.5" />
-              <span>Nộp bài vụ án</span>
+              <span aria-hidden="true" className="sm:hidden">Nộp bài</span>
+              <span aria-hidden="true" className="hidden sm:inline">Nộp bài vụ án</span>
             </>
           )}
         </button>
@@ -67,6 +71,7 @@ export function ActionToolbar({
       <div className="contents sm:flex sm:items-center gap-2">
         {/* Nút Gợi ý từng bước (Progressive Hints - Neutral Secondary Button) */}
         <button
+          ref={hintButtonRef}
           type="button"
           onClick={onToggleHint}
           disabled={isSubmitting}

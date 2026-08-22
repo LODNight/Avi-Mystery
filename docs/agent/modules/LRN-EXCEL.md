@@ -13,7 +13,7 @@ Không điều phối generic submission attempt, không lưu/trao XP, không tr
 ## Current Status
 
 - Existing
-- UI stabilization candidates: Partial; planned for Step 3.5
+- UI stabilization: DONE qua Step 3.6G
 - Related Sprint: 1–3
 - Verified Paths: `src/components/excel/`; `src/pages/learner/ExcelMissionPage.jsx`; `src/pages/learner/ExcelMissionPage.test.jsx`; `src/utils/excelChecker.js`; `src/utils/excelChecker.test.js`
 
@@ -66,10 +66,13 @@ Formula normalization/value/error, grid selection/edit/reset, run/hint states, t
 - [x] Regression liên quan pass.
 - [x] Không sửa ngoài scope.
 - [x] Documentation được cập nhật theo diagnostic contract.
+- [x] Global validator giữ mã lỗi ổn định và kiểm tra mọi công thức trong required range.
+- [x] Reset/mission change không giữ inline hint stale.
+- [x] Targeted 73/73, full regression 133/133 và production build pass.
 
 ## Known Risks
 
-`ExcelMissionPage.jsx` vẫn chứa Excel state, submission orchestration và inline hint state ở cấp page. Working tree có Hint side drawer/inline hint nhưng integration coverage chưa đủ; reset hoặc mission change có thể giữ hint stale. Thay đổi Step 3.5 phải tránh làm vỡ Sprint 1–3.4.
+`ExcelMissionPage.jsx` vẫn chứa Excel state, submission orchestration và inline hint state ở cấp page; đây là debt kiến trúc dài hạn nhưng đã có integration coverage cho Reset, mission change và drawer keyboard focus. Fallback hint normalization vẫn tồn tại ở cả page và `HintPanel`, chỉ refactor khi có task riêng.
 
 ## Open Questions
 

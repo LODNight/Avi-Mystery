@@ -12,7 +12,7 @@ Không tự đánh giá Excel/SQL khi evaluator riêng tồn tại; không trự
 
 ## Current Status
 
-- Existing — Step 3.4 core `DONE`; Step 3.4E UI stabilization `READY`
+- Existing — Step 3.4 core và Step 3.4E UI stabilization `DONE`
 - Related Sprint: 3.4
 - Verified Paths: `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submission flow trong `src/pages/learner/ExcelMissionPage*`; `src/components/excel/ActionToolbar*`; `src/components/excel/MissionResultModal*`
 
@@ -81,14 +81,14 @@ Success, incorrect, validation error, service error, retry, optional timeout, do
 
 ## Step 3.4E Stabilization Gate
 
-- [ ] Feedback/loading/retry states được xác minh lại.
-- [ ] Modal và submission area đạt responsive/accessibility gate.
-- [ ] Targeted test và full regression pass.
-- [ ] Không mở rộng sang Step 3.5 UI foundation.
+- [x] Feedback/loading/retry states được xác minh lại.
+- [x] Modal và submission area đạt responsive/accessibility gate.
+- [x] Targeted test và full regression pass.
+- [x] Không mở rộng sang Sprint 4 hoặc thay đổi Submission Contract.
 
 ## Known Risks
 
-Checker config mới được xác minh cho `mission-001`; mission Excel khác trả `CONTENT_CONFIG_MISSING`. Step 3.4E cần xác minh responsive/a11y của submission area và wording phần thưởng dự kiến; reward idempotency/XP mutation vẫn thuộc Sprint 5/7.
+Checker config hiện được xác minh cho `mission-001`; mission Excel khác vẫn trả `CONTENT_CONFIG_MISSING` theo contract. Wording UI dùng “Phần thưởng dự kiến”; reward idempotency/XP mutation vẫn thuộc Sprint 5/7.
 
 ## Open Questions
 

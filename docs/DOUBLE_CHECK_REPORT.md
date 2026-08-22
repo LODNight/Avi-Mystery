@@ -1,7 +1,9 @@
 # Báo Cáo Double-Check Tiến Độ Dự Án Avi-Mystery
 
-> **Ngày thực hiện:** 21/08/2026  
+> **Ngày thực hiện:** 22/08/2026
 > **Mục đích:** Kiểm tra đối chiếu toàn bộ mã nguồn & bộ test đã thực hiện so với danh mục công việc trong `docs/CHECKLIST.md` và `docs/agent/CURRENT_TASK.md`.
+
+> **Cập nhật Step 3.6G:** Các đề xuất cũ bên dưới đã được thực hiện. Baseline mới là 20 files, 133/133 tests pass; production build và Browser verification pass. Sprint 4 sẵn sàng nhưng chưa được kích hoạt.
 
 ---
 
@@ -28,7 +30,7 @@
 - [x] **Xử lý Lỗi Service & Thử lại:** Có nút `[Thử lại]` khi service gặp sự cố, giữ nguyên công thức bài làm của học viên.
 - [x] **Chống Double-Submit:** Khóa nút khi đang gửi bài (`submitInFlightRef`) và tự dọn dẹp khi unmount.
 - [x] **Quy định Phần thưởng XP:** Chỉ trả về `potentialXp` (Phần thưởng dự kiến), Evaluator không trực tiếp cộng XP.
-- [x] **Kiểm thử Regression:** 120/120 unit/integration tests **PASSED (100%)**.
+- [x] **Kiểm thử Regression:** 133/133 unit/integration tests **PASSED (100%)**.
 
 ---
 
@@ -37,18 +39,14 @@
 - [x] **Xác minh inline validation/incorrect/service error và Retry:** Đã kiểm tra trong `FormulaBar.test.jsx` & `ExcelMissionPage.test.jsx`.
 - [x] **Xác minh success modal, keyboard/focus và responsive submission area:** Đã kiểm tra trong `MissionResultModal.test.jsx`.
 - [x] **Giữ answer khi sai/lỗi và wording phần thưởng dự kiến:** Đã verified đúng từ ngữ "Phần thưởng dự kiến / Potential XP".
-- [x] **Chạy targeted test và regression trước khi đóng Step:** 120/120 tests passing.
+- [x] **Chạy targeted test và regression trước khi đóng Step:** 73/73 targeted và 133/133 full regression passing.
 
 ---
 
-## 📌 2. Các Đề Xuất Bổ Sung (Cần Xin Ý Kiến Học Viên/User)
+## 📌 2. Trạng Thái Các Đề Xuất Cũ
 
-1. **Cập nhật tick `[x]` cho Step 3.4E trong file `docs/CHECKLIST.md`:**
-   - *Hiện trạng:* Trong `docs/CHECKLIST.md` (dòng 89-94), các mục của Step 3.4E đang ở dạng `[ ]` (chưa tick).
-   - *Đề xuất:* Đánh tick `[x]` toàn bộ 5 mục thuộc Step 3.4E vì mã nguồn và bộ test 120/120 đã đáp ứng hoàn hảo.
-
-2. **Chuẩn bị kích hoạt Step 3.5 (Learner UI Foundation & Stabilization):**
-   - *Đề xuất:* Chuyển trạng thái của Step 3.5 từ `PLANNED` sang `READY` để chuẩn bị cho giai đoạn tối ưu hóa giao diện chung của người học.
+1. Step 3.4E, 3.5, 3.6 và 3.6G đã hoàn thành và được đồng bộ trong checklist/status/roadmap.
+2. Sprint 4 chỉ chờ người dùng tạo hoặc cho phép kích hoạt Current Task mới.
 
 ---
 
@@ -56,7 +54,7 @@
 
 | Test File | Số lượng Test | Trạng thái |
 | :--- | :---: | :---: |
-| `src/utils/excelChecker.test.js` | 26 | PASSED |
+| `src/utils/excelChecker.test.js` | 32 | PASSED |
 | `src/services/mock/mockMissionService.test.js` | 6 | PASSED |
 | `src/services/mock/mockAuthService.test.js` | 5 | PASSED |
 | `src/services/mock/mockSubmissionService.test.js` | 11 | PASSED |
@@ -70,9 +68,10 @@
 | `src/components/excel/FormulaBar.test.jsx` | 7 | PASSED |
 | `src/pages/learner/MissionIntroPage.test.jsx` | 2 | PASSED |
 | `src/tests/PageStatus.test.jsx` | 6 | PASSED |
-| `src/components/excel/ActionToolbar.test.jsx` | 3 | PASSED |
+| `src/components/excel/ActionToolbar.test.jsx` | 4 | PASSED |
 | `src/pages/learner/CourseDetailPage.test.jsx` | 3 | PASSED |
 | `src/pages/learner/CoursesPage.test.jsx` | 5 | PASSED |
-| `src/pages/learner/ExcelMissionPage.test.jsx` | 13 | PASSED |
+| `src/pages/learner/ExcelMissionPage.test.jsx` | 16 | PASSED |
+| `src/app/layouts/LearnerLayout.test.jsx` | 3 | PASSED |
 | `src/services/mock/mockCourseService.test.js` | 5 | PASSED |
-| **Tổng cộng** | **120 / 120** | **100% PASS** |
+| **Tổng cộng** | **133 / 133** | **100% PASS** |

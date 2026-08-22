@@ -4,14 +4,14 @@ Trạng thái phản ánh source đã xác minh, không phản ánh riêng check
 
 | Module ID | Module / owner trách nhiệm | Trạng thái | Đường dẫn thật | Dependency chính | Sprint |
 |---|---|---|---|---|---|
-| `LRN-EXCEL` | Excel Learning | Existing; UI stabilization Partial | `src/components/excel/`; `src/pages/learner/ExcelMissionPage*`; `src/utils/excelChecker*` | SHR, LRN-SUB | 1–3.5 |
-| `LRN-SUB` | Submission & Feedback | Existing; Step 3.4E Ready | `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submit flow trong `ExcelMissionPage*`; `MissionResultModal*`; `ActionToolbar*` | LRN-EXCEL, SHR | 3.4–3.4E |
+| `LRN-EXCEL` | Excel Learning | Existing; Step 3.6G stabilization Done | `src/components/excel/`; `src/pages/learner/ExcelMissionPage*`; `src/utils/excelChecker*` | SHR, LRN-SUB | 1–3.6G |
+| `LRN-SUB` | Submission & Feedback | Existing; Step 3.4E Done | `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submit flow trong `ExcelMissionPage*`; `MissionResultModal*`; `ActionToolbar*` | LRN-EXCEL, SHR | 3.4–3.4E |
 | `LRN-SQL` | SQL Learning | Planned | Không có module source; chỉ có SQL records trong `src/mocks/data/missions.json` và `steps.json` | SHR, LRN-SUB | 4 |
 | `GAME` | Game Progress | Partial | Chưa có module riêng; XP/level fields hiện chỉ nằm ở `authService`/auth mock, không do Submission mutate | LRN-SUB, SHR | 5 |
 | `ADM` | Admin Content | Partial | `src/pages/admin/`; `src/app/layouts/AdminLayout.jsx`; content routes hiện là placeholder | SHR | 6 |
 | `BE` | Backend API | Planned | `src/services/api/index.js` chỉ là frontend API stub; không có backend source | SHR contracts | 7 |
 | `ANL` | Analytics & Hardening | Planned | `/admin/analytics` là placeholder trong router; không có module source | Frontend, BE | 8 |
-| `SHR` | Shared Contracts/UI | Existing; Step 3.5 Planned | `src/services/contracts/`; `src/services/index.js`; `src/components/ui/`; `src/hooks/`; `src/utils/`; `src/mocks/`; shared layout tại `src/app/layouts/` | Không phụ thuộc feature module | Xuyên suốt |
+| `SHR` | Shared Contracts/UI | Existing; Sprint 3 stabilization Done | `src/services/contracts/`; `src/services/index.js`; `src/components/ui/`; `src/hooks/`; `src/utils/`; `src/mocks/`; shared layout tại `src/app/layouts/` | Không phụ thuộc feature module | Xuyên suốt |
 
 ## Dependency Direction
 
@@ -37,7 +37,7 @@ flowchart LR
 | Area | Route/entry point | Status |
 |---|---|---|
 | Learner Excel | `/missions/:missionId/workspace` → `ExcelMissionPage` | Existing |
-| Learner navigation | `LearnerLayout` active state, gồm `/missions/*` → `/map` | Partial; Step 3.5 candidate |
+| Learner navigation | `LearnerLayout` active state, gồm `/missions/*` → `/map` | Existing; segment-boundary test pass |
 | Learner mission | `/missions/:missionId` → `MissionIntroPage` | Existing |
 | Learner SQL | Không có route riêng | Planned |
 | Game | `/profile`, `/achievements` | Placeholder |

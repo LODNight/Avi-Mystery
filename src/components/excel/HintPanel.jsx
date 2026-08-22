@@ -12,6 +12,7 @@ export function HintPanel({
   baseXp = 100,
   penaltyPerHint = 15,
   onClose,
+  closeButtonRef,
 }) {
   // Chuẩn hóa mảng gợi ý (nếu nhận vào là chuỗi đơn thì tách/tạo 3 cấp độ gợi ý)
   const normalizedHints = Array.isArray(hints) && hints.length > 0
@@ -47,6 +48,7 @@ export function HintPanel({
 
             {onClose && (
               <button
+                ref={closeButtonRef}
                 onClick={onClose}
                 className="grid size-7 place-items-center rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0"
                 title="Đóng bảng gợi ý"
@@ -61,7 +63,7 @@ export function HintPanel({
           <div className="flex items-center justify-between">
             <div className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
               <Award className="size-3.5" />
-              <span>Thưởng Net: {netXp} XP</span>
+              <span>Phần thưởng dự kiến: {netXp} XP</span>
               {currentPenalty > 0 && (
                 <span className="text-[10px] text-rose-500">(-{currentPenalty} XP)</span>
               )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -53,6 +53,8 @@ export function ExcelMissionPage() {
   const isMountedRef = useRef(true);
   const submitInFlightRef = useRef(false);
   const notificationTimerRef = useRef(null);
+  const hintTriggerRef = useRef(null);
+  const hintCloseButtonRef = useRef(null);
 
   // State quản lý Popup Kết quả nộp bài (Step 3.4)
   const [submissionResult, setSubmissionResult] = useState(null);
@@ -75,8 +77,37 @@ export function ExcelMissionPage() {
     };
   }, []);
 
+  const closeHintPanel = useCallback(() => {
+    setShowHintPanel(false);
+    hintTriggerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!showHintPanel) return undefined;
+
+    hintCloseButtonRef.current?.focus();
+    const handleEscape = (event) => {
+      if (event.key === 'Escape') closeHintPanel();
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [closeHintPanel, showHintPanel]);
+
   useEffect(() => {
     let isMounted = true;
+
+    setShowHintPanel(false);
+    setHintsUnlockedCount(0);
+    setActiveUnlockedHint(null);
+    setFeedbackToast(null);
+    setFormulaInput('');
+    setFormulaDiagnostic(null);
+    setCellFormulas({});
+    setCellValues({});
+    setSubmissionFeedback(null);
+    setSubmissionError(null);
+    setSubmissionResult(null);
+    setShowResultModal(false);
 
     async function loadMissionAndDataset() {
       setLoading(true);
@@ -254,6 +285,7 @@ export function ExcelMissionPage() {
     setSubmissionError(null);
     setSubmissionResult(null);
     setShowResultModal(false);
+    setActiveUnlockedHint(null);
     const starterCell = mission?.starterContent?.targetCell || 'E2';
     setSelectedCell(starterCell);
     showNotification('info', 'Đã đặt lại toàn bộ bảng tính về trạng thái ban đầu.');
@@ -483,6 +515,7 @@ export function ExcelMissionPage() {
           onSubmit={handleSubmitAnswer}
           onReset={handleResetGrid}
           onToggleHint={() => setShowHintPanel(!showHintPanel)}
+          hintButtonRef={hintTriggerRef}
           hintCount={3}
           hintsUnlockedCount={hintsUnlockedCount}
           isEvaluating={isEvaluating}
@@ -642,7 +675,8 @@ export function ExcelMissionPage() {
             onUnlockNextHint={handleUnlockNextHint}
             baseXp={mission.rewardXp || 100}
             penaltyPerHint={15}
-            onClose={() => setShowHintPanel(false)}
+            onClose={closeHintPanel}
+            closeButtonRef={hintCloseButtonRef}
           />
         </aside>
       )}

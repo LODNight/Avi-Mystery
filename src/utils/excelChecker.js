@@ -504,6 +504,7 @@ export function validateGlobalExcelMission({
       status: 'warning',
       title: 'Chưa có công thức tại ô mục tiêu',
       message: `Ô mục tiêu ${targetCellKey} chưa có công thức. Hãy chọn ô ${targetCellKey} và nhập công thức tính toán vào thanh fx.`,
+      feedbackCode: EXCEL_FORMULA_ERROR_CODES.REQUIRED,
     };
   }
 
@@ -514,6 +515,7 @@ export function validateGlobalExcelMission({
       status: 'error',
       title: 'Công thức chưa đúng cú pháp',
       message: `Công thức tại ô ${targetCellKey} bị lỗi: ${starterDiagnostic.message}`,
+      feedbackCode: starterDiagnostic.errorCode,
     };
   }
 
@@ -535,7 +537,24 @@ export function validateGlobalExcelMission({
         status: 'warning',
         title: 'Chưa áp dụng công thức cho toàn bộ bảng',
         message: `Công thức ở ô ${targetCellKey} chính xác! Tuy nhiên, bạn mới hoàn thành ${filledCount}/${requiredRange.length} hàng. Các ô còn lại (${missingCells.slice(0, 3).join(', ')}${missingCells.length > 3 ? '...' : ''}) chưa có công thức. Hãy kéo (Fill down) hoặc điền công thức cho các ô còn lại!`,
+        feedbackCode: 'INCOMPLETE_REQUIRED_RANGE',
       };
+    }
+
+    for (const cell of requiredRange) {
+      const cellKey = cell.toUpperCase();
+      const formula = cellFormulas[cellKey];
+      if (!formula || !formula.trim()) continue;
+
+      const diagnostic = analyzeExcelFormula(formula, sheetData);
+      if (!diagnostic.valid) {
+        return {
+          status: 'error',
+          title: `Công thức tại ô ${cellKey} chưa đúng cú pháp`,
+          message: `Công thức tại ô ${cellKey} bị lỗi: ${diagnostic.message}`,
+          feedbackCode: diagnostic.errorCode,
+        };
+      }
     }
   }
 
@@ -544,6 +563,7 @@ export function validateGlobalExcelMission({
     status: 'success',
     title: 'Kiểm tra tổng thể thành công',
     message: `Cú pháp tại ô ${targetCellKey} và dữ liệu toàn bảng đã hợp lệ! Bạn đã sẵn sàng bấm nút "Nộp bài vụ án".`,
+    feedbackCode: 'GLOBAL_VALIDATION_SUCCESS',
   };
 }
 

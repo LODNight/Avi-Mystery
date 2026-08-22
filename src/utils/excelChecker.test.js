@@ -201,6 +201,7 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       });
       expect(res.status).toBe('warning');
       expect(res.message).toContain('Ô mục tiêu E2 chưa có công thức');
+      expect(res.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.REQUIRED);
     });
 
     it('báo lỗi khi công thức tại ô mục tiêu sai cú pháp', () => {
@@ -212,6 +213,20 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       });
       expect(res.status).toBe('error');
       expect(res.message).toContain('bị lỗi');
+      expect(res.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.INVALID_SYNTAX);
+    });
+
+    it('giữ mã lỗi EMPTY_EXPRESSION khi ô mục tiêu chỉ chứa dấu "="', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: { E2: '=' },
+        starterCell: 'E2',
+        requiredRange: ['E2'],
+        sheetData,
+      });
+
+      expect(res.status).toBe('error');
+      expect(res.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION);
+      expect(res.message).toContain('đi kèm một biểu thức');
     });
 
     it('cảnh báo khi ô E2 đúng nhưng thiếu các hàng E3-E4 (Fill down check)', () => {
@@ -223,8 +238,22 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
         sheetData,
       });
       expect(res.status).toBe('warning');
-      expect(res.message).toContain('chưa áp dụng công thức cho toàn bộ bảng');
+      expect(res.title).toContain('Chưa áp dụng công thức cho toàn bộ bảng');
       expect(res.message).toContain('E3');
+      expect(res.feedbackCode).toBe('INCOMPLETE_REQUIRED_RANGE');
+    });
+
+    it('báo đúng ô có công thức lỗi trong requiredRange', () => {
+      const res = validateGlobalExcelMission({
+        cellFormulas: { E2: '=C2*D2', E3: '=' },
+        starterCell: 'E2',
+        requiredRange: ['E2', 'E3'],
+        sheetData,
+      });
+
+      expect(res.status).toBe('error');
+      expect(res.title).toContain('E3');
+      expect(res.feedbackCode).toBe(EXCEL_FORMULA_ERROR_CODES.EMPTY_EXPRESSION);
     });
 
     it('trả về success khi tất cả các ô trong requiredRange đã được hoàn thành', () => {
@@ -233,10 +262,11 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
         cellValues: { E2: 450000, E3: 900000, E4: 3200000 },
         starterCell: 'E2',
         requiredRange: ['E2', 'E3', 'E4'],
-        sheetData,
+        sheetData: { ...sheetData, C4: 4, D4: 800000 },
       });
       expect(res.status).toBe('success');
-      expect(res.message).toContain('Kiểm tra tổng thể thành công');
+      expect(res.title).toContain('Kiểm tra tổng thể thành công');
+      expect(res.feedbackCode).toBe('GLOBAL_VALIDATION_SUCCESS');
     });
   });
 });

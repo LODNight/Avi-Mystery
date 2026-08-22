@@ -65,13 +65,14 @@
   * Step 3.4E — Submission UI Stabilization — **DONE**.
   * Step 3.5 — Learner UI Foundation & Stabilization — **DONE**.
   * Step 3.6 — Light Mode Refinement & Accessibility — **DONE**.
+  * Step 3.6G — Sprint 3 Stabilization Gate — **DONE**.
 * **Admin Features:** Chưa thay đổi trong Sprint này.
 * **Shared / Backend Features:**
   * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6 và regression tests 120/120 pass. Sprint 4 đã sẵn sàng kích hoạt.
+* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 đã sẵn sàng để người dùng kích hoạt.
 
 ### Step 3.4E — Submission UI Stabilization (HOÀN THÀNH)
 
@@ -156,7 +157,16 @@
 #### Step 3.6F — Accessibility & Theme Regression
 - [x] Kiểm tra text contrast, component contrast, keyboard focus.
 - [x] Regression test Dark Mode, Submission flow trên desktop & mobile.
-- [x] Chuẩn bị Vercel Preview để người dùng thử.
+- [x] Xác minh local Browser preview trên desktop/tablet/mobile.
+
+### Step 3.6G — Sprint 3 Stabilization Gate (HOÀN THÀNH)
+
+- [x] Dấu `=` và lỗi cú pháp trong required range không trả success.
+- [x] Global validator trả mã lỗi ổn định và có unit test đủ các nhánh.
+- [x] Reset/mission change xóa inline hint stale.
+- [x] Hint drawer hỗ trợ focus, Escape và restore focus.
+- [x] Sidebar active matching theo segment boundary.
+- [x] Targeted 73/73, full regression 133/133, production build và Browser check pass.
 
 ---
 

@@ -72,7 +72,7 @@
   * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
   * Submission contract dùng chung và gateway export — **DONE**.
 * **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 Step 4.0 cũng đã hoàn thành; Step 4.1A chưa kích hoạt.
+* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 Step 4.0 → 4.1B cũng đã hoàn thành.
 
 ### Step 3.4E — Submission UI Stabilization (HOÀN THÀNH)
 
@@ -170,7 +170,7 @@
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice (PLANNING GATE)
+## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.1C)
 
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)

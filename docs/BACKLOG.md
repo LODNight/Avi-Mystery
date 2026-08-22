@@ -58,8 +58,8 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
 | `LRN-SQL-4.0-SPIKE` | Technical Spike & SQL Contracts | `LRN-SQL` | `Critical` | `DONE` | `sql.js@1.14.2`, Worker/WASM, contracts, policy và browser/build gate đã pass |
-| `LRN-SQL-4.1A-WORKER` | WASM Packaging & Worker Transport | `LRN-SQL` | `High` | `TODO` | Lazy load, request correlation, loading/error/dispose |
-| `LRN-SQL-4.1B-LIFECYCLE` | Database Lifecycle, Seed, Reset & Schema API | `LRN-SQL` | `High` | `TODO` | Deterministic seed, reset, cleanup và internal schema API |
+| `LRN-SQL-4.1A-WORKER` | WASM Packaging & Worker Transport | `LRN-SQL` | `High` | `DONE` | Request ID correlation, out-of-order & stale filter, lazy-loading, build gating, unit 7/7 & regression 148/148 pass |
+| `LRN-SQL-4.1B-LIFECYCLE` | Database Lifecycle, Seed, Reset & Schema API | `LRN-SQL` | `High` | `DONE` | `getSchema` + `sampleRows`, deterministic seed/reset, lifecycle test 7/7, dataset validation 8/8, SQL 27/27 pass |
 | `LRN-SQL-4.1C-POLICY` | Read-only Policy, Timeout & Row Limit | `LRN-SQL` | `Critical` | `TODO` | Single read-only statement, cancel/recovery và resource limits |
 | `LRN-SQL-4.2-SCHEMA` | Schema Browser | `LRN-SQL` | `High` | `TODO` | Accessible table/column metadata states |
 | `LRN-SQL-4.3-SHELL` | SQL Mission Shell, Loader & Route | `LRN-SQL` | `High` | `TODO` | Mission lifecycle và route regression |

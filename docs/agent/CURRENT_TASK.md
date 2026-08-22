@@ -4,9 +4,9 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.1A
-- Task ID: LRN-SQL-4.1A-WORKER-TRANSPORT
-- Status: DONE
+- Step: 4.1B
+- Task ID: LRN-SQL-4.1B-DB-LIFECYCLE
+- Status: IN_PROGRESS
 - Primary Module: LRN-SQL
 - Supporting Modules:
   - SHR
@@ -14,29 +14,30 @@
 
 ## Goal
 
-Productionize Worker transport layer cho SQL Engine: đảm bảo Request ID correlation, xử lý out-of-order responses, chặn stale responses sau timeout/reset, xử lý Worker crash/error, dispose sạch sẽ không treo promise/timer,lazy-loading cách ly khỏi Dashboard/Excel và cổng đóng `sql-spike.html` khỏi production mặc định.
+Hoàn thiện và kiểm tra toàn bộ Database Lifecycle API của SQL Engine: seed xác định, reset sạch về trạng thái ban đầu, Schema API trả về cấu trúc bảng kèm sample rows, và dispose chain dọn dẹp sạch. Đây là foundation cứng để Schema Browser (Step 4.2) có thể render thông tin bảng và cột mà không cần thêm contract mới.
 
 ## In Scope
 
-- Transport resilience: Request ID + response correlation.
-- Out-of-order responses & stale response rejection.
-- Worker crash (`onerror`, `onmessageerror`, unexpected termination) error handling & recovery.
-- `dispose()` sạch sẽ: reject pending promises lập tức, hủy all timers, terminate worker, ngăn memory leak.
-- Singleton / Lazy Worker initialization (nhiều lần gọi `initialize()` dùng chung 1 Worker instance).
-- Test harness gating: Đưa `sql-spike.html` trong `vite.config.js` về cờ `BUILD_SQL_SPIKE=true`.
-- Mở rộng unit test `sqlEngineAdapter.test.js` bao phủ các kịch bản transport edge cases.
+1. **Schema API mở rộng với sample rows** — `getSchema()` trả thêm field `sampleRows: Array<Array<unknown>>` (tối đa 3 hàng đầu) để Schema Browser hiển thị preview dữ liệu mà không cần execute câu lệnh riêng.
+2. **Database Lifecycle Test Suite** — Tạo `sqlDatabaseLifecycle.test.js` (adapter unit test, FakeSqlWorker) bao phủ:
+   - Seed → getSchema (có sampleRows) → execute truy vấn → reset → schema sau reset không thay đổi → dispose.
+   - Reset khi chưa có dataset phải throw `ENGINE_NOT_READY`.
+   - Double-dispose phải trả về `{ disposed: true }` và không throw.
+   - Schema sau reset phải giống schema sau seed ban đầu (determinism).
+3. **`sqlDataset.test.js` bổ sung** — Thêm test case: duplicate table name, duplicate column name, column type không hợp lệ.
+4. **Cập nhật Worker response contract** — Thêm `sampleRows` vào response của `getSchema` trong Worker (`sqlEngine.worker.js`).
 
 ## Out of Scope
 
 - Product UI/Route (Schema Browser, SQL Editor, Result Viewer thuộc Step 4.2+).
 - SQL Result Checker và Submission Integration (Step 4.6 & 4.7).
 - Backend DB, OPFS persistence, XP mutation, Admin builder.
+- Read-only Query Policy hardening (Step 4.1C).
 
 ## Allowed Write Paths
 
 - `src/utils/sql/`
 - `src/workers/sql/`
-- `vite.config.js`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/agent/modules/LRN-SQL.md`
 - `docs/PROJECT_STATUS.md`
@@ -60,21 +61,13 @@ Productionize Worker transport layer cho SQL Engine: đảm bảo Request ID cor
 
 ## Acceptance Criteria
 
-- [x] Request ID & response correlation xử lý out-of-order responses chính xác không nhầm lẫn.
-- [x] Stale responses xuất hiện muộn sau timeout hoặc reset bị bỏ qua hoàn toàn.
-- [x] Worker error (`error`, `messageerror`) reject pending promises và không làm ứng dụng treo.
-- [x] `dispose()` dọn dẹp Worker, reject pending requests với `ENGINE_NOT_READY`, xóa toàn bộ timers.
-- [x] Multiple concurrent `initialize()` calls chỉ khởi tạo 1 Worker duy nhất.
-- [x] Spike harness `sql-spike.html` trong `vite.config.js` được che chắn bởi cờ `BUILD_SQL_SPIKE`.
-- [x] Lazy loading được đảm bảo: Dashboard và Excel hoàn toàn không nạp SQL Worker hay WASM.
-- [x] SQL targeted unit tests (7/7) và full regression suite (148/148) pass 100%.
-
-## Completion Evidence
-
-- Adapter Transport: `SqlEngineAdapter` quản lý Map pending requests, cấp Request ID tăng dần, hủy `setTimeout` khi nhận phản hồi hoặc dispose.
-- Out-of-order & Timeout Test: `sqlEngineAdapter.test.js` đã thử nghiệm delays out-of-order, concurrent `initialize()`, Worker error event, và `dispose()` ngắt promise ngay lập tức.
-- Vite Config Gating: `vite.config.js` chuyển `sql-spike.html` vào cờ `process.env.BUILD_SQL_SPIKE === 'true'`, bảo vệ production entry points.
-- Test suite results: 7/7 SQL engine adapter tests pass; 148/148 full regression tests pass.
+- [ ] `getSchema()` response có field `sampleRows` (mảng tối đa 3 hàng) cho mỗi bảng.
+- [ ] Seed → reset → schema sau reset giống hệt schema sau seed (determinism).
+- [ ] Reset khi chưa có dataset throw `ENGINE_NOT_READY`.
+- [ ] Double-dispose trả `{ disposed: true }` không throw.
+- [ ] `sqlDatabaseLifecycle.test.js` bao phủ lifecycle end-to-end.
+- [ ] Dataset validation: duplicate table/column, column type không hợp lệ bị chặn.
+- [ ] Full regression suite pass 100% (mọi test hiện tại vẫn xanh).
 
 ## Test Commands
 

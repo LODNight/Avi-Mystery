@@ -27,5 +27,48 @@ describe('SQL dataset contract', () => {
       expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID })
     )
   })
+
+  it('chặn tên bảng bị trùng nhau (duplicate table name)', () => {
+    const invalidDataset = JSON.parse(JSON.stringify(spikeDataset))
+    invalidDataset.tables.push({ ...invalidDataset.tables[0] })
+    expect(() => validateSqlDataset(invalidDataset)).toThrow(
+      expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID })
+    )
+  })
+
+  it('chặn tên cột bị trùng trong cùng một bảng (duplicate column name)', () => {
+    const invalidDataset = JSON.parse(JSON.stringify(spikeDataset))
+    const col0 = invalidDataset.tables[0].columns[0]
+    invalidDataset.tables[0].columns.push({ ...col0 })
+    expect(() => validateSqlDataset(invalidDataset)).toThrow(
+      expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID })
+    )
+  })
+
+  it('chặn kiểu dữ liệu cột không hợp lệ (unsupported column type)', () => {
+    const invalidDataset = JSON.parse(JSON.stringify(spikeDataset))
+    invalidDataset.tables[0].columns[0] = {
+      ...invalidDataset.tables[0].columns[0],
+      type: 'VARCHAR',
+    }
+    expect(() => validateSqlDataset(invalidDataset)).toThrow(
+      expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID })
+    )
+  })
+
+  it('chặn dataset không có bảng nào', () => {
+    expect(() =>
+      validateSqlDataset({ ...spikeDataset, tables: [] })
+    ).toThrow(expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID }))
+  })
+
+  it('chặn bảng không có cột nào', () => {
+    const invalidDataset = JSON.parse(JSON.stringify(spikeDataset))
+    invalidDataset.tables[0].columns = []
+    expect(() => validateSqlDataset(invalidDataset)).toThrow(
+      expect.objectContaining({ code: SQL_ERROR_CODES.DATASET_INVALID })
+    )
+  })
 })
+
 

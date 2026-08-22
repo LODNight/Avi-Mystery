@@ -154,7 +154,7 @@ export class SqlEngineAdapter {
     return result
   }
 
-  async getSchema() {
+  async getSchema({ sampleRowLimit = 3 } = {}) {
     if (!this.initialized || !this.lastDataset) {
       throw new SqlEngineError(
         SQL_ERROR_CODES.ENGINE_NOT_READY,
@@ -163,7 +163,7 @@ export class SqlEngineAdapter {
         true
       )
     }
-    return this.request('getSchema')
+    return this.request('getSchema', { sampleRowLimit })
   }
 
   async execute(query, options = {}) {

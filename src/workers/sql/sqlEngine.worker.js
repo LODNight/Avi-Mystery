@@ -105,8 +105,12 @@ function assertDatabaseReady() {
   }
 }
 
-function getSchema() {
+function getSchema({ sampleRowLimit = 3 } = {}) {
   assertDatabaseReady()
+  const safeLimit = Number.isInteger(sampleRowLimit)
+    ? Math.min(Math.max(sampleRowLimit, 0), 10)
+    : 3
+
   const tablesResult = database.exec(
     "SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name"
   )
@@ -118,16 +122,31 @@ function getSchema() {
       const pragmaResult = database.exec(
         `PRAGMA table_info(${quoteIdentifier(tableName)})`
       )
-      const columns = pragmaResult[0]?.values || []
+      const columnMeta = pragmaResult[0]?.values || []
+
+      // Fetch sample rows for Schema Browser preview
+      let sampleRows = []
+      if (safeLimit > 0) {
+        try {
+          const sampleResult = database.exec(
+            `SELECT * FROM ${quoteIdentifier(tableName)} LIMIT ${safeLimit}`
+          )
+          sampleRows = sampleResult[0]?.values || []
+        } catch {
+          sampleRows = []
+        }
+      }
+
       return {
         name: tableName,
-        columns: columns.map(([, name, type, notNull, defaultValue, primaryKey]) => ({
+        columns: columnMeta.map(([, name, type, notNull, defaultValue, primaryKey]) => ({
           name,
           type,
           nullable: !Boolean(notNull),
           primaryKey: Boolean(primaryKey),
           defaultValue,
         })),
+        sampleRows,
       }
     }),
   }

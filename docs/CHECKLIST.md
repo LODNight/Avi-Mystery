@@ -137,9 +137,14 @@
 - [x] Gate spike harness `sql-spike.html` phía sau cờ `BUILD_SQL_SPIKE`
 - [x] Lazy-load WASM/Worker khi vào SQL flow; không tải ở Excel/dashboard
 
-### 🔹 Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
-- [ ] Load seed xác định; reset sạch theo mission
-- [ ] Internal schema query và statement/database cleanup
+### 🔹 Step 4.1B: Database Lifecycle, Seed, Reset & Schema API *(HOÀN THÀNH)*
+- [x] `getSchema()` trả `sampleRows` (tối đa 3 hàng) cho mỗi bảng để Schema Browser preview
+- [x] Seed → reset → schema sau reset giống hệt schema ban đầu (determinism)
+- [x] Reset khi chưa có dataset throw `ENGINE_NOT_READY`
+- [x] Double-dispose an toàn, trả `{ disposed: true }` không throw
+- [x] `sqlDatabaseLifecycle.test.js` bao phủ lifecycle end-to-end (7/7 tests)
+- [x] `sqlDataset.test.js` bổ sung: duplicate table/column, unsupported type, no-table, no-column (8/8 tests)
+- [x] Full SQL targeted suite 27/27 pass
 
 ### 🔹 Step 4.1C: Read-only Query Policy, Timeout & Row Limit
 - [ ] Chỉ một `SELECT`/`WITH`; chặn mutation/DDL/attach/pragma

@@ -10,13 +10,13 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 
 ## Current Status
 
-- Planned
+- IN_PROGRESS — Step 4.1: In-Browser SQL Engine & Schema Browser
 - Related Sprint: 4
-- Verified Paths: không có source module; SQL mission/step records chỉ tồn tại trong `src/mocks/data/missions.json` và `src/mocks/data/steps.json`; không có SQL route riêng.
+- Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/pages/learner/SqlMissionPage.jsx`
 
 ## Public Interfaces
 
-TBD. Mục tiêu cần engine adapter/Worker boundary, result-set evaluator và integration với generic submission contract.
+TBD. Engine adapter/Worker boundary, result-set evaluator và integration với generic submission contract.
 
 ## Dependencies
 
@@ -24,7 +24,11 @@ Chỉ SHR contracts/UI/utilities và LRN-SUB public interface. Shared không đ�
 
 ## Allowed Write Paths
 
-Không có source path đã được duyệt. Task Sprint 4 phải tạo và phê duyệt đường dẫn cụ thể trước khi viết code.
+- `src/components/sql/`
+- `src/utils/sql/`
+- `src/pages/learner/SqlMissionPage.jsx`
+- `src/services/mock/mockSqlService.js`
+- `src/mocks/data/sqlMissions.json`
 
 ## Read-only Paths
 

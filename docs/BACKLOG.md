@@ -48,9 +48,18 @@
 | `LRN-SUB-3.4E` | Submission UI Stabilization | `LRN-SUB` | `High` | `DONE` | Xác minh feedback/loading/retry/modal/responsive/a11y; hoàn thành gate 3.4E |
 | `SHR-3.5` | Learner UI Foundation & Stabilization | `SHR` | `High` | `DONE` | UI inventory, shared primitives, Learner layout/navigation, Mission layout, responsive/a11y và regression pass |
 | `LRN-UI-3.6` | Light Mode Refinement & Accessibility | `LRN-EXCEL` | `High` | `DONE` | Light mode theme tokens, secondary action buttons neutral tone, FormulaBar & SpreadsheetGrid contrast, Smart Visibility target cell badge |
-| `LRN-EXCEL-3.6G` | Sprint 3 Stabilization Gate | `LRN-EXCEL` | `High` | `DONE` | Formula/global diagnostics, hint lifecycle/a11y, route boundary, responsive/theme regression và build pass |
 
 Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đúng ownership. Backend thật vẫn thuộc Sprint 7.
+
+---
+
+## Sprint 4 — SQL Vertical Slice Tasks
+
+| Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
+|---|---|---|---|---|---|
+| `LRN-SQL-4.1-ENGINE` | In-Browser SQL Engine Adapter & Schema Browser | `LRN-SQL` | `High` | `IN_PROGRESS` | Tích hợp SQLite WASM / engine adapter & component Schema Browser |
+| `LRN-SQL-4.2-EDITOR` | SQL Code Editor & Result Viewer | `LRN-SQL` | `High` | `TODO` | Syntax highlighter, SQL editor UI & Query result table |
+| `LRN-SQL-4.3-SUB` | SQL Result Evaluator & Submission | `LRN-SQL` | `High` | `TODO` | Dynamic query dataset comparator & Submission contract integration |
 
 ---
 

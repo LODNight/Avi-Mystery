@@ -118,11 +118,11 @@
 
 ---
 
-## ⚪ Sprint 4 — SQL Vertical Slice *(Chưa kích hoạt)*
+## 🟡 Sprint 4 — SQL Vertical Slice *(ĐANG THỰC HIỆN)*
 
-### 🔹 Step 4.1: In-Browser SQL Engine & Schema Browser
-- [ ] Tích hợp trình quản lý SQL WebAssembly (SQLite) chạy trực tiếp trên trình duyệt
-- [ ] Xây dựng Trình duyệt Cấu trúc Bảng (`Schema Browser`) hiển thị tên bảng, tên cột & kiểu dữ liệu
+### 🔹 Step 4.1: In-Browser SQL Engine & Schema Browser *(IN_PROGRESS)*
+- [ ] Tích hợp trình quản lý SQL WebAssembly (SQLite / Mock Engine Adapter) chạy trực tiếp trên trình duyệt
+- [ ] Xây dựng Trình duyệt Cấu trúc Bảng (`Schema Browser`) hiển thị tên bảng, tên cột, kiểu dữ liệu & sample data
 
 ### 🔹 Step 4.2: SQL Code Editor & Result Viewer
 - [ ] Xây dựng Trình soạn thảo cú pháp SQL (`SQL Code Editor`) với Tô màu cú pháp & gợi ý tự động

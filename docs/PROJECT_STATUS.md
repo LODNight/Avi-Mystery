@@ -7,23 +7,23 @@
 
 ## 1. Tổng Quan Tiến Độ Sprint 3
 
-* **Sprint Hiện Tại:** Sprint 3 — Excel Vertical Slice
-* **Sprint Goal:** Hoàn thiện một Excel learning vertical slice với workspace, evaluator, submission orchestration và feedback có boundary ổn định.
-* **Step đã hoàn thành:** Step 3.0–3.6G.
-* **Step hiện tại:** Step 3.6G — Sprint 3 Stabilization (`DONE`).
-* **Step kế tiếp đã lên kế hoạch:** Sprint 4 — SQL Vertical Slice.
-* **Trạng thái Sprint:** `DONE — SPRINT 3 COMPLETE`; Chuẩn bị kích hoạt Sprint 4.
+* **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
+* **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
+* **Step đã hoàn thành:** Step 1.1–3.6G.
+* **Step hiện tại:** Step 4.1 — In-Browser SQL Engine & Schema Browser (`IN_PROGRESS`).
+* **Step kế tiếp đã lên kế hoạch:** Step 4.2 — SQL Code Editor & Result Viewer.
+* **Trạng thái Sprint:** `IN_PROGRESS — SPRINT 4 ACTIVATED`.
 
 ---
 
-## 2. Bảng Trạng Thái Sprint Hiện Tại (Sprint 3)
+## 2. Bảng Trạng Thái Sprint Hiện Tại (Sprint 4)
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner Excel (`LRN-EXCEL`)** | `Primary` | Workspace core `DONE`; Light Mode & Accessibility Refinement | `DONE / Step 3.6` |
-| **Submission (`LRN-SUB`)** | `Supporting` | Core `DONE`; feedback/responsive/a11y stabilization | `DONE / Step 3.4E` |
-| **Admin (`ADM`)** | `None` | Giữ nguyên App Shell, Quản lý trạng thái trang trong Cài đặt | `NO_CHANGE` |
-| **Shared (`SHR`)** | `Supporting` | Contract/gateway `DONE`; Learner layout/shared UI audit & Light Mode tokens | `DONE / Step 3.6` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Client-side SQL Engine (WASM/Adapter), Schema Browser & SQL Workspace | `IN_PROGRESS / Step 4.1` |
+| **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
+| **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
+| **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
 | **Backend (`BE`)** | `None` | FastAPI/PostgreSQL/API integration | `PLANNED` cho Sprint 7 |
 
 ---

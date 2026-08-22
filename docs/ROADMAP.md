@@ -170,11 +170,15 @@
 
 ---
 
-## ⚪ Sprint 4 — SQL Vertical Slice (CHƯA KÍCH HOẠT)
+## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN)
 
-* **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser và tự động kiểm tra kết quả truy vấn.
+* **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
 * **Supporting Focus Area:** `SHR` và `LRN-SUB`
+* **Sub-Steps:**
+  - **Step 4.1:** In-Browser SQL Engine & Schema Browser — **IN_PROGRESS**
+  - **Step 4.2:** SQL Code Editor & Result Viewer — **PLANNED**
+  - **Step 4.3:** SQL Result Evaluator & Submission — **PLANNED**
 
 ---
 

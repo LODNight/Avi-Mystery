@@ -40,7 +40,10 @@ export function ExcelMissionPage() {
   const [showBriefing, setShowBriefing] = useState(false);
   const [showHintPanel, setShowHintPanel] = useState(false);
   const [hintsUnlockedCount, setHintsUnlockedCount] = useState(0);
+  // activeUnlockedHint = nội dung đang hiển thị trên FormulaBar (ghim từ HintPanel)
   const [activeUnlockedHint, setActiveUnlockedHint] = useState(null);
+  // pinnedHint = hint nào đang được chọn/ghim trong HintPanel (để highlight card)
+  const [pinnedHint, setPinnedHint] = useState(null);
 
   // State quản lý phản hồi thông báo (Feedback Toast)
   const [feedbackToast, setFeedbackToast] = useState(null);
@@ -97,6 +100,7 @@ export function ExcelMissionPage() {
     setShowHintPanel(false);
     setHintsUnlockedCount(0);
     setActiveUnlockedHint(null);
+    setPinnedHint(null);
     setFeedbackToast(null);
     setFormulaInput('');
     setFormulaDiagnostic(null);
@@ -272,6 +276,7 @@ export function ExcelMissionPage() {
     setSubmissionResult(null);
     setShowResultModal(false);
     setActiveUnlockedHint(null);
+    setPinnedHint(null);
     const starterCell = mission?.starterContent?.targetCell || 'E2';
     setSelectedCell(starterCell);
     showNotification('info', 'Đã đặt lại toàn bộ bảng tính về trạng thái ban đầu.');
@@ -298,7 +303,21 @@ export function ExcelMissionPage() {
         ];
 
     const newlyUnlockedHintText = normalizedHints[nextCount - 1] || normalizedHints[0];
+    // Tự động ghim gợi ý mới nhất lên FormulaBar khi mở khóa
     setActiveUnlockedHint(newlyUnlockedHintText);
+    setPinnedHint(newlyUnlockedHintText);
+  };
+
+  // onPinHint: Khi người dùng click vào một hint card đã mở khóa để ghim lên FormulaBar
+  const handlePinHint = (hintText) => {
+    if (pinnedHint === hintText) {
+      // Toggle: bấm lại cùng gợi ý sẽ gỡ ghim
+      setPinnedHint(null);
+      setActiveUnlockedHint(null);
+    } else {
+      setPinnedHint(hintText);
+      setActiveUnlockedHint(hintText);
+    }
   };
 
   // 4. Nộp bài vụ án (Submit Answer - Step 3.4)
@@ -393,7 +412,9 @@ export function ExcelMissionPage() {
   const potentialXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12">
+    <div className={`flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12 transition-all duration-300 ${
+      showHintPanel ? 'xl:pr-[410px]' : ''
+    }`}>
       {/* ── Top Bar Header ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
@@ -587,7 +608,10 @@ export function ExcelMissionPage() {
           isTargetCell={selectedCell === starterCell}
           diagnostic={formulaDiagnostic}
           activeHint={activeUnlockedHint}
-          onClearActiveHint={() => setActiveUnlockedHint(null)}
+          onClearActiveHint={() => {
+            setActiveUnlockedHint(null);
+            setPinnedHint(null);
+          }}
           disabled={isSubmitting}
         />
       </div>
@@ -596,7 +620,7 @@ export function ExcelMissionPage() {
       {showHintPanel && (
         <aside
           aria-label="Khung gợi ý"
-          className="fixed bottom-0 right-0 top-20 z-40 w-full sm:w-[400px] max-w-full bg-card/95 backdrop-blur-md border-l border-amber-500/30 shadow-2xl p-4 sm:p-5 overflow-y-auto animate-in slide-in-from-right duration-300"
+          className="fixed bottom-0 right-0 top-20 z-40 w-full sm:w-[400px] max-w-full bg-card border-l border-amber-500/30 shadow-2xl p-4 sm:p-5 overflow-y-auto animate-in slide-in-from-right duration-300"
         >
           <HintPanel
             hints={hintsData}
@@ -606,6 +630,8 @@ export function ExcelMissionPage() {
             penaltyPerHint={15}
             onClose={closeHintPanel}
             closeButtonRef={hintCloseButtonRef}
+            pinnedHint={pinnedHint}
+            onPinHint={handlePinHint}
           />
         </aside>
       )}

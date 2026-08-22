@@ -75,10 +75,10 @@ export function SpreadsheetGrid({
   };
 
   return (
-    <div className="w-full overflow-x-auto rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card shadow-md">
+    <div className="w-full overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card shadow-md">
       {/* Excel Sheet Title Bar */}
       {dataset.name && (
-        <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-stone-100/70 dark:bg-stone-900/60 px-4 py-2.5 text-xs font-semibold text-stone-600 dark:text-stone-400">
+        <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-stone-100/80 dark:bg-stone-900/80 px-4 py-2.5 text-xs font-semibold text-stone-600 dark:text-stone-400 shrink-0">
           <div className="flex items-center gap-2">
             <Database className="size-3.5 text-stone-600 dark:text-stone-300" />
             <span className="font-bold text-stone-900 dark:text-stone-100">{dataset.name}</span>
@@ -88,138 +88,142 @@ export function SpreadsheetGrid({
           </span>
         </div>
       )}
-      <table className="w-full border-collapse font-mono text-xs select-none">
-        {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
-        <thead>
-          <tr className="bg-stone-200/90 dark:bg-stone-900 text-foreground border-b-2 border-stone-300 dark:border-stone-700">
-            <th className="w-10 border-r border-stone-300 dark:border-stone-700 p-2 text-center text-[10px] font-extrabold uppercase tracking-wider bg-stone-300/80 dark:bg-stone-950 text-stone-700 dark:text-stone-300">
-              #
-            </th>
-            {colLetters.map((letter) => (
-              <th
-                key={letter}
-                className="border-r border-stone-300 dark:border-stone-700 py-1.5 px-3 text-center font-extrabold text-stone-800 dark:text-stone-200 last:border-r-0 min-w-[100px] text-xs bg-stone-200/90 dark:bg-stone-900"
-              >
-                <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-2xs">
-                  {letter}
-                </span>
-              </th>
-            ))}
-          </tr>
-        </thead>
 
-        <tbody>
-          {/* Hàng 1: Dòng Tiêu đề Tên Cột Trong Dataset (Header Row 1) */}
-          <tr className="border-b border-border bg-background dark:bg-card/30 text-foreground font-semibold">
-            <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
-              1
-            </td>
-            {columns.map((col, cIdx) => {
-              const cellAddr = `${colLetters[cIdx]}1`;
-              const isSelected = selectedCell === cellAddr;
-              const isNumeric = col.type === 'currency' || col.type === 'number' || col.dataType === 'currency' || col.dataType === 'number' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount'].includes(col.key);
+      {/* Responsive Horizontal Scroll Container with Min-Width Protection */}
+      <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700 pb-1">
+        <table className="w-full min-w-[580px] border-collapse font-mono text-xs select-none">
+          {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
+          <thead>
+            <tr className="bg-stone-200/90 dark:bg-stone-900 text-foreground border-b-2 border-stone-300 dark:border-stone-700">
+              <th className="w-10 border-r border-stone-300 dark:border-stone-700 p-2 text-center text-[10px] font-extrabold uppercase tracking-wider bg-stone-300/80 dark:bg-stone-950 text-stone-700 dark:text-stone-300 shrink-0">
+                #
+              </th>
+              {colLetters.map((letter) => (
+                <th
+                  key={letter}
+                  className="border-r border-stone-300 dark:border-stone-700 py-2 px-3 text-center font-extrabold text-stone-800 dark:text-stone-200 last:border-r-0 min-w-[130px] sm:min-w-[150px] text-xs bg-stone-200/90 dark:bg-stone-900"
+                >
+                  <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-2xs">
+                    {letter}
+                  </span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {/* Hàng 1: Dòng Tiêu đề Tên Cột Trong Dataset (Header Row 1) */}
+            <tr className="border-b border-border bg-background dark:bg-card/30 text-foreground font-semibold">
+              <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
+                1
+              </td>
+              {columns.map((col, cIdx) => {
+                const cellAddr = `${colLetters[cIdx]}1`;
+                const isSelected = selectedCell === cellAddr;
+                const isNumeric = col.type === 'currency' || col.type === 'number' || col.dataType === 'currency' || col.dataType === 'number' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount'].includes(col.key);
+
+                return (
+                  <td
+                    key={cellAddr}
+                    onClick={() => onCellSelect && onCellSelect(cellAddr)}
+                    className={`border-r border-border px-3 py-2 font-sans font-bold text-foreground transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
+                      isNumeric ? 'text-right' : 'text-left'
+                    } ${
+                      isSelected
+                        ? 'bg-primary/10 ring-2 ring-primary ring-inset'
+                        : 'hover:bg-muted/60'
+                    }`}
+                  >
+                    {col.label || col.name}
+                  </td>
+                );
+              })}
+            </tr>
+
+            {/* Dòng 2 trở đi: Các dòng dữ liệu thực tế (Data Rows: Row 2, 3, 4...) */}
+            {rows.map((row, rIdx) => {
+              const excelRowNumber = rIdx + 2; // Row 2 = first data row
 
               return (
-                <td
-                  key={cellAddr}
-                  onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                  className={`border-r border-border px-3 py-2 font-sans font-bold text-foreground transition-all cursor-pointer last:border-r-0 ${
-                    isNumeric ? 'text-right' : 'text-left'
-                  } ${
-                    isSelected
-                      ? 'bg-primary/10 ring-2 ring-primary ring-inset'
-                      : 'hover:bg-muted/60'
-                  }`}
+                <tr
+                  key={excelRowNumber}
+                  className="border-b border-border/70 hover:bg-muted/20 transition-colors last:border-b-0"
                 >
-                  {col.label || col.name}
-                </td>
-              );
-            })}
-          </tr>
+                  {/* Excel Row Index Label (2, 3, 4...) */}
+                  <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/40 text-muted-foreground">
+                    {excelRowNumber}
+                  </td>
 
-          {/* Dòng 2 trở đi: Các dòng dữ liệu thực tế (Data Rows: Row 2, 3, 4...) */}
-          {rows.map((row, rIdx) => {
-            const excelRowNumber = rIdx + 2; // Row 2 = first data row
+                  {/* Cells in Row */}
+                  {columns.map((col, cIdx) => {
+                    const cellAddr = `${colLetters[cIdx]}${excelRowNumber}`;
+                    const isSelected = selectedCell === cellAddr;
+                    const isTarget = cellAddr === targetCell;
+                    const editable = isCellEditable(cellAddr);
+                    const rawVal = row[col.key];
+                    const colType = col.dataType || col.type;
+                    const isNumeric = colType === 'currency' || colType === 'number' || colType === 'integer' || colType === 'float' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
 
-            return (
-              <tr
-                key={excelRowNumber}
-                className="border-b border-border/70 hover:bg-muted/20 transition-colors last:border-b-0"
-              >
-                {/* Excel Row Index Label (2, 3, 4...) */}
-                <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/40 text-muted-foreground">
-                  {excelRowNumber}
-                </td>
+                    const hasCellData =
+                      (cellValues[cellAddr] !== undefined && cellValues[cellAddr] !== null) ||
+                      Boolean(cellFormulas[cellAddr] && cellFormulas[cellAddr].trim()) ||
+                      (rawVal !== null && rawVal !== undefined && rawVal !== '');
 
-                {/* Cells in Row */}
-                {columns.map((col, cIdx) => {
-                  const cellAddr = `${colLetters[cIdx]}${excelRowNumber}`;
-                  const isSelected = selectedCell === cellAddr;
-                  const isTarget = cellAddr === targetCell;
-                  const editable = isCellEditable(cellAddr);
-                  const rawVal = row[col.key];
-                  const colType = col.dataType || col.type;
-                  const isNumeric = colType === 'currency' || colType === 'number' || colType === 'integer' || colType === 'float' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
-
-                  const hasCellData =
-                    (cellValues[cellAddr] !== undefined && cellValues[cellAddr] !== null) ||
-                    Boolean(cellFormulas[cellAddr] && cellFormulas[cellAddr].trim()) ||
-                    (rawVal !== null && rawVal !== undefined && rawVal !== '');
-
-                  return (
-                    <td
-                      key={cellAddr}
-                      onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                      className={`relative border-r border-border/80 px-3 py-2 transition-all cursor-pointer last:border-r-0 ${
-                        isNumeric ? 'text-right' : 'text-left'
-                      } ${
-                        isTarget
-                          ? isSelected
-                            ? 'bg-amber-500/20 ring-2 ring-amber-500 shadow-xs'
-                            : 'bg-amber-500/10 border-amber-400/80 ring-1 ring-amber-400/40'
-                          : isSelected
-                          ? 'bg-primary/10 ring-2 ring-primary ring-inset'
-                          : editable
-                          ? 'bg-amber-500/5 hover:bg-amber-500/10'
-                          : 'hover:bg-muted/40'
-                      }`}
-                    >
-                      {/* Smart Visibility Target Cell Badge Indicator */}
-                      {isTarget && (
-                        !hasCellData ? (
-                          /* Trạng thái 1 (Ô trống): Hiển thị đầy đủ badge "✦ Mục tiêu" */
-                          <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
-                            <Sparkles className="size-2.5 fill-current" />
-                            <span>Mục tiêu</span>
-                          </div>
-                        ) : (
-                          /* Trạng thái 2 (Đã có dữ liệu): Ẩn chữ "Mục tiêu", giữ icon ✦ nhỏ góc trái để trả không gian hiển thị con số */
-                          <div className="absolute top-1 left-1.5 z-10 flex items-center text-amber-600 dark:text-amber-400 pointer-events-none" title="Ô mục tiêu vụ án">
-                            <Sparkles className="size-2.5 fill-amber-500/40" />
-                          </div>
-                        )
-                      )}
-
-                      {/* Editable Indicator Icon */}
-                      {editable && !isTarget && (
-                        <Edit3 className="absolute right-1.5 top-1.5 size-3 text-amber-500/60 pointer-events-none" />
-                      )}
-
-                      <span
-                        className={`${
-                          isTarget ? 'font-bold text-amber-600 dark:text-amber-400' : 'text-foreground'
+                    return (
+                      <td
+                        key={cellAddr}
+                        onClick={() => onCellSelect && onCellSelect(cellAddr)}
+                        className={`relative border-r border-border/80 px-3 py-2 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
+                          isNumeric ? 'text-right' : 'text-left'
+                        } ${
+                          isTarget
+                            ? isSelected
+                              ? 'bg-amber-500/20 ring-2 ring-amber-500 shadow-xs'
+                              : 'bg-amber-500/10 border-amber-400/80 ring-1 ring-amber-400/40'
+                            : isSelected
+                            ? 'bg-primary/10 ring-2 ring-primary ring-inset'
+                            : editable
+                            ? 'bg-amber-500/5 hover:bg-amber-500/10'
+                            : 'hover:bg-muted/40'
                         }`}
                       >
-                        {renderCellValue(col, rawVal, cellAddr)}
-                      </span>
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                        {/* Smart Visibility Target Cell Badge Indicator */}
+                        {isTarget && (
+                          !hasCellData ? (
+                            /* Trạng thái 1 (Ô trống): Hiển thị đầy đủ badge "✦ Mục tiêu" */
+                            <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
+                              <Sparkles className="size-2.5 fill-current" />
+                              <span>Mục tiêu</span>
+                            </div>
+                          ) : (
+                            /* Trạng thái 2 (Đã có dữ liệu): Ẩn chữ "Mục tiêu", giữ icon ✦ nhỏ góc trái để trả không gian hiển thị con số */
+                            <div className="absolute top-1 left-1.5 z-10 flex items-center text-amber-600 dark:text-amber-400 pointer-events-none" title="Ô mục tiêu vụ án">
+                              <Sparkles className="size-2.5 fill-amber-500/40" />
+                            </div>
+                          )
+                        )}
+
+                        {/* Editable Indicator Icon */}
+                        {editable && !isTarget && (
+                          <Edit3 className="absolute right-1.5 top-1.5 size-3 text-amber-500/60 pointer-events-none" />
+                        )}
+
+                        <span
+                          className={`${
+                            isTarget ? 'font-bold text-amber-600 dark:text-amber-400' : 'text-foreground'
+                          }`}
+                        >
+                          {renderCellValue(col, rawVal, cellAddr)}
+                        </span>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -1,9 +1,19 @@
 import React from 'react';
-import { Lightbulb, Lock, Unlock, Award, AlertTriangle, X, Check } from 'lucide-react';
+import { Lightbulb, Lock, Unlock, Award, AlertTriangle, X, Check, Pin, ArrowUpRight } from 'lucide-react';
 
 /**
  * HintPanel Component (LRN-EXCEL-002 / Step 3.3)
  * Bảng gợi ý từng bước giải bài tập Excel kèm trừ điểm XP
+ *
+ * @param {Array|string} hints - Danh sách gợi ý từ nhiệm vụ
+ * @param {number} hintsUnlockedCount - Số gợi ý đã mở khóa
+ * @param {Function} onUnlockNextHint - Callback mở gợi ý tiếp theo
+ * @param {number} baseXp - XP gốc của bài tập
+ * @param {number} penaltyPerHint - XP bị trừ mỗi khi mở 1 gợi ý
+ * @param {Function} onClose - Callback đóng panel
+ * @param {React.RefObject} closeButtonRef - Ref cho nút đóng panel (accessibility)
+ * @param {string|null} pinnedHint - Nội dung gợi ý đang được ghim lên FormulaBar
+ * @param {Function} onPinHint - Callback khi click vào hint card để ghim/gỡ ghim lên FormulaBar
  */
 export function HintPanel({
   hints = [],
@@ -13,6 +23,8 @@ export function HintPanel({
   penaltyPerHint = 15,
   onClose,
   closeButtonRef,
+  pinnedHint = null,
+  onPinHint,
 }) {
   // Chuẩn hóa mảng gợi ý (nếu nhận vào là chuỗi đơn thì tách/tạo 3 cấp độ gợi ý)
   const normalizedHints = Array.isArray(hints) && hints.length > 0
@@ -37,8 +49,8 @@ export function HintPanel({
   return (
     <div className="rounded-3xl border border-amber-500/30 bg-card p-5 sm:p-6 shadow-xl space-y-5 animate-fade-in relative flex flex-col justify-between h-full">
       <div className="space-y-4">
-        {/* ── Panel Header (Redesigned 2-row layout for full title visibility) ── */}
-        <div className="border-b border-border pb-3 space-y-2.5">
+        {/* ── Panel Header ── */}
+        <div className="border-b border-border pb-3.5 space-y-3">
           {/* Row 1: Title + Close Button */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
@@ -59,18 +71,18 @@ export function HintPanel({
             )}
           </div>
 
-          {/* Row 2: XP Net Badge */}
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-              <Award className="size-3.5" />
-              <span>Phần thưởng dự kiến: {netXp} XP</span>
+          {/* Row 2: XP Net Badge — Hoàn toàn thẳng hàng & không bao giờ bị rớt dòng chữ XP */}
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1 font-mono text-xs font-bold text-amber-700 dark:text-amber-300 whitespace-nowrap shadow-xs">
+              <Award className="size-3.5 shrink-0 text-amber-500" />
+              <span>Dự kiến: {netXp} XP</span>
               {currentPenalty > 0 && (
-                <span className="text-[10px] text-rose-500">(-{currentPenalty} XP)</span>
+                <span className="text-[11px] text-rose-500 font-extrabold whitespace-nowrap">(-{currentPenalty} XP)</span>
               )}
             </div>
 
             {hintsUnlockedCount > 0 && (
-              <span className="text-[11px] font-mono text-muted-foreground">
+              <span className="text-[11px] font-mono text-muted-foreground font-semibold whitespace-nowrap">
                 Đã mở {hintsUnlockedCount}/{totalHints}
               </span>
             )}
@@ -83,24 +95,40 @@ export function HintPanel({
             const levelNumber = index + 1;
             const isUnlocked = levelNumber <= hintsUnlockedCount;
             const isNextAvailable = index === hintsUnlockedCount;
+            const isPinned = pinnedHint === hintText;
 
             return (
               <div
                 key={index}
-                className={`rounded-2xl border p-3.5 transition-all ${
+                role={isUnlocked ? 'button' : undefined}
+                tabIndex={isUnlocked ? 0 : undefined}
+                title={isUnlocked ? (isPinned ? 'Nhấn để bỏ ghim gợi ý khỏi thanh fx' : 'Nhấn để ghim gợi ý này lên thanh fx') : undefined}
+                onClick={() => isUnlocked && onPinHint && onPinHint(hintText)}
+                onKeyDown={(e) => {
+                  if (isUnlocked && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    onPinHint && onPinHint(hintText);
+                  }
+                }}
+                className={`group relative rounded-2xl border p-4 transition-all duration-200 ${
                   isUnlocked
-                    ? 'border-emerald-500/40 bg-emerald-500/5 text-foreground shadow-xs'
+                    ? isPinned
+                      ? 'border-amber-500 bg-amber-500/15 text-foreground shadow-md ring-2 ring-amber-400/60 dark:ring-amber-400/80 cursor-pointer'
+                      : 'border-emerald-500/40 bg-emerald-500/5 text-foreground shadow-xs cursor-pointer hover:border-amber-400 hover:bg-amber-500/10 hover:shadow-sm'
                     : isNextAvailable
                     ? 'border-amber-500/60 bg-amber-500/10 text-foreground font-semibold shadow-xs ring-2 ring-amber-500/20'
                     : 'border-border/60 bg-muted/30 text-muted-foreground opacity-50 cursor-not-allowed'
                 }`}
               >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
+                {/* Header hàng gợi ý */}
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`flex size-6 items-center justify-center rounded-lg font-mono text-xs font-bold ${
+                      className={`flex size-6 items-center justify-center rounded-lg font-mono text-xs font-black shrink-0 ${
                         isUnlocked
-                          ? 'bg-emerald-500 text-emerald-950'
+                          ? isPinned
+                            ? 'bg-amber-500 text-amber-950 shadow-xs'
+                            : 'bg-emerald-500 text-emerald-950'
                           : isNextAvailable
                           ? 'bg-amber-500 text-amber-950'
                           : 'bg-muted text-muted-foreground'
@@ -113,11 +141,18 @@ export function HintPanel({
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-1 text-[11px] font-mono">
+                  {/* Status Badge */}
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono">
                     {isUnlocked ? (
-                      <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
-                        <Check className="size-3" /> Đã mở
-                      </span>
+                      isPinned ? (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/25 dark:bg-amber-400/25 px-2 py-0.5 text-amber-800 dark:text-amber-200 font-extrabold border border-amber-500/50 shadow-2xs">
+                          <Pin className="size-3 text-amber-600 dark:text-amber-300 fill-amber-500/40 animate-pulse" /> Đang ghim
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
+                          <Check className="size-3" /> Đã mở
+                        </span>
+                      )
                     ) : isNextAvailable ? (
                       <span className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-bold">
                         <Unlock className="size-3" /> Sẵn sàng mở
@@ -130,6 +165,7 @@ export function HintPanel({
                   </div>
                 </div>
 
+                {/* Body Text */}
                 {isUnlocked ? (
                   <p className="text-xs sm:text-sm leading-relaxed font-medium pl-8">
                     {hintText}
@@ -143,24 +179,40 @@ export function HintPanel({
                     Cần mở khóa Gợi ý Cấp độ {index} trước.
                   </p>
                 )}
+
+                {/* Clickable Call-to-Action Affordance cho Gợi ý đã mở */}
+                {isUnlocked && (
+                  <div className="mt-2.5 pt-2 border-t border-border/40 pl-8 flex items-center justify-between text-xs">
+                    {isPinned ? (
+                      <span className="font-bold text-amber-700 dark:text-amber-300 inline-flex items-center gap-1 group-hover:underline">
+                        <Pin className="size-3" /> Bấm để bỏ ghim khỏi thanh fx
+                      </span>
+                    ) : (
+                      <span className="font-bold text-emerald-700 dark:text-emerald-400 inline-flex items-center gap-1 group-hover:underline">
+                        <ArrowUpRight className="size-3.5" /> Ghim nội dung này lên thanh fx ⇡
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* ── Footer Action & Alignment ── */}
-      <div className="border-t border-border pt-3.5 mt-3 space-y-3">
-        <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
-          <AlertTriangle className="size-3.5 text-amber-500 shrink-0" />
-          <span>Mỗi lượt mở gợi ý sẽ trừ {penaltyPerHint} XP từ quỹ điểm.</span>
+      {/* ── Footer Action & Precise Left Alignment ── */}
+      <div className="border-t border-border pt-4 mt-3 space-y-3">
+        {/* Warning text aligned exactly with button padding */}
+        <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400 font-medium">
+          <AlertTriangle className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
+          <span className="leading-tight">Mỗi lượt mở gợi ý sẽ trừ {penaltyPerHint} XP từ quỹ điểm.</span>
         </div>
 
         {!isAllUnlocked && (
           <button
             type="button"
             onClick={onUnlockNextHint}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-amber-950 hover:bg-amber-400 transition-all shadow-md cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 px-4 py-2.5 text-xs font-bold text-amber-950 hover:bg-amber-400 transition-all shadow-md cursor-pointer active:scale-[0.99]"
           >
             <Unlock className="size-3.5" />
             <span>Mở Gợi ý Cấp {hintsUnlockedCount + 1} (-{penaltyPerHint} XP)</span>

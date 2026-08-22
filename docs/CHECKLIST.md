@@ -128,9 +128,14 @@
 - [x] Deterministic seed chứng minh initialize/load/schema/execute/reset/dispose
 - [x] SQL unit 11/11, full regression 144/144; không xây product UI hoặc route
 
-### 🔹 Step 4.1A: WASM Packaging & Worker Transport
-- [ ] Lazy-load WASM khi vào SQL flow; không tải ở Excel/dashboard
-- [ ] Worker request ID, loading/error, dispose và cleanup
+### 🔹 Step 4.1A: WASM Packaging & Worker Transport *(HOÀN THÀNH)*
+- [x] Request ID correlation & handling out-of-order worker responses
+- [x] Lọc stale responses muộn sau timeout/reset
+- [x] Worker error handling (`onerror`, `messageerror`) & recovery không treo UI
+- [x] Dispose dọn dẹp pending requests, timers và terminate worker
+- [x] Singleton Lazy Worker initialization (không tạo nhiều Worker)
+- [x] Gate spike harness `sql-spike.html` phía sau cờ `BUILD_SQL_SPIKE`
+- [x] Lazy-load WASM/Worker khi vào SQL flow; không tải ở Excel/dashboard
 
 ### 🔹 Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
 - [ ] Load seed xác định; reset sạch theo mission

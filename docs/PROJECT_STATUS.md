@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.0.
-* **Step vừa hoàn thành:** Step 4.0 — Technical Spike & SQL Contracts (`DONE`).
-* **Step kế tiếp đã lên kế hoạch:** Step 4.1A — WASM Packaging & Worker Transport; chưa kích hoạt.
-* **Trạng thái Sprint:** `TECHNICAL GATE PASS — CHƯA IMPLEMENT PRODUCT FEATURE`.
+* **Step đã hoàn thành:** Step 1.1–4.1A.
+* **Step vừa hoàn thành:** Step 4.1A — WASM Packaging & Worker Transport (`DONE`).
+* **Step kế tiếp đã lên kế hoạch:** Step 4.1B — Database Lifecycle, Seed, Reset & Schema API (`PLANNED`).
+* **Trạng thái Sprint:** `TRANSPORT GATE PASS — SẴN SÀNG CHO DATABASE LIFECYCLE (4.1B)`.
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Technical spike, contracts và risk gates trước SQL Workspace | `DONE / Step 4.0` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, request ID correlation, stale filter, lazy-load & test harness gating | `DONE / Step 4.1A` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
@@ -49,28 +49,9 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `LRN-MAP-001` | `LRN` | Map | Bản đồ học tập dạng Node/Tree (`LearningMapPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/LearningMapPage.jsx` |
 | `LRN-MISSION-001` | `LRN` | Mission | Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage`) | Sprint 2 | `DONE` | Pass | `src/pages/learner/MissionIntroPage.jsx` |
 | `SHR-EXCEL-CHECKER-001` | `SHR` | Excel | Bộ chấm điểm công thức Excel Answer Checker (`excelChecker.js`) | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.js` |
-| `SHR-AUDIT-003` | `SHR` | Audit | Step 3.0 Transition Audit và Excel checker | Sprint 3 | `DONE` | Pass | `src/utils/excelChecker.test.js` |
-| `LRN-EXCEL-001` | `LRN-EXCEL` | Mission | Step 3.1 Excel Mission Shell (`/missions/:missionId/workspace`) | Sprint 3 | `DONE` | Pass | `src/pages/learner/ExcelMissionPage.test.jsx` |
-| `LRN-EXCEL-002` | `LRN-EXCEL` | Workspace | Step 3.2 Grid/Formula Bar và Step 3.3 Toolbar/Hints | Sprint 3 | `DONE` | Pass | `src/components/excel/*.test.jsx` |
-| `LRN-SUB-3.4` | `LRN-SUB` | Submission | Contract, async submit và feedback | Sprint 3 | `DONE` | Pass | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService*`, `ExcelMissionPage*` |
-| `LRN-SUB-3.4E` | `LRN-SUB` | UI Stabilization | Submission feedback/responsive/accessibility gate | Sprint 3 | `DONE` | Pass | `docs/agent/UI_CHANGE_INVENTORY.md` |
-| `LRN-UI-3.6` | `LRN-EXCEL` | Light Mode Refinement | Standardized Light Mode design & accessibility | Sprint 3 | `DONE` | Pass | `src/styles/index.css`, `ActionToolbar.jsx`, `FormulaBar.jsx`, `SpreadsheetGrid.jsx`, `LearnerLayout.jsx` |
-| `LRN-EXCEL-3.6G` | `LRN-EXCEL` | Sprint Stabilization | Formula/global diagnostics, stale hint, route boundary, responsive/a11y verification | Sprint 3 | `DONE` | Pass (133/133) | `excelChecker*`, `ExcelMissionPage*`, `LearnerLayout*`, `HintPanel*` |
-| `LRN-SQL-4.0` | `LRN-SQL` | Technical Spike & Contracts | WASM/Worker/dialect/contracts/query-policy decision gate | Sprint 4 | `DONE` | Pass (11/11 SQL; 144/144 full) | `src/utils/sql/`, `src/workers/sql/`, `docs/agent/CURRENT_TASK.md` |
-
----
-
-## 4. Step 3.6 Completion Summary
-
-* **Đã hoàn thành:** Tinh chỉnh theme tokens light mode, trung tính hóa các nút phụ ActionToolbar, nâng cao độ tương phản FormulaBar, làm sạch header và ô bảng SpreadsheetGrid, cân bằng Streak promo card trong Sidebar.
-* **Boundary:** Giữ nguyên Submission Contract, Evaluator logic, không trao XP hay kích hoạt logic game chưa tới lượt.
-* **Audit validation:** targeted 73/73, full regression 20/20 files với 133/133 tests, production build và Browser verification pass.
-* **Tooling note:** lint project-level chưa khả dụng vì repository chưa có `eslint.config.*`; global npm của máy xác minh thiếu `npm-cli.js`.
-
-## 5. Sprint 4 Planning Summary
-
-* **Current gate:** Step 4.0 `DONE`; có engine/Worker/seed/browser harness nhưng chưa có product UI/route SQL.
-* **Execution order:** 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8.
-* **Boundary:** `sql.js@1.14.2` SQLite in-memory trong Worker; không OPFS/backend/XP; Step 4.1A chưa kích hoạt.
-* **Verified:** SQL unit 11/11, full regression 144/144, Vite dev/build/production preview Worker+WASM pass.
-* **Remaining risks:** read-only policy cần hardening theo fixture matrix và canonical result equivalence vẫn thuộc Step 4.6.
+| `LRN-EXCEL-001` | `LRN` | Excel | Giao diện Bảng tính & Thanh nhập liệu FormulaBar (`SpreadsheetGrid`, `FormulaBar`) | Sprint 3 | `DONE` | Pass | `src/components/excel/` |
+| `LRN-EXCEL-002` | `LRN` | Excel | Trang Nhiệm vụ Excel (`ExcelMissionPage`) & Điều phối gợi ý (`HintPanel`) | Sprint 3 | `DONE` | Pass | `src/pages/learner/ExcelMissionPage.jsx` |
+| `LRN-SUB-3.4` | `LRN` | Submission | Integration của Excel Mission với Submission Gateway (`mockSubmissionService`) | Sprint 3 | `DONE` | Pass | `src/services/mock/mockSubmissionService.js` |
+| `LRN-UI-3.6` | `LRN` | Excel | Light Mode Refinement, Contrast & Accessibility Gate | Sprint 3 | `DONE` | Pass | `src/components/excel/` |
+| `LRN-SQL-4.0` | `LRN` | SQL | Technical Spike & SQL Contracts (SQLite WASM, Worker, Policy, Error Envelope) | Sprint 4 | `DONE` | Pass | `src/utils/sql/`, `src/workers/sql/` |
+| `LRN-SQL-4.1A` | `LRN` | SQL | WASM Packaging & Worker Transport (Request ID correlation, stale response filter, lazy-load & test harness gating) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlEngineAdapter.js`, `vite.config.js` |

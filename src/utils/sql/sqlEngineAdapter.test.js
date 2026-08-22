@@ -1,15 +1,16 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import spikeDataset from '../../mocks/data/sql/aviation-spike.json'
 import { SqlEngineAdapter } from './sqlEngineAdapter.js'
 import { SQL_ERROR_CODES } from './sqlErrors.js'
 
 class FakeSqlWorker {
-  constructor({ hangOnFirstExecute = false } = {}) {
+  constructor({ hangOnFirstExecute = false, delayMap = new Map() } = {}) {
     this.listeners = new Map()
     this.terminated = false
     this.hangOnFirstExecute = hangOnFirstExecute
     this.executeCount = 0
     this.actions = []
+    this.delayMap = delayMap
   }
 
   addEventListener(type, listener) {
@@ -24,6 +25,10 @@ class FakeSqlWorker {
 
   emit(type, data) {
     this.listeners.get(type)?.forEach((listener) => listener({ data }))
+  }
+
+  emitError(message) {
+    this.listeners.get('error')?.forEach((listener) => listener({ message }))
   }
 
   postMessage(message) {
@@ -54,11 +59,19 @@ class FakeSqlWorker {
       dispose: { disposed: true },
     }
 
-    queueMicrotask(() => {
+    const delay = this.delayMap.get(message.id) || 0
+
+    const sendResponse = () => {
       if (!this.terminated) {
         this.emit('message', { id: message.id, ok: true, data: responses[message.action] })
       }
-    })
+    }
+
+    if (delay > 0) {
+      setTimeout(sendResponse, delay)
+    } else {
+      queueMicrotask(sendResponse)
+    }
   }
 
   terminate() {
@@ -66,7 +79,7 @@ class FakeSqlWorker {
   }
 }
 
-describe('SqlEngineAdapter with fake Worker', () => {
+describe('SqlEngineAdapter — Step 4.1A Production Transport Tests', () => {
   it('giữ interface initialize/load/schema/execute/reset/dispose ổn định', async () => {
     const worker = new FakeSqlWorker()
     const engine = new SqlEngineAdapter({ workerFactory: () => worker })
@@ -132,5 +145,86 @@ describe('SqlEngineAdapter with fake Worker', () => {
       rowCount: 1,
     })
     await engine.dispose()
+  })
+
+  it('xử lý out-of-order responses chính xác theo request ID', async () => {
+    // ID 1 (initialize): delay 50ms, ID 2 (loadDataset): delay 10ms
+    const delayMap = new Map([
+      [1, 50],
+      [2, 10],
+    ])
+    const worker = new FakeSqlWorker({ delayMap })
+    const engine = new SqlEngineAdapter({ workerFactory: () => worker })
+
+    const p1 = engine.initialize()
+    const p2 = engine.request('loadDataset', spikeDataset, 5000)
+
+    // Resolution: p2 finishes at 10ms, p1 finishes at 50ms
+    const res2 = await p2
+    const res1 = await p1
+
+    expect(res2).toMatchObject({ datasetId: spikeDataset.id })
+    expect(res1).toEqual({ ready: true, dialect: 'sqlite' })
+  })
+
+  it('nhiều lần gọi initialize concurrent chỉ tạo 1 Worker duy nhất', async () => {
+    let factoryCount = 0
+    const engine = new SqlEngineAdapter({
+      workerFactory: () => {
+        factoryCount += 1
+        return new FakeSqlWorker()
+      },
+    })
+
+    const [r1, r2, r3] = await Promise.all([
+      engine.initialize(),
+      engine.initialize(),
+      engine.initialize(),
+    ])
+
+    expect(factoryCount).toBe(1)
+    expect(r1).toEqual({ ready: true, dialect: 'sqlite' })
+    expect(r2).toEqual({ ready: true, dialect: 'sqlite' })
+    expect(r3).toEqual({ ready: true, dialect: 'sqlite' })
+
+    await engine.dispose()
+  })
+
+  it('xử lý Worker crash unexpected và reject pending requests', async () => {
+    const worker = new FakeSqlWorker()
+    const engine = new SqlEngineAdapter({ workerFactory: () => worker })
+
+    await engine.initialize()
+    const pendingQuery = engine.request('execute', { query: 'SELECT 1' }, 5000)
+
+    worker.emitError('Fatal Worker Out Of Memory Error')
+
+    await expect(pendingQuery).rejects.toMatchObject({
+      code: SQL_ERROR_CODES.WORKER_TERMINATED,
+    })
+    expect(worker.terminated).toBe(true)
+
+    await engine.dispose()
+  })
+
+  it('dispose dọn dẹp các pending requests và hủy timer không bị treo', async () => {
+    const worker = new FakeSqlWorker()
+    const engine = new SqlEngineAdapter({ workerFactory: () => worker })
+
+    await engine.initialize()
+    // Trigger request hangs
+    const pendingQuery = engine.request('execute', { query: 'SELECT 1' }, 10000)
+
+    const disposePromise = engine.dispose()
+
+    await expect(pendingQuery).rejects.toMatchObject({
+      code: SQL_ERROR_CODES.ENGINE_NOT_READY,
+    })
+    await expect(disposePromise).resolves.toEqual({ disposed: true })
+
+    // Calling initialize after dispose throws ENGINE_NOT_READY
+    await expect(engine.initialize()).rejects.toMatchObject({
+      code: SQL_ERROR_CODES.ENGINE_NOT_READY,
+    })
   })
 })

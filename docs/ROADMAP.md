@@ -178,7 +178,7 @@
 * **Execution rule:** Step 4.0 phải hoàn thành trước mọi product implementation; mỗi Step có một Primary Module và Current Task riêng.
 * **Sub-Steps:**
   - **Step 4.0:** Technical Spike & SQL Contracts — **DONE**; `sql.js@1.14.2`, SQL unit 11/11, regression 144/144 và dev/build/preview Worker+WASM pass
-  - **Step 4.1A:** WASM Packaging & Worker Transport — **PLANNED**
+  - **Step 4.1A:** WASM Packaging & Worker Transport — **DONE**; Request ID correlation, out-of-order & stale filter, lazy-loading, build gating `sql-spike.html`, unit 7/7 & full regression 148/148 pass
   - **Step 4.1B:** Database Lifecycle, Seed, Reset & Schema API — **PLANNED**
   - **Step 4.1C:** Read-only Query Policy, Timeout & Row Limit — **PLANNED**
   - **Step 4.2:** Schema Browser — **PLANNED**

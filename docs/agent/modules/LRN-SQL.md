@@ -2,6 +2,10 @@
 
 ## Responsibility
 
+# LRN-SQL — SQL Learning
+
+## Responsibility
+
 SQL engine adapter/Worker, schema browser, editor, query result viewer, SQL evaluator và learner feedback riêng cho SQL.
 
 ## Non-responsibility
@@ -11,8 +15,10 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 ## Current Status
 
 - DONE — Step 4.0: Technical Spike & SQL Contracts
+- DONE — Step 4.1A: WASM Packaging & Worker Transport
+- PLANNED — Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
 - Related Sprint: 4
-- Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/pages/learner/SqlMissionPage.jsx`
+- Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/workers/sql/`
 
 ## Proposed Public Interfaces
 

@@ -267,11 +267,20 @@ export class SqlEngineAdapter {
     if (this.disposed) return { disposed: true }
 
     try {
-      if (this.worker && this.initialized) {
-        await this.request('dispose', {}, this.initializationTimeoutMs)
+      if (this.worker && this.initialized && this.pendingRequests.size === 0) {
+        await this.request('dispose', {}, 1000)
       }
+    } catch {
+      // Ignore worker dispose request timeout/failure during teardown
     } finally {
-      this.terminateWorker()
+      this.terminateWorker(
+        new SqlEngineError(
+          SQL_ERROR_CODES.ENGINE_NOT_READY,
+          'SQL engine đã được dispose. Hãy tạo adapter mới.',
+          null,
+          false
+        )
+      )
       this.initialized = false
       this.lastDataset = null
       this.disposed = true

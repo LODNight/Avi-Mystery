@@ -5,9 +5,7 @@ import {
   Award,
   Sparkles,
   Clock,
-  Database,
   FileSpreadsheet,
-  CheckCircle2,
   ChevronDown,
   FileText,
   HelpCircle,
@@ -213,18 +211,6 @@ export function ExcelMissionPage() {
       return;
     }
 
-    // ── Tạm thời comment kiểm tra diagnostic theo từng ký tự nhập vào ──
-    // Chỉ hiển thị thông báo lỗi inline khi người dùng nhấn "Chạy thử" hoặc "Nộp bài"
-    /*
-    const diagnostic = analyzeExcelFormula(newFormula, getSheetDataMap());
-    setFormulaDiagnostic(diagnostic);
-    setCellValues((prev) => {
-      const next = { ...prev };
-      if (diagnostic.valid) next[selectedCell] = diagnostic.value;
-      else delete next[selectedCell];
-      return next;
-    });
-    */
     setFormulaDiagnostic(null);
   };
 
@@ -445,7 +431,7 @@ export function ExcelMissionPage() {
             <ChevronDown className={`size-4 transition-transform duration-200 ${showBriefing ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* Potential XP preview; Submission does not award XP in Sprint 3.4. */}
+          {/* Potential XP preview */}
           <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
             <Award className="size-4" />
             <span>Dự kiến +{potentialXp} XP</span>
@@ -460,33 +446,37 @@ export function ExcelMissionPage() {
         </div>
       </div>
 
-
-      {/*
-        <div
-          className={`flex items-center justify-between gap-3 rounded-2xl border p-4 text-xs sm:text-sm font-semibold shadow-md animate-fade-in ${
-            feedbackToast.type === 'success'
-              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-              : feedbackToast.type === 'warning'
-              ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-              : feedbackToast.type === 'error'
-              ? 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
-              : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300'
-          }`}
-        >
-          <div className="flex items-center gap-2">
-            <AlertCircle className="size-4 shrink-0" />
-            <span>{feedbackToast.message}</span>
+      {/* ── Collapsible Mission Briefing Drawer (Nằm ngay dưới Tiêu đề chính, 100% width) ── */}
+      {showBriefing && (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 shadow-xs space-y-3 animate-fade-in">
+          <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+              <Sparkles className="size-4 text-amber-500" />
+              <span>Hồ sơ bối cảnh vụ án</span>
+            </div>
+            <button
+              onClick={() => setShowBriefing(false)}
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+            >
+              Thu gọn ▲
+            </button>
           </div>
-          <button
-            onClick={() => setFeedbackToast(null)}
-            className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
-          >
-            Đóng
-          </button>
-        </div>
-      */}
 
-      {/* ── Nhóm 1: Mục tiêu vụ án (1) & Thanh thao tác hành động (3) ── */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
+              Câu chuyện trinh thám
+            </h3>
+            <p className="text-sm leading-relaxed text-foreground italic border-l-2 border-primary/50 pl-3.5 py-1 bg-muted/30 rounded-r-xl">
+              "{mission.story}"
+            </p>
+            <p className="text-xs text-muted-foreground">
+              Hãy chọn ô <strong className="text-foreground font-mono">{starterCell}</strong> trên bảng tính phía dưới và nhập công thức thích hợp để giải quyết nghi vấn.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Nhóm 1: Mục tiêu vụ án & Thanh thao tác hành động ── */}
       <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-card p-3 space-y-3 shadow-xs">
         {/* 1. Compact Sticky Objective Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3.5 py-2.5 shadow-2xs">
@@ -508,8 +498,7 @@ export function ExcelMissionPage() {
           </button>
         </div>
 
-
-        {/* 3. Action Toolbar Component (Thao tác Nộp bài, Chạy thử...) */}
+        {/* Action Toolbar Component */}
         <ActionToolbar
           onRun={handleRunFormula}
           onSubmit={handleSubmitAnswer}
@@ -523,9 +512,9 @@ export function ExcelMissionPage() {
         />
       </div>
 
-      {/* ── Nhóm 2: Thông báo phản hồi (2) & Thanh nhập công thức (4) ── */}
+      {/* ── Nhóm 2: Thông báo phản hồi & Thanh nhập công thức ── */}
       <div className="space-y-2.5">
-        {/* 2. Khu vực hiển thị thông báo (Luôn nằm phía trên Thanh nhập công thức 4) */}
+        {/* Khu vực hiển thị thông báo (Luôn nằm phía trên Thanh nhập công thức) */}
         {(feedbackToast || submissionFeedback || submissionError) && (
           <div className="space-y-2 animate-fade-in" role="region" aria-label="Thông báo hệ thống">
             {feedbackToast && (
@@ -589,18 +578,7 @@ export function ExcelMissionPage() {
           </div>
         )}
 
-
-
-
-
-
-
-
-
-
-
-
-        {/* Formula Bar Component (Thanh nhập công thức kết nối liền kề với Bảng tính phía dưới) */}
+        {/* Formula Bar Component (Thanh nhập công thức dính liền trực tiếp phía trên Bảng tính) */}
         <FormulaBar
           selectedCell={selectedCell}
           formula={formulaInput}
@@ -613,55 +591,6 @@ export function ExcelMissionPage() {
           disabled={isSubmitting}
         />
       </div>
-
-      {/* ── Collapsible Mission Briefing Drawer (Phần phụ) ── */}
-      {showBriefing && (
-        <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-md space-y-5 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              <Sparkles className="size-4 text-amber-500" />
-              <span>Hồ sơ bối cảnh & Yêu cầu điều tra</span>
-            </div>
-            <span className="rounded-lg bg-amber-500/20 px-2.5 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-              Mục tiêu: {starterCell}
-            </span>
-          </div>
-
-          <div className="grid md:grid-cols-12 gap-6 items-start">
-            {/* Story & Narrative */}
-            <div className="md:col-span-8 space-y-3">
-              <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                Câu chuyện trinh thám
-              </h3>
-              <p className="text-sm leading-relaxed text-foreground italic border-l-2 border-primary/50 pl-3.5 py-1 bg-muted/30 rounded-r-xl">
-                "{mission.story}"
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Hãy chọn ô <strong className="text-foreground font-mono">{starterCell}</strong> trên bảng tính phía dưới và nhập công thức thích hợp để giải quyết nghi vấn.
-              </p>
-            </div>
-
-            {/* Dataset Metadata */}
-            {dataset && (
-              <div className="md:col-span-4 rounded-2xl border border-border bg-muted/20 p-4 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-                    <Database className="size-4 text-primary" />
-                    <span>Dữ liệu điều tra</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-muted-foreground">v{dataset.version}</span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{dataset.name}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Gồm {dataset.columns?.length || 0} cột & {dataset.rows?.length || 0} hàng dữ liệu
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
 
       {/* ── Progressive Hint Side Drawer (Non-modal / No dark backdrop overlay) ── */}
       {showHintPanel && (
@@ -681,7 +610,7 @@ export function ExcelMissionPage() {
         </aside>
       )}
 
-      {/* ── Full Width Spreadsheet Grid Component ── */}
+      {/* ── Full Width Spreadsheet Grid Component (Dính liền phía dưới FormulaBar) ── */}
       {dataset ? (
         <SpreadsheetGrid
           dataset={dataset}

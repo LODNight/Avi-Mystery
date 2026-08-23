@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Clock, Database, FileText, Target } from 'lucide-react'
+import { ArrowLeft, Clock, Database, Target } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
+import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
 import { ErrorState } from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { sqlMissionService } from '../../services/index.js'
@@ -21,10 +22,6 @@ function WorkspaceSkeleton() {
   )
 }
 
-/**
- * Step 4.3 shell only: loads isolated SQL mission content and schema.
- * Query editing, execution, checking and submission remain deferred.
- */
 export function SqlMissionPage({
   workspaceService = sqlMissionService,
   engineFactory = createSqlEngine,
@@ -33,6 +30,7 @@ export function SqlMissionPage({
   const engineRef = useRef(null)
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
+  const [query, setQuery] = useState('')
 
   const disposeCurrentEngine = useCallback(async () => {
     const engine = engineRef.current
@@ -71,6 +69,9 @@ export function SqlMissionPage({
         await engine.loadDataset(workspaceResult.data.dataset)
         const schema = await engine.getSchema({ sampleRowLimit: 3 })
         if (cancelled) return
+
+        const initialQuery = workspaceResult.data.mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
+        setQuery(initialQuery)
         setState({ phase: 'ready', workspace: workspaceResult.data, schema, error: null })
       } catch (error) {
         if (cancelled) return
@@ -100,6 +101,16 @@ export function SqlMissionPage({
   }
 
   const { mission } = state.workspace
+  const starterSql = mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
+
+  const handleRun = () => {
+    // Execution will be wired in Step 4.5
+  }
+
+  const handleReset = () => {
+    setQuery(starterSql)
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6 animate-fade-in">
       <Link to={`/missions/${mission.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
@@ -120,13 +131,15 @@ export function SqlMissionPage({
       </header>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center gap-2 text-sm font-bold text-foreground"><FileText className="size-4 text-cyan-500" /> Briefing nhiệm vụ</div>
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{mission.objective}</p>
-          <div className="mt-6 rounded-2xl border border-dashed border-cyan-500/30 bg-cyan-500/5 p-5 text-sm text-muted-foreground">
-            Trình soạn thảo, chạy truy vấn, kiểm tra đáp án và nộp bài sẽ được mở ở Step 4.4. Hiện tại bạn có thể kiểm tra cấu trúc dữ liệu ở bảng bên cạnh.
-          </div>
-        </section>
+        <div className="flex flex-col gap-6">
+          <SqlEditor
+            value={query}
+            onChange={setQuery}
+            onRun={handleRun}
+            onReset={handleReset}
+          />
+        </div>
+
         <SchemaBrowser schema={state.schema} className="min-h-[28rem]" />
       </div>
     </div>

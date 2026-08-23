@@ -268,7 +268,7 @@ export function SchemaBrowser({
                               </span>
                               {!column.nullable && (
                                 <span
-                                  className="text-[9px] font-semibold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1 py-0.5 rounded"
+                                  className="text-[9px] font-mono font-medium text-stone-500 dark:text-stone-400 bg-stone-200/60 dark:bg-stone-800/80 px-1 py-0.5 rounded"
                                   title="Không được để trống (NOT NULL)"
                                 >
                                   REQ

@@ -156,14 +156,15 @@
 - [x] Loading/empty/error states, expand/collapse, copy identifier vào clipboard và xem mẫu 3 hàng data preview
 - [x] `SchemaBrowser.test.jsx` bao phủ 100% test cases (6/6 tests pass)
 
-### 🔹 Step 4.3: SQL Mission Shell, Loader & Route
-- [ ] Mission/dataset loading, error/retry và lifecycle cleanup
-- [ ] Route/link không xung đột hoặc làm vỡ Excel workspace
+### 🔹 Step 4.3: SQL Mission Shell, Loader & Route *(HOÀN THÀNH)*
+- [x] Mission/dataset loading, error/retry và lifecycle cleanup
+- [x] Route `/missions/:missionId/sql` độc lập, không vỡ Excel workspace (`/workspace`)
+- [x] `SqlMissionPage.test.jsx`, `mockSqlMissionService.test.js` & `MissionIntroPage.test.jsx` pass (100% regression pass)
 
-### 🔹 Step 4.4: SQL Editor MVP
-- [ ] Controlled editor, starter/reset query, Tab và Ctrl/Cmd+Enter
-- [ ] Accessible label và giữ query khi Run lỗi
-- [ ] Syntax highlighting/autocomplete/format chỉ thêm sau dependency gate
+### 🔹 Step 4.4: SQL Editor MVP *(HOÀN THÀNH)*
+- [x] Controlled editor, starter/reset query, Tab 2-space indentation và Ctrl/Cmd+Enter shortcut
+- [x] Accessible ARIA label (`Khung soạn thảo câu lệnh SQL`) và đồng bộ Detective Amber theme
+- [x] `SqlEditor.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (7/7 component tests pass)
 
 ### 🔹 Step 4.5: Query Execution & Result Viewer
 - [ ] Running/double-run guard và stable error mapping

@@ -28,15 +28,15 @@ function renderPage(props = {}) {
 }
 
 describe('SqlMissionPage', () => {
-  it('loads briefing and schema without exposing execution controls', async () => {
+  it('loads briefing, schema and SqlEditor without exposing result viewer/submission', async () => {
     const engine = createEngine()
     renderPage({ workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) }, engineFactory: () => engine })
     expect(screen.getByLabelText('Đang tải SQL mission')).toBeInTheDocument()
     await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
     expect(screen.getByTestId('schema-browser')).toBeInTheDocument()
     expect(screen.getByText('sales')).toBeInTheDocument()
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /chạy|nộp/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: /khung soạn thảo câu lệnh sql/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /nộp bài/i })).not.toBeInTheDocument()
     expect(engine.initialize).toHaveBeenCalledOnce()
     expect(engine.loadDataset).toHaveBeenCalledWith(workspace.dataset)
   })

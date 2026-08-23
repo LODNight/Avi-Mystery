@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.1B.
-* **Step vừa hoàn thành:** Step 4.2 — Schema Browser Component (`DONE`).
-* **Step kế tiếp:** Step 4.3 — SQL Mission Shell, Loader & Route (`PLANNED`).
-* **Trạng thái Sprint:** `SCHEMA BROWSER GATE PASS — SẴN SÀNG CHO SQL MISSION SHELL (STEP 4.3)`.
+* **Step đã hoàn thành:** Step 1.1–4.3.
+* **Step vừa hoàn thành:** Step 4.4 — SQL Editor MVP (`DONE`).
+* **Step kế tiếp:** Step 4.5 — Query Execution & Result Viewer (`PLANNED`).
+* **Trạng thái Sprint:** `SQL EDITOR MVP GATE PASS — SẴN SÀNG CHO QUERY EXECUTION (STEP 4.5)`.
 
 ---
 

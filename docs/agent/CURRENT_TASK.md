@@ -4,8 +4,8 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.1B
-- Task ID: LRN-SQL-4.1B-DB-LIFECYCLE
+- Step: 4.1C
+- Task ID: LRN-SQL-4.1C-QUERY-POLICY
 - Status: IN_PROGRESS
 - Primary Module: LRN-SQL
 - Supporting Modules:
@@ -14,35 +14,25 @@
 
 ## Goal
 
-Hoàn thiện và kiểm tra toàn bộ Database Lifecycle API của SQL Engine: seed xác định, reset sạch về trạng thái ban đầu, Schema API trả về cấu trúc bảng kèm sample rows, và dispose chain dọn dẹp sạch. Đây là foundation cứng để Schema Browser (Step 4.2) có thể render thông tin bảng và cột mà không cần thêm contract mới.
+Hoàn thiện và kiểm định toàn bộ cơ chế bảo vệ truy vấn chỉ đọc (Read-only Policy), kiểm soát thời gian chờ (Timeout & Recovery) và giới hạn số dòng kết quả trả về (Row Limit / Truncation) của SQL Engine Web Worker.
 
 ## In Scope
 
-1. **Schema API mở rộng với sample rows** — `getSchema()` trả thêm field `sampleRows: Array<Array<unknown>>` (tối đa 3 hàng đầu) để Schema Browser hiển thị preview dữ liệu mà không cần execute câu lệnh riêng.
-2. **Database Lifecycle Test Suite** — Tạo `sqlDatabaseLifecycle.test.js` (adapter unit test, FakeSqlWorker) bao phủ:
-   - Seed → getSchema (có sampleRows) → execute truy vấn → reset → schema sau reset không thay đổi → dispose.
-   - Reset khi chưa có dataset phải throw `ENGINE_NOT_READY`.
-   - Double-dispose phải trả về `{ disposed: true }` và không throw.
-   - Schema sau reset phải giống schema sau seed ban đầu (determinism).
-3. **`sqlDataset.test.js` bổ sung** — Thêm test case: duplicate table name, duplicate column name, column type không hợp lệ.
-4. **Cập nhật Worker response contract** — Thêm `sampleRows` vào response của `getSchema` trong Worker (`sqlEngine.worker.js`).
+1. **Chặn truy vấn thay đổi (Read-only Policy)** — Chỉ hỗ trợ đúng 1 câu lệnh `SELECT` hoặc `WITH`. Chặn tuyệt đối `INSERT`, `UPDATE`, `DELETE`, `DROP`, `CREATE`, `ALTER`, `ATTACH`, `PRAGMA`, `VACUUM`...
+2. **Quản lý thời gian chờ (Timeout & Worker Recovery)** — Xử lý khi câu lệnh SQL thực thi vượt quá `queryTimeoutMs` bằng cách `terminate()` worker, tự động khởi tạo lại và khôi phục dataset hiện tại (`recoverWorker()`), trả về lỗi envelope `TIMEOUT` ổn định.
+3. **Giới hạn số dòng kết quả (Row Truncation)** — Giới hạn số dòng kết quả ở mức `maxRows` (mặc định 500), đánh dấu `truncated: true` và đặt `errorCode` phù hợp.
+4. **Test Suite bao phủ** — Mở rộng unit tests cho `sqlQueryPolicy.test.js` và `sqlEngineAdapter.test.js` đảm bảo 100% test cases pass.
 
 ## Out of Scope
 
 - Product UI/Route (Schema Browser, SQL Editor, Result Viewer thuộc Step 4.2+).
 - SQL Result Checker và Submission Integration (Step 4.6 & 4.7).
 - Backend DB, OPFS persistence, XP mutation, Admin builder.
-- Read-only Query Policy hardening (Step 4.1C).
 
 ## Allowed Write Paths
 
 - `src/utils/sql/`
 - `src/workers/sql/`
-- `src/utils/excelChecker.js`
-- `src/components/excel/SpreadsheetGrid.jsx`
-- `src/components/excel/ActionToolbar.jsx`
-- `src/pages/learner/ExcelMissionPage.jsx`
-- `src/pages/learner/MissionIntroPage.jsx`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/agent/modules/LRN-SQL.md`
 - `docs/PROJECT_STATUS.md`
@@ -66,13 +56,11 @@ Hoàn thiện và kiểm tra toàn bộ Database Lifecycle API của SQL Engine:
 
 ## Acceptance Criteria
 
-- [ ] `getSchema()` response có field `sampleRows` (mảng tối đa 3 hàng) cho mỗi bảng.
-- [ ] Seed → reset → schema sau reset giống hệt schema sau seed (determinism).
-- [ ] Reset khi chưa có dataset throw `ENGINE_NOT_READY`.
-- [ ] Double-dispose trả `{ disposed: true }` không throw.
-- [ ] `sqlDatabaseLifecycle.test.js` bao phủ lifecycle end-to-end.
-- [ ] Dataset validation: duplicate table/column, column type không hợp lệ bị chặn.
-- [ ] Full regression suite pass 100% (mọi test hiện tại vẫn xanh).
+- [ ] Chỉ 1 câu lệnh `SELECT`/`WITH` duy nhất được chấp nhận; các câu lệnh mutation, DDL, PRAGMA bị chặn và trả `READ_ONLY_VIOLATION`.
+- [ ] Truy vấn chạy vượt quá timeout sẽ tự động ngắt worker, khôi phục trạng thái database và trả mã lỗi `TIMEOUT`.
+- [ ] Kết quả truy vấn vượt quá `maxRows` được ngắt đúng điểm, trả `truncated: true` và mã lỗi `RESULT_LIMIT_EXCEEDED`.
+- [ ] Cụm test SQL targeted (`src/utils/sql/`) pass 100%.
+- [ ] Toàn bộ regression suite dự án pass 100%.
 
 ## Test Commands
 

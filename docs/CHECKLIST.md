@@ -146,9 +146,10 @@
 - [x] `sqlDataset.test.js` bổ sung: duplicate table/column, unsupported type, no-table, no-column (8/8 tests)
 - [x] Full SQL targeted suite 27/27 pass
 
-### 🔹 Step 4.1C: Read-only Query Policy, Timeout & Row Limit
-- [ ] Chỉ một `SELECT`/`WITH`; chặn mutation/DDL/attach/pragma
-- [ ] Timeout bằng cancel/terminate + worker/database recovery; giới hạn result rows
+### 🔹 Step 4.1C: Read-only Query Policy, Timeout & Row Limit *(HOÀN THÀNH)*
+- [x] Chỉ một `SELECT`/`WITH`; chặn mutation/DDL/attach/pragma (10 từ khóa cấm)
+- [x] Timeout bằng cancel/terminate + worker/database recovery; giới hạn result rows (maxRows truncation)
+- [x] `sqlQueryPolicy.test.js` & `sqlEngineAdapter.test.js` bao phủ 100% test cases (28/28 tests pass)
 
 ### 🔹 Step 4.2: Schema Browser
 - [ ] Table/column/type/PK/nullable; ẩn internal tables

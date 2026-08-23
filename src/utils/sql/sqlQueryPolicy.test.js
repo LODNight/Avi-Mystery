@@ -50,5 +50,24 @@ describe('SQL read-only query policy', () => {
     expectPolicyError("SELECT 'missing", SQL_ERROR_CODES.SYNTAX_ERROR)
     expectPolicyError('SELECT 1 /* missing', SQL_ERROR_CODES.SYNTAX_ERROR)
   })
+
+  it('chặn các câu lệnh DDL và mutation khác (CREATE, DROP, ALTER, UPDATE, INSERT, ATTACH, DETACH, VACUUM, REINDEX, REPLACE)', () => {
+    const forbiddenQueries = [
+      'CREATE TABLE temp (id INT)',
+      'DROP TABLE flights',
+      'ALTER TABLE flights ADD COLUMN test TEXT',
+      'UPDATE flights SET status = "CANCELLED"',
+      'INSERT INTO flights VALUES (1)',
+      'ATTACH DATABASE "other.db" AS other',
+      'DETACH DATABASE other',
+      'VACUUM',
+      'REINDEX flights',
+      'REPLACE INTO flights VALUES (1)',
+    ]
+
+    forbiddenQueries.forEach((q) => {
+      expectPolicyError(q, SQL_ERROR_CODES.READ_ONLY_VIOLATION)
+    })
+  })
 })
 

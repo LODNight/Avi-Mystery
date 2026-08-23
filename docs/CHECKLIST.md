@@ -151,9 +151,10 @@
 - [x] Timeout bằng cancel/terminate + worker/database recovery; giới hạn result rows (maxRows truncation)
 - [x] `sqlQueryPolicy.test.js` & `sqlEngineAdapter.test.js` bao phủ 100% test cases (28/28 tests pass)
 
-### 🔹 Step 4.2: Schema Browser
-- [ ] Table/column/type/PK/nullable; ẩn internal tables
-- [ ] Loading/empty/error, expand/collapse, copy identifier và keyboard navigation
+### 🔹 Step 4.2: Schema Browser *(HOÀN THÀNH)*
+- [x] Table/column/type/PK/nullable; tự động ẩn internal tables (`sqlite_*`)
+- [x] Loading/empty/error states, expand/collapse, copy identifier vào clipboard và xem mẫu 3 hàng data preview
+- [x] `SchemaBrowser.test.jsx` bao phủ 100% test cases (6/6 tests pass)
 
 ### 🔹 Step 4.3: SQL Mission Shell, Loader & Route
 - [ ] Mission/dataset loading, error/retry và lifecycle cleanup

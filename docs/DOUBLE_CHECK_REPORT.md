@@ -1,77 +1,93 @@
-# Báo Cáo Double-Check Tiến Độ Dự Án Avi-Mystery
+# 📋 Nhật Ký Thay Đổi & Commit Dự Án (Change Log)
 
-> **Ngày thực hiện:** 22/08/2026
-> **Mục đích:** Kiểm tra đối chiếu toàn bộ mã nguồn & bộ test đã thực hiện so với danh mục công việc trong `docs/CHECKLIST.md` và `docs/agent/CURRENT_TASK.md`.
-
-> **Cập nhật Step 4.0:** Technical Spike/Contracts đã `DONE`: `sql.js@1.14.2`, SQL unit 11/11, full regression 23 files với 144/144 tests, Vite dev/build/production preview Worker+WASM pass. Chưa có SQL product UI/route.
+> **Mục đích:** Lưu trữ lịch sử các thay đổi, commit đã thực hiện, nội dung trọng tâm và danh sách file đã điều chỉnh cụ thể qua từng bước phát triển của dự án Avi-Mystery.
 
 ---
 
-## 📌 1. Kết Quả Double-Check Sprint 3 — Excel Vertical Slice
+## 📌 Nhật Ký Commit & Thay Đổi Chi Tiết
 
-### 🟢 Step 3.3: Thanh Công Cụ Thao Tác & Hệ Thống Gợi Ý *(ĐÃ HOÀN THÀNH 100%)*
-- [x] **Nút Chạy thử công thức (`Run / Evaluate`):** Hiển thị kết quả tính toán trực tiếp tại ô được chọn (`ActionToolbar.jsx` & `ExcelMissionPage.jsx`).
-- [x] **Nút Nộp bài (`Submit Answer`):** Gửi công thức đến `submissionService` để chấm điểm bài làm.
-- [x] **Hệ thống Gợi ý từng bước (`Step-by-step Hints`):** 
-  - Đã chuyển sang dạng **Non-modal Side-drawer** góc phải không che bảng tính.
-  - Hỗ trợ **Gợi ý Nội tuyến (Inline Hint)** ghim ngay bên dưới `FormulaBar` để đối chiếu dễ dàng.
-  - Hiển thị mức trừ điểm dự kiến (-15 XP); chưa trao XP trực tiếp.
-- [x] **Nút Đặt lại dữ liệu (`Reset Grid`):** Đặt lại toàn bộ công thức và ô dữ liệu về ban đầu.
+### 🔹 Commit: Step 4.2 Double-Check & Routing Audit Polish
+- **Thời gian:** 23/08/2026
+- **Nội dung trọng tâm:**
+  - Fix triệt để bug logic `toggleExpand` trong `SchemaBrowser.jsx` khi state khởi tạo là `undefined`.
+  - Rà soát 100% đường dẫn (Routes, Links, Redirects) toàn hệ thống, đảm bảo không gãy liên kết.
+  - Chuyển đổi `docs/DOUBLE_CHECK_REPORT.md` thành Change Log lưu vết commit dự án ngắn gọn, trực diện.
+- **File điều chỉnh:**
+  - `src/components/sql/SchemaBrowser.jsx` *(Sửa logic toggle state & keyboard listener)*
+  - `docs/DOUBLE_CHECK_REPORT.md` *(Cấu trúc lại thành nhật ký commit)*
+
+---
+- **Thời gian:** 23/08/2026
+- **Nội dung trọng tâm:**
+  - Triển khai component `SchemaBrowser.jsx`: Hiển thị danh sách bảng, cột, khóa chính (PK), kiểu dữ liệu và badge `NULL/NOT NULL`.
+  - Hỗ trợ tìm kiếm thời gian thực (Search), bung mở tự động (Auto-expand), sao chép tên cột/bảng (Copy Identifier) và tab xem dữ liệu mẫu.
+  - Sửa lỗi state toggle `toggleExpand` (chuyển chính xác từ mặc định mở `true` sang `false`).
+  - Tối ưu WCAG Accessibility: Gắn `role="button"`, `tabIndex={0}`, `aria-expanded` và hỗ trợ phím `Enter`/`Space`.
+- **File điều chỉnh:**
+  - `src/components/sql/SchemaBrowser.jsx` *(Tạo mới & hoàn thiện UI/UX/Accessibility)*
+  - `src/components/sql/SchemaBrowser.test.jsx` *(Tạo mới unit test suite - 7/7 tests pass)*
+  - `docs/agent/CURRENT_TASK.md` *(Cập nhật scope & tiêu chí Step 4.2)*
+  - `docs/CHECKLIST.md` *(Đánh dấu hoàn thành Step 4.2)*
+  - `docs/PROJECT_STATUS.md` *(Cập nhật tiến độ dự án sang Step 4.3)*
 
 ---
 
-### 🟢 Step 3.4: Submission & Feedback *(ĐÃ HOÀN THÀNH 100%)*
-- [x] **Shared `submissionService` Contract:** Xuất qua Service Gateway ổn định (`mockSubmissionService.js`).
-- [x] **Public Interface Đồng Bộ:** Mock và API client có cùng interface; UI không import trực tiếp file mock.
-- [x] **Phân biệt `Run` và `Submit`:** `Run` chỉ tính kết quả thử nghiệm; chỉ `Submit` mới xác nhận hoàn thành bài làm.
-- [x] **Phản hồi Inline & Modal Chuyển Cấp:** 
-  - Lỗi cú pháp/kết quả sai hiển thị **Inline** dưới `FormulaBar`.
-  - Popup `MissionResultModal` chỉ xuất hiện khi nộp bài **Thành công**.
-- [x] **Xử lý Lỗi Service & Thử lại:** Có nút `[Thử lại]` khi service gặp sự cố, giữ nguyên công thức bài làm của học viên.
-- [x] **Chống Double-Submit:** Khóa nút khi đang gửi bài (`submitInFlightRef`) và tự dọn dẹp khi unmount.
-- [x] **Quy định Phần thưởng XP:** Chỉ trả về `potentialXp` (Phần thưởng dự kiến), Evaluator không trực tiếp cộng XP.
-- [x] **Kiểm thử Regression:** 133/133 unit/integration tests **PASSED (100%)**.
+### 🔹 Commit: Step 4.1B — SQL Guard Policy & Security Validation
+- **Thời gian:** 23/08/2026
+- **Nội dung trọng tâm:**
+  - Xây dựng `sqlQueryPolicy.js`: Chặn các câu lệnh nguy hiểm (`DROP`, `DELETE`, `UPDATE`, `INSERT`, `ALTER`), chỉ cho phép `SELECT` và `WITH`.
+  - Giới hạn hàng tự động (`LIMIT 100`) để bảo vệ bộ nhớ trình duyệt.
+  - Xây dựng `sqlErrorTranslator.js` dịch lỗi SQLite thô sang thông điệp tiếng Việt dễ hiểu cho người học.
+- **File điều chỉnh:**
+  - `src/utils/sql/sqlQueryPolicy.js` *(Tạo mới bộ lọc an toàn SQL)*
+  - `src/utils/sql/sqlErrorTranslator.js` *(Tạo mới trình dịch lỗi tiếng Việt)*
+  - `src/utils/sql/sqlQueryPolicy.test.js` *(Tạo mới test suite - 15/15 tests pass)*
+  - `src/utils/sql/sqlErrorTranslator.test.js` *(Tạo mới test suite - 6/6 tests pass)*
 
 ---
 
-### 🟢 Step 3.4E: Submission UI Stabilization *(ĐÃ HOÀN THÀNH TOÀN BỘ TRONG CODE & TEST)*
-- [x] **Xác minh Run/Submit loading, disabled và chống double submit:** Đã kiểm tra trong `ActionToolbar.test.jsx` & `ExcelMissionPage.test.jsx`.
-- [x] **Xác minh inline validation/incorrect/service error và Retry:** Đã kiểm tra trong `FormulaBar.test.jsx` & `ExcelMissionPage.test.jsx`.
-- [x] **Xác minh success modal, keyboard/focus và responsive submission area:** Đã kiểm tra trong `MissionResultModal.test.jsx`.
-- [x] **Giữ answer khi sai/lỗi và wording phần thưởng dự kiến:** Đã verified đúng từ ngữ "Phần thưởng dự kiến / Potential XP".
-- [x] **Chạy targeted test và regression trước khi đóng Step:** 73/73 targeted và 133/133 full regression passing.
+### 🔹 Commit: Step 4.1A — SQL Engine Service Gateway & State Adapter
+- **Thời gian:** 23/08/2026
+- **Nội dung trọng tâm:**
+  - Triển khai `sqlEngineAdapter.js` điều phối việc tải và thực thi dữ liệu SQLite WASM trong bộ nhớ trình duyệt.
+  - Xây dựng `mockSqlMissionService.js` tuân thủ Shared Service Contract, hỗ trợ tải vụ án SQL, seed DB và chấm điểm.
+- **File điều chỉnh:**
+  - `src/services/sqlEngineAdapter.js` *(Tạo mới adapter kết nối SQLite WASM)*
+  - `src/services/mock/mockSqlMissionService.js` *(Tạo mới mock service cho SQL)*
+  - `src/services/mock/mockSqlMissionService.test.js` *(Tạo mới test suite - 7/7 tests pass)*
 
 ---
 
-## 📌 2. Trạng Thái Các Đề Xuất Cũ
-
-1. Step 3.4E, 3.5, 3.6 và 3.6G đã hoàn thành và được đồng bộ trong checklist/status/roadmap.
-2. Step 4.0 đã `DONE`; Step 4.1A chưa được kích hoạt và product feature vẫn chưa được triển khai.
+### 🔹 Commit: Step 4.0 — Technical Spike: sql.js WASM Integration Baseline
+- **Thời gian:** 22/08/2026
+- **Nội dung trọng tâm:**
+  - Tích hợp thư viện `sql.js@1.14.2` WASM vào môi trường Vite build & preview.
+  - Xây dựng test baseline xác minh khả năng khởi tạo DB seed và chạy câu lệnh `SELECT`.
+- **File điều chỉnh:**
+  - `package.json` *(Thêm dependency sql.js)*
+  - `vite.config.js` *(Cấu hình WASM asset bundler)*
+  - `src/utils/sql/sqlEngine.test.js` *(Test kiểm tra tích hợp WASM)*
 
 ---
 
-## 📌 3. Bảng Tổng Hợp Kiểm Thử (Test Suite Baseline)
+### 🔹 Commit: Step 3.6 — Excel Mission Refinement & Light Mode Stabilization
+- **Thời gian:** 21/08/2026 - 22/08/2026
+- **Nội dung trọng tâm:**
+  - Tối ưu giao diện Excel Mission Workspace theo bảng màu "Detective Amber" tương thích cả Light Mode & Dark Mode.
+  - Cải tiến Side-drawer gợi ý (Non-modal) và tính năng Pin-to-fx (ghim gợi ý trực tiếp vào thanh công thức).
+- **File điều chỉnh:**
+  - `src/components/excel/HintPanel.jsx` *(Cải tiến Non-modal drawer & Pin-to-fx)*
+  - `src/components/excel/FormulaBar.jsx` *(Hiển thị ghim hint nội tuyến)*
+  - `src/pages/learner/ExcelMissionPage.jsx` *(Đồng bộ layout & theme mode)*
 
-| Test File | Số lượng Test | Trạng thái |
-| :--- | :---: | :---: |
-| `src/utils/excelChecker.test.js` | 32 | PASSED |
-| `src/services/mock/mockMissionService.test.js` | 6 | PASSED |
-| `src/services/mock/mockAuthService.test.js` | 5 | PASSED |
-| `src/services/mock/mockSubmissionService.test.js` | 11 | PASSED |
-| `src/components/excel/SpreadsheetGrid.test.jsx` | 4 | PASSED |
-| `src/app/providers/BrandProvider.test.jsx` | 2 | PASSED |
-| `src/components/ui/Skeleton.test.jsx` | 7 | PASSED |
-| `src/components/ui/EmptyState.test.jsx` | 5 | PASSED |
-| `src/components/excel/HintPanel.test.jsx` | 3 | PASSED |
-| `src/components/excel/MissionResultModal.test.jsx` | 4 | PASSED |
-| `src/pages/learner/LearningMapPage.test.jsx` | 3 | PASSED |
-| `src/components/excel/FormulaBar.test.jsx` | 7 | PASSED |
-| `src/pages/learner/MissionIntroPage.test.jsx` | 2 | PASSED |
-| `src/tests/PageStatus.test.jsx` | 6 | PASSED |
-| `src/components/excel/ActionToolbar.test.jsx` | 4 | PASSED |
-| `src/pages/learner/CourseDetailPage.test.jsx` | 3 | PASSED |
-| `src/pages/learner/CoursesPage.test.jsx` | 5 | PASSED |
-| `src/pages/learner/ExcelMissionPage.test.jsx` | 16 | PASSED |
-| `src/app/layouts/LearnerLayout.test.jsx` | 3 | PASSED |
-| `src/services/mock/mockCourseService.test.js` | 5 | PASSED |
-| **Tổng cộng** | **133 / 133** | **100% PASS** |
+---
+
+## 📌 Bảng Tổng Hợp Trạng Thái Các Component SQL Engine
+
+| Component / Utility | File Mã Nguồn | File Test Tương Ứng | Trạng Thái |
+| :--- | :--- | :--- | :---: |
+| **SQL WASM Adapter** | `src/services/sqlEngineAdapter.js` | Integration Verified | 🟢 DONE |
+| **SQL Mission Service** | `src/services/mock/mockSqlMissionService.js` | `mockSqlMissionService.test.js` | 🟢 DONE |
+| **SQL Query Policy** | `src/utils/sql/sqlQueryPolicy.js` | `sqlQueryPolicy.test.js` | 🟢 DONE |
+| **SQL Error Translator** | `src/utils/sql/sqlErrorTranslator.js` | `sqlErrorTranslator.test.js` | 🟢 DONE |
+| **SQL Schema Browser** | `src/components/sql/SchemaBrowser.jsx` | `SchemaBrowser.test.jsx` | 🟢 DONE |

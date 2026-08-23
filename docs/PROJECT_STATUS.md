@@ -10,9 +10,9 @@
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
 * **Step đã hoàn thành:** Step 1.1–4.1B.
-* **Step vừa hoàn thành:** Step 4.1C — Read-only Query Policy, Timeout & Row Limit (`DONE`).
-* **Step kế tiếp:** Step 4.2 — Schema Browser (`PLANNED`).
-* **Trạng thái Sprint:** `QUERY POLICY & SAFETY GATE PASS — SẴN SÀNG CHO SCHEMA BROWSER (STEP 4.2)`.
+* **Step vừa hoàn thành:** Step 4.2 — Schema Browser Component (`DONE`).
+* **Step kế tiếp:** Step 4.3 — SQL Mission Shell, Loader & Route (`PLANNED`).
+* **Trạng thái Sprint:** `SCHEMA BROWSER GATE PASS — SẴN SÀNG CHO SQL MISSION SHELL (STEP 4.3)`.
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, timeout & row truncation | `DONE / Step 4.1C` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser UI component | `DONE / Step 4.2` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
@@ -57,3 +57,4 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `LRN-SQL-4.1A` | `LRN` | SQL | WASM Packaging & Worker Transport (Request ID correlation, stale response filter, lazy-load & test harness gating) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlEngineAdapter.js`, `vite.config.js` |
 | `LRN-SQL-4.1B` | `LRN` | SQL | Database Lifecycle, Seed, Reset & Schema API (`getSchema` + `sampleRows`, deterministic reset, lifecycle/validation tests) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlDatabaseLifecycle.test.js`, `src/workers/sql/sqlEngine.worker.js` |
 | `LRN-SQL-4.1C` | `LRN` | SQL | Read-only Query Policy, Timeout & Row Limit (10 DDL/mutation keywords guard, worker recovery on timeout, maxRows truncation) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlQueryPolicy.js`, `src/utils/sql/sqlEngineAdapter.js` |
+| `LRN-SQL-4.2` | `LRN` | SQL | Schema Browser Component (Table/column metadata, type badge, primary key indicator, copy identifier, sample rows preview) | Sprint 4 | `DONE` | Pass | `src/components/sql/SchemaBrowser.jsx`, `src/components/sql/SchemaBrowser.test.jsx` |

@@ -75,7 +75,7 @@ export function HintPanel({
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div className="inline-flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-1 font-mono text-xs font-bold text-amber-700 dark:text-amber-300 whitespace-nowrap shadow-xs">
               <Award className="size-3.5 shrink-0 text-amber-500" />
-              <span>Dự kiến: {netXp} XP</span>
+              <span>Phần thưởng dự kiến: {netXp} XP</span>
               {currentPenalty > 0 && (
                 <span className="text-[11px] text-rose-500 font-extrabold whitespace-nowrap">(-{currentPenalty} XP)</span>
               )}

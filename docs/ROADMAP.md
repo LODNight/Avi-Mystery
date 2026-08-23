@@ -170,7 +170,7 @@
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.1C)
+## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.3)
 
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
@@ -180,9 +180,9 @@
   - **Step 4.0:** Technical Spike & SQL Contracts — **DONE**; `sql.js@1.14.2`, SQL unit 11/11, regression 144/144 và dev/build/preview Worker+WASM pass
   - **Step 4.1A:** WASM Packaging & Worker Transport — **DONE**; Request ID correlation, out-of-order & stale filter, lazy-loading, build gating `sql-spike.html`, unit 7/7 & full regression 148/148 pass
   - **Step 4.1B:** Database Lifecycle, Seed, Reset & Schema API — **DONE**; `getSchema` mở rộng `sampleRows`, lifecycle test 7/7 & dataset validation 8/8 & full SQL 27/27 pass
-  - **Step 4.1C:** Read-only Query Policy, Timeout & Row Limit — **PLANNED**
-  - **Step 4.2:** Schema Browser — **PLANNED**
-  - **Step 4.3:** SQL Mission Shell, Loader & Route — **PLANNED**
+  - **Step 4.1C:** Read-only Query Policy, Timeout & Row Limit — **DONE**; 10 mutation/DDL keywords, single-statement policy, timeout recovery and row truncation verified
+  - **Step 4.2:** Schema Browser — **DONE**; search, metadata, sample rows, copy, loading/empty/error and keyboard tests pass
+  - **Step 4.3:** SQL Mission Shell, Loader & Route — **IN_PROGRESS**
   - **Step 4.4:** SQL Editor MVP — **PLANNED**
   - **Step 4.5:** Query Execution & Result Viewer — **PLANNED**
   - **Step 4.6:** SQL Result Checker — **PLANNED**

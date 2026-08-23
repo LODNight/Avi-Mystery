@@ -40,4 +40,4 @@ Mock Service và API Client phải giữ cùng public interface để Sprint 7 k
 
 Ngày 22/08/2026, Step 3.0–4.0 đã `DONE`. Step 4.0 chốt `sql.js@1.14.2`, Worker/WASM, contracts, policy và recovery; chưa có SQL product UI/route. Step 4.1A chưa được kích hoạt. [CURRENT_TASK.md](./CURRENT_TASK.md) là nguồn trạng thái duy nhất cho agent.
 
-Các file prompt/reference (`dataquest-project-prompts.md`, `docs/avi-mystery-codex-agent-md-generator.md`, `docs/avi-mystery-roadmap-review-sprint-3-8.md`) không phải status tracker.
+`dataquest-project-prompts.md` là reference đầu vào, không phải status tracker. Các tài liệu vận hành canonical nằm trong `docs/agent/` và bộ tracker ngắn ở `docs/`.

@@ -38,3 +38,16 @@ export const apiMissionService = {
     throw new Error('API not implemented yet.');
   },
 };
+
+export const apiSqlMissionService = {
+  async loadWorkspace(_missionId) {
+    return {
+      data: null,
+      error: {
+        code: 'SERVICE_UNAVAILABLE',
+        message: 'SQL Mission API chưa được triển khai.',
+        retryable: true,
+      },
+    };
+  },
+};

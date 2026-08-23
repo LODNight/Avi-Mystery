@@ -16,7 +16,10 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 
 - DONE — Step 4.0: Technical Spike & SQL Contracts
 - DONE — Step 4.1A: WASM Packaging & Worker Transport
-- PLANNED — Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
+- DONE — Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
+- DONE — Step 4.1C: Read-only Query Policy, Timeout & Row Limit
+- DONE — Step 4.2: Schema Browser
+- IN_PROGRESS — Step 4.3: SQL Mission Shell, Loader & Route
 - Related Sprint: 4
 - Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/workers/sql/`
 

@@ -1,0 +1,35 @@
+{
+  "id": "sql-commerce-v1",
+  "version": 1,
+  "dialect": "sqlite",
+  "tables": [
+    {
+      "name": "customers",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "primaryKey": true, "nullable": false },
+        { "name": "name", "type": "TEXT", "nullable": false },
+        { "name": "email", "type": "TEXT", "nullable": false }
+      ],
+      "rows": [
+        [1, "An Nguyễn", "an@example.test"],
+        [2, "Bình Trần", "binh@example.test"],
+        [3, "Chi Lê", "chi@example.test"],
+        [4, "Dũng Phạm", "dung@example.test"]
+      ]
+    },
+    {
+      "name": "orders",
+      "columns": [
+        { "name": "id", "type": "INTEGER", "primaryKey": true, "nullable": false },
+        { "name": "customer_id", "type": "INTEGER", "nullable": false },
+        { "name": "order_value", "type": "REAL", "nullable": false }
+      ],
+      "rows": [
+        [101, 1, 32000000],
+        [102, 1, 24000000],
+        [103, 2, 18000000],
+        [104, 3, 7500000]
+      ]
+    }
+  ]
+}

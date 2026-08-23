@@ -272,7 +272,7 @@ export function MissionIntroPage() {
         </div>
 
         <Link
-          to={`/missions/${mission.id}/workspace`}
+          to={mission.tool === 'sql' ? `/missions/${mission.id}/sql` : `/missions/${mission.id}/workspace`}
           className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/35 transition-all transform hover:-translate-y-0.5 shrink-0 active:translate-y-0"
         >
           <Play className="size-4 fill-current" /> Bắt đầu điều tra ngay

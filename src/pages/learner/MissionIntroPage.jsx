@@ -152,7 +152,7 @@ export function MissionIntroPage() {
           {/* Quick Info Badges */}
           <div className="flex items-center gap-6 flex-wrap pt-2 text-xs font-medium text-muted-foreground border-t border-border/60">
             <span className="flex items-center gap-1.5 font-bold text-amber-600 dark:text-amber-400">
-              <Zap className="size-4" /> +{formatXP(mission.rewardXp)} XP Thưởng
+              <Zap className="size-4" /> +{formatXP(mission.rewardXp)} Thưởng
             </span>
             <span className="flex items-center gap-1.5">
               <Clock className="size-4 text-cyan-500" /> Thời gian ước tính: {formatDuration(mission.estimatedDuration)}
@@ -195,9 +195,14 @@ export function MissionIntroPage() {
                 <p className="text-xs text-muted-foreground">Mục tiêu kiểm tra chính</p>
               </div>
             </div>
-            <p className="text-sm font-semibold leading-relaxed text-foreground bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl">
-              {mission.objective}
-            </p>
+            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 dark:bg-emerald-500/15 p-4 sm:p-5 flex items-start gap-3 shadow-sm">
+              <div className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-white font-bold text-xs">
+                ✓
+              </div>
+              <p className="text-sm font-semibold leading-relaxed text-foreground">
+                {mission.objective}
+              </p>
+            </div>
           </div>
 
           <div className="mt-4 pt-4 border-t border-border/60 flex items-center gap-2 text-xs text-muted-foreground">
@@ -258,7 +263,7 @@ export function MissionIntroPage() {
       </div>
 
       {/* ── Section 4: Action Launch Bar ── */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl border border-primary/30 bg-primary/5 p-6 shadow-md shadow-primary/5">
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl border border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10 p-6 shadow-xs">
         <div>
           <h3 className="font-bold text-base text-foreground">Bạn đã sẵn sàng phá án?</h3>
           <p className="text-xs text-muted-foreground mt-0.5">
@@ -268,7 +273,7 @@ export function MissionIntroPage() {
 
         <Link
           to={`/missions/${mission.id}/workspace`}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary px-8 py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-95 transition-all transform hover:-translate-y-0.5 shrink-0"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/35 transition-all transform hover:-translate-y-0.5 shrink-0 active:translate-y-0"
         >
           <Play className="size-4 fill-current" /> Bắt đầu điều tra ngay
         </Link>

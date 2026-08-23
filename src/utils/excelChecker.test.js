@@ -7,6 +7,7 @@ import {
   evaluateFormulaValue,
   checkExcelAnswer,
   validateGlobalExcelMission,
+  shiftFormulaRows,
   EXCEL_FORMULA_ERROR_CODES,
 } from './excelChecker.js';
 
@@ -269,4 +270,24 @@ describe('excelChecker Utility Unit Tests (SHR-EXCEL-CHECKER-001)', () => {
       expect(res.feedbackCode).toBe('GLOBAL_VALIDATION_SUCCESS');
     });
   });
+
+  describe('shiftFormulaRows (Fill Down helper)', () => {
+    it('dịch chuyển ô tương đối từ hàng 2 sang hàng 3 chính xác', () => {
+      expect(shiftFormulaRows('=C2*D2', 2, 3)).toBe('=C3*D3');
+      expect(shiftFormulaRows('=SUM(C2:D2)', 2, 5)).toBe('=SUM(C5:D5)');
+      expect(shiftFormulaRows('=C2 + D2', 2, 4)).toBe('=C4 + D4');
+    });
+
+    it('giữ nguyên hàng cố định có dấu "$" (Absolute Row Reference)', () => {
+      expect(shiftFormulaRows('=C$2*D2', 2, 3)).toBe('=C$2*D3');
+      expect(shiftFormulaRows('=$C$2*$D$2', 2, 5)).toBe('=$C$2*$D$2');
+    });
+
+    it('xử lý an toàn khi delta = 0 hoặc chuỗi không hợp lệ', () => {
+      expect(shiftFormulaRows('=C2*D2', 2, 2)).toBe('=C2*D2');
+      expect(shiftFormulaRows('', 2, 3)).toBe('');
+      expect(shiftFormulaRows(null, 2, 3)).toBe('');
+    });
+  });
 });
+

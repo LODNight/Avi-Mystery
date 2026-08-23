@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Send, RotateCcw, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { Play, Send, RotateCcw, Lightbulb, CheckCircle2, ArrowDownCircle } from 'lucide-react';
 
 /**
  * ActionToolbar Component (LRN-EXCEL-002 / Step 3.3)
@@ -7,6 +7,7 @@ import { Play, Send, RotateCcw, Lightbulb, CheckCircle2 } from 'lucide-react';
  *
  * @param {Object} props
  * @param {Function} props.onRun - Handler tính toán công thức tại ô hiện tại
+ * @param {Function} [props.onFillDown] - Handler tự động kéo công thức xuống các ô còn lại
  * @param {Function} props.onSubmit - Handler nộp bài kiểm tra đáp án
  * @param {Function} props.onReset - Handler đặt lại bảng tính ban đầu
  * @param {Function} props.onToggleHint - Handler bật/tắt bảng gợi ý
@@ -18,6 +19,7 @@ import { Play, Send, RotateCcw, Lightbulb, CheckCircle2 } from 'lucide-react';
  */
 export function ActionToolbar({
   onRun,
+  onFillDown,
   onSubmit,
   onReset,
   onToggleHint,
@@ -36,12 +38,26 @@ export function ActionToolbar({
           type="button"
           onClick={onRun}
           disabled={isEvaluating || isSubmitting}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-stone-100/90 text-stone-800 hover:bg-stone-200 hover:text-stone-950 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 dark:hover:border-stone-500 px-3.5 py-2 text-xs font-bold transition-all shadow-2xs disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-stone-500"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-stone-100/90 text-stone-800 hover:bg-stone-200 hover:text-stone-950 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100 dark:hover:bg-stone-700 dark:hover:border-stone-500 px-3.5 py-2 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-stone-500"
           title="Kiểm duyệt cú pháp & toàn bộ dải ô bài làm vụ án"
         >
           <Play className={`size-3.5 ${isEvaluating ? 'animate-spin' : 'fill-stone-700 dark:fill-stone-200 text-stone-700 dark:text-stone-200'}`} />
           <span>{isEvaluating ? 'Đang tính...' : 'Chạy thử công thức'}</span>
         </button>
+
+        {/* Nút Fill Down (Auto-fill - Secondary Amber Action Button) */}
+        {onFillDown && (
+          <button
+            type="button"
+            onClick={onFillDown}
+            disabled={isEvaluating || isSubmitting}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 px-3 py-2 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-amber-500"
+            title="Tự động kéo (Fill down) công thức ô đang chọn xuống các hàng còn lại"
+          >
+            <ArrowDownCircle className="size-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Fill down</span>
+          </button>
+        )}
 
         {/* Nút Nộp bài (Submit Answer - Primary Action CTA) */}
         <button

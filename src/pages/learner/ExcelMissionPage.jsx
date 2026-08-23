@@ -20,7 +20,7 @@ import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
 import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
-import { analyzeExcelFormula, validateGlobalExcelMission } from '../../utils/excelChecker.js';
+import { analyzeExcelFormula, validateGlobalExcelMission, shiftFormulaRows } from '../../utils/excelChecker.js';
 
 function createClientAttemptId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
@@ -242,20 +242,20 @@ export function ExcelMissionPage() {
     setIsEvaluating(true);
     handleFormulaSubmit();
 
-    const starterCell = mission?.starterContent?.targetCell || 'E2';
-    const match = starterCell.match(/^([A-Z]+)([0-9]+)$/i);
-    let requiredRange = [starterCell];
+    const targetStarterCell = mission?.starterContent?.targetCell || 'E2';
+    const match = targetStarterCell.match(/^([A-Z]+)([0-9]+)$/i);
+    let currentRequiredRange = [targetStarterCell];
     if (match && dataset?.rows) {
       const colLetter = match[1].toUpperCase();
       const startRow = parseInt(match[2], 10);
-      requiredRange = dataset.rows.map((_, idx) => `${colLetter}${startRow + idx}`);
+      currentRequiredRange = dataset.rows.map((_, idx) => `${colLetter}${startRow + idx}`);
     }
 
     const validation = validateGlobalExcelMission({
       cellFormulas,
       cellValues,
-      starterCell,
-      requiredRange,
+      starterCell: targetStarterCell,
+      requiredRange: currentRequiredRange,
       sheetData: getSheetDataMap(),
     });
 
@@ -263,6 +263,50 @@ export function ExcelMissionPage() {
       setIsEvaluating(false);
       showNotification(validation.status, validation.message);
     }, 250);
+  };
+
+  // 1.5. Thao tác Kéo công thức xuống (Fill Down / Auto-fill across required data rows)
+  const handleFillDown = (fromCell) => {
+    const sourceCell = typeof fromCell === 'string' ? fromCell : selectedCell || mission?.starterContent?.targetCell || 'E2';
+    const sourceFormula = cellFormulas[sourceCell] || (sourceCell === selectedCell ? formulaInput : '');
+
+    if (!sourceFormula || !sourceFormula.trim()) {
+      showNotification('warning', `Vui lòng nhập công thức tại ô ${sourceCell} trước khi kéo Fill down.`);
+      return;
+    }
+
+    const cellMatch = sourceCell.match(/^([A-Z]+)([0-9]+)$/i);
+    if (!cellMatch || !dataset?.rows) return;
+
+    const colLetter = cellMatch[1].toUpperCase();
+    const sourceRow = parseInt(cellMatch[2], 10);
+
+    const newFormulas = { ...cellFormulas };
+    const newValues = { ...cellValues };
+    const currentSheetData = getSheetDataMap();
+
+    let filledCount = 0;
+    dataset.rows.forEach((_, idx) => {
+      const targetRow = idx + 2; // Data row starts at row 2
+      if (targetRow === sourceRow) return;
+
+      const targetCellAddr = `${colLetter}${targetRow}`;
+      const shiftedFormula = shiftFormulaRows(sourceFormula, sourceRow, targetRow);
+
+      newFormulas[targetCellAddr] = shiftedFormula;
+      const diagnostic = analyzeExcelFormula(shiftedFormula, { ...currentSheetData, ...newValues });
+      if (diagnostic.valid) {
+        newValues[targetCellAddr] = diagnostic.value;
+      }
+      filledCount += 1;
+    });
+
+    setCellFormulas(newFormulas);
+    setCellValues(newValues);
+    showNotification(
+      'success',
+      `Đã áp dụng (Fill down) công thức cho ${filledCount} ô còn lại (từ hàng ${sourceRow + 1} đến ${sourceRow + filledCount})!`
+    );
   };
 
   // 2. Đặt lại bảng tính (Reset Grid)
@@ -411,6 +455,14 @@ export function ExcelMissionPage() {
   const hintsData = mission.starterContent?.hints || mission.starterContent?.hint;
   const potentialXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
 
+  const matchStarter = starterCell.match(/^([A-Z]+)([0-9]+)$/i);
+  let requiredRange = [starterCell];
+  if (matchStarter && dataset?.rows) {
+    const colLetter = matchStarter[1].toUpperCase();
+    const startRow = parseInt(matchStarter[2], 10);
+    requiredRange = dataset.rows.map((_, idx) => `${colLetter}${startRow + idx}`);
+  }
+
   return (
     <div className={`flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12 transition-all duration-300 ${
       showHintPanel ? 'xl:pr-[410px]' : ''
@@ -522,6 +574,7 @@ export function ExcelMissionPage() {
         {/* Action Toolbar Component */}
         <ActionToolbar
           onRun={handleRunFormula}
+          onFillDown={() => handleFillDown(selectedCell)}
           onSubmit={handleSubmitAnswer}
           onReset={handleResetGrid}
           onToggleHint={() => setShowHintPanel(!showHintPanel)}
@@ -642,9 +695,11 @@ export function ExcelMissionPage() {
           dataset={dataset}
           selectedCell={selectedCell}
           onCellSelect={handleCellSelect}
+          onFillDown={handleFillDown}
           targetCell={starterCell}
           cellFormulas={cellFormulas}
           cellValues={cellValues}
+          editableCells={requiredRange}
         />
       ) : (
         <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">

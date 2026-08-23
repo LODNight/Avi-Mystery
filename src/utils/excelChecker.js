@@ -567,3 +567,36 @@ export function validateGlobalExcelMission({
   };
 }
 
+/**
+ * Tự động dịch chuyển các ô tham chiếu trong công thức Excel khi Fill Down
+ * Ví dụ: shiftFormulaRows("=C2*D2", 2, 3) → "=C3*D3"
+ * Ví dụ: shiftFormulaRows("=SUM(C2:D2)", 2, 4) → "=SUM(C4:D4)"
+ * Ví dụ: shiftFormulaRows("=C$2*D2", 2, 3) → "=C$2*D3" (giữ nguyên hàng có dấu $)
+ *
+ * @param {string} formula - Công thức gốc (ví dụ "=C2*D2")
+ * @param {number} sourceRow - Hàng gốc (ví dụ 2)
+ * @param {number} targetRow - Hàng đích (ví dụ 3)
+ * @returns {string} Công thức đã được dịch chuyển hàng tương ứng
+ */
+export function shiftFormulaRows(formula, sourceRow, targetRow) {
+  if (!formula || typeof formula !== 'string') return '';
+  const delta = targetRow - sourceRow;
+  if (delta === 0) return formula;
+
+  return formula.replace(
+    /(^|[^A-Z0-9_$])(\$?[A-Z]+)(\$?)([0-9]+)/gi,
+    (match, prefix, colPart, rowDollar, rowNumStr) => {
+      // Nếu có dấu $ trước số hàng ($2) -> Khóa hàng tuyệt đối, không dịch chuyển
+      if (rowDollar === '$') {
+        return match;
+      }
+      const originalRowNum = parseInt(rowNumStr, 10);
+      const newRowNum = originalRowNum + delta;
+
+      if (newRowNum < 1) return match;
+      return `${prefix}${colPart}${newRowNum}`;
+    }
+  );
+}
+
+

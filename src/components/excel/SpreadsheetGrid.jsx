@@ -19,6 +19,7 @@ export function SpreadsheetGrid({
   dataset,
   selectedCell = 'A1',
   onCellSelect,
+  onFillDown,
   targetCell = 'E2',
   cellFormulas = {},
   cellValues = {},
@@ -103,7 +104,7 @@ export function SpreadsheetGrid({
                   key={letter}
                   className="border-r border-stone-300 dark:border-stone-700 py-2 px-3 text-center font-extrabold text-stone-800 dark:text-stone-200 last:border-r-0 min-w-[130px] sm:min-w-[150px] text-xs bg-stone-200/90 dark:bg-stone-900"
                 >
-                  <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-2xs">
+                  <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-sm">
                     {letter}
                   </span>
                 </th>
@@ -206,6 +207,24 @@ export function SpreadsheetGrid({
                         {/* Editable Indicator Icon */}
                         {editable && !isTarget && (
                           <Edit3 className="absolute right-1.5 top-1.5 size-3 text-amber-500/60 pointer-events-none" />
+                        )}
+
+                        {/* Interactive Excel Fill Handle Square (Góc dưới bên phải ô đang chọn) */}
+                        {isSelected && editable && (
+                          <div
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (onFillDown) onFillDown(cellAddr);
+                            }}
+                            onDoubleClick={(e) => {
+                              e.stopPropagation();
+                              if (onFillDown) onFillDown(cellAddr);
+                            }}
+                            title="Bấm hoặc nhấp đúp để Kéo (Fill down) công thức xuống các hàng bên dưới"
+                            className="absolute -bottom-1.5 -right-1.5 z-30 size-3 rounded-sm bg-amber-500 hover:bg-amber-400 border-2 border-white dark:border-stone-900 shadow-sm cursor-pointer transition-transform hover:scale-125 flex items-center justify-center"
+                          >
+                            <span className="sr-only">Fill down</span>
+                          </div>
                         )}
 
                         <span

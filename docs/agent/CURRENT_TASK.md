@@ -38,6 +38,11 @@ Hoàn thiện và kiểm tra toàn bộ Database Lifecycle API của SQL Engine:
 
 - `src/utils/sql/`
 - `src/workers/sql/`
+- `src/utils/excelChecker.js`
+- `src/components/excel/SpreadsheetGrid.jsx`
+- `src/components/excel/ActionToolbar.jsx`
+- `src/pages/learner/ExcelMissionPage.jsx`
+- `src/pages/learner/MissionIntroPage.jsx`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/agent/modules/LRN-SQL.md`
 - `docs/PROJECT_STATUS.md`

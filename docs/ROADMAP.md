@@ -187,8 +187,8 @@
   - **Step 4.5:** Query Execution & Result Viewer — **DONE**; SQLite WASM execution, ResultViewer component, NULL/number formatting, thousand separator, sticky scroll container, column width auto-compacting, caret pixel-alignment & integration tests pass (191/191 tests pass)
   - **Step 4.7:** Submission Integration — **DONE**; mở rộng `mockSubmissionService.js` hỗ trợ `tool: 'sql'`, tích hợp `evaluateSqlResult` vào gateway, nộp bài vụ án kích hoạt `MissionResultModal` và báo lỗi inline trong `SqlMissionPage.jsx` (222/222 tests pass)
   - **Step 4.8A:** Security, Query Policy & Resource Limits Guard — **DONE**; kiểm tra chính sách read-only, chặn multi-statement injection, execution timeout 3s & row truncation 500 rows
-  - **Step 4.8B:** Web Worker & Database Lifecycle Cleanup — **IN_PROGRESS**; tự động dọn dẹp Web Worker khi unmount và cô lập bộ nhớ khi đổi dataset vụ án
-  - **Step 4.8C:** Responsive Design & Light/Dark Theme Polish — **PLANNED**; tinh chỉnh hiển thị theme Sáng/Tối và độ nhạy giao diện trên Mobile/Tablet/Desktop
+  - **Step 4.8B:** Web Worker & Database Lifecycle Cleanup — **DONE**; tự động dọn dẹp Web Worker khi unmount và cô lập bộ nhớ khi đổi dataset vụ án
+  - **Step 4.8C:** Responsive Design & Light/Dark Theme Polish — **IN_PROGRESS**; tinh chỉnh hiển thị theme Sáng/Tối và độ nhạy giao diện trên Mobile/Tablet/Desktop
   - **Step 4.8D:** Production WASM Build & Full Regression Gate — **PLANNED**; kiểm tra đóng gói file tĩnh WASM/Worker trên production build & full regression gate trước khi chuyển sang Sprint 5
 * **MVP Boundary:** SQLite dialect, database in-memory, Worker bắt buộc, không OPFS, không backend execution, không XP mutation. Editor dùng controlled textarea trước; syntax highlighting/CodeMirror chỉ được nâng lên P0 khi dependency spike pass.
 * **Sprint Exit Criteria:** một SQL Mission chạy xuyên suốt; engine không block UI; reset/dispose ổn định; user query read-only; checker xử lý order/`NULL`/duplicate/tolerance; Run khác Submit; production WASM và full Excel regression pass.

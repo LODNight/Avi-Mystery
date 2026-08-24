@@ -4,45 +4,38 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.8A
-- Task ID: LRN-SQL-4.8A-SECURITY
+- Step: 4.8B
+- Task ID: LRN-SQL-4.8B-LIFECYCLE
 - Status: IN_PROGRESS
 - Primary Module: LRN-SQL
 
 ## Gate Before This Task
 
-- Step 4.7 SQL Submission Integration is DONE.
-- Step 4.8 has been broken down into 4 focused sub-steps (4.8A, 4.8B, 4.8C, 4.8D).
-- Full test suite (222/222 across 30 files) is passing.
+- Step 4.8A Query Security Policy & Resource Limits Guard is DONE.
+- Full test suite passing.
 
 ## Goal
 
-Execute **Step 4.8A (Security, Query Policy & Resource Limits Guard)**:
-1. **Read-only Query Policy Audit**: Ensure `sqlQueryPolicy.js` strictly blocks all 10 mutation/DDL statement keywords (`INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`, `REPLACE`, `TRUNCATE`, `ATTACH`, `DETACH`, `VACUUM`).
-2. **Multi-Statement Guard**: Ensure queries containing multiple statements separated by `;` are rejected with `SQL_POLICY_MULTIPLE_STATEMENTS` to prevent SQL injection attacks.
-3. **Execution Timeout Guard**: Ensure heavy queries exceeding 3000ms are terminated safely without hanging the browser UI.
-4. **Row Truncation Guard**: Ensure output datasets exceeding 500 rows are truncated with a user notification to preserve DOM rendering performance.
-5. **Unit Tests**: Ensure unit test coverage for `sqlQueryPolicy.test.js` covers 100% of security boundary conditions.
+Execute **Step 4.8B (Web Worker & Database Lifecycle Cleanup)**:
+1. **Web Worker Unmount Cleanup**: Ensure `SqlMissionPage` calls `dispose()` on the Web Worker instance when leaving the mission component.
+2. **Dataset Switching Cleanup**: Ensure switching between missions (e.g. `mission-010` ➔ `mission-011` / `sql-sales-v1` ↔ `sql-commerce-v1`) disposes the old engine instance and loads a fresh dataset into SQLite.
+3. **Component Tests**: Verify lifecycle cleanup test cases in `SqlMissionPage.test.jsx`.
 
 ## In Scope
 
-- `src/utils/sql/sqlQueryPolicy.js`
-- `src/utils/sql/sqlQueryPolicy.test.js`
-- `src/utils/sql/sqlEngineAdapter.js`
+- `src/pages/learner/SqlMissionPage.jsx`
+- `src/pages/learner/SqlMissionPage.test.jsx`
 - Documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`, `CURRENT_TASK.md`).
 
 ## Out of Scope
 
-- Worker unmount lifecycle cleanup (handled in Step 4.8B).
 - Light/Dark theme visual polish & responsive tuning (handled in Step 4.8C).
 - Production build & full regression gate (handled in Step 4.8D).
 
 ## Allowed Write Paths
 
-- `src/utils/sql/sqlQueryPolicy.js`
-- `src/utils/sql/sqlQueryPolicy.test.js`
-- `src/utils/sql/sqlEngineAdapter.js`
-- `src/utils/sql/sqlEngineAdapter.test.js`
+- `src/pages/learner/SqlMissionPage.jsx`
+- `src/pages/learner/SqlMissionPage.test.jsx`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/CHECKLIST.md`
 - `docs/ROADMAP.md`
@@ -56,14 +49,12 @@ Execute **Step 4.8A (Security, Query Policy & Resource Limits Guard)**:
 
 ## Acceptance Criteria
 
-- [ ] All 10 mutation/DDL statement types are blocked with descriptive error code `SQL_POLICY_MUTATION_DISALLOWED`.
-- [ ] Multi-statement queries separated by `;` are blocked with error code `SQL_POLICY_MULTIPLE_STATEMENTS`.
-- [ ] Query timeout guard (3000ms) terminates long queries with error code `SQL_TIMEOUT`.
-- [ ] Row truncation (500 rows limit) marks `isTruncated: true` in the output result envelope.
-- [ ] All policy unit tests pass 100%.
+- [x] Worker `dispose()` is called when `SqlMissionPage` unmounts.
+- [x] Switching missions disposes the active Web Worker engine and loads fresh dataset.
+- [x] Component test cases in `SqlMissionPage.test.jsx` cover unmount and dataset switching lifecycle.
 
 ## Test Commands
 
 ```bash
-npx vitest run src/utils/sql/sqlQueryPolicy.test.js src/utils/sql/sqlEngineAdapter.test.js
+npx vitest run src/pages/learner/SqlMissionPage.test.jsx
 ```

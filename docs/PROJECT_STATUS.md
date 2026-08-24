@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.8A.
-* **Step hiện tại:** Step 4.8B — Web Worker & Database Lifecycle Cleanup (`IN_PROGRESS`).
-* **Step kế tiếp:** Step 4.8C — Responsive Design & Light/Dark Theme Polish (`PLANNED`).
-* **Trạng thái Sprint:** `QUẢN LÝ VÒNG ĐỜI WEB WORKER & DỌN DẸP BỘ NHỚ KHI ĐỔI DATASET (STEP 4.8B)`.
+* **Step đã hoàn thành:** Step 1.1–4.8B.
+* **Step hiện tại:** Step 4.8C — Responsive Design & Light/Dark Theme Polish (`IN_PROGRESS`).
+* **Step kế tiếp:** Step 4.8D — Production WASM Build & Full Regression Gate (`PLANNED`).
+* **Trạng thái Sprint:** `TINH CHỈNH GIAO DIỆN THEME SÁNG/TỐI & NGHỆ THUẬT ĐÁP ỨNG ĐA THIẾT BỊ (STEP 4.8C)`.
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Web Worker & Database Lifecycle Cleanup | `IN_PROGRESS / Step 4.8B` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Responsive Design & Light/Dark Theme Polish | `IN_PROGRESS / Step 4.8C` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & SQL Tool Extension | `DONE / Step 4.7` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |

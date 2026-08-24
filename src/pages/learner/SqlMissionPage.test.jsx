@@ -160,4 +160,50 @@ describe('SqlMissionPage', () => {
     view.unmount()
     await waitFor(() => expect(engine.dispose).toHaveBeenCalledOnce())
   })
+
+  it('disposes previous engine and initializes fresh dataset when switching missions', async () => {
+    const engine1 = createEngine()
+    const engine2 = createEngine()
+    const engines = [engine1, engine2]
+
+    const workspace2 = {
+      mission: { id: 'mission-011', title: 'Phân tích E-commerce', story: 'Bối cảnh Commerce.', objective: 'Xem bảng orders.', estimatedDuration: 20, rewardXp: 150 },
+      dataset: { id: 'sql-commerce-v1' },
+    }
+
+    const loadWorkspace = vi.fn().mockImplementation((id) => {
+      if (id === 'mission-010') return Promise.resolve({ data: workspace, error: null })
+      return Promise.resolve({ data: workspace2, error: null })
+    })
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={['/missions/mission-010/sql']}>
+        <Routes>
+          <Route
+            path="/missions/:missionId/sql"
+            element={<SqlMissionPage workspaceService={{ loadWorkspace }} engineFactory={() => engines.shift()} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+    expect(engine1.loadDataset).toHaveBeenCalledWith(workspace.dataset)
+
+    // Re-render with mission-011 route
+    rerender(
+      <MemoryRouter initialEntries={['/missions/mission-011/sql']}>
+        <Routes>
+          <Route
+            path="/missions/:missionId/sql"
+            element={<SqlMissionPage workspaceService={{ loadWorkspace }} engineFactory={() => engines.shift()} />}
+          />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await waitFor(() => expect(engine1.dispose).toHaveBeenCalledOnce())
+    await waitFor(() => expect(screen.getByText('Phân tích E-commerce')).toBeInTheDocument())
+    expect(engine2.loadDataset).toHaveBeenCalledWith(workspace2.dataset)
+  })
 })

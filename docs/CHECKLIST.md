@@ -190,12 +190,12 @@
 - [x] Kiểm tra cắt giảm dòng dữ liệu (Row truncation limit 500 rows) bảo vệ hiệu năng DOM trình duyệt.
 - [x] Bổ sung unit tests cho Query Policy (`sqlQueryPolicy.test.js`) & Resource limits (`sqlEngineAdapter.test.js`).
 
-### 🔹 Step 4.8B: Web Worker & Database Lifecycle Cleanup *(DỰ KIẾN)*
-- [ ] Tự động gọi `dispose()` trên Web Worker khi unmount `SqlMissionPage`.
-- [ ] Đảm bảo dọn dẹp bộ nhớ và khởi tạo lại SQLite DB sạch khi chuyển đổi vụ án (`sql-sales-v1` ↔ `sql-commerce-v1`).
-- [ ] Thêm test cases kiểm tra dọn dẹp lifecycle trong `SqlMissionPage.test.jsx`.
+### 🔹 Step 4.8B: Web Worker & Database Lifecycle Cleanup *(HOÀN THÀNH)*
+- [x] Tự động gọi `dispose()` trên Web Worker khi unmount `SqlMissionPage`.
+- [x] Đảm bảo dọn dẹp bộ nhớ và khởi tạo lại SQLite DB sạch khi chuyển đổi vụ án (`sql-sales-v1` ↔ `sql-commerce-v1`).
+- [x] Thêm test cases kiểm tra dọn dẹp lifecycle trong `SqlMissionPage.test.jsx`.
 
-### 🔹 Step 4.8C: Responsive Design & Light/Dark Theme Polish *(DỰ KIẾN)*
+### 🔹 Step 4.8C: Responsive Design & Light/Dark Theme Polish *(ĐANG THỰC HIỆN)*
 - [ ] Tinh chỉnh hiển thị giao diện chuẩn đẹp trong 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
 - [ ] Tinh chỉnh giao diện đáp ứng linh hoạt (Responsive Layout) trên các thiết bị Mobile, Tablet và Desktop (tối ưu hóa thanh cuộn và ô bảng).
 

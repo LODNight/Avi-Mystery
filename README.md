@@ -1,6 +1,7 @@
 # Avi-Mystery — Hướng Dẫn Vận Hành Ứng Dụng (Page Operations Guide)
 
 > **Avi-Mystery** là ứng dụng luyện tập phân tích dữ liệu theo phong cách **game hóa điều tra vụ án** (Gameified Data Analytics Investigation).  
+> 🌐 **Trải nghiệm ứng dụng trực tiếp tại**: [https://avi-mystery.vercel.app/dashboard](https://avi-mystery.vercel.app/dashboard)  
 > Tài liệu này tập trung vào **hướng dẫn vận hành các trang giao diện**, luồng trải nghiệm của **Người học (Learner)** và **Quản trị viên (Admin)**.
 
 ---

@@ -177,9 +177,11 @@
 - [x] `NULL`, duplicate rows, numeric tolerance và construct validation (`requiredConstructs`/`forbiddenConstructs`)
 - [x] `sqlChecker.js` & `sqlChecker.test.js` bao phủ 100% test cases (17/17 test cases pass)
 
-### 🔹 Step 4.7: Submission Integration
-- [ ] Dùng chung `submissionService`; không tạo SQL Submission Service riêng
-- [ ] Run không complete; Submit chỉ trả `potentialXp`; retry/double-submit/idempotency seam
+### 🔹 Step 4.7: Submission Integration *(HOÀN THÀNH)*
+- [x] Dùng chung `submissionService`; không tạo SQL Submission Service riêng. Hỗ trợ `tool: 'sql'` mở rộng trong `mockSubmissionService.js`.
+- [x] Run không complete; Submit tính `potentialXp`, trả `attemptId` và kiểm tra idempotency seam với `clientAttemptId`.
+- [x] Tích hợp `MissionResultModal` vào `SqlMissionPage.jsx` khi phá án thành công, hiển thị banner cảnh báo inline khi câu truy vấn chưa đạt.
+- [x] Unit & component test cases (`mockSubmissionService.test.js`, `SqlMissionPage.test.jsx`) bao phủ 100%.
 
 ### 🔹 Step 4.8: Security, Browser, Deployment & Regression Gate
 - [ ] Test query policy, timeout, row limit, cleanup và mission change

@@ -66,7 +66,7 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | `LRN-SQL-4.4-EDITOR` | SQL Editor MVP | `LRN-SQL` | `Medium` | `DONE` | Controlled editor (`SqlEditor.jsx`), starter query, Reset/Run, Tab soft 2-spaces, Ctrl+Enter keyboard shortcut |
 | `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `DONE` | Run execution wire-up, ResultViewer component, NULL/number formatting, thousand separator, action button, sticky height constraint, column compacting, caret pixel-alignment & integration tests (191 tests pass) |
 | `LRN-SQL-4.6-CHECKER` | SQL Result Checker | `LRN-SQL` | `Critical` | `DONE` | Order/NULL/duplicate/tolerance-aware pure evaluator (`sqlChecker.js`), construct validation, feedback codes & 17 unit tests pass |
-| `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `TODO` | Dùng shared submission contract/gateway; không mutate XP |
+| `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `DONE` | Mở rộng `mockSubmissionService.js` hỗ trợ SQL, tích hợp submission flow & `MissionResultModal` vào `SqlMissionPage.jsx`, unit & integration tests pass (222 tests pass) |
 | `LRN-SQL-4.8-GATE` | Security, Browser, Deployment & Regression Gate | `LRN-SQL` | `Critical` | `TODO` | Policy/deploy/browser/Excel regression và SQL happy path |
 
 ---

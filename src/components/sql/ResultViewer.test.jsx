@@ -55,7 +55,7 @@ describe('ResultViewer Component', () => {
 
     render(<ResultViewer result={successResult} isExecuting={false} />);
     expect(screen.getByText('Thành công')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument(); // rowCount
+    expect(screen.getAllByText('2').length).toBeGreaterThan(0); // rowCount badge and row id
     expect(screen.getByText(/5 ms/i)).toBeInTheDocument();
     expect(screen.getByText('Alice')).toBeInTheDocument();
     expect(screen.getByText('Bob')).toBeInTheDocument();

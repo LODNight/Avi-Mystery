@@ -168,4 +168,79 @@ describe('mockSubmissionService Unit Tests (Step 3.4)', () => {
     expect(replay).toEqual(first);
     expect(history.data).toHaveLength(1);
   });
+
+  describe('SQL Tool Submissions (Step 4.7)', () => {
+    const makeSqlRequest = (overrides = {}) => ({
+      mode: SUBMISSION_MODES.SUBMIT,
+      missionId: 'mission-010',
+      tool: SUBMISSION_TOOLS.SQL,
+      answer: {
+        query: 'SELECT * FROM sales;',
+        executionResult: {
+          columns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+          rows: [
+            [1, '2026-03-01', 'Thẻ Nông Dân Gold', 'Hà Nội', 2, 1500000],
+            [2, '2026-03-02', 'Máy Gặt Đa Năng', 'TP.HCM', 1, 25000000],
+            [3, '2026-03-03', 'Phân Bón Hữu Cơ', 'Cần Thơ', 5, 450000],
+            [4, '2026-03-05', 'Thẻ Nông Dân Gold', 'Hà Nội', 1, 750000],
+            [5, '2026-03-06', 'Hạt Giống Lúa Hybrid', 'Đà Nẵng', 10, 1200000],
+            [6, '2026-03-07', 'Máy Bơm Nước Nông Nghiệp', 'TP.HCM', 2, 6800000],
+            [7, '2026-03-08', 'Phân Bón Hữu Cơ', 'Hà Nội', 8, 720000],
+            [8, '2026-03-10', 'Thẻ Nông Dân Gold', 'Đà Nẵng', 3, 2250000],
+            [9, '2026-03-12', 'Hệ Thống Tưới Tự Động', 'Cần Thơ', 1, 14500000],
+            [10, '2026-03-15', 'Hạt Giống Lúa Hybrid', 'Hà Nội', 15, 1800000],
+          ],
+        },
+      },
+      hintsUsed: 0,
+      clientAttemptId: 'client-sql-attempt-001',
+      ...overrides,
+    });
+
+    it('hoàn thành vụ án SQL khi kết quả khớp 100%', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit(makeSqlRequest());
+
+      expect(res.error).toBeNull();
+      expect(res.data.isCorrect).toBe(true);
+      expect(res.data.stepCompleted).toBe(true);
+      expect(res.data.missionCompleted).toBe(true);
+      expect(res.data.potentialXp).toBe(100);
+      expect(res.data.feedback).toMatch(/hoàn toàn chính xác/i);
+    });
+
+    it('trả kết quả chưa đạt khi câu truy vấn SQL thiếu từ khóa bắt buộc', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit(
+        makeSqlRequest({
+          missionId: 'mission-011',
+          answer: {
+            query: 'SELECT * FROM sales;',
+            executionResult: {
+              columns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+              rows: [],
+            },
+          },
+        })
+      );
+
+      expect(res.error).toBeNull();
+      expect(res.data.isCorrect).toBe(false);
+      expect(res.data.stepCompleted).toBe(false);
+      expect(res.data.feedbackCode).toBe('SQL_MISSING_REQUIRED_CONSTRUCT');
+      expect(res.data.feedback).toMatch(/WHERE/i);
+    });
+
+    it('báo lỗi validation khi câu truy vấn SQL để rỗng', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit(
+        makeSqlRequest({
+          answer: { query: '   ' },
+        })
+      );
+
+      expect(res.data).toBeNull();
+      expect(res.error.code).toBe(SUBMISSION_ERROR_CODES.VALIDATION_ERROR);
+    });
+  });
 });

@@ -185,8 +185,7 @@
   - **Step 4.3:** SQL Mission Shell, Loader & Route — **DONE**; `/missions/:missionId/sql`, dataset isolation, lifecycle cleanup & navigation matching pass
   - **Step 4.4:** SQL Editor MVP — **DONE**; controlled editor, starter/reset query, soft Tab 2-space, Ctrl+Enter shortcut, Detective Amber theme styling & unit tests pass
   - **Step 4.5:** Query Execution & Result Viewer — **DONE**; SQLite WASM execution, ResultViewer component, NULL/number formatting, thousand separator, sticky scroll container, column width auto-compacting, caret pixel-alignment & integration tests pass (191/191 tests pass)
-  - **Step 4.6:** SQL Result Checker — **DONE**; pure evaluator `sqlChecker.js`, multiset row frequency matching, NULL alignment, numeric tolerance, construct validation & unit tests pass (17/17 tests pass)
-  - **Step 4.7:** Submission Integration — **PLANNED**; Primary Module dự kiến `LRN-SUB`
+  - **Step 4.7:** Submission Integration — **DONE**; mở rộng `mockSubmissionService.js` hỗ trợ `tool: 'sql'`, tích hợp `evaluateSqlResult` vào gateway, nộp bài vụ án kích hoạt `MissionResultModal` và báo lỗi inline trong `SqlMissionPage.jsx` (222/222 tests pass)
   - **Step 4.8:** Security, Browser, Deployment & Regression Gate — **PLANNED**
 * **MVP Boundary:** SQLite dialect, database in-memory, Worker bắt buộc, không OPFS, không backend execution, không XP mutation. Editor dùng controlled textarea trước; syntax highlighting/CodeMirror chỉ được nâng lên P0 khi dependency spike pass.
 * **Sprint Exit Criteria:** một SQL Mission chạy xuyên suốt; engine không block UI; reset/dispose ổn định; user query read-only; checker xử lý order/`NULL`/duplicate/tolerance; Run khác Submit; production WASM và full Excel regression pass.

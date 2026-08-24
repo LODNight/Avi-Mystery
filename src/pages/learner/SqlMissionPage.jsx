@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft, Clock, Database, Target } from 'lucide-react'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowLeft, Clock, Database, Target, AlertCircle, AlertTriangle } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
 import { ResultViewer } from '../../components/sql/ResultViewer.jsx'
 import { ErrorState } from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
-import { sqlMissionService } from '../../services/index.js'
+import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx'
+import { sqlMissionService, submissionService as defaultSubmissionService } from '../../services/index.js'
 import { createSqlEngine } from '../../utils/sql/index.js'
 import { formatDuration, formatXP } from '../../utils/format.js'
 
@@ -25,15 +26,21 @@ function WorkspaceSkeleton() {
 
 export function SqlMissionPage({
   workspaceService = sqlMissionService,
+  subService = defaultSubmissionService,
   engineFactory = createSqlEngine,
 }) {
   const { missionId } = useParams()
+  const navigate = useNavigate()
   const engineRef = useRef(null)
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
   const [query, setQuery] = useState('')
   const [executionResult, setExecutionResult] = useState(null)
   const [isExecuting, setIsExecuting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submissionResult, setSubmissionResult] = useState(null)
+  const [submissionError, setSubmissionError] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const disposeCurrentEngine = useCallback(async () => {
     const engine = engineRef.current
@@ -54,6 +61,10 @@ export function SqlMissionPage({
       setState({ phase: 'loading', workspace: null, schema: null, error: null })
       setExecutionResult(null)
       setIsExecuting(false)
+      setIsSubmitting(false)
+      setSubmissionResult(null)
+      setSubmissionError(null)
+      setIsModalOpen(false)
       await disposeCurrentEngine()
       if (cancelled) return
 
@@ -109,11 +120,12 @@ export function SqlMissionPage({
   const starterSql = mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
 
   const handleRun = async () => {
-    if (isExecuting) return
+    if (isExecuting || isSubmitting) return
     const engine = engineRef.current
     if (!engine) return
 
     setIsExecuting(true)
+    setSubmissionError(null)
     try {
       const res = await engine.execute(query, { maxRows: 500 })
       setExecutionResult(res)
@@ -134,11 +146,72 @@ export function SqlMissionPage({
   const handleReset = () => {
     setQuery(starterSql)
     setExecutionResult(null)
+    setSubmissionResult(null)
+    setSubmissionError(null)
   }
 
-  const handleSubmit = () => {
-    // Bước chuẩn bị cho Submission Integration (Step 4.6 & Step 4.7)
-    window.alert('Tính năng kiểm tra đáp án tự động sẽ được kích hoạt ở bước tiếp theo!')
+  const handleSubmit = async () => {
+    if (isSubmitting || isExecuting) return
+
+    let currentExec = executionResult
+    if (!currentExec) {
+      const engine = engineRef.current
+      if (!engine) return
+      setIsExecuting(true)
+      try {
+        currentExec = await engine.execute(query, { maxRows: 500 })
+        setExecutionResult(currentExec)
+      } catch (err) {
+        currentExec = {
+          columns: [],
+          rows: [],
+          rowCount: 0,
+          executionMs: 0,
+          errorCode: err?.code || 'SQL_RUNTIME_ERROR',
+          message: err?.message || 'Không thể thực thi truy vấn SQL.',
+        }
+        setExecutionResult(currentExec)
+      } finally {
+        setIsExecuting(false)
+      }
+    }
+
+    setIsSubmitting(true)
+    setSubmissionError(null)
+
+    const clientAttemptId = `sql-attempt-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`
+
+    try {
+      const res = await subService.submit({
+        mode: 'submit',
+        missionId: mission.id,
+        tool: 'sql',
+        answer: {
+          query,
+          executionResult: currentExec,
+        },
+        hintsUsed: 0,
+        clientAttemptId,
+      })
+
+      if (res.error) {
+        setSubmissionError(res.error)
+        setSubmissionResult(null)
+      } else {
+        setSubmissionResult(res.data)
+        setSubmissionError(null)
+        if (res.data?.isCorrect && (res.data?.stepCompleted || res.data?.missionCompleted)) {
+          setIsModalOpen(true)
+        }
+      }
+    } catch (error) {
+      setSubmissionError({
+        code: 'SUBMISSION_FAILED',
+        message: error?.message || 'Có lỗi xảy ra khi gửi bài làm.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -167,14 +240,52 @@ export function SqlMissionPage({
             onChange={setQuery}
             onRun={handleRun}
             onReset={handleReset}
-            isRunning={isExecuting}
+            isRunning={isExecuting || isSubmitting}
           />
-          <ResultViewer result={executionResult} isExecuting={isExecuting} onSubmit={handleSubmit} />
+
+          {/* Submission Feedback Banner for Incorrect Submissions */}
+          {submissionResult && !submissionResult.isCorrect && (
+            <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-medium text-amber-800 dark:text-amber-200 animate-fade-in">
+              <div className="flex items-start gap-2.5">
+                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                <div>
+                  <strong className="font-bold">Chưa chính xác: </strong>
+                  <span>{submissionResult.feedback}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Submission Service Error Banner */}
+          {submissionError && (
+            <div role="alert" className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-medium text-rose-800 dark:text-rose-200 animate-fade-in">
+              <div className="flex items-start gap-2.5">
+                <AlertCircle className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                <div>
+                  <strong className="font-bold">Lỗi nộp bài: </strong>
+                  <span>{submissionError.message}</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <ResultViewer
+            result={executionResult}
+            isExecuting={isExecuting || isSubmitting}
+            onSubmit={handleSubmit}
+          />
         </div>
 
         <SchemaBrowser schema={state.schema} className="min-h-[28rem]" />
       </div>
+
+      <MissionResultModal
+        isOpen={isModalOpen}
+        result={submissionResult}
+        missionTitle={mission.title}
+        onClose={() => setIsModalOpen(false)}
+        onNextMission={() => navigate('/learning-map')}
+      />
     </div>
   )
 }
-

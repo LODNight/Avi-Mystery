@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.5.
-* **Step vừa hoàn thành:** Step 4.6 — SQL Result Checker (`DONE`).
-* **Step kế tiếp:** Step 4.7 — SQL Submission Integration (`PLANNED`).
-* **Trạng thái Sprint:** `SQL RESULT CHECKER ENGINE PASS — SẴN SÀNG CHO SUBMISSION INTEGRATION (STEP 4.7)`.
+* **Step đã hoàn thành:** Step 1.1–4.6.
+* **Step vừa hoàn thành:** Step 4.7 — SQL Submission Integration (`DONE`).
+* **Step kế tiếp:** Step 4.8 — Security, Browser, Deployment & Regression Gate (`PLANNED`).
+* **Trạng thái Sprint:** `SQL SUBMISSION INTEGRATION PASS — SẴN SÀNG CHO STEP 4.8 REGRESSION GATE`.
 
 ---
 
@@ -20,9 +20,9 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser, Editor, Result Viewer & Result Checker | `DONE / Step 4.6` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser, Editor, Result Viewer, Result Checker & Submission Integration | `DONE / Step 4.7` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
-| **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
+| **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & SQL Tool Extension | `DONE / Step 4.7` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
 | **Backend (`BE`)** | `None` | FastAPI/PostgreSQL/API integration | `PLANNED` cho Sprint 7 |
 

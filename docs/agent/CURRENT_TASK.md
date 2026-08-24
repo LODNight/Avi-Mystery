@@ -4,66 +4,72 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.6
-- Task ID: LRN-SQL-4.6-CHECKER
+- Step: 4.7
+- Task ID: LRN-SUB-4.7-SQL
 - Status: DONE
-- Primary Module: LRN-SQL
+- Primary Module: LRN-SUB
 
 ## Gate Before This Task
 
 - Step 4.5 base execution, ResultViewer & UX/UI polish are DONE.
-- Step 4.6 SQL Result Checker (`sqlChecker.js`) is DONE.
-- Full test suite (208/208 across 30 files) is passing.
+- Step 4.6 SQL Result Checker (`sqlChecker.js`) pure evaluator engine is DONE.
+- Step 4.7 SQL Submission Integration is DONE.
+- Full test suite (213/213 across 30 files) is passing.
 
 ## Goal
 
-Implement the SQL Result Checker (`sqlChecker.js`) to evaluate learner SQL query results against canonical mission solutions:
-1. **Construct Validation**: Check required keywords (`requiredConstructs`) and forbidden constructs (`forbiddenConstructs`).
-2. **Column Matching**: Validate column count and column names/casing according to `checkerConfig` (`expectedColumns`, `columnOrderMatters`).
-3. **Row Count & Multiplicity Matching**: Compare actual vs expected row counts, handling row order sensitivity (`orderMatters: true/false`) with frequency/multiplicity hash matching.
-4. **Numeric Tolerance & NULL Alignment**: Support floating-point comparison tolerance (`numericTolerance`, default `0.001`) and strict `NULL` matching.
-5. **Stable Feedback Catalog**: Map evaluation outcomes to canonical feedback codes (`SQL_CHECKER_FEEDBACK_CODES`) with human-readable Vietnamese feedback messages.
+Integrate SQL query submission into the shared `submissionService` gateway & `SqlMissionPage`:
+1. **Service Gateway**: Extended `mockSubmissionService.js` to support `tool: 'sql'` requests without creating a separate SQL submission service.
+2. **Evaluator Wiring**: Wired `evaluateSqlResult` into `mockSubmissionService` using SQL mission checker configs (`SQL_CHECKER_CONFIG`).
+3. **Workspace Integration**: Wired `SqlMissionPage.jsx` action button to `submissionService.submit({ mode: 'submit', tool: 'sql', ... })` with `isSubmitting` guards and `clientAttemptId` idempotency.
+4. **Completion Feedback**: Rendered `MissionResultModal` on successful query submission showing potential XP & completion status, while keeping incorrect answer feedback inline in the SQL workspace.
+5. **Testing**: Added component & unit tests covering SQL submission happy path, incorrect answer feedback, missing query validation, and idempotency.
 
 ## In Scope
 
-- Create `src/utils/sql/sqlChecker.js` implementing `evaluateSqlResult(actualResult, expectedResult, checkerConfig)`.
-- Export stable feedback catalog `SQL_CHECKER_FEEDBACK_CODES`.
-- Create comprehensive unit test suite `src/utils/sql/sqlChecker.test.js` covering all edge cases (constructs, columns, row order, numeric tolerance, empty sets, NULLs).
-- Update documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`).
+- Updated `src/services/mock/mockSubmissionService.js` to support `SUBMISSION_TOOLS.SQL` and `evaluateSqlResult`.
+- Updated `src/services/mock/mockSubmissionService.test.js` with SQL submission test cases.
+- Updated `src/components/excel/MissionResultModal.jsx` for SQL mission completion.
+- Updated `src/pages/learner/SqlMissionPage.jsx` to handle submit state, call `submissionService.submit`, display inline feedback or trigger result modal.
+- Updated `src/pages/learner/SqlMissionPage.test.jsx` for end-to-end submission testing.
+- Updated documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`, `TEST_REPORT.md`, `README.md`).
 
 ## Out of Scope
 
-- Submission XP awarding and Progress system state mutation (reserved for Step 4.7 / Sprint 5).
-- Admin Content Builder UI for configuring checkers (Sprint 6).
+- User state XP mutation or persistent progress unlocking (reserved for Sprint 5).
+- Admin Content Builder UI (Sprint 6).
 
 ## Allowed Write Paths
 
-- `src/utils/sql/sqlChecker.js`
-- `src/utils/sql/sqlChecker.test.js`
-- `src/utils/sql/`
+- `src/services/mock/mockSubmissionService.js`
+- `src/services/mock/mockSubmissionService.test.js`
+- `src/components/excel/MissionResultModal.jsx`
+- `src/pages/learner/SqlMissionPage.jsx`
+- `src/pages/learner/SqlMissionPage.test.jsx`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/CHECKLIST.md`
 - `docs/ROADMAP.md`
 - `docs/PROJECT_STATUS.md`
 - `docs/BACKLOG.md`
 - `docs/TEST_REPORT.md`
+- `README.md`
 
 ## Forbidden Paths
 
 - `src/pages/admin/`
-- `src/components/excel/`
+- `src/components/excel/SpreadsheetGrid.jsx`
 
 ## Acceptance Criteria
 
-- [x] `evaluateSqlResult` pure evaluator handles all comparison rules deterministically without mutating inputs.
-- [x] Returns `{ isCorrect, score, feedbackCode, feedback, details }`.
-- [x] `SQL_CHECKER_FEEDBACK_CODES` contains all canonical codes (`SUCCESS`, `MISSING_REQUIRED_CONSTRUCT`, `FORBIDDEN_CONSTRUCT_USED`, `COLUMN_COUNT_MISMATCH`, `MISSING_EXPECTED_COLUMN`, `ROW_COUNT_MISMATCH`, `ROW_ORDER_MISMATCH`, `VALUE_MISMATCH`, `EMPTY_RESULT_SET`).
-- [x] Row order insensitivity (`orderMatters: false`) handles duplicate rows and different row ordering accurately.
-- [x] Numeric comparison respects `numericTolerance` (e.g. `0.001`).
-- [x] 100% test coverage for `sqlChecker.test.js` with 17 passed test cases and 0 failures.
+- [x] `submissionService.submit({ tool: 'sql' })` executes evaluation using `sqlChecker.js` and returns standard `SubmissionResult` shape.
+- [x] Mode `'run'` does not mark mission completed or calculate `potentialXp`. Mode `'submit'` calculates `potentialXp` when `isCorrect: true`.
+- [x] Clicking "Nộp bài vụ án" in `SqlMissionPage` triggers `submissionService.submit`, shows loading spinner, and disables double click.
+- [x] Correct answer displays `MissionResultModal` with potential XP and success feedback.
+- [x] Incorrect answer displays clear inline error/feedback in `SqlMissionPage` without breaking workspace.
+- [x] All unit and component tests pass 100% (213/213 passed across 30 files).
 
 ## Test Commands
 
 ```bash
-npx vitest run src/utils/sql/sqlChecker.test.js
+npx vitest run src/services/mock/mockSubmissionService.test.js src/pages/learner/SqlMissionPage.test.jsx
 ```

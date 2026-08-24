@@ -1,5 +1,6 @@
 import missionsData from '../../mocks/data/missions.json';
 import { checkExcelAnswer } from '../../utils/excelChecker.js';
+import { evaluateSqlResult } from '../../utils/sql/sqlChecker.js';
 import { storage } from '../../utils/storage.js';
 import {
   SUBMISSION_ERROR_CODES,
@@ -16,12 +17,59 @@ export const MOCK_SUBMISSION_FAILURES = Object.freeze({
   TIMEOUT: 'timeout',
 });
 
-// MVP Step 3.4 supports one verified Excel vertical slice. Missions without a
-// checker config fail explicitly instead of silently using another mission's answer.
+// MVP Step 3.4 Excel Checker Config
 const EXCEL_CHECKER_CONFIG = Object.freeze({
   'mission-001': Object.freeze({
     expectedFormula: Object.freeze(['=C2*D2', '=D2*C2', '=PRODUCT(C2,D2)']),
     expectedValue: 450000,
+  }),
+});
+
+// MVP Step 4.7 SQL Checker Config
+const SQL_CHECKER_CONFIG = Object.freeze({
+  'mission-010': Object.freeze({
+    expectedColumns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+    expectedRows: [
+      [1, "2026-03-01", "Thẻ Nông Dân Gold", "Hà Nội", 2, 1500000],
+      [2, "2026-03-02", "Máy Gặt Đa Năng", "TP.HCM", 1, 25000000],
+      [3, "2026-03-03", "Phân Bón Hữu Cơ", "Cần Thơ", 5, 450000],
+      [4, "2026-03-05", "Thẻ Nông Dân Gold", "Hà Nội", 1, 750000],
+      [5, "2026-03-06", "Hạt Giống Lúa Hybrid", "Đà Nẵng", 10, 1200000],
+      [6, "2026-03-07", "Máy Bơm Nước Nông Nghiệp", "TP.HCM", 2, 6800000],
+      [7, "2026-03-08", "Phân Bón Hữu Cơ", "Hà Nội", 8, 720000],
+      [8, "2026-03-10", "Thẻ Nông Dân Gold", "Đà Nẵng", 3, 2250000],
+      [9, "2026-03-12", "Hệ Thống Tưới Tự Động", "Cần Thơ", 1, 14500000],
+      [10, "2026-03-15", "Hạt Giống Lúa Hybrid", "Hà Nội", 15, 1800000]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+  }),
+  'mission-011': Object.freeze({
+    expectedColumns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+    expectedRows: [
+      [2, "2026-03-02", "Máy Gặt Đa Năng", "TP.HCM", 1, 25000000],
+      [6, "2026-03-07", "Máy Bơm Nước Nông Nghiệp", "TP.HCM", 2, 6800000],
+      [9, "2026-03-12", "Hệ Thống Tưới Tự Động", "Cần Thơ", 1, 14500000]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    requiredConstructs: ['WHERE'],
+  }),
+  'mission-012': Object.freeze({
+    expectedColumns: ['product_name'],
+    expectedRows: [
+      ["Thẻ Nông Dân Gold"],
+      ["Máy Gặt Đa Năng"],
+      ["Phân Bón Hữu Cơ"],
+      ["Hạt Giống Lúa Hybrid"],
+      ["Máy Bơm Nước Nông Nghiệp"],
+      ["Hệ Thống Tưới Tự Động"]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    requiredConstructs: ['DISTINCT'],
   }),
 });
 
@@ -66,23 +114,36 @@ function validateRequest(request) {
     );
   }
 
-  if (request.tool !== SUBMISSION_TOOLS.EXCEL) {
+  if (!Object.values(SUBMISSION_TOOLS).includes(request.tool)) {
     return errorEnvelope(
       SUBMISSION_ERROR_CODES.UNSUPPORTED_TOOL,
-      `Công cụ "${request.tool || 'unknown'}" chưa được hỗ trợ trong Step 3.4.`
+      `Công cụ "${request.tool || 'unknown'}" chưa được hỗ trợ.`
     );
   }
 
-  if (
-    !request.answer ||
-    typeof request.answer !== 'object' ||
-    typeof request.answer.formula !== 'string' ||
-    !request.answer.formula.trim()
-  ) {
+  if (!request.answer || typeof request.answer !== 'object') {
     return errorEnvelope(
       SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
-      'Vui lòng nhập công thức Excel trước khi nộp bài.'
+      'Dữ liệu câu trả lời (answer) không hợp lệ.'
     );
+  }
+
+  if (request.tool === SUBMISSION_TOOLS.EXCEL) {
+    if (typeof request.answer.formula !== 'string' || !request.answer.formula.trim()) {
+      return errorEnvelope(
+        SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+        'Vui lòng nhập công thức Excel trước khi nộp bài.'
+      );
+    }
+  }
+
+  if (request.tool === SUBMISSION_TOOLS.SQL) {
+    if (typeof request.answer.query !== 'string' || !request.answer.query.trim()) {
+      return errorEnvelope(
+        SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
+        'Vui lòng nhập câu truy vấn SQL trước khi nộp bài.'
+      );
+    }
   }
 
   return null;
@@ -146,20 +207,44 @@ export function createMockSubmissionService({
           );
         }
 
-        const checkerConfig = EXCEL_CHECKER_CONFIG[request.missionId];
-        if (!checkerConfig) {
-          return errorEnvelope(
-            SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
-            `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+        let checkResult = { isCorrect: false, score: 0, feedback: '', feedbackCode: '' };
+
+        if (request.tool === SUBMISSION_TOOLS.EXCEL) {
+          const checkerConfig = EXCEL_CHECKER_CONFIG[request.missionId];
+          if (!checkerConfig) {
+            return errorEnvelope(
+              SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
+              `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+            );
+          }
+
+          checkResult = checkExcelAnswer({
+            userFormula: request.answer.formula,
+            expectedFormula: checkerConfig.expectedFormula,
+            expectedValue: checkerConfig.expectedValue,
+            sheetData: request.answer.sheetData || {},
+          });
+        } else if (request.tool === SUBMISSION_TOOLS.SQL) {
+          const checkerConfig = SQL_CHECKER_CONFIG[request.missionId];
+          if (!checkerConfig) {
+            return errorEnvelope(
+              SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
+              `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+            );
+          }
+
+          const actualResult = request.answer.executionResult || {
+            columns: [],
+            rows: [],
+          };
+
+          checkResult = evaluateSqlResult(
+            actualResult,
+            { columns: checkerConfig.expectedColumns, rows: checkerConfig.expectedRows },
+            checkerConfig,
+            request.answer.query
           );
         }
-
-        const checkResult = checkExcelAnswer({
-          userFormula: request.answer.formula,
-          expectedFormula: checkerConfig.expectedFormula,
-          expectedValue: checkerConfig.expectedValue,
-          sheetData: request.answer.sheetData || {},
-        });
 
         const isOfficialSubmit = request.mode === SUBMISSION_MODES.SUBMIT;
         const isCompleted = isOfficialSubmit && checkResult.isCorrect;

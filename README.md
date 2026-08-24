@@ -104,8 +104,8 @@ npm run build
 Lần xác minh gần nhất ngày **24/08/2026** đạt:
 
 - **30 Test Files Passed**
-- **208 Test Cases Passed**
-- Bao phủ service mocks (auth, course, mission, sqlMission, submission contract), shared UI, route/page status, course/map/mission flow, Excel workspace/evaluator, và SQL workspace (WASM engine, Worker, Schema Browser, SqlEditor, ResultViewer, ResultChecker, `/missions/:missionId/sql` route).
+- **213 Test Cases Passed**
+- Bao phủ service mocks (auth, course, mission, sqlMission, submission contract), shared UI, route/page status, course/map/mission flow, Excel workspace/evaluator, và SQL workspace (WASM engine, Worker, Schema Browser, SqlEditor, ResultViewer, ResultChecker, SQL Submission Integration, `/missions/:missionId/sql` route).
 
 Chi tiết và cảnh báo test được ghi tại **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**.
 

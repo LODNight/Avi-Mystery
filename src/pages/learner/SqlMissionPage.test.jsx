@@ -65,6 +65,84 @@ describe('SqlMissionPage', () => {
     expect(engine.execute).toHaveBeenCalledOnce()
   })
 
+  it('submits query and opens MissionResultModal when answer is correct', async () => {
+    const engine = createEngine()
+    const subService = {
+      submit: vi.fn().mockResolvedValue({
+        data: {
+          attemptId: 'attempt-001',
+          isCorrect: true,
+          stepCompleted: true,
+          missionCompleted: true,
+          potentialXp: 100,
+          feedbackCode: 'SUCCESS',
+          feedback: 'Kết quả hoàn toàn chính xác!',
+        },
+        error: null,
+      }),
+    }
+
+    renderPage({
+      workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) },
+      engineFactory: () => engine,
+      subService,
+    })
+    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+
+    // First run the query so submit button is visible
+    fireEvent.click(screen.getByRole('button', { name: /chạy câu lệnh sql/i }))
+    await waitFor(() => expect(screen.getByRole('button', { name: /nộp bài vụ án/i })).toBeInTheDocument())
+
+    // Now click submit button
+    fireEvent.click(screen.getByRole('button', { name: /nộp bài vụ án/i }))
+
+    await waitFor(() => expect(screen.getByText('Chúc Mừng Trinh Thám!')).toBeInTheDocument())
+    expect(screen.getByText('Phần thưởng dự kiến: +100 XP')).toBeInTheDocument()
+    expect(subService.submit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: 'submit',
+        missionId: 'mission-010',
+        tool: 'sql',
+      })
+    )
+  })
+
+  it('displays inline alert feedback when submission is incorrect', async () => {
+    const engine = createEngine()
+    const subService = {
+      submit: vi.fn().mockResolvedValue({
+        data: {
+          attemptId: 'attempt-002',
+          isCorrect: false,
+          stepCompleted: false,
+          missionCompleted: false,
+          potentialXp: 0,
+          feedbackCode: 'SQL_MISSING_REQUIRED_CONSTRUCT',
+          feedback: 'Câu truy vấn của bạn còn thiếu từ khóa WHERE.',
+        },
+        error: null,
+      }),
+    }
+
+    renderPage({
+      workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) },
+      engineFactory: () => engine,
+      subService,
+    })
+    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+
+    // Run query
+    fireEvent.click(screen.getByRole('button', { name: /chạy câu lệnh sql/i }))
+    await waitFor(() => expect(screen.getByRole('button', { name: /nộp bài vụ án/i })).toBeInTheDocument())
+
+    // Submit query
+    fireEvent.click(screen.getByRole('button', { name: /nộp bài vụ án/i }))
+
+    await waitFor(() => expect(screen.getByRole('alert')).toBeInTheDocument())
+    expect(screen.getByText('Chưa chính xác:')).toBeInTheDocument()
+    expect(screen.getByText('Câu truy vấn của bạn còn thiếu từ khóa WHERE.')).toBeInTheDocument()
+  })
+
   it('shows retryable service errors and disposes the engine on unmount', async () => {
     const engine = createEngine()
     const service = { loadWorkspace: vi.fn().mockResolvedValue({ data: null, error: { message: 'Không tải được', retryable: true } }) }

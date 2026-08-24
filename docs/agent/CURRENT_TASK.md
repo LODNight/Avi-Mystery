@@ -15,16 +15,18 @@
 
 ## Goal
 
-Refine the UX/UI of `ResultViewer.jsx` and `SqlMissionPage.jsx` based on user feedback:
+Refine the UX/UI of `ResultViewer.jsx`, `SqlEditor.jsx` and `SqlMissionPage.jsx` based on user feedback:
 1. **User Flow**: Add prominent action button ("Kiểm tra đáp án / Nộp bài") upon successful query run to prevent dead-end flow.
 2. **Data Alignment**: Right-align numeric data cells (`number`, `INTEGER`, `REAL`), keep text/string cells left-aligned.
 3. **Data Formatting**: Format numbers with thousand separators (e.g. `12,500,000`).
 4. **Consistency**: Preserve case of column headers matching database/query schema without forced casing.
 5. **Layout Scalability**: Add internal scroll container with `max-h-[360px]` and `sticky top-0` header to prevent layout explosion.
+6. **Editor Caret Alignment**: Fix cursor vertical & horizontal alignment by eliminating font letter-spacing/tracking differences between syntax highlighting overlay and standard textarea input.
 
 ## In Scope
 
 - Update `ResultViewer.jsx` for right-aligning numbers, thousand separator formatting, sticky header, scroll container, and column header case consistency.
+- Update `SqlEditor.jsx` to remove `tracking-wide` / font weight divergence and ensure pixel-perfect cursor alignment and scroll synchronization.
 - Add primary call-to-action button in `ResultViewer.jsx` or `SqlMissionPage.jsx` when query runs successfully.
 - Update `ResultViewer.test.jsx` and `SqlMissionPage.test.jsx` for the new UX features.
 
@@ -36,6 +38,7 @@ Refine the UX/UI of `ResultViewer.jsx` and `SqlMissionPage.jsx` based on user fe
 
 - `src/components/sql/ResultViewer.jsx`
 - `src/components/sql/ResultViewer.test.jsx`
+- `src/components/sql/SqlEditor.jsx`
 - `src/components/sql/`
 - `src/pages/learner/SqlMissionPage.jsx`
 - `src/pages/learner/SqlMissionPage.test.jsx`
@@ -53,6 +56,7 @@ Refine the UX/UI of `ResultViewer.jsx` and `SqlMissionPage.jsx` based on user fe
 - [x] Numbers >= 1,000 or currency/quantity values are formatted with thousand separators (e.g. `12,500,000`).
 - [x] Table headers maintain exact database schema column name casing.
 - [x] Table container has `max-h-[360px]` with sticky header (`sticky top-0`) and vertical scrollbar (`overflow-y-auto`).
+- [x] Textarea cursor (caret) aligns pixel-perfectly with syntax highlighted text without position offset.
 - [x] Unit & integration tests pass 100%.
 
 

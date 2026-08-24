@@ -64,7 +64,7 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | `LRN-SQL-4.2-SCHEMA` | Schema Browser | `LRN-SQL` | `High` | `DONE` | Accessible table/column metadata, sample rows and component states verified |
 | `LRN-SQL-4.3-SHELL` | SQL Mission Shell, Loader & Route | `LRN-SQL` | `High` | `DONE` | Typed SQL content gateway, lifecycle cleanup, isolated route `/missions/:missionId/sql` and Excel regression gate |
 | `LRN-SQL-4.4-EDITOR` | SQL Editor MVP | `LRN-SQL` | `Medium` | `DONE` | Controlled editor (`SqlEditor.jsx`), starter query, Reset/Run, Tab soft 2-spaces, Ctrl+Enter keyboard shortcut |
-| `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `DONE` | Run execution wire-up, ResultViewer component, NULL formatting, error alerts, pagination & integration tests |
+| `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `DONE` | Run execution wire-up, ResultViewer component, NULL/number formatting, thousand separator, action button, sticky height constraint, column compacting, caret pixel-alignment & integration tests (191 tests pass) |
 | `LRN-SQL-4.6-CHECKER` | SQL Result Checker | `LRN-SQL` | `Critical` | `TODO` | Order/NULL/duplicate/tolerance-aware comparator |
 | `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `TODO` | Dùng shared submission contract/gateway; không mutate XP |
 | `LRN-SQL-4.8-GATE` | Security, Browser, Deployment & Regression Gate | `LRN-SQL` | `Critical` | `TODO` | Policy/deploy/browser/Excel regression và SQL happy path |

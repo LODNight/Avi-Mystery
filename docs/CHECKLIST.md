@@ -169,7 +169,8 @@
 ### 🔹 Step 4.5: Query Execution & Result Viewer *(HOÀN THÀNH)*
 - [x] Running/double-run guard và stable error mapping (`SQL_SYNTAX_ERROR`, `SQL_READ_ONLY_VIOLATION`, v.v.)
 - [x] Columns/rows/`NULL`/empty/time/count/truncation, scroll và client-side pagination (50 dòng/trang)
-- [x] `ResultViewer.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (9/9 component tests pass)
+- [x] UX Polish: Nút "Nộp bài vụ án" nổi bật, căn phải ô số (`text-right`), định dạng 1,000, giữ nguyên casing tên cột, cuộn nội bộ `max-h-[360px]` với sticky header, tối ưu độ rộng cột (`w-1`/`w-auto`) và căn chỉnh con trỏ gõ phím pixel-perfect.
+- [x] `ResultViewer.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (12/12 component tests pass)
 
 ### 🔹 Step 4.6: SQL Result Checker
 - [ ] Column/row/value comparison; column order và result order tùy cấu hình

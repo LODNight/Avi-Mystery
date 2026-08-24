@@ -1,6 +1,6 @@
 # Trạng Thái Dự Án Avi-Mystery
 
-> **Cập nhật lần cuối:** 22/08/2026
+> **Cập nhật lần cuối:** 24/08/2026
 > **Nguồn trạng thái task:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md)
 
 ---
@@ -10,9 +10,9 @@
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
 * **Step đã hoàn thành:** Step 1.1–4.4.
-* **Step vừa hoàn thành:** Step 4.5 — Query Execution & Result Viewer (`DONE`).
+* **Step vừa hoàn thành:** Step 4.5 — Query Execution & Result Viewer & UX Polish (`DONE`).
 * **Step kế tiếp:** Step 4.6 — SQL Result Checker (`PLANNED`).
-* **Trạng thái Sprint:** `QUERY EXECUTION & RESULT VIEWER PASS — SẴN SÀNG CHO SQL RESULT CHECKER (STEP 4.6)`.
+* **Trạng thái Sprint:** `QUERY EXECUTION & RESULT VIEWER PASS (KÈM UX POLISH & CARET ALIGNMENT) — SẴN SÀNG CHO SQL RESULT CHECKER (STEP 4.6)`.
 
 ---
 

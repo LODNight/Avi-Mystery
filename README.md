@@ -1,124 +1,98 @@
-# Avi-Mystery — Nền Tảng Luyện Tập Phân Tích Dữ Liệu Nông Nghiệp & Kinh Doanh
+# Avi-Mystery — Hướng Dẫn Vận Hành Ứng Dụng (Page Operations Guide)
 
 > **Avi-Mystery** là ứng dụng luyện tập phân tích dữ liệu theo phong cách **game hóa điều tra vụ án** (Gameified Data Analytics Investigation).  
-> Người học đóng vai trò là một **Nhà điều tra dữ liệu (Data Investigator)** giải quyết các tình huống kinh doanh & nông nghiệp thực tế bằng công thức **Excel** và câu lệnh **SQL**.
+> Tài liệu này tập trung vào **hướng dẫn vận hành các trang giao diện**, luồng trải nghiệm của **Người học (Learner)** và **Quản trị viên (Admin)**.
 
 ---
 
-## 🌟 Tính Năng Nổi Bật
+## ⚡ 1. Hướng Dẫn Chạy & Thao Tác Cơ Bản
 
-### 🕵️ Learner Application (Dành cho Người học)
-- **Bảng điều khiển Học tập (Learner Dashboard)**: Hiển thị tổng quan mock về XP, nhiệm vụ và bảng xếp hạng; Progress domain chính thức thuộc Sprint 5.
-- **Danh sách Khóa học (`/courses`)**: Tìm kiếm và lọc khóa học theo từ khóa, công cụ (Excel / SQL) và độ khó (Easy, Medium, Hard).
-- **Chi tiết Khóa học (`/courses/:slug`)**: Xem thông tin tổng quan khóa học, cấu trúc chương học Accordion và danh sách bài học vụ án.
-- **Bản đồ Học tập (`/map`)**: Bản đồ tiến trình dạng Node/Tree tương tác, kiểm soát trạng thái nhiệm vụ (`locked`, `available`, `in_progress`, `completed`).
-- **Hồ sơ Vụ án (`/missions/:missionId`)**: Briefing chi tiết bối cảnh câu chuyện, mục tiêu vụ án, bộ dataset liên quan và điểm thưởng XP trước khi làm bài.
-- **Màn hình Bảo trì Tự động (`UnderMaintenancePage`)**: Tự động chuyển hướng và chặn truy cập khi trang đang ở chế độ bảo trì do Admin thiết lập.
-
-### 🛡️ Admin Application (Dành cho Quản trị viên)
-- **Tổng quan Admin (`/admin`)**: Giao diện tổng quan với dữ liệu hiện tại; Admin Analytics chính thức thuộc Sprint 8.
-- **Cài đặt & Quản lý Trang (`/admin/settings?tab=pages`)**: 
-  - Điều khiển trạng thái thời gian thực của toàn bộ trang Learner (`Active`, `Maintenance`, `Notice`).
-  - Cấu hình thông điệp bảo trì, lý do và thời gian dự kiến khôi phục.
-  - Chế độ **Admin Maintenance Bypass** (Cho phép Admin xem trước giao diện bị bảo trì).
-  - Thao tác nhanh khẩn cấp: *Bảo trì tất cả*, *Kích hoạt tất cả*, *Khôi phục mặc định*.
+| Thao tác | Câu lệnh Terminal | Mô tả |
+|---|---|---|
+| **Cài đặt phụ thuộc** | `npm install` | Cài đặt các package cần thiết cho dự án |
+| **Khởi chạy ứng dụng (Dev)** | `npm run dev` | Chạy dev server tại `http://localhost:5173` |
+| **Kiểm thử tự động** | `npx vitest run` | Chạy toàn bộ 30 test files / 222 test cases |
+| **Đóng gói sản phẩm** | `npm run build` | Đóng gói bản Production vào thư mục `dist/` |
+| **Xem trước bản Build** | `npm run preview` | Chạy xem trước bản Production sau khi build |
 
 ---
 
-## 🎨 Thiết Kế & Aesthetic
-
-- **Design System Detective Amber**: Tông màu chủ đạo **Hổ phách (Amber/Warm brown)** gợi cảm giác hồ sơ điều tra trinh thám cổ điển.
-- **Hỗ trợ Chế độ Tối & Sáng (Dark/Light Theme Toggle)**: Chuyển đổi theme mượt mà toàn ứng dụng.
-- **Collapsible Responsive Sidebar**: Thanh điều hướng có thể thu gọn linh hoạt cho cả Learner và Admin layouts, tự động ghi nhớ trạng thái qua `localStorage`.
-
----
-
-## 🛠️ Công Nghệ Sử Dụng
-
-- **Core**: React 18 + JavaScript (ES6+).
-- **Build Tool**: Vite.
-- **Styling**: Tailwind CSS + Lucide React Icons.
-- **Routing**: React Router v6.
-- **Testing**: Vitest + React Testing Library + JSDOM.
-- **Architecture**: Service Contract Pattern (`UI → Service Adapter → Mock / API Data`).
-
----
-
-## 📁 Cấu Trúc Thư Mục Dự Án
+## 🕵️ 2. Luồng Vận Hành Giao Diện Người Học (Learner Operations)
 
 ```text
-Avi-Mystery/
-├── docs/                        # Bộ tài liệu tiến độ (PROJECT_STATUS, ROADMAP, BACKLOG, DECISIONS, TEST_REPORT)
-├── src/
-│   ├── app/
-│   │   ├── layouts/            # LearnerLayout & AdminLayout (Sidebar + Topbar)
-│   │   ├── providers/          # ThemeProvider, PageStatusProvider, AuthProvider
-│   │   └── router/             # Cấu hình AppRouter & RBAC Route Guards
-│   ├── components/
-│   │   ├── excel/              # Grid, Formula Bar, toolbar, hints và result modal
-│   │   ├── sql/                # Schema Browser, SQL Code Editor & Result Viewer
-│   │   └── ui/                 # Component UI tái sử dụng (Button, Card, Skeleton, EmptyState)
-│   ├── hooks/                  # Custom hooks (useAuth, useTheme, usePageStatus, useAsync)
-│   ├── mocks/                  # Mock JSON data (courses, chapters, missions, steps, datasets)
-│   ├── pages/
-│   │   ├── admin/              # OverviewPage, SettingsPage, PageStatusPage
-│   │   └── learner/            # Dashboard, course/map/mission, Excel & SQL workspace
-│   ├── services/               # Contracts, mock adapters, API stubs và service gateway
-│   ├── tests/                  # Automated Vitest test suites
-│   ├── utils/                  # Excel Answer Checker, SQL engine adapter/policy & format utilities
-│   └── workers/                # In-browser SQLite WASM Web Worker
-├── package.json
-├── tailwind.config.js
-└── vite.config.js
+[Trang chủ / Login] ➔ [/courses] ➔ [/courses/:slug] ➔ [/map] ➔ [/missions/:id] ➔ [Excel / SQL Workspace]
 ```
+
+### 🔹 Step 1: Đăng Nhập & Bảng Điều Khiển (`/login`, `/dashboard`)
+- Sử dụng nút **"Demo Login"** (ở môi trường DEV) hoặc đăng nhập để vào giao diện Người học.
+- Bảng điều khiển (`/dashboard`) hiển thị tổng quan tiến trình học tập, XP và lối tắt vụ án đang làm dở.
+
+### 🔹 Step 2: Khám Phá & Chọn Khóa Học (`/courses`, `/courses/:slug`)
+- Trang danh sách khóa học (`/courses`): Hỗ trợ tìm kiếm theo từ khóa, lọc công cụ (**Excel** hoặc **SQL**) và mức độ khó (**Easy**, **Medium**, **Hard**).
+- Trang chi tiết khóa học (`/courses/:slug`): Hiển thị thông tin tổng quan, cấu trúc các Chương học (Accordion) và các Bài học vụ án.
+
+### 🔹 Step 3: Định Hướng Trên Bản Đồ Học Tập (`/map`)
+- Bản đồ dạng Node/Tree tương tác hiển thị tiến trình của Người học.
+- Trạng thái các nút bài học:
+  - 🟢 **Completed / Available**: Đã hoàn thành hoặc đã mở khóa để làm bài.
+  - 🟡 **In Progress**: Vụ án đang thực hiện dở dang.
+  - 🔒 **Locked**: Vụ án chưa đủ điều kiện mở khóa.
+
+### 🔹 Step 4: Đọc Hồ Sơ Vụ Án (`/missions/:missionId`)
+- Xem bối cảnh câu chuyện điều tra trinh thám, mục tiêu vụ án, tập dữ liệu liên quan và phần thưởng XP.
+- Nút **"Bắt đầu điều tra"** sẽ chuyển tiếp tới không gian làm việc công cụ phù hợp (Excel hoặc SQL).
+
+### 🔹 Step 5: Không Gian Làm Việc Thực Hành
+- **Excel Workspace (`/missions/:missionId/excel`)**:
+  - Nhập công thức vào thanh `FormulaBar` hoặc ô lưới `SpreadsheetGrid`.
+  - Bấm **"Chạy thử"** để xem kết quả tính toán hoặc **"Nộp bài vụ án"** để chấm điểm.
+  - Sử dụng bảng **Gợi ý (Hint Panel)** khi cần hỗ trợ (có tính năng ghim gợi ý lên công thức).
+- **SQL Workspace (`/missions/:missionId/sql`)**:
+  - Tra cứu cấu trúc bảng & dữ liệu mẫu tại **Schema Browser** bên trái.
+  - Soạn thảo câu lệnh SQL tại **SQL Code Editor** (hỗ trợ phím tắt `Ctrl + Enter` và thụt lề Tab 2 khoảng trắng).
+  - Bấm **"Chạy thử"** để thực thi câu lệnh trên trình duyệt (SQLite WASM Engine) và xem bảng kết quả tại **ResultViewer**.
+  - Bấm **"Nộp bài vụ án"** để chấm điểm tự động. Khi đúng, cửa sổ **`MissionResultModal`** sẽ xuất hiện chúc mừng phá án thành công.
 
 ---
 
-## 🚀 Hướng Dẫn Cài Đặt & Chạy Dự Án
+## 🛡️ 3. Luồng Vận Hành Quản Trị Viên & Chế Độ Bảo Trì (Admin Operations)
 
-### 1. Cài đặt các thư viện phụ thuộc:
-```bash
-npm install
-```
+### 🔹 Trang Quản Lý Trạng Thái Giao Diện (`/admin/settings?tab=pages`)
+Admin có toàn quyền điều khiển khả năng truy cập của Người học theo thời gian thực:
 
-### 2. Chạy môi trường phát triển (Dev Server):
-```bash
-npm run dev
-```
-Mở trình duyệt tại đường dẫn: `http://localhost:5173`
+1. **Thay Đổi Trạng Thái Trang**:
+   - 🟢 **Hoạt động (Active)**: Trang hiển thị bình thường cho Người học.
+   - 🟡 **Thông báo (Notice)**: Trang vẫn truy cập được nhưng hiển thị banner lưu ý trên cùng.
+   - 🔴 **Bảo trì (Maintenance)**: Chặn Người học truy cập, tự động chuyển hướng về trang **Bảo trì (`UnderMaintenancePage`)**.
 
-### 3. Chạy bộ kiểm thử tự động (Vitest Test Suite):
-```bash
-node ./node_modules/vitest/vitest.mjs run
-```
+2. **Cấu Hình Nội Dung Bảo Trì**:
+   - Nhập tiêu đề, thông điệp giải thích, lý do và thời gian dự kiến hoàn thành.
 
-### 4. Build bản đóng gói Production:
-```bash
-npm run build
-```
+3. **Admin Maintenance Bypass (Xem Trước Giao Diện)**:
+   - Admin luôn có nút bật/tắt **Bypass** để truy cập và xem trước các trang đang trong chế độ bảo trì mà không bị hệ thống chặn.
+
+4. **Thao Tác Nhanh Khẩn Cấp**:
+   - **Bảo trì tất cả**: Chuyển ngay toàn bộ hệ thống sang trạng thái bảo trì.
+   - **Kích hoạt tất cả**: Khôi phục tất cả các trang về trạng thái hoạt động.
+   - **Khôi phục mặc định**: Đưa cấu hình về trạng thái ban đầu của hệ thống.
 
 ---
 
-## 🧪 Kết Quả Kiểm Thử (Automated Test Report)
+## 🌍 4. Phân Luồng Môi Trường (Dev vs Prod)
 
-Lần xác minh gần nhất ngày **24/08/2026** đạt:
-
-- **30 Test Files Passed**
-- **213 Test Cases Passed**
-- Bao phủ service mocks (auth, course, mission, sqlMission, submission contract), shared UI, route/page status, course/map/mission flow, Excel workspace/evaluator, và SQL workspace (WASM engine, Worker, Schema Browser, SqlEditor, ResultViewer, ResultChecker, SQL Submission Integration, `/missions/:missionId/sql` route).
-
-Chi tiết và cảnh báo test được ghi tại **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**.
+- **Môi trường Phát triển (Dev Branch / Local)**:
+  - Hiển thị Badge **"DEV"** trên thanh điều hướng Topbar.
+  - Cho phép đăng nhập nhanh qua nút **Demo Login**.
+- **Môi trường Sản phẩm (Main Branch / Vercel Production)**:
+  - Tự động ẩn các lối tắt Demo/DEV, đảm bảo trải nghiệm người dùng cuối chuẩn chỉnh và an toàn.
 
 ---
 
-## 🗺️ Lộ Trình Phát Triển (Roadmap Summary)
+## 📚 5. Tài Liệu Kỹ Thuật Chi Tiết
 
-Bảng tiến độ chi tiết theo dạng checkbox cho từng Sprint có thể xem tại tệp tài liệu: **[`docs/CHECKLIST.md`](./docs/CHECKLIST.md)**.
+Đối với các nhà phát triển muốn tìm hiểu sâu về kiến trúc mã nguồn và tiến độ dự án, tham khảo các tệp tài liệu trong thư mục `docs/`:
 
-- [x] **Sprint 1 — Foundation & Auth**: Khởi tạo App Shell, Design System Amber, Service Layer contract, Role Guards.
-- [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing, Admin Page Status Manager.
-- [x] **Step 3.0–3.6G — Excel Workspace**: Checker, mission shell, spreadsheet grid, Formula Bar, Run/Reset/Hint, toolbar và Light Mode Refinement đã hoàn thành 100%.
-- [x] **Step 3.4 — Submission & Feedback**: Shared contract/gateway, mock async/idempotency-ready, inline feedback/retry, double-submit guard, success modal và boundary không trao XP đã hoàn thành.
-- [x] **Step 4.0–4.5 — SQL Vertical Slice**: SQLite WASM Worker engine, Schema Browser, SQL Mission Shell (`/missions/:missionId/sql`), SQL Code Editor MVP (`SqlEditor.jsx`), và Query Execution & Result Viewer (`ResultViewer.jsx`) đã `DONE` (SQL targeted suite 70/70, full regression 188/188 tests pass).
-
-Trạng thái task duy nhất dành cho agent nằm tại **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**; roadmap không tự kích hoạt Sprint/Step tiếp theo.
+- 📋 **[`docs/CHECKLIST.md`](./docs/CHECKLIST.md)**: Danh sách kiểm tra tiến độ chi tiết theo từng Step.
+- 📊 **[`docs/PROJECT_STATUS.md`](./docs/PROJECT_STATUS.md)**: Báo cáo trạng thái tổng thể và các quyết định kiến trúc.
+- 🧪 **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**: Kết quả chạy tự động 222 unit & integration test cases.
+- 🎯 **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**: Nhiệm vụ hiện tại đang thực hiện.

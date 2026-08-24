@@ -227,4 +227,21 @@ describe('SqlEngineAdapter — Step 4.1A Production Transport Tests', () => {
       code: SQL_ERROR_CODES.ENGINE_NOT_READY,
     })
   })
+
+  it('từ chối các truy vấn vi phạm Security Query Policy trước khi gửi sang Worker', async () => {
+    const worker = new FakeSqlWorker()
+    const engine = new SqlEngineAdapter({ workerFactory: () => worker })
+
+    await engine.loadDataset(spikeDataset)
+
+    const resMutation = await engine.execute('DELETE FROM airports')
+    expect(resMutation.errorCode).toBe(SQL_ERROR_CODES.READ_ONLY_VIOLATION)
+    expect(resMutation.message).toMatch(/không được phép/i)
+
+    const resMulti = await engine.execute('SELECT 1; SELECT 2;')
+    expect(resMulti.errorCode).toBe(SQL_ERROR_CODES.MULTIPLE_STATEMENTS)
+    expect(resMulti.message).toMatch(/chỉ được chạy một câu lệnh/i)
+
+    await engine.dispose()
+  })
 })

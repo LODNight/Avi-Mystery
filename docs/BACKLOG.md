@@ -67,7 +67,10 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `DONE` | Run execution wire-up, ResultViewer component, NULL/number formatting, thousand separator, action button, sticky height constraint, column compacting, caret pixel-alignment & integration tests (191 tests pass) |
 | `LRN-SQL-4.6-CHECKER` | SQL Result Checker | `LRN-SQL` | `Critical` | `DONE` | Order/NULL/duplicate/tolerance-aware pure evaluator (`sqlChecker.js`), construct validation, feedback codes & 17 unit tests pass |
 | `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `DONE` | Mở rộng `mockSubmissionService.js` hỗ trợ SQL, tích hợp submission flow & `MissionResultModal` vào `SqlMissionPage.jsx`, unit & integration tests pass (222 tests pass) |
-| `LRN-SQL-4.8-GATE` | Security, Browser, Deployment & Regression Gate | `LRN-SQL` | `Critical` | `IN_PROGRESS` | Policy security, Web Worker lifecycle cleanup, Light/Dark mode polish, Responsive cross-device testing, WASM production build packaging & full Excel/SQL regression gate |
+| `LRN-SQL-4.8A-SECURITY` | Query Security Policy & Resource Limits Guard | `LRN-SQL` | `Critical` | `DONE` | Read-only policy, multi-statement injection guard, timeout 3s & row truncation 500 rows |
+| `LRN-SQL-4.8B-LIFECYCLE` | Web Worker & Database Lifecycle Cleanup | `LRN-SQL` | `High` | `IN_PROGRESS` | Worker `dispose()` memory cleanup on route unmount and dataset switching |
+| `LRN-SQL-4.8C-UI` | Responsive Design & Theme Polish | `LRN-SQL` | `Medium` | `TODO` | Light/Dark theme visual fidelity & responsive layout tuning across screen sizes |
+| `LRN-SQL-4.8D-GATE` | Production WASM Build & Full Regression Gate | `LRN-SQL` | `Critical` | `TODO` | Vite WASM build packaging & 222+ test suite full Excel/SQL regression pass |
 
 ---
 

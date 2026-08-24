@@ -51,7 +51,7 @@ describe('SQL read-only query policy', () => {
     expectPolicyError('SELECT 1 /* missing', SQL_ERROR_CODES.SYNTAX_ERROR)
   })
 
-  it('chặn các câu lệnh DDL và mutation khác (CREATE, DROP, ALTER, UPDATE, INSERT, ATTACH, DETACH, VACUUM, REINDEX, REPLACE)', () => {
+  it('chặn các câu lệnh DDL và mutation khác (CREATE, DROP, ALTER, UPDATE, INSERT, ATTACH, DETACH, VACUUM, REINDEX, REPLACE, PRAGMA)', () => {
     const forbiddenQueries = [
       'CREATE TABLE temp (id INT)',
       'DROP TABLE flights',
@@ -63,11 +63,34 @@ describe('SQL read-only query policy', () => {
       'VACUUM',
       'REINDEX flights',
       'REPLACE INTO flights VALUES (1)',
+      'PRAGMA journal_mode=WAL',
+      'PRAGMA foreign_keys=OFF',
     ]
 
     forbiddenQueries.forEach((q) => {
       expectPolicyError(q, SQL_ERROR_CODES.READ_ONLY_VIOLATION)
     })
+  })
+
+  it('chặn các mưu đồ SQL Injection thông qua multi-statement hoặc từ khóa bị cấm ẩn', () => {
+    expectPolicyError(
+      "SELECT * FROM sales WHERE branch = 'Hà Nội'; DROP TABLE sales;",
+      SQL_ERROR_CODES.MULTIPLE_STATEMENTS
+    )
+    expectPolicyError(
+      "SELECT * FROM sales; UPDATE sales SET revenue = 0;",
+      SQL_ERROR_CODES.MULTIPLE_STATEMENTS
+    )
+    expectPolicyError(
+      "SELECT * FROM sales;\nDELETE FROM sales;",
+      SQL_ERROR_CODES.MULTIPLE_STATEMENTS
+    )
+  })
+
+  it('cho phép câu lệnh kết thúc bằng dấu chấm phẩy và khoảng trắng', () => {
+    expect(validateReadOnlyQuery('SELECT * FROM sales;   \n  ')).toBe(
+      'SELECT * FROM sales;   \n'
+    )
   })
 })
 

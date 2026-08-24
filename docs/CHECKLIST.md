@@ -183,23 +183,26 @@
 - [x] Tích hợp `MissionResultModal` vào `SqlMissionPage.jsx` khi phá án thành công, hiển thị banner cảnh báo inline khi câu truy vấn chưa đạt.
 - [x] Unit & component test cases (`mockSubmissionService.test.js`, `SqlMissionPage.test.jsx`) bao phủ 100%.
 
-### 🔹 Step 4.8: Security, Browser, Deployment & Regression Gate *(ĐANG THỰC HIỆN)*
-- [ ] **Bảo mật & Giới hạn tài nguyên thực thi (Query Policy & Resource Limits)**:
-  - [ ] Kiểm tra chính sách Read-only: Chặn mọi câu lệnh đột biến/thay đổi dữ liệu (`INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`...).
-  - [ ] Kiểm tra bảo vệ Multi-statement & SQL Injection (chỉ cho phép thực thi 1 câu lệnh duy nhất).
-  - [ ] Kiểm tra ngắt thời gian (Execution Timeout 3000ms) để giải phóng Worker khi gặp truy vấn lặp/nặng.
-  - [ ] Kiểm tra cắt giảm dòng dữ liệu (Row truncation limit 500 rows) tránh tràn bộ nhớ DOM trình duyệt.
-- [ ] **Quản lý Vòng đời & Giải phóng Bộ nhớ (DB Lifecycle & Memory Cleanup)**:
-  - [ ] Tự động dọn dẹp và hủy Web Worker (`dispose()`) khi unmount `SqlMissionPage` hoặc khi chuyển đổi vụ án (`sql-sales-v1` ↔ `sql-commerce-v1`).
-  - [ ] Đảm bảo tính cô lập dữ liệu giữa các nhiệm vụ SQL khác nhau.
-- [ ] **Giao Diện Trải Nghiệm & Đa Nền Tảng (UI/UX, Responsive & Theme)**:
-  - [ ] Kiểm tra hiển thị chuẩn đẹp trong cả 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
-  - [ ] Kiểm tra giao diện đáp ứng linh hoạt (Responsive Design) trên các thiết bị Mobile, Tablet và Desktop.
-- [ ] **Đóng Gói Sản Phẩm & Triển Khai (Production WASM & Build Gate)**:
-  - [ ] Chạy `npm run build` và `npm run preview` xác minh đóng gói file tĩnh `.wasm` và Web Worker không gặp lỗi MIME/MIME type hay 404 trên Vercel.
-- [ ] **Kiểm Thử Hồi Quy Toàn Diện (Full Regression Gate)**:
-  - [ ] Chạy full Vitest suite (tất cả 30 test files / 222 test cases pass 100%).
-  - [ ] Kiểm tra luồng Happy Path từ Bản đồ học tập (`/map`) -> Hồ sơ Vụ án (`/missions/mission-010`) -> Thực hành SQL (`/missions/mission-010/sql`) -> Chạy thử -> Nộp bài -> Nhận thưởng Modal thành công.
+### 🔹 Step 4.8A: Security, Query Policy & Resource Limits Guard *(HOÀN THÀNH)*
+- [x] Kiểm tra chính sách Read-only (`sqlQueryPolicy.js`): Chặn 100% câu lệnh đột biến (`INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`, `VACUUM`, `PRAGMA`...).
+- [x] Kiểm tra bảo vệ Multi-statement & SQL Injection (chặn thực thi nhiều câu lệnh cách nhau bởi dấu `;`).
+- [x] Kiểm tra ngắt thời gian (Execution Timeout 3000ms) giải phóng Worker khi gặp vòng lặp/Cartesian join quá nặng.
+- [x] Kiểm tra cắt giảm dòng dữ liệu (Row truncation limit 500 rows) bảo vệ hiệu năng DOM trình duyệt.
+- [x] Bổ sung unit tests cho Query Policy (`sqlQueryPolicy.test.js`) & Resource limits (`sqlEngineAdapter.test.js`).
+
+### 🔹 Step 4.8B: Web Worker & Database Lifecycle Cleanup *(DỰ KIẾN)*
+- [ ] Tự động gọi `dispose()` trên Web Worker khi unmount `SqlMissionPage`.
+- [ ] Đảm bảo dọn dẹp bộ nhớ và khởi tạo lại SQLite DB sạch khi chuyển đổi vụ án (`sql-sales-v1` ↔ `sql-commerce-v1`).
+- [ ] Thêm test cases kiểm tra dọn dẹp lifecycle trong `SqlMissionPage.test.jsx`.
+
+### 🔹 Step 4.8C: Responsive Design & Light/Dark Theme Polish *(DỰ KIẾN)*
+- [ ] Tinh chỉnh hiển thị giao diện chuẩn đẹp trong 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
+- [ ] Tinh chỉnh giao diện đáp ứng linh hoạt (Responsive Layout) trên các thiết bị Mobile, Tablet và Desktop (tối ưu hóa thanh cuộn và ô bảng).
+
+### 🔹 Step 4.8D: Production WASM Build & Full Regression Gate *(DỰ KIẾN)*
+- [ ] Chạy `npm run build` và `npm run preview` xác minh đóng gói file `.wasm` và Web Worker không bị lỗi MIME type hay 404 trên Vercel.
+- [ ] Chạy full Vitest suite (tất cả 30+ test files / 222+ test cases pass 100%).
+- [ ] Kiểm tra luồng Happy Path E2E từ `/map` ➔ `/missions/mission-010` ➔ `/missions/mission-010/sql` ➔ Run ➔ Submit ➔ Modal thành công.
 
 ---
 

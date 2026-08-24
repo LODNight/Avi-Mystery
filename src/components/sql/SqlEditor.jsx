@@ -1,11 +1,20 @@
 import React, { useRef } from 'react'
 import { Play, RotateCcw, Code2, Sparkles } from 'lucide-react'
 
+const EDITOR_FONT_STYLE = {
+  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+  fontSize: '14px',
+  lineHeight: '24px',
+  letterSpacing: '0px',
+  tabSize: 2,
+  MozTabSize: 2,
+}
+
 function renderSqlLine(line) {
   if (!line) return <span>&nbsp;</span>
 
   if (/^\s*--/.test(line)) {
-    return <span className="text-emerald-700 dark:text-emerald-400/90 italic font-normal">{line}</span>
+    return <span className="text-emerald-700 dark:text-emerald-400/90 font-normal">{line}</span>
   }
 
   const regex = /(\b(?:SELECT|FROM|WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT|JOIN|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN|ON|AS|DISTINCT|AND|OR|NOT|IN|IS|NULL|LIKE|WITH|UNION|ALL|SUM|COUNT|AVG|MIN|MAX)\b|'[^']*'|"[^"]*"|\b\d+\b|--.*$)/gi
@@ -16,19 +25,19 @@ function renderSqlLine(line) {
     if (!part) return null
 
     if (/^--.*$/.test(part)) {
-      return <span key={idx} className="text-emerald-700 dark:text-emerald-400/90 italic font-normal">{part}</span>
+      return <span key={idx} className="text-emerald-700 dark:text-emerald-400/90 font-normal">{part}</span>
     }
     if (/^'[^']*'|"([^"]*)"$/.test(part)) {
-      return <span key={idx} className="text-emerald-800 dark:text-emerald-300 font-semibold">{part}</span>
+      return <span key={idx} className="text-emerald-800 dark:text-emerald-300 font-normal">{part}</span>
     }
     if (/^\d+$/.test(part)) {
-      return <span key={idx} className="text-purple-700 dark:text-purple-400 font-semibold">{part}</span>
+      return <span key={idx} className="text-purple-700 dark:text-purple-400 font-normal">{part}</span>
     }
     if (/^(SELECT|FROM|WHERE|GROUP\s+BY|ORDER\s+BY|HAVING|LIMIT|JOIN|INNER\s+JOIN|LEFT\s+JOIN|RIGHT\s+JOIN|ON|AS|DISTINCT|AND|OR|NOT|IN|IS|NULL|LIKE|WITH|UNION|ALL|SUM|COUNT|AVG|MIN|MAX)$/i.test(part)) {
-      return <span key={idx} className="text-blue-700 dark:text-cyan-400 font-bold tracking-wide">{part.toUpperCase()}</span>
+      return <span key={idx} className="text-blue-600 dark:text-cyan-400 font-normal">{part.toUpperCase()}</span>
     }
 
-    return <span key={idx} className="text-stone-900 dark:text-stone-100">{part}</span>
+    return <span key={idx} className="text-stone-900 dark:text-stone-100 font-normal">{part}</span>
   })
 }
 
@@ -157,7 +166,7 @@ export function SqlEditor({
             ref={overlayRef}
             className="absolute inset-0 p-4 pointer-events-none whitespace-pre font-mono text-sm leading-6 select-none overflow-hidden"
             aria-hidden="true"
-            style={{ tabSize: 2, MozTabSize: 2 }}
+            style={EDITOR_FONT_STYLE}
           >
             {lines.map((line, i) => (
               <div key={i} className="h-6 leading-6">
@@ -178,7 +187,7 @@ export function SqlEditor({
             aria-label="Khung soạn thảo câu lệnh SQL"
             placeholder="-- Nhập câu lệnh SQL tại đây (Ví dụ: SELECT * FROM sales;)"
             spellCheck={false}
-            style={{ WebkitTextFillColor: 'transparent', tabSize: 2, MozTabSize: 2 }}
+            style={{ ...EDITOR_FONT_STYLE, WebkitTextFillColor: 'transparent' }}
             className="absolute inset-0 w-full h-full resize-none bg-transparent p-4 font-mono text-sm leading-6 whitespace-pre caret-amber-600 dark:caret-amber-400 placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 selection:bg-amber-500/20 dark:selection:bg-amber-500/30 overflow-auto"
           />
         </div>

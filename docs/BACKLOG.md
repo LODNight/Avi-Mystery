@@ -70,7 +70,8 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | `LRN-SQL-4.8A-SECURITY` | Query Security Policy & Resource Limits Guard | `LRN-SQL` | `Critical` | `DONE` | Read-only policy, multi-statement injection guard, timeout 3s & row truncation 500 rows |
 | `LRN-SQL-4.8B-LIFECYCLE` | Web Worker & Database Lifecycle Cleanup | `LRN-SQL` | `High` | `DONE` | Worker `dispose()` memory cleanup on route unmount and dataset switching |
 | `LRN-SQL-4.8C-UI` | Responsive Design & Theme Polish | `LRN-SQL` | `Medium` | `DONE` | Light/Dark theme visual fidelity & responsive layout tuning across screen sizes |
-| `LRN-SQL-4.8D-GATE` | Production WASM Build & Full Regression Gate | `LRN-SQL` | `Critical` | `IN_PROGRESS` | Vite WASM build packaging & 222+ test suite full Excel/SQL regression pass |
+| `LRN-SQL-4.8D-GATE` | Production WASM Build & Full Regression Gate | `LRN-SQL` | `Critical` | `DONE` | Vite WASM build packaging & 222+ test suite full Excel/SQL regression pass |
+| `GAM-XP-5.1-LEVELING` | Leveling Engine & XP Calculator | `GAME` | `Critical` | `IN_PROGRESS` | Level formula, cumulative XP calculation & Level Up Modal animation |
 
 ---
 

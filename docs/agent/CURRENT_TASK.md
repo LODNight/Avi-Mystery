@@ -3,44 +3,39 @@
 ## Identification
 
 - Project: Avi-Mystery
-- Sprint: 4
-- Step: 4.8C
-- Task ID: LRN-SQL-4.8C-UI
+- Sprint: 5
+- Step: 5.1
+- Task ID: GAM-XP-5.1-LEVELING
 - Status: IN_PROGRESS
-- Primary Module: LRN-SQL
+- Primary Module: GAME
 
 ## Gate Before This Task
 
-- Step 4.8A Query Security Policy & Resource Limits Guard is DONE.
-- Step 4.8B Web Worker & Database Lifecycle Cleanup is DONE.
-- Full unit test suite passing.
+- Sprint 4 (SQL Vertical Slice) is 100% COMPLETED (Step 4.0 - 4.8D).
+- All unit tests and regression gates pass.
 
 ## Goal
 
-Execute **Step 4.8C (Responsive Design & Light/Dark Theme Polish)**:
-1. **Light/Dark Theme Fidelity**: Verify color tokens (`bg-card`, `border-stone-200/80`, `text-stone-800/200`, `amber-500`) across `SqlEditor`, `SchemaBrowser`, `ResultViewer`, and `MissionResultModal`.
-2. **Responsive Layout Adaptation**: Ensure single-column stacking (`grid-cols-1`) on Mobile/Tablet and 2-column layout on Desktop (`lg:grid-cols-[minmax(0,1fr)_380px]`).
-3. **Table & Editor Scroll Containers**: Verify horizontal table scrolling (`overflow-x-auto`) in `ResultViewer` and `SchemaBrowser`, and set responsive minimum height for `SchemaBrowser` on mobile.
+Execute **Step 5.1 (Leveling Engine & XP System)**:
+1. **Leveling Formula & Engine**: Build a pure, deterministic utility `levelingEngine.js` calculating level (Level 1 to 50), XP required for next level, and title progression (e.g. "Tập sự", "Trinh thám tập sự", "Thám tử tư", "Siêu thám tử").
+2. **Progress Integration**: Connect submission XP rewards to cumulative XP progression.
+3. **Level Up Modal & Animation**: Design visual level-up popups and progress indicators in the UI.
 
 ## In Scope
 
-- `src/components/sql/SchemaBrowser.jsx`
-- `src/components/sql/SqlEditor.jsx`
-- `src/components/sql/ResultViewer.jsx`
-- `src/pages/learner/SqlMissionPage.jsx`
+- `src/utils/game/levelingEngine.js` (NEW)
+- `src/utils/game/levelingEngine.test.js` (NEW)
 - Documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`, `CURRENT_TASK.md`).
 
 ## Out of Scope
 
-- Production WASM build packaging & Vercel deployment gate (handled in Step 4.8D).
-- Sprint 5 Game Progress System.
+- Auto unlock lesson map logic (handled in Step 5.2).
+- Profile page & Achievements (handled in Step 5.3).
 
 ## Allowed Write Paths
 
-- `src/components/sql/SchemaBrowser.jsx`
-- `src/components/sql/SqlEditor.jsx`
-- `src/components/sql/ResultViewer.jsx`
-- `src/pages/learner/SqlMissionPage.jsx`
+- `src/utils/game/levelingEngine.js`
+- `src/utils/game/levelingEngine.test.js`
 - `docs/agent/CURRENT_TASK.md`
 - `docs/CHECKLIST.md`
 - `docs/ROADMAP.md`
@@ -50,17 +45,15 @@ Execute **Step 4.8C (Responsive Design & Light/Dark Theme Polish)**:
 ## Forbidden Paths
 
 - `src/pages/admin/`
-- `src/components/excel/SpreadsheetGrid.jsx`
 
 ## Acceptance Criteria
 
-- [x] SchemaBrowser has responsive `min-h-[320px] lg:min-h-0` layout adaptation for mobile viewports.
-- [x] SqlEditor uses 14px mono font size (preventing mobile zoom) with responsive buttons.
-- [x] ResultViewer table scroll container supports `overflow-x-auto` for high column count.
-- [x] All 4 SQL workspace components display harmoniously in both Light Mode and Dark Mode (Detective Amber).
+- [ ] Deterministic XP to Level calculation supporting Level 1 - 50.
+- [ ] Comprehensive unit tests for leveling formula and title progression.
+- [ ] Level Up event state returned cleanly for progress gateway integration.
 
 ## Test Commands
 
 ```bash
-npx vitest run
+npx vitest run src/utils/game/levelingEngine.test.js
 ```

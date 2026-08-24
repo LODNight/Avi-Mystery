@@ -199,16 +199,16 @@
 - [x] Tinh chỉnh hiển thị giao diện chuẩn đẹp trong 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
 - [x] Tinh chỉnh giao diện đáp ứng linh hoạt (Responsive Layout) trên các thiết bị Mobile, Tablet và Desktop (tối ưu hóa thanh cuộn và ô bảng).
 
-### 🔹 Step 4.8D: Production WASM Build & Full Regression Gate *(ĐANG THỰC HIỆN)*
-- [ ] Chạy `npm run build` và `npm run preview` xác minh đóng gói file `.wasm` và Web Worker không bị lỗi MIME type hay 404 trên Vercel.
-- [ ] Chạy full Vitest suite (tất cả 30+ test files / 222+ test cases pass 100%).
-- [ ] Kiểm tra luồng Happy Path E2E từ `/map` ➔ `/missions/mission-010` ➔ `/missions/mission-010/sql` ➔ Run ➔ Submit ➔ Modal thành công.
+### 🔹 Step 4.8D: Production WASM Build & Full Regression Gate *(HOÀN THÀNH)*
+- [x] Chạy `npm run build` và `npm run preview` xác minh đóng gói file `.wasm` và Web Worker không bị lỗi MIME type hay 404 trên Vercel.
+- [x] Chạy full Vitest suite (tất cả 30+ test files / 222+ test cases pass 100%).
+- [x] Kiểm tra luồng Happy Path E2E từ `/map` ➔ `/missions/mission-010` ➔ `/missions/mission-010/sql` ➔ Run ➔ Submit ➔ Modal thành công.
 
 ---
 
-## ⚪ Sprint 5 — Game Progress System *(Dự kiến)*
+## 🟡 Sprint 5 — Game Progress System *(ĐANG THỰC HIỆN)*
 
-### 🔹 Step 5.1: Hệ Thống XP & Thăng Cấp (Leveling Engine)
+### 🔹 Step 5.1: Hệ Thống XP & Thăng Cấp (Leveling Engine) *(ĐANG THỰC HIỆN)*
 - [ ] Hệ thống tính toán điểm XP tích lũy & công thức thăng cấp (Level Up Formula)
 - [ ] Hiệu ứng hoạt họa khi thăng cấp & nhận danh hiệu mới (Level Up Modal & Animation)
 

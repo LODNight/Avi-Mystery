@@ -7,20 +7,21 @@
 
 ## 1. Tổng Quan Tiến Độ Sprint 4
 
-* **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
-* **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.8C.
-* **Step hiện tại:** Step 4.8D — Production WASM Build & Full Regression Gate (`IN_PROGRESS`).
-* **Step kế tiếp:** Sprint 5 — Game Progress System (`PLANNED`).
-* **Trạng thái Sprint:** `ĐÓNG GÓI PRODUCTION BUILD WASM & KIỂM THỬ TOÀN DIỆN REGRESSION GATE (STEP 4.8D)`.
+* **Sprint Hiện Tại:** Sprint 5 — Game Progress System & Gamification
+* **Sprint Goal:** Tích hợp cơ chế game hóa (XP, Leveling Engine, Unlock Bài học tự động, Chuỗi Streak counter, Hồ sơ Cá nhân & Bảng Thành tựu).
+* **Step đã hoàn thành:** Step 1.1–4.8D (Hoàn tất 100% Sprint 4).
+* **Step hiện tại:** Step 5.1 — Leveling Engine & XP System (`IN_PROGRESS`).
+* **Step kế tiếp:** Step 5.2 — Auto Unlock Lessons & Streak System (`PLANNED`).
+* **Trạng thái Sprint:** `BẮT ĐẦU SPRINT 5: THIẾT KẾ HỆ THỐNG XP & THĂNG CẤP HỌC VIÊN (STEP 5.1)`.
 
 ---
 
-## 2. Bảng Trạng Thái Sprint Hiện Tại (Sprint 4)
+## 2. Bảng Trạng Thái Sprint Hiện Tại (Sprint 5)
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Production WASM Build & Full Regression Gate | `IN_PROGRESS / Step 4.8D` |
+| **Game Progress (`GAME`)** | `Primary` | Leveling Engine & XP System | `IN_PROGRESS / Step 5.1` |
+| **Learner SQL (`LRN-SQL`)** | `Supporting` | SQL Workspace Core & Security Gate | `DONE / Step 4.8D` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & SQL Tool Extension | `DONE / Step 4.7` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |

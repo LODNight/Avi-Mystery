@@ -42,6 +42,19 @@ export function SqlEditor({
   className = '',
 }) {
   const textareaRef = useRef(null)
+  const overlayRef = useRef(null)
+  const lineNumbersRef = useRef(null)
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollLeft } = e.target
+    if (overlayRef.current) {
+      overlayRef.current.scrollTop = scrollTop
+      overlayRef.current.scrollLeft = scrollLeft
+    }
+    if (lineNumbersRef.current) {
+      lineNumbersRef.current.scrollTop = scrollTop
+    }
+  }
 
   const handleKeyDown = (e) => {
     // 1. Ctrl+Enter or Cmd+Enter to Run query
@@ -126,7 +139,10 @@ export function SqlEditor({
       {/* Code Textarea Area with Line Numbers preview & Syntax Highlight overlay */}
       <div className="relative flex-1 min-h-[18rem] bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 font-mono text-sm leading-6 flex overflow-hidden">
         {/* Line Numbers Column */}
-        <div className="select-none py-4 pl-3 pr-2 text-right text-stone-400 dark:text-stone-600 bg-stone-100/80 dark:bg-stone-900/50 text-xs font-mono border-r border-stone-200 dark:border-stone-800/80 min-w-[2.5rem] shrink-0">
+        <div
+          ref={lineNumbersRef}
+          className="select-none py-4 pl-3 pr-2 text-right text-stone-400 dark:text-stone-600 bg-stone-100/80 dark:bg-stone-900/50 text-xs font-mono border-r border-stone-200 dark:border-stone-800/80 min-w-[2.5rem] shrink-0 overflow-hidden"
+        >
           {Array.from({ length: Math.max(lineCount, 8) }).map((_, i) => (
             <div key={i} className="h-6 leading-6">
               {i + 1}
@@ -138,8 +154,10 @@ export function SqlEditor({
         <div className="relative flex-1 overflow-hidden">
           {/* Syntax Highlight Overlay */}
           <div
+            ref={overlayRef}
             className="absolute inset-0 p-4 pointer-events-none whitespace-pre font-mono text-sm leading-6 select-none overflow-hidden"
             aria-hidden="true"
+            style={{ tabSize: 2, MozTabSize: 2 }}
           >
             {lines.map((line, i) => (
               <div key={i} className="h-6 leading-6">
@@ -155,11 +173,13 @@ export function SqlEditor({
             value={value}
             onChange={(e) => onChange && onChange(e.target.value)}
             onKeyDown={handleKeyDown}
+            onScroll={handleScroll}
             disabled={disabled || isRunning}
             aria-label="Khung soạn thảo câu lệnh SQL"
             placeholder="-- Nhập câu lệnh SQL tại đây (Ví dụ: SELECT * FROM sales;)"
             spellCheck={false}
-            className="absolute inset-0 w-full h-full resize-none bg-transparent p-4 font-mono text-sm leading-6 text-transparent caret-amber-600 dark:caret-amber-400 placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 selection:bg-amber-500/20 dark:selection:bg-amber-500/30 overflow-auto"
+            style={{ WebkitTextFillColor: 'transparent', tabSize: 2, MozTabSize: 2 }}
+            className="absolute inset-0 w-full h-full resize-none bg-transparent p-4 font-mono text-sm leading-6 whitespace-pre caret-amber-600 dark:caret-amber-400 placeholder:text-stone-400 dark:placeholder:text-stone-600 focus:outline-none focus:ring-2 focus:ring-amber-500/40 selection:bg-amber-500/20 dark:selection:bg-amber-500/30 overflow-auto"
           />
         </div>
       </div>

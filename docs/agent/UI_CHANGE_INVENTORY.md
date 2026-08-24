@@ -29,6 +29,9 @@ Không có một commit duy nhất được xác nhận là baseline trước to
 | `UI-012` | `/profile` và `/achievements` đã có placeholder route | Learner placeholders | `GAME` | No | No | Future Sprint 5 | Planned — Early Prototype | `src/app/router/index.jsx` |
 | `UI-013` | Admin content routes đã có placeholder | Admin placeholders | `ADM` | No | No | Future Sprint 6 | Planned — Early Prototype | `src/app/router/index.jsx` |
 | `UI-014` | `/admin/analytics` đã có placeholder | Admin Analytics placeholder | `ANL` | No | No | Future Sprint 8 | Planned — Early Prototype | `src/app/router/index.jsx` |
+| `UI-015` | Schema Browser Component (Table/Column metadata, type badges, search, 3-row data sample) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.2` | Tested | `src/components/sql/SchemaBrowser.jsx`; `SchemaBrowser.test.jsx` |
+| `UI-016` | SQL Mission Page Shell, loader, dataset initialization & route (`/missions/:missionId/sql`) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.3` | Tested | `src/pages/learner/SqlMissionPage.jsx`; `SqlMissionPage.test.jsx` |
+| `UI-017` | Controlled SQL Editor MVP Component (`SqlEditor.jsx`, Reset/Run, soft Tab 2-spaces, Ctrl+Enter) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.4` | Tested | `src/components/sql/SqlEditor.jsx`; `SqlEditor.test.jsx` |
 
 ## Step 3.4E Completion
 
@@ -44,12 +47,18 @@ Các mục trên đã được xác minh và Step 3.4E đã hoàn thành. Submis
 
 - `3.5A–E`: hoàn thành; các risk còn lại được khép trong Step 3.6G.
 
+## Step 4.0-4.4 Completion
+
+- `Step 4.0–4.4`: Hoàn thành. Đã có SQLite WASM Worker engine, Schema Browser, SQL Mission Shell (`/missions/:missionId/sql`), và SQL Editor MVP.
+- **Light Mode Refinement (Dashboard)**:
+  - Khối "Data Investigator": Chuyển từ nền cam đặc (`bg-primary` solid fill) sang nền trắng/card thanh thoát với viền cam (`border-2 border-amber-500/30 bg-card`), huy hiệu `Award` màu cam bắt mắt, và thanh tiến trình `bg-amber-500/15`, nhường lại sự tập trung cho khối hành động "Trở lại vụ án gần nhất".
+  - Nâng cấp độ tương phản (WCAG AA/AAA) cho tất cả text phụ ("Chương 1 · Excel Foundations...", "Nhiệm vụ tiếp theo: Truy vấn bảng dữ liệu SQL") từ `text-muted-foreground` nhạt sang `text-slate-600 dark:text-slate-400 font-medium`.
+
 ## Future Sprint Candidates
 
 - `/profile`, `/achievements`: Early Prototype cho Sprint 5; chưa có Game Progress domain.
 - Admin course/chapter/mission/dataset placeholders: Early Prototype cho Sprint 6; chưa có Content Builder.
 - `/admin/analytics`: Early Prototype cho Sprint 8; chưa có analytics implementation.
-- Không có SQL learner UI; Step 4.0 chỉ thêm engine/Worker và browser harness cô lập, không thêm product route/navigation.
 
 ## Business Flow Verification
 

@@ -62,8 +62,8 @@ Task `BE-SUB-001` cũ được thay bằng `LRN-SUB-3.4` để phản ánh đún
 | `LRN-SQL-4.1B-LIFECYCLE` | Database Lifecycle, Seed, Reset & Schema API | `LRN-SQL` | `High` | `DONE` | `getSchema` + `sampleRows`, deterministic seed/reset, lifecycle test 7/7, dataset validation 8/8, SQL 27/27 pass |
 | `LRN-SQL-4.1C-POLICY` | Read-only Policy, Timeout & Row Limit | `LRN-SQL` | `Critical` | `DONE` | Single read-only statement, recovery, mutation/DDL guard và resource limits verified |
 | `LRN-SQL-4.2-SCHEMA` | Schema Browser | `LRN-SQL` | `High` | `DONE` | Accessible table/column metadata, sample rows and component states verified |
-| `LRN-SQL-4.3-SHELL` | SQL Mission Shell, Loader & Route | `LRN-SQL` | `High` | `IN_PROGRESS` | Typed SQL content gateway, lifecycle cleanup, isolated route and Excel regression gate |
-| `LRN-SQL-4.4-EDITOR` | SQL Editor MVP | `LRN-SQL` | `Medium` | `TODO` | Controlled editor; advanced CodeMirror features gated |
+| `LRN-SQL-4.3-SHELL` | SQL Mission Shell, Loader & Route | `LRN-SQL` | `High` | `DONE` | Typed SQL content gateway, lifecycle cleanup, isolated route `/missions/:missionId/sql` and Excel regression gate |
+| `LRN-SQL-4.4-EDITOR` | SQL Editor MVP | `LRN-SQL` | `Medium` | `DONE` | Controlled editor (`SqlEditor.jsx`), starter query, Reset/Run, Tab soft 2-spaces, Ctrl+Enter keyboard shortcut |
 | `LRN-SQL-4.5-RESULTS` | Query Execution & Result Viewer | `LRN-SQL` | `High` | `TODO` | Run states, error mapping, result table và pagination |
 | `LRN-SQL-4.6-CHECKER` | SQL Result Checker | `LRN-SQL` | `Critical` | `TODO` | Order/NULL/duplicate/tolerance-aware comparator |
 | `LRN-SUB-4.7-SQL` | SQL Submission Integration | `LRN-SUB` | `Critical` | `TODO` | Dùng shared submission contract/gateway; không mutate XP |

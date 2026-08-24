@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   ChevronRight,
   Zap,
+  Award,
   MoreHorizontal,
   BookOpen,
   CheckCircle2,
@@ -52,14 +53,14 @@ export function DashboardPage() {
       {/* ── Section 1: Learning Pulse Header ── */}
       <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div>
-          <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground capitalize">
+          <p className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 capitalize">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
             {formattedDate}
           </p>
           <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
             Chào mừng nhà điều tra, {user?.name?.split(' ').pop() || 'bạn'} 👋
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
             Tiến độ nhỏ mỗi ngày tạo nên đột phá lớn. Bạn đang tích lũy kỹ năng phân tích dữ liệu qua từng vụ án.
           </p>
         </div>
@@ -109,7 +110,7 @@ export function DashboardPage() {
         <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6 flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
                 Tiếp tục cuộc điều tra
               </p>
               <h3 className="mt-2 text-xl font-bold text-foreground">Trở lại vụ án gần nhất</h3>
@@ -136,7 +137,7 @@ export function DashboardPage() {
               <div className="mt-3 h-2 overflow-hidden rounded-full bg-background">
                 <div className="h-full w-[72%] rounded-full bg-primary" />
               </div>
-              <p className="mt-2 text-xs text-muted-foreground">
+              <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
                 Chương 1 · Excel Foundations (Phân tích dữ liệu kinh doanh)
               </p>
             </div>
@@ -150,41 +151,41 @@ export function DashboardPage() {
           </div>
 
           <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-            <p className="text-xs text-muted-foreground">
-              Nhiệm vụ tiếp theo: <span className="font-medium text-foreground">Truy vấn bảng dữ liệu SQL</span>
+            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+              Nhiệm vụ tiếp theo: <span className="font-semibold text-foreground">Truy vấn bảng dữ liệu SQL</span>
             </p>
             <ChevronRight className="size-4 text-muted-foreground" />
           </div>
         </div>
 
         {/* Quest Progress Level Card */}
-        <div className="rounded-3xl bg-primary p-6 text-primary-foreground shadow-lg shadow-primary/10 flex flex-col justify-between">
+        <div className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors">
           <div>
             <div className="flex items-start justify-between">
-              <div className="grid size-11 place-items-center rounded-2xl bg-primary-foreground/15">
-                <Zap className="size-5 fill-current" />
+              <div className="grid size-11 place-items-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                <Award className="size-6 text-amber-500" />
               </div>
-              <span className="rounded-full bg-primary-foreground/15 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest">
+              <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
                 Cấp {user?.level || 1}
               </span>
             </div>
-            <p className="mt-8 font-mono text-[10px] font-bold uppercase tracking-[0.18em] opacity-80">
+            <p className="mt-6 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
               Tiến trình danh hiệu
             </p>
-            <h3 className="mt-2 text-2xl font-bold">Data Investigator</h3>
-            <p className="mt-2 text-sm leading-6 opacity-85">
-              Còn {formatXP((user?.xpToNextLevel || 1000) - (user?.xp || 0))} để mở khóa danh hiệu kế tiếp.
+            <h3 className="mt-1.5 text-2xl font-bold text-foreground">Data Investigator</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
+              Còn <span className="font-semibold text-foreground">{formatXP((user?.xpToNextLevel || 1000) - (user?.xp || 0))}</span> để mở khóa danh hiệu kế tiếp.
             </p>
           </div>
 
           <div className="mt-6">
-            <div className="h-2.5 overflow-hidden rounded-full bg-primary-foreground/20">
+            <div className="h-2.5 overflow-hidden rounded-full bg-amber-500/15">
               <div
-                className="h-full rounded-full bg-primary-foreground transition-all duration-300"
+                className="h-full rounded-full bg-amber-500 transition-all duration-300"
                 style={{ width: `${xpPercent}%` }}
               />
             </div>
-            <div className="mt-2 flex justify-between font-mono text-[10px] opacity-80">
+            <div className="mt-2 flex justify-between font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-400">
               <span>{formatXP(user?.xp || 0)}</span>
               <span>{formatXP(user?.xpToNextLevel || 1000)}</span>
             </div>

@@ -19,9 +19,11 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 - DONE — Step 4.1B: Database Lifecycle, Seed, Reset & Schema API
 - DONE — Step 4.1C: Read-only Query Policy, Timeout & Row Limit
 - DONE — Step 4.2: Schema Browser
-- IN_PROGRESS — Step 4.3: SQL Mission Shell, Loader & Route
+- DONE — Step 4.3: SQL Mission Shell, Loader & Route (`/missions/:missionId/sql`)
+- DONE — Step 4.4: SQL Editor MVP (`SqlEditor.jsx`)
+- PLANNED — Step 4.5: Query Execution & Result Viewer
 - Related Sprint: 4
-- Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/workers/sql/`
+- Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/workers/sql/`, `src/pages/learner/SqlMissionPage.jsx`
 
 ## Proposed Public Interfaces
 
@@ -84,7 +86,7 @@ Fake adapter unit tests; Worker/WASM browser integration; engine isolation; read
 
 ## Known Risks
 
-- `sql.js@1.14.2` và spike source đã có; product route/UI vẫn chưa tồn tại theo boundary Step 4.0.
+- `sql.js@1.14.2` WASM engine, dedicated Worker, Schema Browser, product route (`/missions/:missionId/sql`), và SQL Editor MVP (`SqlEditor.jsx`) đã hoàn thiện trong Step 4.0–4.4.
 - JSDOM không đại diện đầy đủ cho Worker/WASM; cần browser integration riêng.
 - Read-only parsing, hard timeout/recovery và result equivalence (`NULL`, duplicate, order, tolerance) là các vùng risk cao.
 - Editor dependency và route integration có thể làm tăng bundle hoặc ảnh hưởng Excel nếu không lazy-load/test boundary.

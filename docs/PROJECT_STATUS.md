@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser UI component | `DONE / Step 4.2` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser & SQL Editor MVP | `DONE / Step 4.4` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |
@@ -58,3 +58,5 @@ Các ID `BE-*` ở Sprint 1–2 là legacy IDs của frontend mock adapters; kh�
 | `LRN-SQL-4.1B` | `LRN` | SQL | Database Lifecycle, Seed, Reset & Schema API (`getSchema` + `sampleRows`, deterministic reset, lifecycle/validation tests) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlDatabaseLifecycle.test.js`, `src/workers/sql/sqlEngine.worker.js` |
 | `LRN-SQL-4.1C` | `LRN` | SQL | Read-only Query Policy, Timeout & Row Limit (10 DDL/mutation keywords guard, worker recovery on timeout, maxRows truncation) | Sprint 4 | `DONE` | Pass | `src/utils/sql/sqlQueryPolicy.js`, `src/utils/sql/sqlEngineAdapter.js` |
 | `LRN-SQL-4.2` | `LRN` | SQL | Schema Browser Component (Table/column metadata, type badge, primary key indicator, copy identifier, sample rows preview) | Sprint 4 | `DONE` | Pass | `src/components/sql/SchemaBrowser.jsx`, `src/components/sql/SchemaBrowser.test.jsx` |
+| `LRN-SQL-4.3` | `LRN` | SQL | SQL Mission Shell, Loader & Isolated Route (`/missions/:missionId/sql`, dataset isolation, lifecycle cleanup) | Sprint 4 | `DONE` | Pass | `src/pages/learner/SqlMissionPage.jsx`, `src/services/mock/mockSqlMissionService.js` |
+| `LRN-SQL-4.4` | `LRN` | SQL | Controlled SQL Code Editor MVP Component (`SqlEditor.jsx`, starter query, Reset/Run, Tab soft 2-spaces, Ctrl+Enter) | Sprint 4 | `DONE` | Pass | `src/components/sql/SqlEditor.jsx`, `src/components/sql/SqlEditor.test.jsx` |

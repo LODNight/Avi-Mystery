@@ -6,7 +6,7 @@ Trạng thái phản ánh source đã xác minh, không phản ánh riêng check
 |---|---|---|---|---|---|
 | `LRN-EXCEL` | Excel Learning | Existing; Step 3.6G stabilization Done | `src/components/excel/`; `src/pages/learner/ExcelMissionPage*`; `src/utils/excelChecker*` | SHR, LRN-SUB | 1–3.6G |
 | `LRN-SUB` | Submission & Feedback | Existing; Step 3.4E Done | `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submit flow trong `ExcelMissionPage*`; `MissionResultModal*`; `ActionToolbar*` | LRN-EXCEL, SHR | 3.4–3.4E |
-| `LRN-SQL` | SQL Learning | Existing foundation; Step 4.0 Done | Engine/policy ở `src/utils/sql/`; Worker ở `src/workers/sql/`; deterministic seed ở `src/mocks/data/sql/`; chưa có product UI/route | SHR, LRN-SUB | 4.0–4.8 |
+| `LRN-SQL` | SQL Learning | Existing; Step 4.4 Done | Engine/policy ở `src/utils/sql/`; Worker ở `src/workers/sql/`; SchemaBrowser/SqlEditor ở `src/components/sql/`; `src/pages/learner/SqlMissionPage*`; isolated route `/missions/:missionId/sql` | SHR, LRN-SUB | 4.0–4.8 |
 | `GAME` | Game Progress | Partial | Chưa có module riêng; XP/level fields hiện chỉ nằm ở `authService`/auth mock, không do Submission mutate | LRN-SUB, SHR | 5 |
 | `ADM` | Admin Content | Partial | `src/pages/admin/`; `src/app/layouts/AdminLayout.jsx`; content routes hiện là placeholder | SHR | 6 |
 | `BE` | Backend API | Planned | `src/services/api/index.js` chỉ là frontend API stub; không có backend source | SHR contracts | 7 |
@@ -39,7 +39,7 @@ flowchart LR
 | Learner Excel | `/missions/:missionId/workspace` → `ExcelMissionPage` | Existing |
 | Learner navigation | `LearnerLayout` active state, gồm `/missions/*` → `/map` | Existing; segment-boundary test pass |
 | Learner mission | `/missions/:missionId` → `MissionIntroPage` | Existing |
-| Learner SQL | Chưa có route; route được chốt ở Step 4.3 sau engine/policy gates | Planned |
+| Learner SQL | `/missions/:missionId/sql` → `SqlMissionPage` | Existing |
 | Game | `/profile`, `/achievements` | Placeholder |
 | Admin shell | `/admin`, `/admin/pages`, `/admin/settings` | Existing |
 | Admin content | `/admin/courses`, `/admin/chapters`, `/admin/missions`, `/admin/datasets` | Placeholder |

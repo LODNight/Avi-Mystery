@@ -193,8 +193,8 @@
     "chapterId": "ch-004",
     "courseId": "course-002",
     "title": "Khám phá dữ liệu bán hàng",
-    "story": "Bạn vừa được tuyển làm Data Analyst cho một công ty bán lẻ. Nhiệm vụ đầu tiên: xem qua dữ liệu bán hàng để hiểu cấu trúc và nội dung.",
-    "objective": "Viết câu SELECT cơ bản để xem toàn bộ bảng sales và lọc theo cột cụ thể.",
+    "story": "Bạn vừa được tuyển làm Data Analyst cho một công ty bán lẻ. Nhiệm vụ đầu tiên: xem qua toàn bộ dữ liệu bán hàng để hiểu cấu trúc và thông tin các đơn hàng.",
+    "objective": "Viết câu SELECT * FROM sales; để chọn tất cả các cột và dòng trong bảng sales.",
     "tool": "sql",
     "difficulty": "easy",
     "estimatedDuration": 15,
@@ -205,7 +205,7 @@
     "version": 1,
     "starterContent": {
       "starterSql": "-- Hãy xem toàn bộ dữ liệu trong bảng sales\nSELECT * FROM sales;",
-      "hint": "Dùng SELECT cột1, cột2 FROM bảng để chọn cột cụ thể"
+      "hint": "Gõ SELECT * FROM sales; để xem toàn bộ bảng sales."
     }
   },
   {
@@ -213,8 +213,8 @@
     "chapterId": "ch-004",
     "courseId": "course-002",
     "title": "Tìm đơn hàng có giá trị cao",
-    "story": "Giám đốc muốn review lại các đơn hàng có giá trị lớn. Hãy lọc ra các đơn hàng trên 5 triệu đồng.",
-    "objective": "Dùng WHERE để lọc đơn hàng có revenue > 5,000,000.",
+    "story": "Giám đốc muốn xem lại danh sách các đơn hàng có giá trị lớn. Hãy lọc ra các đơn hàng có doanh thu (revenue) trên 5 triệu đồng.",
+    "objective": "Dùng mệnh đề WHERE để lọc các đơn hàng có revenue > 5,000,000.",
     "tool": "sql",
     "difficulty": "easy",
     "estimatedDuration": 15,
@@ -224,8 +224,8 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "-- Lọc đơn hàng có doanh thu cao\nSELECT * FROM sales\nWHERE -- thêm điều kiện của bạn ở đây",
-      "hint": "WHERE revenue > 5000000"
+      "starterSql": "-- Lọc các đơn hàng có doanh thu trên 5 triệu\nSELECT * FROM sales\nWHERE revenue > 5000000;",
+      "hint": "Thêm điều kiện WHERE revenue > 5000000 vào câu SQL."
     }
   },
   {
@@ -233,8 +233,8 @@
     "chapterId": "ch-004",
     "courseId": "course-002",
     "title": "Sản phẩm nào chúng ta đang bán?",
-    "story": "Phòng marketing cần danh sách đầy đủ các sản phẩm hiện đang được bán, không trùng lặp.",
-    "objective": "Dùng DISTINCT để lấy danh sách sản phẩm không trùng.",
+    "story": "Phòng marketing cần danh sách đầy đủ tên các sản phẩm đang được bán trong hệ thống, loại bỏ các tên sản phẩm trùng lặp.",
+    "objective": "Dùng từ khóa DISTINCT để lấy danh sách tên sản phẩm (product_name) không trùng lặp.",
     "tool": "sql",
     "difficulty": "easy",
     "estimatedDuration": 10,
@@ -244,17 +244,17 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "-- Lấy danh sách sản phẩm không trùng lặp\nSELECT -- thêm DISTINCT ở đây\nFROM sales;",
-      "hint": "SELECT DISTINCT product_name FROM sales"
+      "starterSql": "-- Lấy danh sách sản phẩm không trùng lặp\nSELECT DISTINCT product_name FROM sales;",
+      "hint": "SELECT DISTINCT product_name FROM sales;"
     }
   },
   {
     "id": "mission-013",
     "chapterId": "ch-005",
     "courseId": "course-002",
-    "title": "Chi nhánh nào đang hoạt động kém?",
-    "story": "CEO yêu cầu một báo cáo chi tiết về hiệu suất từng chi nhánh. Bạn cần tính tổng doanh thu theo từng chi nhánh và xếp hạng chúng.",
-    "objective": "Dùng GROUP BY để tính tổng doanh thu theo branch, sắp xếp từ thấp đến cao.",
+    "title": "Doanh thu theo từng chi nhánh",
+    "story": "CEO yêu cầu báo cáo tổng doanh thu của từng chi nhánh. Bạn cần gom nhóm theo chi nhánh và tính tổng doanh thu, sắp xếp tổng doanh thu tăng dần.",
+    "objective": "Dùng GROUP BY branch và ORDER BY total_revenue ASC để tính tổng doanh thu theo chi nhánh.",
     "tool": "sql",
     "difficulty": "medium",
     "estimatedDuration": 25,
@@ -264,7 +264,7 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "-- Tổng doanh thu theo chi nhánh\nSELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\n-- GROUP BY ở đây\n-- ORDER BY ở đây",
+      "starterSql": "-- Tính tổng doanh thu theo chi nhánh và sắp xếp tăng dần\nSELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY branch\nORDER BY total_revenue ASC;",
       "hint": "GROUP BY branch ORDER BY total_revenue ASC"
     }
   },
@@ -273,8 +273,8 @@
     "chapterId": "ch-005",
     "courseId": "course-002",
     "title": "Chi nhánh nào dưới chỉ tiêu?",
-    "story": "Chỉ tiêu doanh thu mỗi chi nhánh là 50 triệu/tháng. Cần tìm các chi nhánh chưa đạt.",
-    "objective": "Dùng HAVING để lọc chi nhánh có tổng doanh thu < 50,000,000.",
+    "story": "Chỉ tiêu doanh thu tối thiểu của mỗi chi nhánh là 18 triệu đồng. Hãy lọc ra các chi nhánh có tổng doanh thu chưa đạt 18 triệu đồng.",
+    "objective": "Dùng HAVING SUM(revenue) < 18,000,000 sau khi GROUP BY branch để tìm các chi nhánh chưa đạt chỉ tiêu.",
     "tool": "sql",
     "difficulty": "medium",
     "estimatedDuration": 25,
@@ -284,17 +284,17 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "SELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY branch\n-- Thêm HAVING ở đây để lọc chi nhánh dưới chỉ tiêu",
-      "hint": "HAVING SUM(revenue) < 50000000"
+      "starterSql": "SELECT branch,\n       SUM(revenue) AS total_revenue\nFROM sales\nGROUP BY branch\nHAVING SUM(revenue) < 18000000;",
+      "hint": "HAVING SUM(revenue) < 18000000"
     }
   },
   {
     "id": "mission-015",
     "chapterId": "ch-005",
     "courseId": "course-002",
-    "title": "Top 5 sản phẩm bán chạy",
-    "story": "Phòng supply chain cần biết 5 sản phẩm bán chạy nhất để ưu tiên nhập hàng.",
-    "objective": "Dùng COUNT, GROUP BY và LIMIT để tìm top 5 sản phẩm.",
+    "title": "Top 2 sản phẩm bán nhiều đơn nhất",
+    "story": "Phòng vận hành cần tìm 2 sản phẩm xuất hiện nhiều nhất trong các đơn hàng để ưu tiên kiểm kê hàng tồn kho.",
+    "objective": "Dùng COUNT, GROUP BY product_name, ORDER BY order_count DESC và LIMIT 2 để tìm top 2 sản phẩm.",
     "tool": "sql",
     "difficulty": "medium",
     "estimatedDuration": 20,
@@ -304,8 +304,8 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "SELECT product_name,\n       COUNT(*) AS order_count\nFROM sales\n-- GROUP BY ở đây\n-- ORDER BY ở đây\n-- LIMIT ở đây",
-      "hint": "GROUP BY product_name ORDER BY order_count DESC LIMIT 5"
+      "starterSql": "SELECT product_name,\n       COUNT(*) AS order_count\nFROM sales\nGROUP BY product_name\nORDER BY order_count DESC\nLIMIT 2;",
+      "hint": "GROUP BY product_name ORDER BY order_count DESC LIMIT 2"
     }
   },
   {
@@ -313,8 +313,8 @@
     "chapterId": "ch-006",
     "courseId": "course-002",
     "title": "Ai là khách hàng của chúng ta?",
-    "story": "Database có hai bảng riêng: orders và customers. Bạn cần kết hợp để lấy tên khách hàng và giá trị đơn hàng của họ.",
-    "objective": "Dùng INNER JOIN để kết hợp bảng orders với bảng customers.",
+    "story": "Database có hai bảng: orders và customers. Bạn cần kết hợp hai bảng để hiển thị tên khách hàng (name) và giá trị đơn hàng (order_value).",
+    "objective": "Dùng INNER JOIN kết hợp bảng orders với customers qua orders.customer_id = customers.id.",
     "tool": "sql",
     "difficulty": "hard",
     "estimatedDuration": 30,
@@ -324,17 +324,17 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "SELECT customers.name,\n       orders.order_value\nFROM orders\n-- JOIN bảng customers ở đây",
-      "hint": "INNER JOIN customers ON orders.customer_id = customers.id"
+      "starterSql": "SELECT customers.name,\n       orders.order_value\nFROM orders\nJOIN customers ON orders.customer_id = customers.id;",
+      "hint": "JOIN customers ON orders.customer_id = customers.id"
     }
   },
   {
     "id": "mission-017",
     "chapterId": "ch-006",
     "courseId": "course-002",
-    "title": "Khách hàng nào chưa mua hàng?",
-    "story": "Marketing muốn liên hệ lại những khách hàng đã đăng ký nhưng chưa từng mua hàng để gửi offer đặc biệt.",
-    "objective": "Dùng LEFT JOIN + IS NULL để tìm khách hàng chưa có đơn hàng.",
+    "title": "Khách hàng nào chưa từng mua hàng?",
+    "story": "Phòng Marketing muốn tìm những khách hàng đã đăng ký tài khoản nhưng chưa từng phát sinh đơn hàng nào để gửi ưu đãi thu hút.",
+    "objective": "Dùng LEFT JOIN giữa customers và orders, kết hợp điều kiện WHERE orders.id IS NULL.",
     "tool": "sql",
     "difficulty": "hard",
     "estimatedDuration": 30,
@@ -344,7 +344,7 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "SELECT customers.name, customers.email\nFROM customers\n-- LEFT JOIN orders ở đây\nWHERE -- điều kiện tìm khách chưa mua hàng",
+      "starterSql": "SELECT customers.name, customers.email\nFROM customers\nLEFT JOIN orders ON customers.id = orders.customer_id\nWHERE orders.id IS NULL;",
       "hint": "LEFT JOIN orders ON customers.id = orders.customer_id WHERE orders.id IS NULL"
     }
   },
@@ -352,9 +352,9 @@
     "id": "mission-018",
     "chapterId": "ch-006",
     "courseId": "course-002",
-    "title": "Báo cáo điều tra tổng thể",
-    "story": "Đây là vụ án cuối cùng. Bạn cần kết hợp toàn bộ kỹ năng SQL để viết một báo cáo toàn diện: tổng hợp, lọc điều kiện, JOIN và sắp xếp.",
-    "objective": "Viết một query phức tạp kết hợp JOIN, GROUP BY, HAVING và ORDER BY.",
+    "title": "Báo cáo tổng hợp khách hàng VIP",
+    "story": "Đây là vụ án cuối cùng. Bạn cần tìm các khách hàng VIP có tổng giá trị đơn hàng từ 50 triệu đồng trở lên, hiển thị tên khách hàng và tổng số tiền chi tiêu (total_spent).",
+    "objective": "Kết hợp JOIN, GROUP BY customers.name, HAVING SUM(orders.order_value) >= 50,000,000.",
     "tool": "sql",
     "difficulty": "hard",
     "estimatedDuration": 45,
@@ -364,8 +364,8 @@
     "status": "published",
     "version": 1,
     "starterContent": {
-      "starterSql": "-- Báo cáo tổng hợp: khách hàng VIP\n-- Tìm khách hàng có tổng giá trị đơn hàng >= 50 triệu\nSELECT -- cột cần hiển thị\nFROM -- bắt đầu từ bảng nào\n-- JOIN\n-- GROUP BY\n-- HAVING\n-- ORDER BY",
-      "hint": "Bắt đầu bằng JOIN customers và orders, sau đó GROUP BY customer, HAVING SUM >= 50000000"
+      "starterSql": "SELECT customers.name,\n       SUM(orders.order_value) AS total_spent\nFROM customers\nJOIN orders ON customers.id = orders.customer_id\nGROUP BY customers.name\nHAVING SUM(orders.order_value) >= 50000000;",
+      "hint": "JOIN customers ON orders.customer_id = customers.id GROUP BY customers.name HAVING SUM(orders.order_value) >= 50000000"
     }
   }
 ]

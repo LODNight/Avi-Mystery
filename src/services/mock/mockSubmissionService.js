@@ -28,29 +28,29 @@ const EXCEL_CHECKER_CONFIG = Object.freeze({
 // MVP Step 4.7 SQL Checker Config
 const SQL_CHECKER_CONFIG = Object.freeze({
   'mission-010': Object.freeze({
-    expectedColumns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+    expectedColumns: ['id', 'order_id', 'product_name', 'branch', 'revenue'],
     expectedRows: [
-      [1, "2026-03-01", "Thẻ Nông Dân Gold", "Hà Nội", 2, 1500000],
-      [2, "2026-03-02", "Máy Gặt Đa Năng", "TP.HCM", 1, 25000000],
-      [3, "2026-03-03", "Phân Bón Hữu Cơ", "Cần Thơ", 5, 450000],
-      [4, "2026-03-05", "Thẻ Nông Dân Gold", "Hà Nội", 1, 750000],
-      [5, "2026-03-06", "Hạt Giống Lúa Hybrid", "Đà Nẵng", 10, 1200000],
-      [6, "2026-03-07", "Máy Bơm Nước Nông Nghiệp", "TP.HCM", 2, 6800000],
-      [7, "2026-03-08", "Phân Bón Hữu Cơ", "Hà Nội", 8, 720000],
-      [8, "2026-03-10", "Thẻ Nông Dân Gold", "Đà Nẵng", 3, 2250000],
-      [9, "2026-03-12", "Hệ Thống Tưới Tự Động", "Cần Thơ", 1, 14500000],
-      [10, "2026-03-15", "Hạt Giống Lúa Hybrid", "Hà Nội", 15, 1800000]
+      [1, "ORD-1001", "Laptop Pro", "Hà Nội", 12500000],
+      [2, "ORD-1002", "Màn hình 27 inch", "Hà Nội", 6200000],
+      [3, "ORD-1003", "Laptop Pro", "Đà Nẵng", 11800000],
+      [4, "ORD-1004", "Chuột không dây", "Hồ Chí Minh", 850000],
+      [5, "ORD-1005", "Bàn phím cơ", "Hồ Chí Minh", 2100000],
+      [6, "ORD-1006", "Màn hình 27 inch", "Đà Nẵng", 5900000],
+      [7, "ORD-1007", "Laptop Pro", "Hồ Chí Minh", 13900000],
+      [8, "ORD-1008", "Tai nghe", "Hà Nội", 1750000]
     ],
     orderMatters: false,
     columnOrderMatters: true,
     numericTolerance: 0.001,
   }),
   'mission-011': Object.freeze({
-    expectedColumns: ['id', 'order_date', 'product_name', 'branch', 'quantity', 'revenue'],
+    expectedColumns: ['id', 'order_id', 'product_name', 'branch', 'revenue'],
     expectedRows: [
-      [2, "2026-03-02", "Máy Gặt Đa Năng", "TP.HCM", 1, 25000000],
-      [6, "2026-03-07", "Máy Bơm Nước Nông Nghiệp", "TP.HCM", 2, 6800000],
-      [9, "2026-03-12", "Hệ Thống Tưới Tự Động", "Cần Thơ", 1, 14500000]
+      [1, "ORD-1001", "Laptop Pro", "Hà Nội", 12500000],
+      [2, "ORD-1002", "Màn hình 27 inch", "Hà Nội", 6200000],
+      [3, "ORD-1003", "Laptop Pro", "Đà Nẵng", 11800000],
+      [6, "ORD-1006", "Màn hình 27 inch", "Đà Nẵng", 5900000],
+      [7, "ORD-1007", "Laptop Pro", "Hồ Chí Minh", 13900000]
     ],
     orderMatters: false,
     columnOrderMatters: true,
@@ -60,16 +60,80 @@ const SQL_CHECKER_CONFIG = Object.freeze({
   'mission-012': Object.freeze({
     expectedColumns: ['product_name'],
     expectedRows: [
-      ["Thẻ Nông Dân Gold"],
-      ["Máy Gặt Đa Năng"],
-      ["Phân Bón Hữu Cơ"],
-      ["Hạt Giống Lúa Hybrid"],
-      ["Máy Bơm Nước Nông Nghiệp"],
-      ["Hệ Thống Tưới Tự Động"]
+      ["Laptop Pro"],
+      ["Màn hình 27 inch"],
+      ["Chuột không dây"],
+      ["Bàn phím cơ"],
+      ["Tai nghe"]
     ],
     orderMatters: false,
     columnOrderMatters: true,
     requiredConstructs: ['DISTINCT'],
+  }),
+  'mission-013': Object.freeze({
+    expectedColumns: ['branch', 'total_revenue'],
+    expectedRows: [
+      ["Hồ Chí Minh", 16850000],
+      ["Đà Nẵng", 17700000],
+      ["Hà Nội", 20450000]
+    ],
+    orderMatters: true,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    requiredConstructs: ['GROUP BY', 'ORDER BY'],
+  }),
+  'mission-014': Object.freeze({
+    expectedColumns: ['branch', 'total_revenue'],
+    expectedRows: [
+      ["Hồ Chí Minh", 16850000],
+      ["Đà Nẵng", 17700000]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    requiredConstructs: ['GROUP BY', 'HAVING'],
+  }),
+  'mission-015': Object.freeze({
+    expectedColumns: ['product_name', 'order_count'],
+    expectedRows: [
+      ["Laptop Pro", 3],
+      ["Màn hình 27 inch", 2]
+    ],
+    orderMatters: true,
+    columnOrderMatters: true,
+    requiredConstructs: ['GROUP BY', 'ORDER BY', 'LIMIT'],
+  }),
+  'mission-016': Object.freeze({
+    expectedColumns: ['name', 'order_value'],
+    expectedRows: [
+      ["An Nguyễn", 32000000],
+      ["An Nguyễn", 24000000],
+      ["Bình Trần", 18000000],
+      ["Chi Lê", 7500000]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    requiredConstructs: ['JOIN'],
+  }),
+  'mission-017': Object.freeze({
+    expectedColumns: ['name', 'email'],
+    expectedRows: [
+      ["Dũng Phạm", "dung@example.test"]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    requiredConstructs: ['LEFT', 'JOIN'],
+  }),
+  'mission-018': Object.freeze({
+    expectedColumns: ['name', 'total_spent'],
+    expectedRows: [
+      ["An Nguyễn", 56000000]
+    ],
+    orderMatters: false,
+    columnOrderMatters: true,
+    numericTolerance: 0.001,
+    requiredConstructs: ['JOIN', 'GROUP BY', 'HAVING'],
   }),
 });
 

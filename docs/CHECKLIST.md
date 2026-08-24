@@ -172,9 +172,10 @@
 - [x] UX Polish: Nút "Nộp bài vụ án" nổi bật, căn phải ô số (`text-right`), định dạng 1,000, giữ nguyên casing tên cột, cuộn nội bộ `max-h-[360px]` với sticky header, tối ưu độ rộng cột (`w-1`/`w-auto`) và căn chỉnh con trỏ gõ phím pixel-perfect.
 - [x] `ResultViewer.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (12/12 component tests pass)
 
-### 🔹 Step 4.6: SQL Result Checker
-- [ ] Column/row/value comparison; column order và result order tùy cấu hình
-- [ ] `NULL`, duplicate rows, numeric tolerance và query khác nhưng result đúng
+### 🔹 Step 4.6: SQL Result Checker *(HOÀN THÀNH)*
+- [x] Column/row/value comparison; column order và result order tùy cấu hình
+- [x] `NULL`, duplicate rows, numeric tolerance và construct validation (`requiredConstructs`/`forbiddenConstructs`)
+- [x] `sqlChecker.js` & `sqlChecker.test.js` bao phủ 100% test cases (17/17 test cases pass)
 
 ### 🔹 Step 4.7: Submission Integration
 - [ ] Dùng chung `submissionService`; không tạo SQL Submission Service riêng

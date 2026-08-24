@@ -4,45 +4,49 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.5-UX
-- Task ID: LRN-SQL-4.5-UX-POLISH
+- Step: 4.6
+- Task ID: LRN-SQL-4.6-CHECKER
 - Status: DONE
+- Primary Module: LRN-SQL
 
 ## Gate Before This Task
 
-- Step 4.5 base execution & ResultViewer are DONE.
-- Full regression test suite (191/191 across 29 files) is passing.
+- Step 4.5 base execution, ResultViewer & UX/UI polish are DONE.
+- Step 4.6 SQL Result Checker (`sqlChecker.js`) is DONE.
+- Full test suite (208/208 across 30 files) is passing.
 
 ## Goal
 
-Refine the UX/UI of `ResultViewer.jsx`, `SqlEditor.jsx` and `SqlMissionPage.jsx` based on user feedback:
-1. **User Flow**: Add prominent action button ("Kiểm tra đáp án / Nộp bài") upon successful query run to prevent dead-end flow.
-2. **Data Alignment**: Right-align numeric data cells (`number`, `INTEGER`, `REAL`), keep text/string cells left-aligned.
-3. **Data Formatting**: Format numbers with thousand separators (e.g. `12,500,000`).
-4. **Consistency**: Preserve case of column headers matching database/query schema without forced casing.
-5. **Layout Scalability**: Add internal scroll container with `max-h-[360px]` and `sticky top-0` header to prevent layout explosion.
-6. **Editor Caret Alignment**: Fix cursor vertical & horizontal alignment by eliminating font letter-spacing/tracking differences between syntax highlighting overlay and standard textarea input.
+Implement the SQL Result Checker (`sqlChecker.js`) to evaluate learner SQL query results against canonical mission solutions:
+1. **Construct Validation**: Check required keywords (`requiredConstructs`) and forbidden constructs (`forbiddenConstructs`).
+2. **Column Matching**: Validate column count and column names/casing according to `checkerConfig` (`expectedColumns`, `columnOrderMatters`).
+3. **Row Count & Multiplicity Matching**: Compare actual vs expected row counts, handling row order sensitivity (`orderMatters: true/false`) with frequency/multiplicity hash matching.
+4. **Numeric Tolerance & NULL Alignment**: Support floating-point comparison tolerance (`numericTolerance`, default `0.001`) and strict `NULL` matching.
+5. **Stable Feedback Catalog**: Map evaluation outcomes to canonical feedback codes (`SQL_CHECKER_FEEDBACK_CODES`) with human-readable Vietnamese feedback messages.
 
 ## In Scope
 
-- Update `ResultViewer.jsx` for right-aligning numbers, thousand separator formatting, sticky header, scroll container, and column header case consistency.
-- Update `SqlEditor.jsx` to remove `tracking-wide` / font weight divergence and ensure pixel-perfect cursor alignment and scroll synchronization.
-- Add primary call-to-action button in `ResultViewer.jsx` or `SqlMissionPage.jsx` when query runs successfully.
-- Update `ResultViewer.test.jsx` and `SqlMissionPage.test.jsx` for the new UX features.
+- Create `src/utils/sql/sqlChecker.js` implementing `evaluateSqlResult(actualResult, expectedResult, checkerConfig)`.
+- Export stable feedback catalog `SQL_CHECKER_FEEDBACK_CODES`.
+- Create comprehensive unit test suite `src/utils/sql/sqlChecker.test.js` covering all edge cases (constructs, columns, row order, numeric tolerance, empty sets, NULLs).
+- Update documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`).
 
 ## Out of Scope
 
-- Full submission evaluator backend logic (Step 4.6 / Step 4.7).
+- Submission XP awarding and Progress system state mutation (reserved for Step 4.7 / Sprint 5).
+- Admin Content Builder UI for configuring checkers (Sprint 6).
 
 ## Allowed Write Paths
 
-- `src/components/sql/ResultViewer.jsx`
-- `src/components/sql/ResultViewer.test.jsx`
-- `src/components/sql/SqlEditor.jsx`
-- `src/components/sql/`
-- `src/pages/learner/SqlMissionPage.jsx`
-- `src/pages/learner/SqlMissionPage.test.jsx`
+- `src/utils/sql/sqlChecker.js`
+- `src/utils/sql/sqlChecker.test.js`
+- `src/utils/sql/`
 - `docs/agent/CURRENT_TASK.md`
+- `docs/CHECKLIST.md`
+- `docs/ROADMAP.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/BACKLOG.md`
+- `docs/TEST_REPORT.md`
 
 ## Forbidden Paths
 
@@ -51,19 +55,15 @@ Refine the UX/UI of `ResultViewer.jsx`, `SqlEditor.jsx` and `SqlMissionPage.jsx`
 
 ## Acceptance Criteria
 
-- [x] Successful query execution shows a prominent green/emerald "Nộp bài vụ án" / "Kiểm tra đáp án" action button.
-- [x] Data cells containing numbers are right-aligned with `text-right` class.
-- [x] Numbers >= 1,000 or currency/quantity values are formatted with thousand separators (e.g. `12,500,000`).
-- [x] Table headers maintain exact database schema column name casing.
-- [x] Table container has `max-h-[360px]` with sticky header (`sticky top-0`) and vertical scrollbar (`overflow-y-auto`).
-- [x] Textarea cursor (caret) aligns pixel-perfectly with syntax highlighted text without position offset.
-- [x] Unit & integration tests pass 100%.
-
+- [x] `evaluateSqlResult` pure evaluator handles all comparison rules deterministically without mutating inputs.
+- [x] Returns `{ isCorrect, score, feedbackCode, feedback, details }`.
+- [x] `SQL_CHECKER_FEEDBACK_CODES` contains all canonical codes (`SUCCESS`, `MISSING_REQUIRED_CONSTRUCT`, `FORBIDDEN_CONSTRUCT_USED`, `COLUMN_COUNT_MISMATCH`, `MISSING_EXPECTED_COLUMN`, `ROW_COUNT_MISMATCH`, `ROW_ORDER_MISMATCH`, `VALUE_MISMATCH`, `EMPTY_RESULT_SET`).
+- [x] Row order insensitivity (`orderMatters: false`) handles duplicate rows and different row ordering accurately.
+- [x] Numeric comparison respects `numericTolerance` (e.g. `0.001`).
+- [x] 100% test coverage for `sqlChecker.test.js` with 17 passed test cases and 0 failures.
 
 ## Test Commands
 
 ```bash
-node ./node_modules/vitest/vitest.mjs run src/components/sql/ResultViewer.test.jsx src/pages/learner/SqlMissionPage.test.jsx
-node ./node_modules/vitest/vitest.mjs run
+npx vitest run src/utils/sql/sqlChecker.test.js
 ```
-

@@ -17,8 +17,9 @@ Không trao XP, không chạy query trên backend trong Sprint 4, không quản 
 - DONE — Step 4.2: Schema Browser
 - DONE — Step 4.3: SQL Mission Shell, Loader & Route (`/missions/:missionId/sql`)
 - DONE — Step 4.4: SQL Editor MVP (`SqlEditor.jsx`)
-- DONE — Step 4.5: Query Execution & Result Viewer (`ResultViewer.jsx`) & UX Polish (Nút Nộp bài, căn phải số, format 1,000, sticky header & caret pixel-alignment)
-- PLANNED — Step 4.6: SQL Result Checker
+- DONE — Step 4.5: Query Execution & Result Viewer (`ResultViewer.jsx`) & UX Polish
+- DONE — Step 4.6: SQL Result Checker (`sqlChecker.js`)
+- PLANNED — Step 4.7: SQL Submission Integration
 - Related Sprint: 4
 - Verified Paths: `src/components/sql/`, `src/utils/sql/`, `src/workers/sql/`, `src/pages/learner/SqlMissionPage.jsx`
 

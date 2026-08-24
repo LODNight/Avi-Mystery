@@ -2,10 +2,10 @@
 
 > **Cập nhật lần cuối:** 24/08/2026
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM
-> **Tổng số Test Suites:** 29 files
-> **Tổng số Test Cases:** 191 passed / 0 failed
+> **Tổng số Test Suites:** 30 files
+> **Tổng số Test Cases:** 208 passed / 0 failed
 
-> **Sprint 4 note:** Step 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3, 4.4 và 4.5 đã `DONE`. Đã xác minh SQLite WASM Worker, Schema Browser, SQL Mission Shell loader/route (`/missions/:missionId/sql`), SQL Editor MVP (`SqlEditor.jsx`), và SQL Result Viewer (`ResultViewer.jsx`) kèm 5 điểm tinh chỉnh UX/UI.
+> **Sprint 4 note:** Step 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3, 4.4, 4.5 và 4.6 đã `DONE`. Đã xác minh SQLite WASM Worker, Schema Browser, SQL Mission Shell loader/route (`/missions/:missionId/sql`), SQL Editor MVP (`SqlEditor.jsx`), SQL Result Viewer (`ResultViewer.jsx`) và SQL Result Checker (`sqlChecker.js`).
 
 ---
 
@@ -15,6 +15,7 @@
 |---|---:|---|
 | `src/utils/excelChecker.test.js` | 32 | `PASS` |
 | `src/utils/sql/sqlQueryPolicy.test.js` | 28 | `PASS` |
+| `src/utils/sql/sqlChecker.test.js` | 17 | `PASS` |
 | `src/utils/sql/sqlDatabaseLifecycle.test.js` | 7 | `PASS` |
 | `src/utils/sql/sqlDataset.test.js` | 8 | `PASS` |
 | `src/utils/sql/sqlEngineAdapter.test.js` | 3 | `PASS` |

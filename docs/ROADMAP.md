@@ -170,7 +170,7 @@
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.4 HOÀN THÀNH, Step 4.5 KẾ TIẾP)
+## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.5 HOÀN THÀNH, Step 4.6 KẾ TIẾP)
 
 * **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
 * **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
@@ -184,7 +184,7 @@
   - **Step 4.2:** Schema Browser — **DONE**; search, metadata, sample rows, copy, loading/empty/error and keyboard tests pass
   - **Step 4.3:** SQL Mission Shell, Loader & Route — **DONE**; `/missions/:missionId/sql`, dataset isolation, lifecycle cleanup & navigation matching pass
   - **Step 4.4:** SQL Editor MVP — **DONE**; controlled editor, starter/reset query, soft Tab 2-space, Ctrl+Enter shortcut, Detective Amber theme styling & unit tests pass
-  - **Step 4.5:** Query Execution & Result Viewer — **PLANNED**
+  - **Step 4.5:** Query Execution & Result Viewer — **DONE**; SQLite WASM execution, ResultViewer component, NULL formatting, error alerts, pagination & integration tests pass
   - **Step 4.6:** SQL Result Checker — **PLANNED**
   - **Step 4.7:** Submission Integration — **PLANNED**; Primary Module dự kiến `LRN-SUB`
   - **Step 4.8:** Security, Browser, Deployment & Regression Gate — **PLANNED**

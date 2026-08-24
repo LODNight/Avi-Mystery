@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { SqlMissionPage } from './SqlMissionPage.jsx'
@@ -15,6 +15,15 @@ function createEngine() {
     initialize: vi.fn().mockResolvedValue({ ready: true }),
     loadDataset: vi.fn().mockResolvedValue({}),
     getSchema: vi.fn().mockResolvedValue(schema),
+    execute: vi.fn().mockResolvedValue({
+      columns: ['id', 'amount'],
+      rows: [[1, 100], [2, 250]],
+      rowCount: 2,
+      truncated: false,
+      executionMs: 4,
+      errorCode: null,
+      message: null,
+    }),
     dispose: vi.fn().mockResolvedValue({ disposed: true }),
   }
 }
@@ -28,7 +37,7 @@ function renderPage(props = {}) {
 }
 
 describe('SqlMissionPage', () => {
-  it('loads briefing, schema and SqlEditor without exposing result viewer/submission', async () => {
+  it('loads briefing, schema and SqlEditor with ResultViewer idle state', async () => {
     const engine = createEngine()
     renderPage({ workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) }, engineFactory: () => engine })
     expect(screen.getByLabelText('Đang tải SQL mission')).toBeInTheDocument()
@@ -36,9 +45,24 @@ describe('SqlMissionPage', () => {
     expect(screen.getByTestId('schema-browser')).toBeInTheDocument()
     expect(screen.getByText('sales')).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /khung soạn thảo câu lệnh sql/i })).toBeInTheDocument()
+    expect(screen.getByText('Chưa có kết quả truy vấn')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /nộp bài/i })).not.toBeInTheDocument()
     expect(engine.initialize).toHaveBeenCalledOnce()
     expect(engine.loadDataset).toHaveBeenCalledWith(workspace.dataset)
+  })
+
+  it('executes query when clicking Run Query button and displays results', async () => {
+    const engine = createEngine()
+    renderPage({ workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) }, engineFactory: () => engine })
+    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+
+    const runBtn = screen.getByRole('button', { name: /chạy câu lệnh sql/i })
+    fireEvent.click(runBtn)
+
+    await waitFor(() => expect(screen.getByText('Thành công')).toBeInTheDocument())
+    expect(screen.getByText('100')).toBeInTheDocument()
+    expect(screen.getByText('250')).toBeInTheDocument()
+    expect(engine.execute).toHaveBeenCalledOnce()
   })
 
   it('shows retryable service errors and disposes the engine on unmount', async () => {

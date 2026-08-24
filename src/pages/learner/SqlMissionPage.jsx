@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowLeft, Clock, Database, Target } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
+import { ResultViewer } from '../../components/sql/ResultViewer.jsx'
 import { ErrorState } from '../../components/ui/EmptyState.jsx'
 import { Skeleton } from '../../components/ui/Skeleton.jsx'
 import { sqlMissionService } from '../../services/index.js'
@@ -31,6 +32,8 @@ export function SqlMissionPage({
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
   const [query, setQuery] = useState('')
+  const [executionResult, setExecutionResult] = useState(null)
+  const [isExecuting, setIsExecuting] = useState(false)
 
   const disposeCurrentEngine = useCallback(async () => {
     const engine = engineRef.current
@@ -49,6 +52,8 @@ export function SqlMissionPage({
 
     async function load() {
       setState({ phase: 'loading', workspace: null, schema: null, error: null })
+      setExecutionResult(null)
+      setIsExecuting(false)
       await disposeCurrentEngine()
       if (cancelled) return
 
@@ -103,12 +108,37 @@ export function SqlMissionPage({
   const { mission } = state.workspace
   const starterSql = mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
 
-  const handleRun = () => {
-    // Execution will be wired in Step 4.5
+  const handleRun = async () => {
+    if (isExecuting) return
+    const engine = engineRef.current
+    if (!engine) return
+
+    setIsExecuting(true)
+    try {
+      const res = await engine.execute(query, { maxRows: 500 })
+      setExecutionResult(res)
+    } catch (error) {
+      setExecutionResult({
+        columns: [],
+        rows: [],
+        rowCount: 0,
+        executionMs: 0,
+        errorCode: error?.code || 'SQL_RUNTIME_ERROR',
+        message: error?.message || 'Không thể thực thi truy vấn SQL.',
+      })
+    } finally {
+      setIsExecuting(false)
+    }
   }
 
   const handleReset = () => {
     setQuery(starterSql)
+    setExecutionResult(null)
+  }
+
+  const handleSubmit = () => {
+    // Bước chuẩn bị cho Submission Integration (Step 4.6 & Step 4.7)
+    window.alert('Tính năng kiểm tra đáp án tự động sẽ được kích hoạt ở bước tiếp theo!')
   }
 
   return (
@@ -137,7 +167,9 @@ export function SqlMissionPage({
             onChange={setQuery}
             onRun={handleRun}
             onReset={handleReset}
+            isRunning={isExecuting}
           />
+          <ResultViewer result={executionResult} isExecuting={isExecuting} onSubmit={handleSubmit} />
         </div>
 
         <SchemaBrowser schema={state.schema} className="min-h-[28rem]" />
@@ -145,3 +177,4 @@ export function SqlMissionPage({
     </div>
   )
 }
+

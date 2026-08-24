@@ -6,7 +6,7 @@ Trạng thái phản ánh source đã xác minh, không phản ánh riêng check
 |---|---|---|---|---|---|
 | `LRN-EXCEL` | Excel Learning | Existing; Step 3.6G stabilization Done | `src/components/excel/`; `src/pages/learner/ExcelMissionPage*`; `src/utils/excelChecker*` | SHR, LRN-SUB | 1–3.6G |
 | `LRN-SUB` | Submission & Feedback | Existing; Step 3.4E Done | `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submit flow trong `ExcelMissionPage*`; `MissionResultModal*`; `ActionToolbar*` | LRN-EXCEL, SHR | 3.4–3.4E |
-| `LRN-SQL` | SQL Learning | Existing; Step 4.4 Done | Engine/policy ở `src/utils/sql/`; Worker ở `src/workers/sql/`; SchemaBrowser/SqlEditor ở `src/components/sql/`; `src/pages/learner/SqlMissionPage*`; isolated route `/missions/:missionId/sql` | SHR, LRN-SUB | 4.0–4.8 |
+| `LRN-SQL` | SQL Learning | Existing; Step 4.5 Done | Engine/policy ở `src/utils/sql/`; Worker ở `src/workers/sql/`; SchemaBrowser/SqlEditor/ResultViewer ở `src/components/sql/`; `src/pages/learner/SqlMissionPage*`; isolated route `/missions/:missionId/sql` | SHR, LRN-SUB | 4.0–4.8 |
 | `GAME` | Game Progress | Partial | Chưa có module riêng; XP/level fields hiện chỉ nằm ở `authService`/auth mock, không do Submission mutate | LRN-SUB, SHR | 5 |
 | `ADM` | Admin Content | Partial | `src/pages/admin/`; `src/app/layouts/AdminLayout.jsx`; content routes hiện là placeholder | SHR | 6 |
 | `BE` | Backend API | Planned | `src/services/api/index.js` chỉ là frontend API stub; không có backend source | SHR contracts | 7 |

@@ -9,10 +9,10 @@
 
 * **Sprint Hiện Tại:** Sprint 4 — SQL Vertical Slice
 * **Sprint Goal:** Phát triển môi trường thực hành SQL trực tiếp trên trình duyệt (In-Browser SQLite WASM), Schema Browser, SQL Code Editor và bộ kiểm tra kết quả truy vấn.
-* **Step đã hoàn thành:** Step 1.1–4.3.
-* **Step vừa hoàn thành:** Step 4.4 — SQL Editor MVP (`DONE`).
-* **Step kế tiếp:** Step 4.5 — Query Execution & Result Viewer (`PLANNED`).
-* **Trạng thái Sprint:** `SQL EDITOR MVP GATE PASS — SẴN SÀNG CHO QUERY EXECUTION (STEP 4.5)`.
+* **Step đã hoàn thành:** Step 1.1–4.4.
+* **Step vừa hoàn thành:** Step 4.5 — Query Execution & Result Viewer (`DONE`).
+* **Step kế tiếp:** Step 4.6 — SQL Result Checker (`PLANNED`).
+* **Trạng thái Sprint:** `QUERY EXECUTION & RESULT VIEWER PASS — SẴN SÀNG CHO SQL RESULT CHECKER (STEP 4.6)`.
 
 ---
 
@@ -20,7 +20,7 @@
 
 | Khu vực | Trọng tâm | Tính năng trong Sprint | Trạng thái |
 |---|---|---|---|
-| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser & SQL Editor MVP | `DONE / Step 4.4` |
+| **Learner SQL (`LRN-SQL`)** | `Primary` | Worker transport, DB lifecycle, query policy, Schema Browser, Editor & Result Viewer | `DONE / Step 4.5` |
 | **Learner Excel (`LRN-EXCEL`)** | `Supporting` | Excel Workspace Core & Stabilization Gate | `DONE / Step 3.6G` |
 | **Submission (`LRN-SUB`)** | `Supporting` | Submission Contract & Feedback Core | `DONE / Step 3.4E` |
 | **Shared (`SHR`)** | `Supporting` | Contract/gateway, Learner layout & Design System tokens | `DONE / Step 3.6` |

@@ -56,7 +56,7 @@ Avi-Mystery/
 │   │   └── router/             # Cấu hình AppRouter & RBAC Route Guards
 │   ├── components/
 │   │   ├── excel/              # Grid, Formula Bar, toolbar, hints và result modal
-│   │   ├── sql/                # Schema Browser & SQL Code Editor MVP
+│   │   ├── sql/                # Schema Browser, SQL Code Editor & Result Viewer
 │   │   └── ui/                 # Component UI tái sử dụng (Button, Card, Skeleton, EmptyState)
 │   ├── hooks/                  # Custom hooks (useAuth, useTheme, usePageStatus, useAsync)
 │   ├── mocks/                  # Mock JSON data (courses, chapters, missions, steps, datasets)
@@ -103,9 +103,9 @@ npm run build
 
 Lần xác minh gần nhất ngày **24/08/2026** đạt:
 
-- **28 Test Files Passed**
-- **178 Test Cases Passed**
-- Bao phủ service mocks (auth, course, mission, sqlMission, submission contract), shared UI, route/page status, course/map/mission flow, Excel workspace/evaluator, và SQL workspace (WASM engine, Worker, Schema Browser, SqlEditor, `/missions/:missionId/sql` route).
+- **29 Test Files Passed**
+- **191 Test Cases Passed**
+- Bao phủ service mocks (auth, course, mission, sqlMission, submission contract), shared UI, route/page status, course/map/mission flow, Excel workspace/evaluator, và SQL workspace (WASM engine, Worker, Schema Browser, SqlEditor, ResultViewer, `/missions/:missionId/sql` route).
 
 Chi tiết và cảnh báo test được ghi tại **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**.
 
@@ -119,6 +119,6 @@ Bảng tiến độ chi tiết theo dạng checkbox cho từng Sprint có thể 
 - [x] **Sprint 2 — Course & Learning Map**: Danh sách khóa học, Chi tiết chương học, Bản đồ học tập Node Graph, Mission Intro briefing, Admin Page Status Manager.
 - [x] **Step 3.0–3.6G — Excel Workspace**: Checker, mission shell, spreadsheet grid, Formula Bar, Run/Reset/Hint, toolbar và Light Mode Refinement đã hoàn thành 100%.
 - [x] **Step 3.4 — Submission & Feedback**: Shared contract/gateway, mock async/idempotency-ready, inline feedback/retry, double-submit guard, success modal và boundary không trao XP đã hoàn thành.
-- [x] **Step 4.0–4.4 — SQL Vertical Slice**: SQLite WASM Worker engine, Schema Browser, SQL Mission Shell (`/missions/:missionId/sql`), và SQL Code Editor MVP (`SqlEditor.jsx`) đã `DONE` (SQL targeted suite 60/60, full regression 178/178 tests pass).
+- [x] **Step 4.0–4.5 — SQL Vertical Slice**: SQLite WASM Worker engine, Schema Browser, SQL Mission Shell (`/missions/:missionId/sql`), SQL Code Editor MVP (`SqlEditor.jsx`), và Query Execution & Result Viewer (`ResultViewer.jsx`) đã `DONE` (SQL targeted suite 70/70, full regression 188/188 tests pass).
 
 Trạng thái task duy nhất dành cho agent nằm tại **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**; roadmap không tự kích hoạt Sprint/Step tiếp theo.

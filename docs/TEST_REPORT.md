@@ -2,10 +2,10 @@
 
 > **Cập nhật lần cuối:** 24/08/2026
 > **Công cụ kiểm thử:** Vitest 2.1.9 + React Testing Library 16.0.0 + JSDOM
-> **Tổng số Test Suites:** 28 files
-> **Tổng số Test Cases:** 178 passed / 0 failed
+> **Tổng số Test Suites:** 29 files
+> **Tổng số Test Cases:** 191 passed / 0 failed
 
-> **Sprint 4 note:** Step 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3 và 4.4 đã `DONE`. Đã xác minh SQLite WASM Worker, Schema Browser, SQL Mission Shell loader/route (`/missions/:missionId/sql`), và SQL Editor MVP (`SqlEditor.jsx`).
+> **Sprint 4 note:** Step 4.0, 4.1A, 4.1B, 4.1C, 4.2, 4.3, 4.4 và 4.5 đã `DONE`. Đã xác minh SQLite WASM Worker, Schema Browser, SQL Mission Shell loader/route (`/missions/:missionId/sql`), SQL Editor MVP (`SqlEditor.jsx`), và SQL Result Viewer (`ResultViewer.jsx`) kèm 5 điểm tinh chỉnh UX/UI.
 
 ---
 
@@ -20,6 +20,7 @@
 | `src/utils/sql/sqlEngineAdapter.test.js` | 3 | `PASS` |
 | `src/components/sql/SchemaBrowser.test.jsx` | 6 | `PASS` |
 | `src/components/sql/SqlEditor.test.jsx` | 5 | `PASS` |
+| `src/components/sql/ResultViewer.test.jsx` | 12 | `PASS` |
 | `src/pages/learner/SqlMissionPage.test.jsx` | 4 | `PASS` |
 | `src/services/mock/mockSqlMissionService.test.js` | 4 | `PASS` |
 | `src/services/mock/mockAuthService.test.js` | 5 | `PASS` |
@@ -57,6 +58,7 @@
 - Step 4.2 cover Schema Browser (table/column/type/PK/nullable metadata, search, 3 sample rows preview, copy identifier).
 - Step 4.3 cover SQL Mission Shell (`SqlMissionPage`), `/missions/:missionId/sql` isolated route, mock SqlMissionService, lifecycle disposal on unmount và navigation auto-routing từ LearningMapPage.
 - Step 4.4 cover SQL Editor MVP (`SqlEditor.jsx`), starter SQL initialization, Reset/Run actions, soft-tab 2-spaces indentation, `Ctrl+Enter` shortcut, ARIA accessibility & Detective Amber theme styling.
+- Step 4.5 cover Query Execution wire-up, ResultViewer component (`ResultViewer.jsx`), NULL values formatting, truncated warning pill, mapped error alert box (`SQL_SYNTAX_ERROR`, `SQL_READ_ONLY_VIOLATION`), client-side pagination (50 rows/page), và double-execution guard.
 
 ---
 

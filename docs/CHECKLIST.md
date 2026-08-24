@@ -166,9 +166,10 @@
 - [x] Accessible ARIA label (`Khung soạn thảo câu lệnh SQL`) và đồng bộ Detective Amber theme
 - [x] `SqlEditor.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (7/7 component tests pass)
 
-### 🔹 Step 4.5: Query Execution & Result Viewer
-- [ ] Running/double-run guard và stable error mapping
-- [ ] Columns/rows/`NULL`/empty/time/count/truncation, scroll và pagination
+### 🔹 Step 4.5: Query Execution & Result Viewer *(HOÀN THÀNH)*
+- [x] Running/double-run guard và stable error mapping (`SQL_SYNTAX_ERROR`, `SQL_READ_ONLY_VIOLATION`, v.v.)
+- [x] Columns/rows/`NULL`/empty/time/count/truncation, scroll và client-side pagination (50 dòng/trang)
+- [x] `ResultViewer.test.jsx` & `SqlMissionPage.test.jsx` bao phủ 100% test cases (9/9 component tests pass)
 
 ### 🔹 Step 4.6: SQL Result Checker
 - [ ] Column/row/value comparison; column order và result order tùy cấu hình

@@ -4,49 +4,42 @@
 
 - Project: Avi-Mystery
 - Sprint: 4
-- Step: 4.4
-- Task ID: LRN-SQL-4.4-EDITOR-MVP
-- Status: IN_PROGRESS
-- Primary Module: LRN-SQL
-- Supporting Modules:
-  - SHR (UI components)
-- Module document: [modules/LRN-SQL.md](./modules/LRN-SQL.md)
+- Step: 4.5-UX
+- Task ID: LRN-SQL-4.5-UX-POLISH
+- Status: DONE
 
 ## Gate Before This Task
 
-- Step 4.3 is DONE: SQL Mission Shell, loader, `/missions/:missionId/sql` route and lifecycle cleanup are implemented and verified.
-- Targeted tests (9/9) and full regression test suite (178/178 across 27 files) are passing.
+- Step 4.5 base execution & ResultViewer are DONE.
+- Full regression test suite (191/191 across 29 files) is passing.
 
 ## Goal
 
-Build the controlled SQL Editor MVP component (`SqlEditor.jsx`) inside `SqlMissionPage`. The component must provide a clean code editor container with accessible ARIA labels, starter query loading, query reset functionality, soft-tab indentation, and `Ctrl+Enter` / `Cmd+Enter` keyboard shortcuts.
+Refine the UX/UI of `ResultViewer.jsx` and `SqlMissionPage.jsx` based on user feedback:
+1. **User Flow**: Add prominent action button ("Kiểm tra đáp án / Nộp bài") upon successful query run to prevent dead-end flow.
+2. **Data Alignment**: Right-align numeric data cells (`number`, `INTEGER`, `REAL`), keep text/string cells left-aligned.
+3. **Data Formatting**: Format numbers with thousand separators (e.g. `12,500,000`).
+4. **Consistency**: Preserve case of column headers matching database/query schema without forced casing.
+5. **Layout Scalability**: Add internal scroll container with `max-h-[360px]` and `sticky top-0` header to prevent layout explosion.
 
 ## In Scope
 
-- Create `SqlEditor.jsx` component in `src/components/sql/SqlEditor.jsx`.
-- Controlled query input state management with starter query initialization and reset capabilities.
-- Accessibility features: Proper `aria-label`, `id`, keyboard shortcuts, and focus indicators.
-- Keyboard navigation: `Tab` key handling for soft indentation (2 spaces), `Ctrl+Enter` / `Cmd+Enter` key listener.
-- Action toolbar: `Run Query` button (triggering onRun), `Reset Code` button (reverting to initial starter SQL).
-- Integrate `SqlEditor` into `SqlMissionPage.jsx`.
-- Component unit testing in `src/components/sql/SqlEditor.test.jsx`.
+- Update `ResultViewer.jsx` for right-aligning numbers, thousand separator formatting, sticky header, scroll container, and column header case consistency.
+- Add primary call-to-action button in `ResultViewer.jsx` or `SqlMissionPage.jsx` when query runs successfully.
+- Update `ResultViewer.test.jsx` and `SqlMissionPage.test.jsx` for the new UX features.
 
 ## Out of Scope
 
-- WASM query execution against engine and result viewer rendering (deferred to Step 4.5).
-- Heavy external dependencies (Monaco / CodeMirror) before dependency gate.
-- Query result comparison (deferred to Step 4.6).
+- Full submission evaluator backend logic (Step 4.6 / Step 4.7).
 
 ## Allowed Write Paths
 
-- `src/components/sql/SqlEditor.jsx`
-- `src/components/sql/SqlEditor.test.jsx`
+- `src/components/sql/ResultViewer.jsx`
+- `src/components/sql/ResultViewer.test.jsx`
 - `src/components/sql/`
 - `src/pages/learner/SqlMissionPage.jsx`
 - `src/pages/learner/SqlMissionPage.test.jsx`
 - `docs/agent/CURRENT_TASK.md`
-- `docs/PROJECT_STATUS.md`
-- `docs/CHECKLIST.md`
 
 ## Forbidden Paths
 
@@ -55,15 +48,18 @@ Build the controlled SQL Editor MVP component (`SqlEditor.jsx`) inside `SqlMissi
 
 ## Acceptance Criteria
 
-- [ ] `SqlEditor` component renders with proper ARIA accessibility labels and styling matching "Detective Amber" design system.
-- [ ] Controlled value state initializes with mission `starterSql` query.
-- [ ] `Reset` button reverts code back to initial `starterSql`.
-- [ ] Keyboard navigation: `Tab` inserts 2 spaces without breaking focus; `Ctrl/Cmd+Enter` triggers the onRun callback.
-- [ ] `SqlEditor.test.jsx` passes 100% with Vitest.
+- [x] Successful query execution shows a prominent green/emerald "Nộp bài vụ án" / "Kiểm tra đáp án" action button.
+- [x] Data cells containing numbers are right-aligned with `text-right` class.
+- [x] Numbers >= 1,000 or currency/quantity values are formatted with thousand separators (e.g. `12,500,000`).
+- [x] Table headers maintain exact database schema column name casing.
+- [x] Table container has `max-h-[360px]` with sticky header (`sticky top-0`) and vertical scrollbar (`overflow-y-auto`).
+- [x] Unit & integration tests pass 100%.
+
 
 ## Test Commands
 
 ```bash
-node ./node_modules/vitest/vitest.mjs run src/components/sql/SqlEditor.test.jsx src/pages/learner/SqlMissionPage.test.jsx
+node ./node_modules/vitest/vitest.mjs run src/components/sql/ResultViewer.test.jsx src/pages/learner/SqlMissionPage.test.jsx
 node ./node_modules/vitest/vitest.mjs run
 ```
+

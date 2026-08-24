@@ -195,11 +195,11 @@
 - [x] Đảm bảo dọn dẹp bộ nhớ và khởi tạo lại SQLite DB sạch khi chuyển đổi vụ án (`sql-sales-v1` ↔ `sql-commerce-v1`).
 - [x] Thêm test cases kiểm tra dọn dẹp lifecycle trong `SqlMissionPage.test.jsx`.
 
-### 🔹 Step 4.8C: Responsive Design & Light/Dark Theme Polish *(ĐANG THỰC HIỆN)*
-- [ ] Tinh chỉnh hiển thị giao diện chuẩn đẹp trong 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
-- [ ] Tinh chỉnh giao diện đáp ứng linh hoạt (Responsive Layout) trên các thiết bị Mobile, Tablet và Desktop (tối ưu hóa thanh cuộn và ô bảng).
+### 🔹 Step 4.8C: Responsive Design & Light/Dark Theme Polish *(HOÀN THÀNH)*
+- [x] Tinh chỉnh hiển thị giao diện chuẩn đẹp trong 2 chế độ Sáng/Tối (Light/Dark Mode) trên `SqlEditor`, `SchemaBrowser`, `ResultViewer` và `MissionResultModal`.
+- [x] Tinh chỉnh giao diện đáp ứng linh hoạt (Responsive Layout) trên các thiết bị Mobile, Tablet và Desktop (tối ưu hóa thanh cuộn và ô bảng).
 
-### 🔹 Step 4.8D: Production WASM Build & Full Regression Gate *(DỰ KIẾN)*
+### 🔹 Step 4.8D: Production WASM Build & Full Regression Gate *(ĐANG THỰC HIỆN)*
 - [ ] Chạy `npm run build` và `npm run preview` xác minh đóng gói file `.wasm` và Web Worker không bị lỗi MIME type hay 404 trên Vercel.
 - [ ] Chạy full Vitest suite (tất cả 30+ test files / 222+ test cases pass 100%).
 - [ ] Kiểm tra luồng Happy Path E2E từ `/map` ➔ `/missions/mission-010` ➔ `/missions/mission-010/sql` ➔ Run ➔ Submit ➔ Modal thành công.

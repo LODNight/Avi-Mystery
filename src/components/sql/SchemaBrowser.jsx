@@ -110,7 +110,7 @@ export function SchemaBrowser({
 
   return (
     <div
-      className={`flex flex-col h-full bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden shadow-sm ${className}`}
+      className={`flex flex-col h-full min-h-[320px] lg:min-h-0 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl overflow-hidden shadow-sm ${className}`}
       data-testid="schema-browser"
     >
       {/* Header */}

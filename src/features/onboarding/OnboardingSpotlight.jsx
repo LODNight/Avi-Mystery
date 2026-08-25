@@ -20,14 +20,29 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
 
   const currentStep = steps[currentStepIndex];
 
+  // Helper hỗ trợ chuẩn hóa selector (chấp nhận cả target '#id' lẫn targetId 'id')
+  const getTargetSelector = (step) => {
+    if (!step) return null;
+    const raw = step.target || step.targetId;
+    if (!raw) return null;
+    return raw.startsWith('#') || raw.startsWith('.') || raw.startsWith('[') ? raw : `#${raw}`;
+  };
+
+  // Helper hỗ trợ chuẩn hóa nội dung mô tả (chấp nhận cả body lẫn content)
+  const getStepBody = (step) => {
+    if (!step) return '';
+    return step.body || step.content || '';
+  };
+
   // Tính toán vị trí và kích thước phần tử target
   const updateTargetRect = useCallback(() => {
-    if (!currentStep?.target) {
+    const selector = getTargetSelector(currentStep);
+    if (!selector) {
       setTargetRect(null);
       return;
     }
 
-    const element = document.querySelector(currentStep.target);
+    const element = document.querySelector(selector);
     if (element) {
       const rect = element.getBoundingClientRect();
       setTargetRect({
@@ -36,9 +51,9 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
         width: rect.width,
         height: rect.height,
       });
-      // Scroll nhẹ nếu phần tử nằm ngoài viewport (an toàn trên JSDOM test)
+      // Scroll mượt phần tử ra giữa màn hình nếu cần
       if (typeof element.scrollIntoView === 'function') {
-        element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     } else {
       setTargetRect(null);
@@ -178,7 +193,7 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
 
         {/* Body */}
         <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-          {currentStep.body}
+          {getStepBody(currentStep)}
         </p>
 
         {/* Progress dots & Controls */}

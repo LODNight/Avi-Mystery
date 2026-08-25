@@ -120,7 +120,7 @@ export function DashboardPage() {
       </section>
 
       {/* ── Section 2: 4 Key Stat Cards ── */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section id="dashboard-stat-cards" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Flame}
           label="Chuỗi Streak"
@@ -273,7 +273,7 @@ export function DashboardPage() {
       </section>
 
       {/* ── Section 5: Recommended Missions ── */}
-      <section aria-busy={recommended.loading ? "true" : undefined}>
+      <section id="dashboard-recommended-missions" aria-busy={recommended.loading ? "true" : undefined}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">

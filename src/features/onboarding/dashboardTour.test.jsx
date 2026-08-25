@@ -5,6 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DashboardPage } from '../../pages/learner/DashboardPage.jsx';
 import { onboardingService, ONBOARDING_STATUS } from '../../services/index.js';
 import { DASHBOARD_TOUR_STEPS } from './dashboardTourContent.js';
+import { OnboardingSpotlight } from './OnboardingSpotlight.jsx';
 
 // ── Mocks ────────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,7 @@ function renderDashboardPage() {
   );
 }
 
-describe('Dashboard Guided Tour (Step 6.6)', () => {
+describe('Dashboard Deep Guided Tour (Step 6.6 Refinement)', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     currentMockUser = {
@@ -71,19 +72,39 @@ describe('Dashboard Guided Tour (Step 6.6)', () => {
   // ── 2. Content Config ──────────────────────────────────────────────────────
 
   describe('dashboardTourContent Config', () => {
-    it('defines 4 valid steps with targets matching Dashboard IDs', () => {
-      expect(DASHBOARD_TOUR_STEPS).toHaveLength(4);
+    it('defines 6 valid steps with targets matching all Dashboard layout section IDs', () => {
+      expect(DASHBOARD_TOUR_STEPS).toHaveLength(6);
       expect(DASHBOARD_TOUR_STEPS[0].targetId).toBe('dashboard-welcome-header');
-      expect(DASHBOARD_TOUR_STEPS[1].targetId).toBe('dashboard-continue-investigation');
-      expect(DASHBOARD_TOUR_STEPS[2].targetId).toBe('dashboard-investigator-level');
-      expect(DASHBOARD_TOUR_STEPS[3].targetId).toBe('dashboard-active-courses');
+      expect(DASHBOARD_TOUR_STEPS[1].targetId).toBe('dashboard-stat-cards');
+      expect(DASHBOARD_TOUR_STEPS[2].targetId).toBe('dashboard-continue-investigation');
+      expect(DASHBOARD_TOUR_STEPS[3].targetId).toBe('dashboard-investigator-level');
+      expect(DASHBOARD_TOUR_STEPS[4].targetId).toBe('dashboard-active-courses');
+      expect(DASHBOARD_TOUR_STEPS[5].targetId).toBe('dashboard-recommended-missions');
     });
   });
 
-  // ── 3. Component Interactions ─────────────────────────────────────────────
+  // ── 3. Core Engine Prop Alias Normalization ─────────────────────────────────
+
+  describe('OnboardingSpotlight Prop Alias Normalization', () => {
+    it('renders step body when using "content" or "body" key', () => {
+      const steps = [
+        { targetId: 'test-el', title: 'Step Content Test', content: 'Văn bản sử dụng key content' },
+        { target: '#test-el-2', title: 'Step Body Test', body: 'Văn bản sử dụng key body' },
+      ];
+
+      const { rerender } = render(<OnboardingSpotlight isOpen={true} steps={steps} />);
+      expect(screen.getByText('Văn bản sử dụng key content')).toBeInTheDocument();
+
+      // Click next to test step 2
+      fireEvent.click(screen.getByText(/Tiếp theo/i));
+      expect(screen.getByText('Văn bản sử dụng key body')).toBeInTheDocument();
+    });
+  });
+
+  // ── 4. Component Interactions ─────────────────────────────────────────────
 
   describe('DashboardPage Tour Spotlight Behavior', () => {
-    it('auto-triggers tour spotlight on first dashboard visit', async () => {
+    it('auto-triggers tour spotlight on first dashboard visit and matches all 6 section IDs', async () => {
       useAuth.mockReturnValue({ user: currentMockUser, isLoading: false, isAuthenticated: true });
 
       const { container } = renderDashboardPage();
@@ -92,11 +113,13 @@ describe('Dashboard Guided Tour (Step 6.6)', () => {
         expect(screen.getByText(/Trung Tâm Điều Tra/i)).toBeInTheDocument();
       });
 
-      // Target elements exist
+      // Target elements exist for all 6 steps
       expect(container.querySelector('#dashboard-welcome-header')).not.toBeNull();
+      expect(container.querySelector('#dashboard-stat-cards')).not.toBeNull();
       expect(container.querySelector('#dashboard-continue-investigation')).not.toBeNull();
       expect(container.querySelector('#dashboard-investigator-level')).not.toBeNull();
       expect(container.querySelector('#dashboard-active-courses')).not.toBeNull();
+      expect(container.querySelector('#dashboard-recommended-missions')).not.toBeNull();
     });
 
     it('does not auto-trigger tour spotlight if user has already seen it', async () => {
@@ -110,7 +133,7 @@ describe('Dashboard Guided Tour (Step 6.6)', () => {
       });
 
       // Tour tooltip should not be rendered
-      expect(screen.queryByText(/Chào mừng bạn đến với tổng hành dinh/i)).toBeNull();
+      expect(screen.queryByText(/Chào mừng bạn đến với Tổng hành dinh/i)).toBeNull();
     });
 
     it('allows re-triggering tour by clicking "Hướng dẫn Dashboard" button', async () => {

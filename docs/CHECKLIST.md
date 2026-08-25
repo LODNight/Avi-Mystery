@@ -313,12 +313,12 @@
 ### 🔹 Step 6.5.8: Full Regression Test *(HOÀN THÀNH)*
 - [x] Kiểm tra 7 luồng trong `onboardingRegression.test.jsx`: New learner, Skip, Return guard, Reload persistence, Replay, Fail→Retry, XP Idempotency
 
-### 🔹 Step 6.6: Dashboard Guided Tour *(HOÀN THÀNH)*
-- [x] Định nghĩa 4 tour steps giới thiệu 4 khu vực giao diện chính của Dashboard trong `dashboardTourContent.js`
-- [x] Gắn Spotlight target IDs: `#dashboard-welcome-header`, `#dashboard-continue-investigation`, `#dashboard-investigator-level`, `#dashboard-active-courses`
-- [x] Tự động hiển thị Spotlight tour 1 lần duy nhất cho learner lần đầu vào Dashboard (`onboardingService.hasSeenDashboardTour`)
-- [x] Nút "Hướng dẫn Dashboard" giúp learner xem lại tour bất kỳ lúc nào
-- [x] Unit tests: `dashboardTour.test.jsx` PASS
+### 🔹 Step 6.6: Dashboard Deep Guided Tour & Spotlight Engine Refinement *(HOÀN THÀNH)*
+- [x] **Step 6.6.1**: Chuẩn hóa Core Engine `OnboardingSpotlight.jsx` — Hỗ trợ prop aliases (`target`/`targetId`, `body`/`content`), tự động gắn `#`, cuộn trang `scrollIntoView` mượt và sửa lỗi highlight ring cutout.
+- [x] **Step 6.6.2**: Gắn Target IDs toàn diện cho 6 khu vực Dashboard trong `DashboardPage.jsx` (`#dashboard-welcome-header`, `#dashboard-stat-cards`, `#dashboard-continue-investigation`, `#dashboard-investigator-level`, `#dashboard-active-courses`, `#dashboard-recommended-missions`).
+- [x] **Step 6.6.3**: Thiết kế nội dung Tour 6 bước chi tiết & chuyên sâu trong `dashboardTourContent.js` giải thích toàn bộ tính năng thám tử dữ liệu.
+- [x] **Step 6.6.4**: Mở rộng Unit Tests `dashboardTour.test.jsx` phủ cả 6 bước tour, kiểm tra tính tương thích prop alias và định vị phần tử DOM (6/6 tests PASS).
+- [x] **Step 6.6.5**: Chạy Full Regression Suite (97/97 tests PASS), kiểm tra giao diện thực tế và hoàn thiện tài liệu.
 
 ---
 

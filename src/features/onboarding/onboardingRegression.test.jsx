@@ -63,7 +63,7 @@ describe('Sprint 6.5 — Onboarding Regression Test Suite (Step 6.5.7 & 6.5.8)',
     renderAppAtRoute('/dashboard');
 
     await waitFor(() => {
-      expect(screen.getByText(/Chào mừng bạn đến với Avi-Mystery/i)).toBeInTheDocument();
+      expect(screen.getByText(/Nhà điều tra mới gia nhập/i)).toBeInTheDocument();
       expect(screen.getByText(/Bắt đầu khóa huấn luyện/i)).toBeInTheDocument();
     });
   });
@@ -76,10 +76,10 @@ describe('Sprint 6.5 — Onboarding Regression Test Suite (Step 6.5.7 & 6.5.8)',
     renderAppAtRoute('/onboarding');
 
     await waitFor(() => {
-      expect(screen.getByText(/Bỏ qua & Vào thẳng Dashboard/i)).toBeInTheDocument();
+      expect(screen.getByText(/Bỏ qua, tôi đã có kinh nghiệm/i)).toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByText(/Bỏ qua & Vào thẳng Dashboard/i));
+    fireEvent.click(screen.getByText(/Bỏ qua, tôi đã có kinh nghiệm/i));
 
     await waitFor(() => {
       expect(onboardingService.getStatus(currentMockUser.id)).toBe(ONBOARDING_STATUS.SKIPPED);
@@ -103,7 +103,7 @@ describe('Sprint 6.5 — Onboarding Regression Test Suite (Step 6.5.7 & 6.5.8)',
 
     await waitFor(() => {
       expect(onboardingService.getStatus(currentMockUser.id)).toBe(ONBOARDING_STATUS.IN_PROGRESS);
-      expect(screen.getByText(/Case #00: Đơn Hàng Đầu Tiên/i)).toBeInTheDocument();
+      expect(screen.getByText(/Vụ án #00/i)).toBeInTheDocument();
     });
 
     // Step B: Submit correct formula =C2*D2
@@ -154,7 +154,7 @@ describe('Sprint 6.5 — Onboarding Regression Test Suite (Step 6.5.7 & 6.5.8)',
     // Initial mount
     const { unmount } = renderAppAtRoute('/onboarding/case-0');
     await waitFor(() => {
-      expect(screen.getByText(/Case #00: Đơn Hàng Đầu Tiên/i)).toBeInTheDocument();
+      expect(screen.getByText(/Vụ án #00/i)).toBeInTheDocument();
     });
 
     // Simulate page reload by unmounting and remounting
@@ -162,7 +162,7 @@ describe('Sprint 6.5 — Onboarding Regression Test Suite (Step 6.5.7 & 6.5.8)',
 
     renderAppAtRoute('/onboarding/case-0');
     await waitFor(() => {
-      expect(screen.getByText(/Case #00: Đơn Hàng Đầu Tiên/i)).toBeInTheDocument();
+      expect(screen.getByText(/Vụ án #00/i)).toBeInTheDocument();
       expect(onboardingService.getStatus(currentMockUser.id)).toBe(ONBOARDING_STATUS.IN_PROGRESS);
     });
   });

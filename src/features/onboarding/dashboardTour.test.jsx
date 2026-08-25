@@ -50,6 +50,7 @@ describe('Dashboard Guided Tour (Step 6.6)', () => {
     };
     onboardingService.reset(currentMockUser.id);
     onboardingService.resetDashboardTour(currentMockUser.id);
+    onboardingService.setStatus(currentMockUser.id, ONBOARDING_STATUS.IN_PROGRESS);
     onboardingService.setStatus(currentMockUser.id, ONBOARDING_STATUS.COMPLETED);
   });
 

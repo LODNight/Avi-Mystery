@@ -297,6 +297,8 @@ export function DashboardPage() {
             ))}
           </div>
         )}
+      </section>
+
       {/* ── Dashboard Spotlight Guided Tour (Step 6.6) ── */}
       <OnboardingSpotlight
         isOpen={isTourOpen}

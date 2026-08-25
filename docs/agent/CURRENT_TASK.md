@@ -3,57 +3,48 @@
 ## Identification
 
 - Project: Avi-Mystery
-- Sprint: 5
-- Step: 5.1
-- Task ID: GAM-XP-5.1-LEVELING
-- Status: IN_PROGRESS
-- Primary Module: GAME
-
-## Gate Before This Task
-
-- Sprint 4 (SQL Vertical Slice) is 100% COMPLETED (Step 4.0 - 4.8D).
-- All unit tests and regression gates pass.
+- Sprint: 5 (Content Domain & Dataset Decoupling)
+- Step: 5.8 (Completion vs Mastery Foundation)
+- Task ID: `MST-5.8`
+- Status: `IN_PROGRESS`
+- Primary Module: `MST` (Learner Mastery Domain & Progress Integration)
 
 ## Goal
 
-Execute **Step 5.1 (Leveling Engine & XP System)**:
-1. **Leveling Formula & Engine**: Build a pure, deterministic utility `levelingEngine.js` calculating level (Level 1 to 50), XP required for next level, and title progression (e.g. "Tập sự", "Trinh thám tập sự", "Thám tử tư", "Siêu thám tử").
-2. **Progress Integration**: Connect submission XP rewards to cumulative XP progression.
-3. **Level Up Modal & Animation**: Design visual level-up popups and progress indicators in the UI.
-
-## In Scope
-
-- `src/utils/game/levelingEngine.js` (NEW)
-- `src/utils/game/levelingEngine.test.js` (NEW)
-- Documentation files (`CHECKLIST.md`, `ROADMAP.md`, `PROJECT_STATUS.md`, `BACKLOG.md`, `CURRENT_TASK.md`).
-
-## Out of Scope
-
-- Auto unlock lesson map logic (handled in Step 5.2).
-- Profile page & Achievements (handled in Step 5.3).
+Explicitly separate Completion from Mastery by establishing mastery-ready data structures and pure evaluation logic:
+- **Completion** answers: "Has the learner completed this content?" (Keyed by `learnerId:contentId`).
+- **Mastery** answers: "How well does the learner demonstrate the associated skill?" (Keyed by `learnerId:skillId`).
+- Implement `LearnerMasteryRecord` schema and pure `evaluateSkillMastery` function.
+- Support attempt history reference per skill assessment.
+- Support skill association (`Question` references `skillId`).
+- Do NOT implement a complex adaptive algorithm.
+- Do NOT implement Practice Engine.
+- Do NOT implement recommendations or analytics.
 
 ## Allowed Write Paths
 
-- `src/utils/game/levelingEngine.js`
-- `src/utils/game/levelingEngine.test.js`
+- `src/domain/mastery/masteryEvaluator.js`
+- `src/services/contracts/progressService.js`
+- `src/services/mock/mockProgressService.js`
+- `src/services/mock/mockProgressService.test.js`
+- `src/domain/mastery/masteryContract.test.js`
+- `docs/agent/MASTERY_CONTRACT.md`
 - `docs/agent/CURRENT_TASK.md`
-- `docs/CHECKLIST.md`
-- `docs/ROADMAP.md`
-- `docs/PROJECT_STATUS.md`
-- `docs/BACKLOG.md`
 
-## Forbidden Paths
+## Out of Scope (Preserved)
 
-- `src/pages/admin/`
+- Practice engine is NOT implemented.
+- Recommendations engine is NOT implemented.
+- Analytics dashboard is NOT built.
+- Adaptive difficulty algorithms are NOT implemented.
+- Learning Map UI is NOT modified.
+- Admin UI is NOT built.
 
 ## Acceptance Criteria
 
-- [ ] Deterministic XP to Level calculation supporting Level 1 - 50.
-- [ ] Comprehensive unit tests for leveling formula and title progression.
-- [ ] Level Up event state returned cleanly for progress gateway integration.
-
-## Test Commands
-
-```bash
-npx vitest run src/utils/game/levelingEngine.test.js
-```
+- [ ] Completion state (`LearnerProgressRecord`) is explicitly separate from Mastery state (`LearnerMasteryRecord`).
+- [ ] Mastery records are keyed by learner + skill identity (`learnerId:skillId`).
+- [ ] `evaluateSkillMastery` calculates proficiency (`masteryScore`) deterministically without complex adaptive algorithms.
+- [ ] Attempt history/reference is preserved per skill assessment.
+- [ ] Existing completion, submission, and XP flows remain functional.
+- [ ] Contract & unit tests added and verified.

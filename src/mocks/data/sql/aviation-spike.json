@@ -1,6 +1,51 @@
 {
+  "datasetId": "aviation-spike-v1",
   "id": "aviation-spike-v1",
   "version": 1,
+  "type": "sql",
+  "name": "Aviation Spike Database",
+  "metadata": {
+    "name": "Aviation Spike Database",
+    "description": "Cơ sở dữ liệu hàng không phục vụ thử nghiệm spike"
+  },
+  "schema": {
+    "dialect": "sqlite",
+    "tables": [
+      {
+        "name": "airports",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "primaryKey": true, "nullable": false },
+          { "name": "code", "type": "TEXT", "nullable": false },
+          { "name": "city", "type": "TEXT", "nullable": false },
+          { "name": "country", "type": "TEXT", "nullable": false },
+          { "name": "annual_passengers", "type": "INTEGER", "nullable": true }
+        ],
+        "rows": [
+          [1, "SGN", "Ho Chi Minh City", "Vietnam", 41000000],
+          [2, "HAN", "Hanoi", "Vietnam", 29000000],
+          [3, "DAD", "Da Nang", "Vietnam", 13000000],
+          [4, "SIN", "Singapore", "Singapore", 68000000]
+        ]
+      },
+      {
+        "name": "flights",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "primaryKey": true, "nullable": false },
+          { "name": "flight_no", "type": "TEXT", "nullable": false },
+          { "name": "origin_code", "type": "TEXT", "nullable": false },
+          { "name": "destination_code", "type": "TEXT", "nullable": false },
+          { "name": "duration_minutes", "type": "INTEGER", "nullable": false },
+          { "name": "status", "type": "TEXT", "nullable": false }
+        ],
+        "rows": [
+          [1, "AV101", "SGN", "HAN", 125, "ON_TIME"],
+          [2, "AV202", "HAN", "DAD", 80, "DELAYED"],
+          [3, "AV303", "DAD", "SGN", 90, "ON_TIME"],
+          [4, "AV404", "SGN", "SIN", 125, "CANCELLED"]
+        ]
+      }
+    ]
+  },
   "dialect": "sqlite",
   "tables": [
     {

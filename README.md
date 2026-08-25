@@ -93,7 +93,9 @@ Admin có toàn quyền điều khiển khả năng truy cập của Người h�
 
 Đối với các nhà phát triển muốn tìm hiểu sâu về kiến trúc mã nguồn và tiến độ dự án, tham khảo các tệp tài liệu trong thư mục `docs/`:
 
+- 📓 **[`docs/PROJECT_MASTER_SUMMARY.md`](./docs/PROJECT_MASTER_SUMMARY.md)**: **Báo cáo tổng hợp chi tiết toàn bộ thông tin dự án (Master Summary)**.
 - 📋 **[`docs/CHECKLIST.md`](./docs/CHECKLIST.md)**: Danh sách kiểm tra tiến độ chi tiết theo từng Step.
 - 📊 **[`docs/PROJECT_STATUS.md`](./docs/PROJECT_STATUS.md)**: Báo cáo trạng thái tổng thể và các quyết định kiến trúc.
 - 🧪 **[`docs/TEST_REPORT.md`](./docs/TEST_REPORT.md)**: Kết quả chạy tự động 222 unit & integration test cases.
 - 🎯 **[`docs/agent/CURRENT_TASK.md`](./docs/agent/CURRENT_TASK.md)**: Nhiệm vụ hiện tại đang thực hiện.
+

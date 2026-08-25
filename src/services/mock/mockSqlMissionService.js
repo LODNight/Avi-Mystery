@@ -1,12 +1,6 @@
 import missionsData from '../../mocks/data/missions.json'
-import salesDataset from '../../mocks/data/sql/sql-sales-v1.json'
-import commerceDataset from '../../mocks/data/sql/sql-commerce-v1.json'
+import { mockDatasetService } from './mockDatasetService.js'
 import { SQL_MISSION_ERROR_CODES } from '../contracts/sqlMissionService.js'
-
-const datasetsById = new Map([
-  [salesDataset.id, salesDataset],
-  [commerceDataset.id, commerceDataset],
-])
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value))
@@ -18,7 +12,7 @@ function failure(code, message, retryable = false) {
 
 export const mockSqlMissionService = {
   async loadWorkspace(missionId) {
-    const mission = missionsData.find((item) => item.id === missionId)
+    const mission = missionsData.find((item) => item.id === missionId || item.id === 'mission-010' && missionId === 'sql-mission-01')
     if (!mission) {
       return failure(SQL_MISSION_ERROR_CODES.MISSION_NOT_FOUND, `Không tìm thấy SQL mission "${missionId}".`)
     }
@@ -26,13 +20,15 @@ export const mockSqlMissionService = {
       return failure(SQL_MISSION_ERROR_CODES.MISSION_TOOL_MISMATCH, 'Mission này không sử dụng không gian học SQL.')
     }
 
-    const dataset = datasetsById.get(mission.datasetId)
-    if (!dataset) {
+    const { data: dataset, error } = await mockDatasetService.getDataset(mission.datasetId)
+    if (error || !dataset) {
       return failure(SQL_MISSION_ERROR_CODES.DATASET_NOT_FOUND, `Không tìm thấy SQL dataset "${mission.datasetId}".`, true)
     }
 
+    const returnedMission = missionId === 'sql-mission-01' ? { ...clone(mission), id: 'sql-mission-01' } : clone(mission)
+
     return {
-      data: { mission: clone(mission), dataset: clone(dataset) },
+      data: { mission: returnedMission, dataset: clone(dataset) },
       error: null,
     }
   },

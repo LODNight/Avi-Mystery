@@ -48,12 +48,20 @@ export const SUBMISSION_FEEDBACK_CODES = Object.freeze({
  */
 
 /**
+ * @typedef {Object} SqlSubmissionAnswer
+ * @property {string} query
+ * @property {Object} [executionResult] Envelope from sqlEngine.execute ({ columns, rows, rowCount, truncated, executionMs, errorCode, message })
+ */
+
+/**
  * @typedef {Object} SubmissionRequest
  * @property {'run'|'submit'} mode
- * @property {string} missionId
+ * @property {string} [missionId] Legacy mission ID reference
+ * @property {string} [questionId] Canonical question ID reference (e.g. 'q-001')
+ * @property {string} [investigationId] Canonical investigation ID reference (e.g. 'inv-001')
  * @property {string} [stepId]
  * @property {'excel'|'sql'} tool
- * @property {ExcelSubmissionAnswer|unknown} answer
+ * @property {ExcelSubmissionAnswer|SqlSubmissionAnswer|unknown} answer
  * @property {number} [hintsUsed]
  * @property {string} clientAttemptId
  */
@@ -61,6 +69,8 @@ export const SUBMISSION_FEEDBACK_CODES = Object.freeze({
 /**
  * @typedef {Object} SubmissionResult
  * @property {string} attemptId
+ * @property {string} [questionId]
+ * @property {string} [investigationId]
  * @property {boolean} isCorrect
  * @property {number} score
  * @property {boolean} stepCompleted

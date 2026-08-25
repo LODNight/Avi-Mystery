@@ -1,51 +1,97 @@
-# Module Map
+# Module Map & Area Ownership
 
-Trạng thái phản ánh source đã xác minh, không phản ánh riêng checkbox roadmap.
+> **Cập nhật lần cuối:** 24/08/2026
+> **Mô tả:** Phân vùng trách nhiệm module, đường dẫn mã nguồn thực tế và ranh giới hệ thống.
 
-| Module ID | Module / owner trách nhiệm | Trạng thái | Đường dẫn thật | Dependency chính | Sprint |
+---
+
+## 1. 🗺 Bảng Phân Vùng Module Chi Tiết
+
+| Module ID | Tên Module / Domain Owner | Trạng Thái Kiến Trúc | Đường Dẫn Thực Tế | Dependency Chính | Sprint Kế Hoạch |
 |---|---|---|---|---|---|
-| `LRN-EXCEL` | Excel Learning | Existing; Step 3.6G stabilization Done | `src/components/excel/`; `src/pages/learner/ExcelMissionPage*`; `src/utils/excelChecker*` | SHR, LRN-SUB | 1–3.6G |
-| `LRN-SUB` | Submission & Feedback | Existing; Step 3.4E Done | `src/services/contracts/submissionService.js`; `src/services/index.js`; `src/services/mock/mockSubmissionService*`; submit flow trong `ExcelMissionPage*`; `MissionResultModal*`; `ActionToolbar*` | LRN-EXCEL, SHR | 3.4–3.4E |
-| `LRN-SQL` | SQL Learning | Existing; Step 4.5 Done | Engine/policy ở `src/utils/sql/`; Worker ở `src/workers/sql/`; SchemaBrowser/SqlEditor/ResultViewer ở `src/components/sql/`; `src/pages/learner/SqlMissionPage*`; isolated route `/missions/:missionId/sql` | SHR, LRN-SUB | 4.0–4.8 |
-| `GAME` | Game Progress | Partial | Chưa có module riêng; XP/level fields hiện chỉ nằm ở `authService`/auth mock, không do Submission mutate | LRN-SUB, SHR | 5 |
-| `ADM` | Admin Content | Partial | `src/pages/admin/`; `src/app/layouts/AdminLayout.jsx`; content routes hiện là placeholder | SHR | 6 |
-| `BE` | Backend API | Planned | `src/services/api/index.js` chỉ là frontend API stub; không có backend source | SHR contracts | 7 |
-| `ANL` | Analytics & Hardening | Planned | `/admin/analytics` là placeholder trong router; không có module source | Frontend, BE | 8 |
-| `SHR` | Shared Contracts/UI | Existing; Sprint 3 stabilization Done | `src/services/contracts/`; `src/services/index.js`; `src/components/ui/`; `src/hooks/`; `src/utils/`; `src/mocks/`; shared layout tại `src/app/layouts/` | Không phụ thuộc feature module | Xuyên suốt |
+| `SHR` | Shared UI & Contracts | `CURRENT` | `src/services/contracts/`, `src/components/ui/`, `src/app/layouts/` | Không phụ thuộc | Transversal |
+| `LRN-EXCEL` | Excel Learner Workspace | `CURRENT` | `src/components/excel/`, `src/pages/learner/ExcelMissionPage.jsx`, `src/utils/excelChecker.js` | `SHR`, `LRN-SUB` | 1–3 |
+| `LRN-SQL` | SQL Learner Workspace | `CURRENT` | `src/utils/sql/`, `src/workers/sql/`, `src/components/sql/`, `src/pages/learner/SqlMissionPage.jsx` | `SHR`, `LRN-SUB` | 4 |
+| `LRN-SUB` | Submission Gateway | `CURRENT` | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService.js` | `LRN-EXCEL`, `LRN-SQL` | 3–4 |
+| `CNT` | Content Domain | `PLANNED` | `src/services/contracts/contentService.js` [PLANNED], `src/mocks/data/` | `SHR` | Sprint 5 |
+| `DATA` | Dataset Domain | `PLANNED` | `src/services/contracts/datasetService.js` [PLANNED], `src/utils/sql/sqlDataset.js` | `SHR` | Sprint 5 |
+| `GAME` | Game Progress Domain | `PLANNED` | `src/utils/game/levelingEngine.js` [PLANNED], `src/services/contracts/progressService.js` [PLANNED] | `LRN-SUB`, `SHR` | Sprint 6 |
+| `ADM` | Admin Content Studio | `PROPOSED` | `src/pages/admin/` | `SHR`, `CNT` | Sprint 8 |
+| `BE` | Backend API (FastAPI) | `PROPOSED` | `src/services/api/` [STUB] | Service Contracts | Sprint 9 |
+| `ANL` | Analytics & Insights | `PROPOSED` | `/admin/analytics` [PLACEHOLDER] | `GAME`, `BE` | Sprint 10 |
 
-## Dependency Direction
+---
+
+## 2. 🔀 Sơ Đồ Phụ Thuộc Kiến Trúc Tương Lai (Architecture Dependency Graph)
 
 ```mermaid
-flowchart LR
-  Excel[Excel Evaluator] --> Submission[Submission Contract]
-  SQL[SQL Evaluator] --> Submission
-  Submission --> Progress[Progress]
-  Admin[Admin Content] --> Content[Mission / Dataset Contracts]
-  Content --> Excel
-  Content --> SQL
-  Mock[Mock Service] -. implements .-> Contract[Stable Service Interface]
-  API[API Client] -. implements .-> Contract
+flowchart TD
+  subgraph Content Domain [CNT & DATA Domain - Sprint 5]
+    Investigation[Investigation Narrative]
+    Question[Question Task & Variants]
+    Dataset[Independent Dataset Registry]
+    Investigation --> Question
+    Question --> Dataset
+  end
+
+  subgraph Workspace Domain [Learner Workspaces - CURRENT]
+    ExcelWorkspace[Excel Workspace]
+    SqlWorkspace[SQL Workspace]
+    ExcelChecker[excelChecker.js]
+    SqlChecker[sqlChecker.js]
+  end
+
+  subgraph Submission Gateway [LRN-SUB - CURRENT]
+    SubmissionService[submissionService.js]
+  end
+
+  subgraph Progress Domain [GAME Domain - Sprint 6]
+    ProgressService[progressService.js]
+    LevelingEngine[levelingEngine.js]
+    LearningMapUI[LearningMapPage.jsx]
+  end
+
+  Question --> ExcelWorkspace
+  Question --> SqlWorkspace
+  Dataset --> ExcelWorkspace
+  Dataset --> SqlWorkspace
+
+  ExcelWorkspace --> ExcelChecker --> SubmissionService
+  SqlWorkspace --> SqlChecker --> SubmissionService
+
+  SubmissionService -- "SubmissionResult (No XP Mutation)" --> ProgressService
+  ProgressService --> LevelingEngine
+  ProgressService -- "useProgress Hook" --> LearningMapUI
 ```
 
-- Excel evaluator đánh giá formula/value; SQL evaluator sẽ đánh giá result set. Submission điều phối mode, attempt và feedback, không tự sở hữu logic evaluator khi adapter riêng tồn tại.
-- `GAME`/Progress là frontend domain duy nhất điều phối XP, level, streak và achievements. Progress không phụ thuộc trực tiếp UI component.
-- Backend Sprint 7 là nguồn sự thật cuối cùng cho XP và persisted submission; API client phải map về cùng interface như mock.
-- Shared không phụ thuộc ngược feature module.
+---
 
-## Verified Routes and Entry Points
+## 3. 🚦 Quy Tắc Ranh Giới Module (Module Boundary Rules)
 
-| Area | Route/entry point | Status |
-|---|---|---|
-| Learner Excel | `/missions/:missionId/workspace` → `ExcelMissionPage` | Existing |
-| Learner navigation | `LearnerLayout` active state, gồm `/missions/*` → `/map` | Existing; segment-boundary test pass |
-| Learner mission | `/missions/:missionId` → `MissionIntroPage` | Existing |
-| Learner SQL | `/missions/:missionId/sql` → `SqlMissionPage` | Existing |
-| Game | `/profile`, `/achievements` | Placeholder |
-| Admin shell | `/admin`, `/admin/pages`, `/admin/settings` | Existing |
-| Admin content | `/admin/courses`, `/admin/chapters`, `/admin/missions`, `/admin/datasets` | Placeholder |
-| Analytics | `/admin/analytics` | Placeholder |
-| Service gateway | `src/services/index.js` | Existing; đã export submission service |
+1. **Ranh Giới UI & Gateway (`UI Layering Rule`)**:
+   - UI (`src/pages`, `src/components`) không được đọc trực tiếp mock JSON hay import mock adapters.
+   - UI chỉ giao tiếp thông qua Service Gateway (`src/services/index.js`).
 
-## Module Documents
+2. **Ranh Giới Evaluator & Progress (`Evaluator-Progress Rule`)**:
+   - Evaluator (`excelChecker.js`, `sqlChecker.js`) là hàm thuần túy, không mutate XP hoặc lưu trữ trạng thái.
+   - Progress Service (`GAME` Domain) sở hữu duy nhất quyền hạn trao điểm XP, thăng cấp và cập nhật mở khóa bài học.
 
-[LRN-EXCEL](./modules/LRN-EXCEL.md) · [LRN-SUB](./modules/LRN-SUB.md) · [LRN-SQL](./modules/LRN-SQL.md) · [GAME](./modules/GAME.md) · [ADM](./modules/ADM.md) · [BE](./modules/BE.md) · [ANL](./modules/ANL.md) · [SHR](./modules/SHR.md)
+3. **Ranh Giới Dataset (`Dataset Independence Rule`)**:
+   - Bộ dữ liệu `Dataset` thuộc sở hữu của `DATA` Domain, độc lập với `missionId` hay `questionId`.
+
+---
+
+## 4. 🔗 Đường Dẫn Verified & Placeholders
+
+| Feature Route | Tệp Render Chính | Module Ownership | Trạng Thái |
+|---|---|---|---|
+| `/courses` | `src/pages/learner/CoursesPage.jsx` | `LRN` | `CURRENT` |
+| `/courses/:slug` | `src/pages/learner/CourseDetailPage.jsx` | `LRN` | `CURRENT` |
+| `/map` | `src/pages/learner/LearningMapPage.jsx` | `LRN` / `GAME` | `CURRENT` (Static UI) → Dynamic `Sprint 6` |
+| `/missions/:missionId` | `src/pages/learner/MissionIntroPage.jsx` | `LRN` / `CNT` | `CURRENT` |
+| `/missions/:missionId/workspace` | `src/pages/learner/ExcelMissionPage.jsx` | `LRN-EXCEL` | `CURRENT` |
+| `/missions/:missionId/sql` | `src/pages/learner/SqlMissionPage.jsx` | `LRN-SQL` | `CURRENT` |
+| `/profile` | `src/app/router/index.jsx` | `GAME` | `PLANNED` (Placeholder) |
+| `/achievements` | `src/app/router/index.jsx` | `GAME` | `PLANNED` (Placeholder) |
+| `/admin/settings` | `src/pages/admin/PageStatusPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/courses` | Placeholder | `ADM` | `PROPOSED` |

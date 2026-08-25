@@ -156,7 +156,7 @@ export function validateReadOnlyQuery(query) {
   if (!READ_ONLY_START_KEYWORDS.has(keywords[0])) {
     throw new SqlEngineError(
       SQL_ERROR_CODES.READ_ONLY_VIOLATION,
-      'Chỉ hỗ trợ truy vấn đọc dữ liệu bắt đầu bằng SELECT hoặc WITH.'
+      'Chỉ hỗ trợ truy vấn đọc dữ liệu bắt đầu bằng SELECT hoặc WITH. Các câu lệnh thay đổi dữ liệu không được phép.'
     )
   }
 

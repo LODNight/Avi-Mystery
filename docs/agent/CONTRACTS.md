@@ -1,38 +1,82 @@
-# Shared Contracts
+# Shared Service & Domain Contracts
 
-Đây là contract đã được chấp nhận và triển khai cho Step 3.4. Nguồn code là `src/services/contracts/submissionService.js`; mock và API adapter tương lai phải giữ cùng public interface qua service gateway.
+> **Cập nhật lần cuối:** 24/08/2026
+> **Trạng thái hợp đồng:** Nguồn chuẩn cho giao tiếp dữ liệu giữa các module Frontend và Backend.
+> **Trạng thái phân loại:**
+> - `CURRENT`: Đã triển khai và verified (`submissionService`, `sqlEngineAdapter`, `excelChecker`, `sqlChecker`).
+> - `PLANNED`: Chuẩn bị triển khai trong Sprint 5–6 (`contentService`, `datasetService`, `progressService`).
+> - `PROPOSED`: Định hướng mở rộng tương lai (`practiceService`, `analyticsService`).
 
-## Mission Identity
+---
 
-- `missionId`: string ổn định, bắt buộc.
-- `stepId`: string tùy chọn khi submission ở cấp step.
-- `tool`: `'excel' | 'sql'`.
-- Version/content revision dùng cho submission: TBD.
+## 1. 🏛 Domain Hierarchy & Taxonomy Contracts (`PLANNED`)
 
-## Submission Mode
+Hệ thống tuân thủ chuỗi phân cấp dữ liệu học tập chuẩn:
+```text
+Learning Journey
+  └── Phase
+       └── Chapter
+            └── Investigation (Truyện / Bối cảnh Vụ án)
+                 └── Question (Nhiệm vụ kỹ thuật Excel/SQL)
+                      ├── Question Variant (Biến thể bài tập)
+                      └── Submission (Bài làm của người học)
+                           └── Result (Kết quả chấm điểm & potentialXp)
+                                └── Progress (Ghi nhận XP & Level - Progress Domain)
+```
 
-- `run`: đánh giá thử; không hoàn thành step/mission, không tạo thưởng.
-- `submit`: đánh giá chính thức; có thể trả trạng thái hoàn thành và `potentialXp`, nhưng không trao XP.
+### 1.1. Core Concept Distinctions
+- **Investigation vs Question**: `Investigation` chứa câu chuyện bối cảnh trinh thám; `Question` là nhiệm vụ thao tác kỹ thuật cụ thể (công thức Excel hoặc câu lệnh SQL).
+- **Question vs Question Variant**: `Question` quy định đề bài lõi; `Question Variant` chứa bộ test/tham số khác nhau cho chế độ Luyện tập hoặc Replay.
+- **Dataset (Independent Asset)**: Bộ dữ liệu `Dataset` tồn tại độc lập với ID riêng (`datasetId`), có thể được gán cho nhiều `Question` hoặc `Investigation` mà không bị nhân bản.
+- **Course vs Learning Map**: `Course` chứa cấu trúc tri thức; `Learning Map` hiển thị trạng thái nút học tập của người học theo thời gian thực.
+- **Main Quest vs Practice**: `Main Quest` mở khóa tuyến tính trên Bản đồ Học tập; `Practice` làm bài rèn luyện tự do trong ngân hàng câu hỏi.
+- **Completion vs Mastery**: `Completion` là cờ Boolean mở khóa bài học; `Mastery` là điểm số đánh giá chất lượng (Độ chính xác, thời gian giải, số gợi ý đã dùng, tối ưu SQL).
 
-## Submission Request
+---
 
+## 2. 📝 Content & Evaluation Configuration Contract (`PLANNED — Step 5.1`)
+
+```js
+/**
+ * @typedef {Object} EvaluationConfig
+ * @property {'excel'|'sql'} tool
+ * @property {Object} [excelConfig]
+ * @property {string} [excelConfig.targetCell]
+ * @property {string} [excelConfig.expectedFormula]
+ * @property {unknown} [excelConfig.expectedValue]
+ * @property {Object} [sqlConfig]
+ * @property {string[]} [sqlConfig.expectedColumns]
+ * @property {boolean} [sqlConfig.orderMatters]
+ * @property {boolean} [sqlConfig.columnOrderMatters]
+ * @property {number} [sqlConfig.numericTolerance]
+ * @property {string[]} [sqlConfig.requiredConstructs]
+ * @property {string[]} [sqlConfig.forbiddenConstructs]
+ */
+```
+
+- **Quy tắc bóc tách (`Step 5.1`)**: Evaluator configs không được lưu cứng trong `mockSubmissionService.js`. `submissionService` sẽ gọi `contentService.getEvaluationConfig(questionId)` để lấy `EvaluationConfig` tại thời điểm chấm bài.
+
+---
+
+## 3. 🎯 Submission Service Contract (`CURRENT`)
+
+Duy trì tại `src/services/contracts/submissionService.js`. Mock và API adapter giữ cùng public interface.
+
+### 3.1. Submission Request
 ```js
 /**
  * @typedef {Object} SubmissionRequest
  * @property {'run'|'submit'} mode
- * @property {string} missionId
- * @property {string} [stepId] // required/optional rule: TBD
+ * @property {string} questionId // (Hoặc missionId cho legacy compatibility)
+ * @property {string} [stepId]
  * @property {'excel'|'sql'} tool
- * @property {{formula: string, sheetData?: Record<string, unknown>}|unknown} answer
+ * @property {{formula?: string, query?: string, sheetData?: unknown}} answer
  * @property {number} [hintsUsed]
  * @property {string} clientAttemptId
  */
 ```
 
-Component cung cấp câu trả lời của người học; evaluator/service lấy expected answer từ content boundary. Component không giữ expected formula/result set.
-
-## Submission Result
-
+### 3.2. Submission Result
 ```js
 /**
  * @typedef {Object} SubmissionResult
@@ -40,108 +84,77 @@ Component cung cấp câu trả lời của người học; evaluator/service l�
  * @property {boolean} isCorrect
  * @property {number} score
  * @property {boolean} stepCompleted
- * @property {boolean} missionCompleted
- * @property {number} potentialXp // not awarded
+ * @property {boolean} questionCompleted
+ * @property {number} potentialXp // Ghi chú: CHỈ LÀ PHẦN THƯỞNG DỰ KIẾN, KHÔNG MUTATE XP
  * @property {string} feedbackCode
  * @property {string} feedback
  */
 ```
 
-Mọi adapter trả envelope `{ data, error }`. Khi thành công, `error` là `null`; khi lỗi, `data` là `null` và error có shape `{ code, message, retryable }`. `netXp`, `updatedUser` và `userLevelUp` không thuộc Submission Result.
+- **Ranh giới an toàn (`Boundaries`)**: `submissionService` **tuyệt đối không mutate XP** của người dùng. Mọi thao tác trao XP do `progressService` đảm nhận.
 
-## Stable Errors
+---
 
-Canonical codes ổn định giữa mock/API: `VALIDATION_ERROR`, `MISSION_NOT_FOUND`, `CONTENT_CONFIG_MISSING`, `UNSUPPORTED_TOOL`, `SERVICE_UNAVAILABLE`, `TIMEOUT`, `DUPLICATE_ATTEMPT`. Message hiển thị có thể thay đổi; UI branch theo code, không parse message. `SERVICE_UNAVAILABLE` và `TIMEOUT` là retryable trong mock Step 3.4.
-
-## Excel Formula Diagnostics
-
-Nhập, Apply/Enter, Run và Submit dùng chung `analyzeExcelFormula(formula, sheetData)`. Result có shape `{ valid, value, normalizedFormula, errorCode, message }`; `evaluateFormulaValue` giữ compatibility bằng cách trả value hoặc `null`.
-
-Stable formula codes: `FORMULA_REQUIRED`, `FORMULA_MISSING_EQUALS`, `FORMULA_EMPTY_EXPRESSION`, `FORMULA_UNBALANCED_PARENTHESES`, `FORMULA_UNSUPPORTED_FUNCTION`, `FORMULA_INVALID_RANGE`, `FORMULA_INVALID_CHARACTER`, `FORMULA_INVALID_SYNTAX`, `FORMULA_REFERENCE_NOT_FOUND`, `FORMULA_NON_NUMERIC_REFERENCE`, `FORMULA_DIVISION_BY_ZERO`.
-
-Khi evaluator trả lỗi, Submission Result dùng chính formula code làm `feedbackCode`; UI hiển thị `message` nhưng không suy luận loại lỗi bằng cách parse message.
-
-## SQL Contracts — Step 4.0 Baseline
-
-Engine, Dataset, Execution Result, stable errors và Worker transport dưới đây đã được spike xác minh. Mission/checker/submission shape vẫn là proposal để Step 4.3, 4.6 và 4.7 triển khai mà không mở rộng UI/service trong Step 4.0.
-
-### SQL Engine / Worker
-
-Public engine interface: `initialize()`, `loadDataset(dataset)`, `getSchema()`, `execute(query, options)`, `reset()` và `dispose()`.
-
-Worker request dùng `{ id, action, payload }`; response dùng `{ id, ok: true, data }` hoặc `{ id, ok: false, error: { code, message, details, retryable } }`. Adapter giữ request correlation, timeout và Worker recovery; Worker sở hữu WASM/database.
-
-### SQL Mission / Dataset
+## 4. 🏆 Progress Service Contract (`PLANNED — Step 6.1`)
 
 ```js
-{
-  missionId: 'string',
-  tool: 'sql',
-  datasetId: 'string',
-  starterQuery: 'string',
-  checkerConfig: {
-    expectedColumns: ['string'],
-    orderMatters: false,
-    columnOrderMatters: true,
-    numericTolerance: 0.001,
-    maxExecutionMs: 2000,
-    maxRows: 500,
-    requiredConstructs: [],
-    forbiddenConstructs: []
-  },
-  hints: []
-}
+/**
+ * @typedef {Object} UserProgressRecord
+ * @property {string} userId
+ * @property {number} currentXp
+ * @property {number} currentLevel
+ * @property {string} title
+ * @property {Record<string, boolean>} completedQuestions // Map questionId -> boolean
+ * @property {Record<string, number>} masteryScores // Map questionId -> score
+ * @property {number} streakDays
+ * @property {string} lastActiveDate
+ */
+
+/**
+ * @typedef {Object} AwardXpRequest
+ * @property {string} userId
+ * @property {string} questionId
+ * @property {string} attemptId
+ * @property {number} xpAmount
+ * @property {'main_quest'|'practice'} mode
+ */
 ```
 
-Dataset đã triển khai có shape `{ id, version, dialect: 'sqlite', tables: [{ name, columns, rows }] }`. Mỗi column có `{ name, type, primaryKey?, nullable? }`; identifier/type/row width được validate trước khi seed. Dataset phải deterministic và đủ metadata để reset database. Expected result/config nằm ở content/evaluator boundary, không nằm trong UI component.
+### 4.1. Nguyên Tắc Idempotency (Chống Cộng Trùng XP)
+- Thao tác `awardXp(request)` kiểm tra cờ `completedQuestions[questionId]`.
+- Nếu bài học đã được hoàn thành từ trước, hệ thống trả về bản ghi tiến độ hiện tại mà **không cộng thêm XP cốt truyện**.
+- Chế độ `practice` chỉ cập nhật điểm `masteryScores` nếu điểm mới cao hơn điểm cũ.
 
-### SQL Execution Result
+---
 
-```js
-{
-  columns: ['string'],
-  rows: [[]],
-  rowCount: 0,
-  truncated: false,
-  executionMs: 0,
-  errorCode: null,
-  message: null
-}
-```
+## 5. ⚡ SQL WASM Engine Contract (`CURRENT`)
 
-Stable errors: `SQL_ENGINE_NOT_READY`, `SQL_WASM_LOAD_FAILED`, `SQL_DATASET_INVALID`, `SQL_QUERY_REQUIRED`, `SQL_MULTIPLE_STATEMENTS`, `SQL_READ_ONLY_VIOLATION`, `SQL_SYNTAX_ERROR`, `SQL_RUNTIME_ERROR`, `SQL_TIMEOUT`, `SQL_RESULT_LIMIT_EXCEEDED`, `SQL_WORKER_TERMINATED`.
+Được xác minh tại Step 4.0–4.8.
 
-`execute` chỉ nhận một statement bắt đầu bằng `SELECT`/`WITH`; mutation, DDL, `ATTACH`, `PRAGMA` và statement thứ hai bị chặn ở adapter và Worker. Default timeout 2000ms; timeout cứng terminate/recreate Worker rồi nạp lại seed. Default 500 rows, hard cap 5000; kết quả vượt limit trả rows đã cắt với `truncated: true` và `SQL_RESULT_LIMIT_EXCEEDED`.
+### 5.1. Worker Request Transport
+- Worker Request: `{ id: string, action: string, payload: unknown }`
+- Worker Response: `{ id: string, ok: true, data: unknown }` hoặc `{ id: string, ok: false, error: { code: string, message: string, retryable: boolean } }`
 
-### SQL Submission Answer
+### 5.2. Security Policy Guards
+- **Read-Only Enforcer**: Chặn 100% các từ khóa `INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`, `CREATE`, `VACUUM`, `PRAGMA`, `ATTACH`, `DETACH`.
+- **Multi-Statement Guard**: Chặn thực thi nhiều hơn 1 câu lệnh SQL phân tách bởi dấu `;`.
+- **Resource Limits**: Hard timeout 3000ms (giải phóng Worker) và truncation cap 500 rows.
 
-SQL dùng shared Submission Request với `tool: 'sql'` và answer proposal `{ query, executionResult? }`. Submission adapter/evaluator phải tự lấy expected config từ content boundary; client-provided execution result không được coi là authoritative khi backend Sprint 7 tồn tại.
+---
 
-`run` chỉ execute/feedback; `submit` mới có thể trả completion và `potentialXp`. Không tạo SQL Submission Service riêng.
-
-## Idempotency
-
-- `clientAttemptId` nhận diện một hành động submit phía client; cùng ID không được tạo nhiều attempt/reward.
-- `run` không trao thưởng.
-- `submit` đúng chỉ trả `potentialXp` trong Sprint 3.4.
-- Progress Sprint 5 trao thưởng tối đa một lần cho completion key; backend Sprint 7 thực thi transaction/server authority.
-- Completion key và chính sách reward/resubmit dài hạn thuộc Progress Sprint 5 và backend Sprint 7.
-
-## Boundaries
+## 6. 🔄 Subsystem Boundaries Summary
 
 ```text
-UI → submissionService → tool evaluator → SubmissionResult
-                               ↓
-                         no XP mutation
-
-Progress consumes an eligible completed result → idempotent award
+UI Component ──> submissionService.submit(req) ──> tool Evaluator (pure)
+                         │                                 │
+                         ▼                                 ▼
+                SubmissionResult                     Returns Feedback
+             (potentialXp preview)                     & Correctness
+                         │
+                         ▼
+        progressService.awardProgress(result)
+                         │
+                         ▼
+               Idempotent XP Ledger
+               & Level Up Event Trigger
 ```
-
-- Evaluator: kiểm tra đáp án và tạo evaluation detail; không lưu attempt, completion hoặc XP.
-- Submission: validation, async orchestration, attempt identity, mode và feedback mapping; không cập nhật user XP.
-- Progress: completion/reward/level/streak; không gọi UI component và không đánh giá formula/query.
-- Mock/API adapters: cùng public methods và response shape qua `src/services/index.js`.
-
-## Implemented Contract
-
-`submissionService` cung cấp `submit(request)` và `getSubmissionHistory(userId)` qua `src/services/index.js`. Step 3.4 triển khai checker đã xác minh cho `mission-001`; mission chưa có checker trả `CONTENT_CONFIG_MISSING` thay vì dùng fallback sai. API thật vẫn được hoãn đến Sprint 7.

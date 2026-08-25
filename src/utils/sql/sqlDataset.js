@@ -11,21 +11,24 @@ export function validateSqlDataset(dataset) {
   if (!dataset || typeof dataset !== 'object' || Array.isArray(dataset)) {
     throw datasetError('SQL dataset phải là một object hợp lệ.')
   }
-  if (!dataset.id || typeof dataset.id !== 'string') {
+  const datasetId = dataset.datasetId || dataset.id
+  if (!datasetId || typeof datasetId !== 'string') {
     throw datasetError('SQL dataset phải có id.')
   }
   if (!Number.isInteger(dataset.version) || dataset.version < 1) {
     throw datasetError('SQL dataset phải có version là số nguyên dương.')
   }
-  if (dataset.dialect !== 'sqlite') {
+  const dialect = dataset.dialect !== undefined ? dataset.dialect : dataset.schema?.dialect
+  if (dialect !== 'sqlite') {
     throw datasetError('SQL dataset của Sprint 4 chỉ hỗ trợ dialect sqlite.')
   }
-  if (!Array.isArray(dataset.tables) || dataset.tables.length === 0) {
+  const tables = dataset.tables !== undefined ? dataset.tables : dataset.schema?.tables
+  if (!Array.isArray(tables) || tables.length === 0) {
     throw datasetError('SQL dataset phải có ít nhất một bảng.')
   }
 
   const tableNames = new Set()
-  dataset.tables.forEach((table) => {
+  tables.forEach((table) => {
     if (!table || !IDENTIFIER_PATTERN.test(table.name || '')) {
       throw datasetError('Tên bảng chỉ được chứa chữ, số và dấu gạch dưới.', {
         table: table?.name,

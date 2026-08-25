@@ -1,5 +1,5 @@
 import missionsData from '../../mocks/data/missions.json';
-import datasetsData from '../../mocks/data/datasets.json';
+import { mockDatasetService } from './mockDatasetService.js';
 
 const DELAY = 0;
 function delay(ms = DELAY) {
@@ -27,11 +27,7 @@ export const mockMissionService = {
 
   async getDataset(datasetId) {
     await delay();
-    const dataset = datasetsData.find((d) => d.id === datasetId);
-    if (!dataset) {
-      return { data: null, error: `Không tìm thấy dataset "${datasetId}".` };
-    }
-    return { data: dataset, error: null };
+    return mockDatasetService.getDataset(datasetId);
   },
 
   async getRecommendedMissions(_userId) {

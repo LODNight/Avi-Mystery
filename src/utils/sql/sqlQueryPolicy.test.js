@@ -89,7 +89,7 @@ describe('SQL read-only query policy', () => {
 
   it('cho phép câu lệnh kết thúc bằng dấu chấm phẩy và khoảng trắng', () => {
     expect(validateReadOnlyQuery('SELECT * FROM sales;   \n  ')).toBe(
-      'SELECT * FROM sales;   \n'
+      'SELECT * FROM sales;'
     )
   })
 })

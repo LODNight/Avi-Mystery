@@ -1,6 +1,38 @@
 {
+  "datasetId": "sql-sales-v1",
   "id": "sql-sales-v1",
   "version": 1,
+  "type": "sql",
+  "name": "Database Doanh Thu Bán Hàng",
+  "metadata": {
+    "name": "Database Doanh Thu Bán Hàng",
+    "description": "Cơ sở dữ liệu bán hàng bao gồm thông tin đơn hàng, sản phẩm và chi nhánh"
+  },
+  "schema": {
+    "dialect": "sqlite",
+    "tables": [
+      {
+        "name": "sales",
+        "columns": [
+          { "name": "id", "type": "INTEGER", "primaryKey": true, "nullable": false },
+          { "name": "order_id", "type": "TEXT", "nullable": false },
+          { "name": "product_name", "type": "TEXT", "nullable": false },
+          { "name": "branch", "type": "TEXT", "nullable": false },
+          { "name": "revenue", "type": "REAL", "nullable": false }
+        ],
+        "rows": [
+          [1, "ORD-1001", "Laptop Pro", "Hà Nội", 12500000],
+          [2, "ORD-1002", "Màn hình 27 inch", "Hà Nội", 6200000],
+          [3, "ORD-1003", "Laptop Pro", "Đà Nẵng", 11800000],
+          [4, "ORD-1004", "Chuột không dây", "Hồ Chí Minh", 850000],
+          [5, "ORD-1005", "Bàn phím cơ", "Hồ Chí Minh", 2100000],
+          [6, "ORD-1006", "Màn hình 27 inch", "Đà Nẵng", 5900000],
+          [7, "ORD-1007", "Laptop Pro", "Hồ Chí Minh", 13900000],
+          [8, "ORD-1008", "Tai nghe", "Hà Nội", 1750000]
+        ]
+      }
+    ]
+  },
   "dialect": "sqlite",
   "tables": [
     {

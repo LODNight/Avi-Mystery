@@ -1,80 +1,35 @@
-# UI Change Inventory
+# UI Change Inventory & Architecture Alignment
 
-## Audit Information
+> **Cập nhật lần cuối:** 24/08/2026
+> **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
+> **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
-- Project: Avi-Mystery
-- Current Sprint: Sprint 3 — Excel Vertical Slice / UI Stabilization
-- Current Step: Step 3.6G — Sprint 3 Stabilization (`DONE`)
-- Audit date: 22/08/2026
-- Compared against: working tree sau stabilization Step 3.6G
-- Audit status: Complete — code, automated regression và Browser verification
+---
 
-Không có một commit duy nhất được xác nhận là baseline trước toàn bộ thay đổi UI. Vì vậy audit không suy đoán nguồn gốc xa hơn ba commit gần nhất và trạng thái working tree hiện tại.
+## 1. 📋 UI Change Classification Table
 
-## Change Classification
+| ID | Thay đổi Giao diện | Màn hình / Component | Module Ownership | Trạng thái Kiến trúc | Status | Verified Evidence |
+|---|---|---|---|---|---|---|
+| `UI-001` | Inline validation/incorrect/service error & Retry button | Excel Mission Workspace | `LRN-SUB` | `CURRENT` | Tested | `src/pages/learner/ExcelMissionPage.jsx` |
+| `UI-002` | Victory Modal chúc mừng phá án, potential XP wording | Excel Mission Workspace | `LRN-SUB` | `CURRENT` | Tested | `src/components/excel/MissionResultModal.jsx` |
+| `UI-003` | Action Toolbar buttons (Run / Submit) with loading state | Excel Mission Workspace | `LRN-SUB` | `CURRENT` | Tested | `src/components/excel/ActionToolbar.jsx` |
+| `UI-004` | Formula diagnostic message bar above Formula Bar | Excel Mission Workspace | `LRN-SUB` | `CURRENT` | Tested | `src/components/excel/FormulaBar.jsx` |
+| `UI-005` | Spreadsheet Grid interactive cell selection & formula entry | Excel Mission Workspace | `LRN-EXCEL` | `CURRENT` | Tested | `src/components/excel/SpreadsheetGrid.jsx` |
+| `UI-006` | Hint Drawer non-blocking side panel & Pin-to-fx button | Excel Mission Workspace | `LRN-EXCEL` | `CURRENT` | Tested | `src/components/excel/HintPanel.jsx` |
+| `UI-007` | Learner Layout Collapsible Sidebar & Detective Amber Theme | Learner App Shell | `SHR` | `CURRENT` | Tested | `src/app/layouts/LearnerLayout.jsx` |
+| `UI-008` | Schema Browser Table/Column metadata view & sample rows | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/SchemaBrowser.jsx` |
+| `UI-009` | SQL Code Editor MVP with Ctrl+Enter & soft Tab 2-space | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/SqlEditor.jsx` |
+| `UI-010` | Query Result Viewer with client pagination & NULL badge | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/ResultViewer.jsx` |
+| `UI-011` | SQL Mission Shell with loader & isolated route | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/pages/learner/SqlMissionPage.jsx` |
+| `UI-012` | Dynamic Learning Map node unlock & completion status | `LearningMapPage` | `GAME` | `PLANNED` | Planned | `Sprint 6` |
+| `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
+| `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
+| `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `PROPOSED` | Proposed | `Sprint 8` |
 
-| ID | Thay đổi | Màn hình | Module | Shared? | Logic affected? | Classification | Status | Evidence |
-|---|---|---|---|---|---|---|---|---|
-| `UI-001` | Inline validation/incorrect/service error và Retry trong vùng Submission | Excel Mission Workspace | `LRN-SUB` | No | Yes | `3.4E` | Tested | `src/pages/learner/ExcelMissionPage.jsx`; `ExcelMissionPage.test.jsx`; commit `9802cdc` |
-| `UI-002` | Success-only completion modal, potential XP wording, focus/Escape/restore focus | Excel Mission Workspace | `LRN-SUB` | No | Yes | `3.4E` | Tested | `src/components/excel/MissionResultModal.jsx`; `MissionResultModal.test.jsx`; commits `a103cc0`, `9802cdc` |
-| `UI-003` | Run/Submit loading, disabled state và phân cấp màu nút thao tác | Excel Mission Workspace | `LRN-SUB` | No | Yes | `3.4E` | Existing | `src/components/excel/ActionToolbar.jsx`; `ActionToolbar.test.jsx`; commits `9802cdc`, `c7fef8b` |
-| `UI-004` | Formula diagnostic accessible và nhóm feedback phía trên Formula Bar | Excel Mission Workspace | `LRN-SUB` | No | Yes | `3.4E` | Tested | `src/components/excel/FormulaBar.jsx`; `src/pages/learner/ExcelMissionPage.jsx`; commit `c7fef8b` |
-| `UI-005` | Chống double submit, giữ answer khi sai, retry và unmount guard | Excel Mission Workspace | `LRN-SUB` | No | Yes | `3.4E` | Tested | `src/pages/learner/ExcelMissionPage.test.jsx`; `src/services/mock/mockSubmissionService.test.js`; commit `9802cdc` |
-| `UI-006` | Objective, Action Toolbar, feedback và Formula Bar được gom lại thành hierarchy mới | Excel Mission Workspace | `LRN-EXCEL` | No | No | `3.5` | Verified | `ExcelMissionPage.jsx`; Browser 390/768/1440px |
-| `UI-007` | Header Excel A/B/C, dataset row, numeric alignment và target-cell badge được restyle | Excel Mission Workspace | `LRN-EXCEL` | No | No | `3.5` | Verified | `SpreadsheetGrid.test.jsx`; Browser Light/Dark |
-| `UI-008` | Learner Sidebar active state cho route con và `/missions/*` | Toàn bộ Learner layout | `SHR` | Yes | Yes | `3.5` | Tested | `LearnerLayout.test.jsx`; segment boundary covered |
-| `UI-009` | Hint Panel thành non-modal side drawer, không backdrop | Excel Mission Workspace | `LRN-EXCEL` | No | Yes | `3.5` | Tested | mobile width, focus, Escape và restore focus verified |
-| `UI-010` | Hint header hai dòng, trạng thái card, XP badge và footer alignment | Excel Mission Workspace | `LRN-EXCEL` | No | No | `3.5` | Verified | wording “Phần thưởng dự kiến”; Browser tablet |
-| `UI-011` | Gợi ý vừa mở được ghim inline dưới Formula Bar và có nút ẩn | Excel Mission Workspace | `LRN-EXCEL` | No | Yes | `3.5` | Tested | unlock → inline → reset/mission change integration covered |
-| `UI-012` | `/profile` và `/achievements` đã có placeholder route | Learner placeholders | `GAME` | No | No | Future Sprint 5 | Planned — Early Prototype | `src/app/router/index.jsx` |
-| `UI-013` | Admin content routes đã có placeholder | Admin placeholders | `ADM` | No | No | Future Sprint 6 | Planned — Early Prototype | `src/app/router/index.jsx` |
-| `UI-014` | `/admin/analytics` đã có placeholder | Admin Analytics placeholder | `ANL` | No | No | Future Sprint 8 | Planned — Early Prototype | `src/app/router/index.jsx` |
-| `UI-015` | Schema Browser Component (Table/Column metadata, type badges, search, 3-row data sample) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.2` | Tested | `src/components/sql/SchemaBrowser.jsx`; `SchemaBrowser.test.jsx` |
-| `UI-016` | SQL Mission Page Shell, loader, dataset initialization & route (`/missions/:missionId/sql`) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.3` | Tested | `src/pages/learner/SqlMissionPage.jsx`; `SqlMissionPage.test.jsx` |
-| `UI-017` | Controlled SQL Editor MVP Component (`SqlEditor.jsx`, Reset/Run, soft Tab 2-spaces, Ctrl+Enter) | SQL Mission Workspace | `LRN-SQL` | No | Yes | `4.4` | Tested | `src/components/sql/SqlEditor.jsx`; `SqlEditor.test.jsx` |
+---
 
-## Step 3.4E Completion
+## 2. 🛡 UI Architecture Guard Rules
 
-- Xác minh lại toàn bộ feedback region cho validation, incorrect, service error và retry.
-- Xác minh Run/Submit loading và disabled state bằng integration test, không chỉ component tồn tại.
-- Xác minh success modal trên keyboard/focus và responsive submission area.
-- Giữ nguyên answer khi incorrect/service error và không tạo duplicate request.
-- Chốt wording `potentialXp` là phần thưởng dự kiến; không dùng wording hàm ý XP đã được trao.
-
-Các mục trên đã được xác minh và Step 3.4E đã hoàn thành. Submission Contract không thay đổi và UI chỉ mô tả `potentialXp` là phần thưởng dự kiến.
-
-## Step 3.5 Completion
-
-- `3.5A–E`: hoàn thành; các risk còn lại được khép trong Step 3.6G.
-
-## Step 4.0-4.4 Completion
-
-- `Step 4.0–4.4`: Hoàn thành. Đã có SQLite WASM Worker engine, Schema Browser, SQL Mission Shell (`/missions/:missionId/sql`), và SQL Editor MVP.
-- **Light Mode Refinement (Dashboard)**:
-  - Khối "Data Investigator": Chuyển từ nền cam đặc (`bg-primary` solid fill) sang nền trắng/card thanh thoát với viền cam (`border-2 border-amber-500/30 bg-card`), huy hiệu `Award` màu cam bắt mắt, và thanh tiến trình `bg-amber-500/15`, nhường lại sự tập trung cho khối hành động "Trở lại vụ án gần nhất".
-  - Nâng cấp độ tương phản (WCAG AA/AAA) cho tất cả text phụ ("Chương 1 · Excel Foundations...", "Nhiệm vụ tiếp theo: Truy vấn bảng dữ liệu SQL") từ `text-muted-foreground` nhạt sang `text-slate-600 dark:text-slate-400 font-medium`.
-
-## Future Sprint Candidates
-
-- `/profile`, `/achievements`: Early Prototype cho Sprint 5; chưa có Game Progress domain.
-- Admin course/chapter/mission/dataset placeholders: Early Prototype cho Sprint 6; chưa có Content Builder.
-- `/admin/analytics`: Early Prototype cho Sprint 8; chưa có analytics implementation.
-
-## Business Flow Verification
-
-- Working tree không thay đổi route, service contract hoặc package.
-- Sidebar ánh xạ `/missions/*` về `/map` theo segment boundary và có unit test.
-- Inline hint được xóa khi Reset/mission change và có integration test.
-- Submission contract change trong commit `9802cdc` đã được chấp nhận và thuộc Step 3.4 core; audit này không sửa `CONTRACTS.md`.
-
-## Remaining Risks
-
-- Fallback hint text đang được dựng trong `ExcelMissionPage` song song với normalization trong `HintPanel`, có nguy cơ lệch nội dung.
-- Repository chưa có framework visual regression/E2E; Step 3.6G đã bù bằng Browser check có kích thước 390/768/1440px.
-- Global npm trên máy xác minh bị thiếu `npm-cli.js`; local Vitest/Vite chạy được. ESLint 9 chưa có `eslint.config.*`, nên lint project-level chưa phải gate khả dụng.
-
-## Closed Decisions
-
-- Wording dùng “Phần thưởng dự kiến”.
-- Inline hint tiếp tục thuộc `LRN-EXCEL`; chỉ promote khi có consumer thứ hai.
-- Step 4.0 đã đạt gate; Sprint 4 product implementation chỉ bắt đầu khi người dùng kích hoạt Step tiếp theo với Current Task mới.
+1. **NO direct mock JSON imports in UI**: Mọi trang UI JSX tuyệt đối không import trực tiếp `.json` trong `src/mocks/data/` hoặc gọi trực tiếp `mockSubmissionService.js`. Mọi giao tiếp đi qua `src/services/index.js`.
+2. **Wording Standard for Potential XP**: Giao diện UI chỉ sử dụng cụm từ *"Phần thưởng dự kiến"* (`potentialXp`) khi hiển thị thông tin bài tập. Tuyệt đối không dùng câu chữ hàm ý điểm XP đã được ghi nhận vào tài khoản khi `progressService` chưa chạy.
+3. **Responsive Grid & WASM Cleanup**: Mọi màn hình workspace (Excel & SQL) bảo đảm hiển thị mượt trên 390px, 768px, 1440px và tự động cleanup Web Worker / memory timers khi unmount.

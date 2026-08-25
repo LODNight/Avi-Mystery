@@ -9,7 +9,7 @@
   - Sử dụng React 18 & Vite cho tốc độ build và Hot Module Replacement (HMR) cực nhanh.
   - Sử dụng Vanilla Tailwind CSS 3 cho Design System phong cách Detective Amber.
   - Sử dụng Vitest + React Testing Library để viết unit và component tests.
-* **Lý do:** Tốc độ phản hồi tức thì, cấu hình gọn nhẹ, đáp ứng tốt yêu cầu MVP.
+* **Trạng thái:** `CURRENT` (Đã áp dụng từ Sprint 1).
 
 ---
 
@@ -20,8 +20,7 @@
   - Định nghĩa **Service Contracts** rõ ràng dưới dạng JS object spec (`authServiceContract`, `courseServiceContract`, v.v.).
   - Triển khai **Mock Adapters** trả về cấu trúc dữ liệu chuẩn domain models kèm giả lập độ trễ mạng (`delay(300ms)`).
   - Cung cấp cổng chuyển đổi tập trung `src/services/index.js` điều khiển bằng biến `USE_MOCK`.
-* **Lý do:** Cho phép đổi sang kết nối API Backend thật (`USE_MOCK = false`) mà **không cần sửa bất kỳ file JSX UI nào**.
-* **Compliance hiện tại:** Step 3.4 đã tuân thủ quyết định: `ExcelMissionPage.jsx` gọi `missionService`/`submissionService` qua gateway; shared submission contract và mock adapter dùng cùng public interface. API thật vẫn thuộc Sprint 7.
+* **Trạng thái:** `CURRENT` (Đã áp dụng từ Sprint 1–4). Backend API thật chuyển hướng sang Sprint 9.
 
 ---
 
@@ -29,22 +28,46 @@
 
 * **Bối cảnh:** Hệ thống hỗ trợ 3 nhóm vai trò: `super_admin`, `content_admin`, `learner`.
 * **Quyết định:**
-  - Tạo bảng trợ giúp quyền hạn `src/constants/roles.js` quy định rõ quyền truy cập Admin (`super_admin`, `content_admin`) và Learner (`learner`).
+  - Tạo bảng trợ giúp quyền hạn `src/constants/roles.js` quy định rõ quyền truy cập Admin và Learner.
   - Xây dựng HOC Route Guards (`RequireAuth`, `RequireLearner`, `RequireAdmin`) bao bọc các tuyến đường trong `AppRouter`.
-* **Lý do:** Đảm bảo an toàn phân quyền ngay tại phía Frontend trước khi được Backend kiểm tra lại.
+* **Trạng thái:** `CURRENT` (Đã áp dụng từ Sprint 1).
 
 ---
 
-## ADR-004: Accessible Loading Patterns (Skeleton Loading & ARIA)
+## ADR-004: In-Browser SQLite WASM Worker Engine & Security Guard
 
-* **Bối cảnh:** Người dùng cần nhận biết trạng thái đang tải dữ liệu để tăng trải nghiệm người dùng (Perceived Performance).
+* **Bối cảnh:** Cần cung cấp môi trường thực hành SQL trực tiếp trên trình duyệt mà không phụ thuộc backend server, đồng thời đảm bảo không làm lag UI chính và ngăn chặn các câu lệnh nguy hại.
 * **Quyết định:**
-  - Sử dụng Skeleton loaders giữ nguyên khung bố cục (Layout Geometry) thay vì Spinner xoay đơn điệu.
-  - Gắn thuộc tính `aria-busy="true"` vào vùng container đang thực hiện fetch dữ liệu.
-* **Lý do:** Đạt tiêu chuẩn Accessibility (a11y) và chống giật giật giao diện (Layout Shift).
+  - Sử dụng `sql.js` (SQLite WASM) chạy hoàn toàn trong Web Worker cách ly (`sqlEngine.worker.js`).
+  - Xây dựng bộ lọc an toàn `sqlQueryPolicy.js` chặn 100% các từ khóa đột biến cấu trúc/dữ liệu và multi-statement queries.
+  - Thiết lập ngắt thời gian thực thi (Execution Timeout 3s) và giới hạn dòng dữ liệu trả về (Row Cap 500 rows).
+* **Trạng thái:** `CURRENT` (Đã áp dụng từ Sprint 4).
+
+---
+
+## ADR-005: Tái Cấu Trúc Learning Domain & Bóc Tách Cấu Hình Chấm Điểm (Sprint 5 Architecture)
+
+* **Bối cảnh:** Đợt Audit sau Sprint 4 xác định hai khoản nợ kiến trúc:
+  1. Cấu hình kiểm thử (`EXCEL_CHECKER_CONFIG`, `SQL_CHECKER_CONFIG`) đang bị nhúng trực tiếp trong `mockSubmissionService.js`.
+  2. Khái niệm `Mission` bị gộp chung giữa bối cảnh vụ án (Story Narrative) và nhiệm vụ kỹ thuật (Technical Task/Step).
+* **Quyết định:**
+  - Bóc tách cấu hình chấm điểm ra khỏi Submission Adapter đưa về `contentService`.
+  - Chuẩn hóa mô hình phân tầng: `Learning Journey` → `Phase` → `Chapter` → `Investigation` → `Question` → `Question Variant` → `Submission` → `Result` → `Progress` → `XP / Mastery`.
+  - Độc lập hóa `Dataset` thành tài sản có thể tái sử dụng cho nhiều Question khác nhau.
+* **Trạng thái:** `PLANNED` (Sẵn sàng thực thi trong Sprint 5).
+
+---
+
+## ADR-006: Phân Tách Trách Nhiệm Giữa Submission Service & Progress Service (Sprint 6 Architecture)
+
+* **Bối cảnh:** Trước đây `mockSubmissionService.js` tự tính toán `potentialXp` nhưng không lưu trữ tiến độ hoặc level của người học.
+* **Quyết định:**
+  - `Submission Service` chỉ chịu trách nhiệm đánh giá tính đúng/sai của câu trả lời, trả về `SubmissionResult` chứa kết quả và `potentialXp` (không mutate state).
+  - `Progress Service` chịu trách nhiệm độc lập trong việc tiếp nhận `SubmissionResult`, thực hiện trao thưởng XP theo cơ chế **Idempotent** (chống cộng trùng), thăng cấp và cập nhật mở khóa trên Bản đồ Học tập.
+* **Trạng thái:** `PLANNED` (Sẵn sàng thực thi trong Sprint 6).
 
 ---
 
 ## Agent-facing Decisions
 
-Các quyết định scope/contract mới hơn — gồm Submission không trao XP, inline feedback và quy tắc module Planned — được duy trì tại [`agent/DECISIONS.md`](./agent/DECISIONS.md). File này giữ lịch sử kiến trúc; `agent/CURRENT_TASK.md` giữ trạng thái task hiện tại.
+Các quyết định scope/contract chi tiết dành cho AI Agent tiếp tục được duy trì tại [`agent/CONTRACTS.md`](./agent/CONTRACTS.md) và [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md).

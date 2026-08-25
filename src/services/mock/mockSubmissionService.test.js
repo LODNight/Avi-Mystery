@@ -241,4 +241,48 @@ describe('mockSubmissionService Unit Tests (Step 3.4)', () => {
       expect(res.error.code).toBe(SUBMISSION_ERROR_CODES.VALIDATION_ERROR);
     });
   });
+
+  describe('Question Domain Submissions (Step 5.5)', () => {
+    it('chấp nhận submission với questionId và trả về questionId và investigationId', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit({
+        mode: SUBMISSION_MODES.SUBMIT,
+        questionId: 'q-001',
+        tool: SUBMISSION_TOOLS.EXCEL,
+        answer: {
+          formula: '=C2*D2',
+          sheetData: { C2: 3, D2: 150000 },
+        },
+        clientAttemptId: 'q-attempt-001',
+      });
+
+      expect(res.error).toBeNull();
+      expect(res.data.isCorrect).toBe(true);
+      expect(res.data.questionId).toBe('q-001');
+      expect(res.data.investigationId).toBe('inv-001');
+    });
+
+    it('tự động suy ra questionId và investigationId khi submit bằng legacy missionId', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit(makeRequest({ missionId: 'mission-001' }));
+
+      expect(res.error).toBeNull();
+      expect(res.data.questionId).toBe('q-001');
+      expect(res.data.investigationId).toBe('inv-001');
+    });
+
+    it('báo lỗi khi không truyền cả missionId lẫn questionId', async () => {
+      const service = createMockSubmissionService({ delayMs: 0 });
+      const res = await service.submit({
+        mode: SUBMISSION_MODES.SUBMIT,
+        tool: SUBMISSION_TOOLS.EXCEL,
+        answer: { formula: '=C2*D2' },
+        clientAttemptId: 'invalid-no-id',
+      });
+
+      expect(res.data).toBeNull();
+      expect(res.error.code).toBe(SUBMISSION_ERROR_CODES.VALIDATION_ERROR);
+      expect(res.error.message).toMatch(/questionId hoặc missionId là bắt buộc/i);
+    });
+  });
 });

@@ -2,6 +2,7 @@ import missionsData from '../../mocks/data/missions.json';
 import { checkExcelAnswer } from '../../utils/excelChecker.js';
 import { evaluateSqlResult } from '../../utils/sql/sqlChecker.js';
 import { storage } from '../../utils/storage.js';
+import { getQuestionIdentity } from '../../domain/content/contentIdentity.js';
 import {
   SUBMISSION_ERROR_CODES,
   SUBMISSION_FEEDBACK_CODES,
@@ -164,10 +165,10 @@ function validateRequest(request) {
     );
   }
 
-  if (!request.missionId || typeof request.missionId !== 'string') {
+  if ((!request.missionId || typeof request.missionId !== 'string') && (!request.questionId || typeof request.questionId !== 'string')) {
     return errorEnvelope(
       SUBMISSION_ERROR_CODES.VALIDATION_ERROR,
-      'missionId là bắt buộc.'
+      'questionId hoặc missionId là bắt buộc.'
     );
   }
 
@@ -263,22 +264,27 @@ export function createMockSubmissionService({
           );
         }
 
-        const mission = missionsData.find((item) => item.id === request.missionId);
+        const questionId = request.questionId || (request.missionId ? getQuestionIdentity(request.missionId)?.id : null);
+        const questionIdentity = questionId ? getQuestionIdentity(questionId) : null;
+        const resolvedMissionId = request.missionId || questionIdentity?.legacyMissionId || questionId;
+        const resolvedInvestigationId = request.investigationId || questionIdentity?.investigationId || null;
+
+        const mission = missionsData.find((item) => item.id === resolvedMissionId);
         if (!mission) {
           return errorEnvelope(
             SUBMISSION_ERROR_CODES.MISSION_NOT_FOUND,
-            `Không tìm thấy bài học "${request.missionId}".`
+            `Không tìm thấy bài học "${resolvedMissionId}".`
           );
         }
 
         let checkResult = { isCorrect: false, score: 0, feedback: '', feedbackCode: '' };
 
         if (request.tool === SUBMISSION_TOOLS.EXCEL) {
-          const checkerConfig = EXCEL_CHECKER_CONFIG[request.missionId];
+          const checkerConfig = EXCEL_CHECKER_CONFIG[resolvedMissionId];
           if (!checkerConfig) {
             return errorEnvelope(
               SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
-              `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+              `Bài học "${resolvedMissionId}" chưa có cấu hình chấm điểm.`
             );
           }
 
@@ -289,11 +295,11 @@ export function createMockSubmissionService({
             sheetData: request.answer.sheetData || {},
           });
         } else if (request.tool === SUBMISSION_TOOLS.SQL) {
-          const checkerConfig = SQL_CHECKER_CONFIG[request.missionId];
+          const checkerConfig = SQL_CHECKER_CONFIG[resolvedMissionId];
           if (!checkerConfig) {
             return errorEnvelope(
               SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING,
-              `Bài học "${request.missionId}" chưa có cấu hình chấm điểm.`
+              `Bài học "${resolvedMissionId}" chưa có cấu hình chấm điểm.`
             );
           }
 
@@ -322,6 +328,8 @@ export function createMockSubmissionService({
         const response = {
           data: {
             attemptId,
+            questionId: questionId || null,
+            investigationId: resolvedInvestigationId || null,
             isCorrect: checkResult.isCorrect,
             score: checkResult.score,
             stepCompleted: isCompleted,
@@ -344,7 +352,9 @@ export function createMockSubmissionService({
           submissions.push({
             attemptId,
             clientAttemptId,
-            missionId: request.missionId,
+            questionId: questionId || null,
+            investigationId: resolvedInvestigationId || null,
+            missionId: resolvedMissionId,
             stepId: request.stepId || null,
             tool: request.tool,
             mode: request.mode,

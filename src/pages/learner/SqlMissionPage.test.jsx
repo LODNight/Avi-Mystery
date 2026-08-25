@@ -192,7 +192,7 @@ describe('SqlMissionPage', () => {
 
     // Re-render with mission-011 route
     rerender(
-      <MemoryRouter initialEntries={['/missions/mission-011/sql']}>
+      <MemoryRouter key="mission-011" initialEntries={['/missions/mission-011/sql']}>
         <Routes>
           <Route
             path="/missions/:missionId/sql"

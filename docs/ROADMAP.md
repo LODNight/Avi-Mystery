@@ -1,223 +1,185 @@
-# Lộ Trình Phát Triển Dự Án Avi-Mystery
+# Lộ Trình Phát Triển Dự Án Avi-Mystery (Project Roadmap)
 
-> **Định hướng chiến lược:** Phát triển dự án theo mô hình Vertical Slice & Iterative Sprints. Ưu tiên hoàn thiện các luồng nghiệp vụ lõi (Excel & SQL practice, Game progress) trước khi tích hợp Backend thật và mở rộng tính năng nâng cao.
-> Các khu vực hệ thống bao gồm: `LRN` (Learner App), `ADM` (Admin App), `SHR` (Shared UI/Logic), `BE` (Backend & Mock Services).
+> **Định hướng chiến lược:** Phát triển dự án theo mô hình Vertical Slice & Iterative Sprints. Ưu tiên hoàn thiện các luồng nghiệp vụ lõi (Excel & SQL practice) trước khi tái cấu trúc Learning Domain, tích hợp Game Progress, Admin Builder và Backend API.
+> Các khu vực hệ thống bao gồm: `LRN` (Learner App), `ADM` (Admin App), `SHR` (Shared Layout & System Architecture), `BE` (Backend & Mock Services), `GAME` (Gamification & Progress Domain).
 >
-> **Nguồn trạng thái thực thi:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Roadmap chỉ mô tả thứ tự và mục tiêu; không cho phép agent tự chuyển Sprint/Step.
+> **Nguồn trạng thái thực thi:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Roadmap mô tả thứ tự chiến lược và mục tiêu; không cho phép agent tự chuyển Sprint/Step.
 
 ---
 
-## 🟢 Sprint 1 — Frontend Foundation (HOÀN THÀNH)
+## 🏛 Khung Phân Loại Kiến Trúc (Architecture Categorization Framework)
 
-* **Sprint Goal:** Thiết lập toàn bộ khung hạ tầng ứng dụng Frontend, hệ thống phân quyền RBAC, giao diện Detective Amber và cơ chế kiểm thử tự động.
-* **Primary Focus Area:** `SHR` (Shared Layout & System Architecture)
-* **Supporting Focus Area:** `LRN` & `ADM`
-* **Modules Affected:** Auth, Router, UI Components, Service Contracts
-* **Learner Features:**
-  * App Shell & Sidebar responsive thu gọn/mở rộng.
-  * Trang Dashboard Người học tổng quan (`LRN-DASH-001`).
-* **Admin Features:**
-  * App Shell Admin & Phân quyền bảo vệ route (`RequireAdmin`).
-  * Trang Tổng quan Admin Overview (`ADM-OVER-001`).
-* **Shared / Backend Features:**
-  * Phân quyền RBAC Guard 3 roles (`SHR-AUTH-001`).
-  * Design System Detective Amber hỗ trợ Light/Dark Theme (`SHR-AUTH-002`).
-  * Bộ UI Components tiêu chuẩn (`Button`, `Card`, `Input`, `Badge`, `Skeleton`, `EmptyState`).
-  * Accessible Loading Skeletons (`aria-busy="true"`).
-  * Mock Auth, Course, Mission Adapters (`BE-AUTH-001`, `BE-COURSE-001`, `BE-MISSION-001`).
-* **Out of Scope:** Màn hình làm bài Excel/SQL thực tế, kết nối API backend thật.
-* **Exit Criteria:** 100% test cases pass, RBAC bảo vệ 100% routes, 5 file tài liệu tiến độ khởi tạo thành công.
+| Nhãn Trạng Thái | Ý Nghĩa Architecture |
+|---|---|
+| `CURRENT` | Đã triển khai hoàn tất trong source code, đã verified qua unit & integration tests. |
+| `PLANNED` | Đã chốt spec và step decomposition, sẵn sàng thực thi theo kế hoạch. |
+| `PROPOSED` | Định hướng kiến trúc tương lai, đang chờ phê duyệt hoặc phụ thuộc Sprint trước. |
+| `DEPRECATED` | Mô hình cũ hoặc cấu trúc tạm thời đang trong lộ trình loại bỏ. |
+| `LEGACY` | Các ID/Adapter từ giai đoạn đầu (Sprint 1–2) phục vụ backward compatibility. |
 
 ---
 
-## 🟢 Sprint 2 — Course & Learning Map (HOÀN THÀNH)
+## 🎯 Phân Định Khái Niệm Domain Lõi (Core Domain Distinctions)
 
-* **Sprint Goal:** Xây dựng luồng khám phá lộ trình học tập, danh sách khóa học, cấu trúc chương và bản đồ học tập dạng Node cho Người học.
-* **Primary Focus Area:** `LRN` (Learner App)
-* **Supporting Focus Area:** `BE` & `SHR`
-* **Modules Affected:** Course, Map, Mission
-* **Learner Features:**
-  * Trang Danh sách Khóa học (`/courses`) kèm ô tìm kiếm, lọc theo công cụ Excel/SQL và độ khó (`LRN-COURSE-001`) — **DONE**.
-  * Trang Chi tiết Khóa học (`/courses/:slug`) hiển thị tổng quan khóa học, Accordion chương học & danh sách bài học vụ án (`LRN-COURSE-002`) — **DONE**.
-  * Bản đồ học tập dạng Node/Tree (`LearningMapPage` `/map`) với các vị trí vụ án (`LRN-MAP-001`) — **DONE**.
-  * Trang Giới thiệu & Nhận Nhiệm vụ vụ án (`MissionIntroPage` `/missions/:missionId`) (`LRN-MISSION-001`) — **DONE**.
-* **Admin Features:** Giữ nguyên giao diện Admin Overview từ Sprint 1 (không thay đổi).
-* **Shared / Backend Features:**
-  * Bổ sung định dạng thời gian `formatDuration`, nhãn độ khó `difficultyLabel`, nhãn công cụ `toolLabel` vào `src/utils/format.js`.
-  * `mockCourseService` & `mockMissionService` phục vụ lấy danh sách và chi tiết (`getMissionsByChapter`, `getMission`).
-* **Out of Scope:** Trình soạn thảo công thức Excel, trình soạn câu lệnh SQL, quản lý khóa học Admin.
-* **Exit Criteria:** Toàn bộ 4 tính năng `LRN-COURSE-001`, `LRN-COURSE-002`, `LRN-MAP-001`, `LRN-MISSION-001` được triển khai đầy đủ code và Pass 100% Unit/Component Tests.
+1. **Learning Journey (Hành trình) vs Phase (Giai đoạn) vs Course (Khóa học) vs Learning Map (Bản đồ học tập)**:
+   - `Course`: Danh mục đóng gói kiến thức theo chủ đề (ví dụ: *Excel Adventure*, *SQL Investigation*).
+   - `Learning Map`: Giao diện trực quan dạng cây Node biểu diễn tiến độ di chuyển của người học qua từng giai đoạn (`Phase`) và bài tập.
+   - `Learning Journey`: Tuyến đường tổng thể đưa người học từ *Level 1 (Tập sự)* đến *Mastery*.
 
----
+2. **Investigation (Vụ án / Câu chuyện) vs Question (Nhiệm vụ / Câu hỏi) vs Question Variant (Biến thể)**:
+   - `Investigation`: Bối cảnh cốt truyện trinh thám, hồ sơ vụ án và tư liệu ban đầu.
+   - `Question`: Nhiệm vụ kỹ thuật cụ thể (viết 1 công thức Excel hoặc 1 câu lệnh SQL) thuộc một Investigation.
+   - `Question Variant`: Các biến thể tham số/dữ liệu của cùng 1 Question dùng cho luyện tập lại (Replay / Practice) hoặc chống gian lận.
 
-## 🟢 Sprint 3 — Excel Vertical Slice (HOÀN THÀNH 100%)
+3. **Dataset (Bộ dữ liệu độc lập)**:
+   - Bộ dữ liệu (SQL Schema / Excel Table) được quản lý độc lập, tái sử dụng cho nhiều Question/Investigation khác nhau mà không bị nhân bản file.
 
-* **Sprint Goal:** Phát triển không gian làm bài Excel interactive tối thiểu cho Người học, hỗ trợ nhập công thức, chạy kiểm tra và tự động chấm điểm.
-* **Primary Focus Area hiện tại:** `LRN-EXCEL` (Excel Workspace & Light Mode Refinement)
-* **Supporting Focus Area:** `SHR` (contract/gateway, mặc định read-only ngoài path được duyệt)
-* **Modules Affected:** `LRN-EXCEL`, `LRN-SUB`, `SHR`
-* **Learner Features:**
-  * Step 3.0 — Transition audit và Excel Answer Checker — **DONE**.
-  * Step 3.1 — Excel Mission Shell và dataset — **DONE**.
-  * Step 3.2 — Spreadsheet Grid và Formula Bar — **DONE**.
-  * Step 3.3 — Run, Reset, Hint và Action Toolbar — **DONE**.
-  * Step 3.4 — Submission contract, async flow và feedback — **DONE**.
-  * Step 3.4E — Submission UI Stabilization — **DONE**.
-  * Step 3.5 — Learner UI Foundation & Stabilization — **DONE**.
-  * Step 3.6 — Light Mode Refinement & Accessibility — **DONE**.
-  * Step 3.6G — Sprint 3 Stabilization Gate — **DONE**.
-* **Admin Features:** Chưa thay đổi trong Sprint này.
-* **Shared / Backend Features:**
-  * Bộ chấm điểm công thức Excel Answer Checker (`SHR-EXCEL-CHECKER-001`) — **DONE**.
-  * Mock Submission Service, structured errors, retry/idempotency seams và feedback UI — **DONE**.
-  * Submission contract dùng chung và gateway export — **DONE**.
-* **Out of Scope:** SQL Sandbox, Admin Content Builder, API thật và trao XP/level/streak.
-* **Exit Criteria:** Core technical gate đã đạt. Toàn bộ Step 3.0–3.6G, targeted 73/73, regression 133/133, production build và Browser viewport/theme/a11y check pass. Sprint 4 Step 4.0 → 4.1B cũng đã hoàn thành.
+4. **Main Quest (Nhiệm vụ chính) vs Practice (Luyện tập tự do)**:
+   - `Main Quest`: Luồng mở khóa tuyến tính trên Bản đồ Học tập, ghi nhận `Completion` và tiến trình học.
+   - `Practice`: Chế độ giải bài tự do trong ngân hàng câu hỏi, hỗ trợ rèn luyện kỹ năng mà không ảnh hưởng đến cốt truyện chính.
 
-### Step 3.4E — Submission UI Stabilization (HOÀN THÀNH)
-
-- [x] Xác minh Run/Submit loading và double-submit guard.
-- [x] Xác minh inline validation/incorrect/service error/Retry.
-- [x] Xác minh success modal, focus, Escape và responsive submission area.
-- [x] Giữ answer khi sai/lỗi và giữ wording `potentialXp` là phần thưởng dự kiến.
-- [x] Bổ sung regression test còn thiếu; không mở rộng sang Learner UI redesign.
-
-### Step 3.5 — Learner UI Foundation & Stabilization (HOÀN THÀNH)
-
-#### Step 3.5A — UI Audit & Component Inventory
-
-- [x] Kiểm kê màn hình và component hiện tại.
-- [x] Phân loại feature component và shared component.
-- [x] Xác định component trùng lặp.
-- [x] Xác định regression risk.
-- [x] Chốt phạm vi được phép refactor.
-
-#### Step 3.5B — Shared UI Components
-
-- [x] Chuẩn hóa Button.
-- [x] Chuẩn hóa Modal/Dialog.
-- [x] Chuẩn hóa Card, Form và feedback state.
-- [x] Chuẩn hóa loading, empty và error state.
-- [x] Không thay đổi business logic.
-
-#### Step 3.5C — Learner Layout & Navigation
-
-- [x] Chuẩn hóa Header/Sidebar.
-- [x] Chuẩn hóa Mission layout.
-- [x] Kiểm tra navigation.
-- [x] Không xây route thuộc Sprint tương lai.
-
-#### Step 3.5D — Responsive & Accessibility
-
-- [x] Kiểm tra desktop, tablet và mobile cơ bản.
-- [x] Kiểm tra keyboard navigation và focus management.
-- [x] Không dùng màu sắc làm dấu hiệu duy nhất.
-
-#### Step 3.5E — Regression & User Test Readiness
-
-- [x] Regression test Sprint 1–3.4.
-- [x] Kiểm tra learner happy path, loading, error và retry.
-- [x] Tổng hợp feedback nhưng không tự mở rộng scope.
-
-### Step 3.6 — Light Mode Refinement & Accessibility (HOÀN THÀNH)
-
-#### Step 3.6A — Light Mode Audit & Theme Tokens
-- [x] Kiểm kê các màn hình Learner sử dụng Light Mode.
-- [x] Xác định màu đang hard-code.
-- [x] Chuẩn hóa token cho background, surface, border và text.
-- [x] Xác định visual baseline của Dark Mode.
-- [x] Không chỉnh Dark Mode nếu không có regression.
-
-#### Step 3.6B — Background, Cards & Visual Hierarchy
-- [x] Nền hệ thống sử dụng xám cực nhạt.
-- [x] Card sử dụng nền trắng.
-- [x] Chuẩn hóa border hoặc shadow.
-- [x] Phân biệt rõ page, section và card.
-- [x] Không lạm dụng drop shadow.
-- [x] Kiểm tra giao diện desktop và mobile.
-
-#### Step 3.6C — Secondary Action Buttons
-- [x] Sử dụng màu xám hoặc outline trung tính cho Chạy thử, Gợi ý, Đặt lại.
-- [x] Nút Nộp bài vẫn là primary action.
-- [x] Có default, hover, active và disabled state.
-- [x] Có `focus-visible` khi dùng bàn phím.
-- [x] Không chỉ dùng màu để biểu thị trạng thái.
-- [x] Không thay đổi logic của nút.
-
-#### Step 3.6D — Excel Workspace Light Mode
-- [x] Formula Bar: Tăng khả năng nhận biết input, border rõ hơn trên nền trắng, hover/focus/error state.
-- [x] Data Table: Header xám trung tính, tăng độ đọc text, phân biệt cell states, kiểm tra grid line.
-- [x] Không thay đổi formula evaluator hoặc worksheet state.
-
-#### Step 3.6E — Streak Visual Balance
-- [x] Giảm saturation của màu cam, không để Streak cạnh tranh với nút Nộp bài.
-- [x] Ưu tiên nền trắng/xám và viền cam, giữ icon và nội dung dễ nhận biết.
-- [x] Không xây streak logic, không trao XP, không đánh dấu Sprint 5 đã bắt đầu.
-
-#### Step 3.6F — Accessibility & Theme Regression
-- [x] Kiểm tra text contrast, component contrast, keyboard focus.
-- [x] Regression test Dark Mode, Submission flow trên desktop & mobile.
-- [x] Xác minh local Browser preview trên desktop/tablet/mobile.
-
-### Step 3.6G — Sprint 3 Stabilization Gate (HOÀN THÀNH)
-
-- [x] Dấu `=` và lỗi cú pháp trong required range không trả success.
-- [x] Global validator trả mã lỗi ổn định và có unit test đủ các nhánh.
-- [x] Reset/mission change xóa inline hint stale.
-- [x] Hint drawer hỗ trợ focus, Escape và restore focus.
-- [x] Sidebar active matching theo segment boundary.
-- [x] Targeted 73/73, full regression 133/133, production build và Browser check pass.
+5. **Completion (Hoàn thành) vs Mastery (Thành thạo)**:
+   - `Completion`: Trạng thái Boolean (Đã đạt / Chưa đạt) xác nhận người học đã giải đúng nhiệm vụ để mở khóa nút tiếp theo.
+   - `Mastery`: Chỉ số đánh giá độ sâu (Độ chính xác, thời gian giải, số gợi ý đã dùng, điểm tối ưu câu lệnh SQL).
 
 ---
 
-## 🟡 Sprint 4 — SQL Vertical Slice (ĐANG THỰC HIỆN — Step 4.5 HOÀN THÀNH, Step 4.6 KẾ TIẾP)
+## 🟢 Sprint 1 — Frontend Foundation (`CURRENT`)
 
-* **Sprint Goal:** Phát triển môi trường thực thi câu lệnh SQL trực tiếp trên trình duyệt, hỗ trợ Schema Browser, SQL Code Editor và tự động kiểm tra kết quả truy vấn.
-* **Primary Focus Area:** `LRN-SQL` (SQL Workspace, in-browser engine và evaluator)
-* **Supporting Focus Area:** `SHR` và `LRN-SUB`
-* **Execution rule:** Step 4.0 phải hoàn thành trước mọi product implementation; mỗi Step có một Primary Module và Current Task riêng.
-* **Sub-Steps:**
-  - **Step 4.0:** Technical Spike & SQL Contracts — **DONE**; `sql.js@1.14.2`, SQL unit 11/11, regression 144/144 và dev/build/preview Worker+WASM pass
-  - **Step 4.1A:** WASM Packaging & Worker Transport — **DONE**; Request ID correlation, out-of-order & stale filter, lazy-loading, build gating `sql-spike.html`, unit 7/7 & full regression 148/148 pass
-  - **Step 4.1B:** Database Lifecycle, Seed, Reset & Schema API — **DONE**; `getSchema` mở rộng `sampleRows`, lifecycle test 7/7 & dataset validation 8/8 & full SQL 27/27 pass
-  - **Step 4.1C:** Read-only Query Policy, Timeout & Row Limit — **DONE**; 10 mutation/DDL keywords, single-statement policy, timeout recovery and row truncation verified
-  - **Step 4.2:** Schema Browser — **DONE**; search, metadata, sample rows, copy, loading/empty/error and keyboard tests pass
-  - **Step 4.3:** SQL Mission Shell, Loader & Route — **DONE**; `/missions/:missionId/sql`, dataset isolation, lifecycle cleanup & navigation matching pass
-  - **Step 4.4:** SQL Editor MVP — **DONE**; controlled editor, starter/reset query, soft Tab 2-space, Ctrl+Enter shortcut, Detective Amber theme styling & unit tests pass
-  - **Step 4.5:** Query Execution & Result Viewer — **DONE**; SQLite WASM execution, ResultViewer component, NULL/number formatting, thousand separator, sticky scroll container, column width auto-compacting, caret pixel-alignment & integration tests pass (191/191 tests pass)
-  - **Step 4.7:** Submission Integration — **DONE**; mở rộng `mockSubmissionService.js` hỗ trợ `tool: 'sql'`, tích hợp `evaluateSqlResult` vào gateway, nộp bài vụ án kích hoạt `MissionResultModal` và báo lỗi inline trong `SqlMissionPage.jsx` (222/222 tests pass)
-  - **Step 4.8A:** Security, Query Policy & Resource Limits Guard — **DONE**; kiểm tra chính sách read-only, chặn multi-statement injection, execution timeout 3s & row truncation 500 rows
-  - **Step 4.8B:** Web Worker & Database Lifecycle Cleanup — **DONE**; tự động dọn dẹp Web Worker khi unmount và cô lập bộ nhớ khi đổi dataset vụ án
-  - **Step 4.8D:** Production WASM Build & Full Regression Gate — **DONE**; đóng gói file tĩnh WASM/Worker trên production build & full regression gate pass 100%
-* **MVP Boundary:** SQLite dialect, database in-memory, Worker bắt buộc, không OPFS, không backend execution, không XP mutation. Editor dùng controlled textarea trước; syntax highlighting/CodeMirror chỉ được nâng lên P0 khi dependency spike pass.
-* **Sprint Exit Criteria:** một SQL Mission chạy xuyên suốt; engine không block UI; reset/dispose ổn định; user query read-only; checker xử lý order/`NULL`/duplicate/tolerance; Run khác Submit; production WASM và full Excel regression pass. *(ĐÃ ĐẠT CRITERIA - HOÀN THÀNH SPRINT 4)*
+* **Dominant Architectural Objective:** Thiết lập khung hạ tầng ứng dụng Frontend, hệ thống phân quyền RBAC 3 roles, giao diện Detective Amber và cơ chế kiểm thử Vitest.
+* **Status:** `CURRENT` (Hoàn thành 100%).
+* **Key Deliverables:** App Shell, Learner & Admin Layouts, Design System tokens, Mock Adapters (`mockAuthService`, `mockCourseService`, `mockMissionService`).
 
 ---
 
-## 🟡 Sprint 5 — Game Progress System *(ĐANG THỰC HIỆN)*
+## 🟢 Sprint 2 — Course & Learning Map Baseline (`CURRENT`)
 
-* **Sprint Goal:** Tích hợp cơ chế game hóa (XP, Leveling, Unlock Bài mới, Phạt Hint) để tạo động lực cho Người học.
-* **Primary Focus Area:** `GAME` (Progress & Profile)
-* **Các bước triển khai:**
-  - **Step 5.1:** Hệ Thống XP & Thăng Cấp (Leveling Engine) — **IN_PROGRESS**; công thức tính XP, thăng cấp & Level Up Modal animation
-
----
-
-## ⚪ Sprint 6 — Admin Content Builder
-
-* **Sprint Goal:** Cung cấp công cụ quản trị giúp Admin soạn thảo Khóa học, Chương, Nhiệm vụ và xem trước nội dung.
-* **Primary Focus Area:** `ADM` (Admin App - Content Builder)
+* **Dominant Architectural Objective:** Xây dựng luồng khám phá lộ trình học tập, danh sách khóa học, cấu trúc chương và bản đồ học tập tĩnh cho Người học.
+* **Status:** `CURRENT` (Hoàn thành 100%).
+* **Key Deliverables:** `CoursesPage`, `CourseDetailPage`, `LearningMapPage` (Static nodes), `MissionIntroPage`, Admin Page Status Manager.
 
 ---
 
-## ⚪ Sprint 7 — Backend API & Integration
+## 🟢 Sprint 3 — Excel Vertical Slice (`CURRENT`)
 
-* **Sprint Goal:** Triển khai FastAPI Backend, PostgreSQL Application DB và chuyển đổi Frontend từ Mock Adapters sang Real API.
-* **Primary Focus Area:** `BE` (FastAPI & PostgreSQL)
+* **Dominant Architectural Objective:** Môi trường thực hành Excel tương tác trực tiếp, chấm điểm công thức tự động, Hint drawer và Submission gateway.
+* **Status:** `CURRENT` (Hoàn thành 100%).
+* **Key Deliverables:** `SpreadsheetGrid`, `FormulaBar`, `HintPanel`, pure evaluator `excelChecker.js`, `mockSubmissionService`, targeted 73/73 tests, full regression 133/133 tests pass.
 
 ---
 
-## ⚪ Sprint 8 — Analytics, Hardening & Launch
+## 🟢 Sprint 4 — SQL Vertical Slice (`CURRENT`)
 
-* **Sprint Goal:** Tối ưu hóa hiệu năng, bảo mật, báo cáo Admin Analytics và phát hành sản phẩm.
-* **Primary Focus Area:** `ANL`, hỗ trợ bởi `ADM`, frontend và `BE`.
+* **Dominant Architectural Objective:** Động cơ thực thi SQL SQLite WASM In-Memory chạy trong Web Worker cách ly, Schema Browser, SQL Editor và Security Policy Guard.
+* **Status:** `CURRENT` (Hoàn thành 100%).
+* **Key Deliverables:** SQLite WASM Worker (`sqlEngine.worker.js`), `sqlEngineAdapter.js`, `sqlQueryPolicy.js` (chặn 12 từ khóa đột biến & multi-statement), `SchemaBrowser`, `SqlEditor`, `ResultViewer`, pure evaluator `sqlChecker.js`, submission integration, 222+ tests pass.
+
+---
+
+## 🟡 Sprint 5 — Content Domain & Dataset Decoupling (`PLANNED`)
+
+* **Dominant Architectural Objective:** Tái cấu trúc mô hình nội dung, tách biệt Investigation (Cốt truyện) và Question (Nhiệm vụ), giải phóng Dataset thành tài sản tái sử dụng độc lập, bóc tách evaluator config khỏi `mockSubmissionService`.
+
+### 🔹 Step 5.1: Content Schema & Evaluation Config Extraction
+* **Objective:** Bóc tách các cấu hình kiểm thử hardcoded (`EXCEL_CHECKER_CONFIG`, `SQL_CHECKER_CONFIG`) ra khỏi `mockSubmissionService.js` đưa vào Content Layer contract.
+* **Scope:** Tạo contract truy xuất cấu hình chấm điểm theo Question/Step, refactor `mockSubmissionService.js` để đọc config động.
+* **Dependencies:** Sprint 3 (Excel Checker) & Sprint 4 (SQL Checker).
+* **Files/Modules Affected:** `src/services/contracts/contentService.js` [NEW], `src/services/mock/mockSubmissionService.js` [MODIFY], `src/mocks/data/` [MODIFY].
+* **Acceptance Criteria:** `mockSubmissionService` không chứa bất kỳ Object hardcode `EXCEL_CHECKER_CONFIG` hay `SQL_CHECKER_CONFIG` nào; toàn bộ config được nạp qua `contentService`.
+* **Tests:** `npm test -- --run src/services/mock/mockSubmissionService.test.js`
+* **Rollback Consideration:** Nếu nạp config động thất bại, `contentService` trả error standard `CONTENT_CONFIG_MISSING`.
+* **Explicit Non-Goals:** Không sửa UI, không mutate XP, không xây backend API, không tạo database mới.
+
+### 🔹 Step 5.2: Investigation, Question & Variant Domain Separation
+* **Objective:** Chuẩn hóa sơ đồ dữ liệu phân tách rõ `Investigation` (Truyện/Bối cảnh) và `Question` (Nhiệm vụ/Câu hỏi) kèm hỗ trợ `Question Variant`.
+* **Scope:** Định nghĩa Hợp đồng dữ liệu `Investigation` và `Question`, cập nhật mock json data (`investigations.json`, `questions.json`).
+* **Dependencies:** Step 5.1.
+* **Files/Modules Affected:** `src/services/contracts/contentService.js`, `src/mocks/data/investigations.json` [NEW], `src/mocks/data/questions.json` [NEW].
+* **Acceptance Criteria:** 1 Investigation chứa được 1 hoặc nhiều Question steps; Question có thể khai báo nhiều Variant cho bài tập rèn luyện.
+* **Tests:** Unit test cho Content Service API (`getInvestigation`, `getQuestionById`).
+* **Rollback Consideration:** Duy trì alias mapping backward compatibility cho `missionId` cũ.
+* **Explicit Non-Goals:** Không thay đổi các component UI hiển thị, không làm vỡ các route `/missions/:missionId`.
+
+### 🔹 Step 5.3: Dataset Domain Independence & Schema Registry
+* **Objective:** Biến Dataset (Excel Workbook / SQL SQLite Schema) thành tài sản độc lập có thể gán cho nhiều Question khác nhau mà không nhân bản dữ liệu.
+* **Scope:** Tạo `datasetService` contract & registry, cập nhật SQL dataset loader để nạp và cache schema an toàn.
+* **Dependencies:** Step 5.2.
+* **Files/Modules Affected:** `src/services/contracts/datasetService.js` [NEW], `src/services/mock/mockDatasetService.js` [NEW], `src/utils/sql/sqlDataset.js` [MODIFY].
+* **Acceptance Criteria:** Một dataset có thể dùng chung cho 5+ Question SQL/Excel mà không cần nạp lại file JSON trùng lặp.
+* **Tests:** Test cases kiểm tra việc khởi tạo dataset độc lập và tính chia sẻ schema.
+* **Rollback Consideration:** Giữ nguyên thuộc tính `datasetId` trên mission data làm fallback.
+* **Explicit Non-Goals:** Không xây giao diện Upload Dataset cho Admin, không kết nối database ngoài.
+
+---
+
+## ⚪ Sprint 6 — Game Progress & Progression Architecture (`PLANNED`)
+
+* **Dominant Architectural Objective:** Xây dựng `Progress Service` lưu trữ trạng thái học tập, sổ cái XP (XP Ledger) có tính Idempotent, công thức thăng cấp `levelingEngine`, và kết nối dữ liệu tiến độ thực tế vào `LearningMapPage`.
+
+### 🔹 Step 6.1: Leveling Engine & XP Ledger Contract
+* **Objective:** Phát triển module tính toán Level (1–50) thuần túy `levelingEngine.js` và `progressService` contract xử lý trao thưởng XP idempotent.
+* **Scope:** Xây dựng công thức XP, định nghĩa contract lưu trữ tiến độ học viên trong storage.
+* **Dependencies:** Sprint 5 Content Domain.
+* **Files/Modules Affected:** `src/utils/game/levelingEngine.js` [NEW], `src/services/contracts/progressService.js` [NEW], `src/services/mock/mockProgressService.js` [NEW].
+* **Acceptance Criteria:** Tính toán chính xác Level/XP/Danh hiệu; `progressService` nhận `SubmissionResult` và ghi nhận XP không bị cộng trùng khi submit lại bài đã đúng.
+* **Tests:** `levelingEngine.test.js` & `mockProgressService.test.js`.
+* **Rollback Consideration:** Lỗi ghi tiến độ không làm đứt luồng hiển thị kết quả làm bài của người học.
+* **Explicit Non-Goals:** Chưa tạo giao diện Profile phức tạp, chưa làm Streak counter.
+
+### 🔹 Step 6.2: Main Quest vs Practice Progress & Mastery Tracking
+* **Objective:** Phân định rõ tiến độ `Main Quest` (mở khóa tuyến tính) và `Practice` (luyện tập tự do), đồng thời tính toán chỉ số `Mastery` (Độ chính xác, gợi ý đã dùng, thời gian làm bài).
+* **Scope:** Cấu trúc dữ liệu bản ghi tiến độ, logic tính toán chỉ số Mastery.
+* **Dependencies:** Step 6.1.
+* **Files/Modules Affected:** `src/services/mock/mockProgressService.js`, `src/utils/game/masteryCalculator.js` [NEW].
+* **Acceptance Criteria:** Bài tập Practice không ghi nhận mở khóa cốt truyện chính nhưng cập nhật chỉ số Mastery cho học viên.
+* **Tests:** Integration test kiểm tra sự độc lập giữa Main Quest progress và Practice score.
+* **Rollback Consideration:** Mặc định mọi attempt cũ thuộc Main Quest mode.
+* **Explicit Non-Goals:** Chưa can thiệp giao diện Admin analytics.
+
+### 🔹 Step 6.3: Dynamic Learning Map Progression
+* **Objective:** Thay thế dữ liệu hardcode (`isCompleted = false`) trên `LearningMapPage.jsx` bằng dữ liệu tiến độ thực tế từ `progressService` thông qua `useProgress` hook.
+* **Scope:** Xây dựng `useProgress` hook và tích hợp trạng thái Locked/Unlocked/Completed cho từng Node bài học.
+* **Dependencies:** Step 6.1 & Step 6.2.
+* **Files/Modules Affected:** `src/hooks/useProgress.js` [NEW], `src/pages/learner/LearningMapPage.jsx` [MODIFY].
+* **Acceptance Criteria:** Bản đồ học tập tự động mở khóa nút bài học kế tiếp ngay khi người học hoàn thành bài học trước đó.
+* **Tests:** `LearningMapPage.test.jsx` kiểm tra render các trạng thái Node khác nhau theo mock progress state.
+* **Rollback Consideration:** Phục hồi trạng thái mặc định mở khóa Chương 1 nếu không lấy được progress.
+* **Explicit Non-Goals:** Không thay đổi CSS layout của Bản đồ học tập.
+
+---
+
+## ⚪ Sprint 7 — Learner Engagement & Practice Engine (`PROPOSED`)
+
+* **Dominant Architectural Objective:** Phát triển các tính năng tăng cường tương tác cho Học viên (Modal Thăng Cấp, Chuỗi Streak, Ngân hàng Luyện tập & Trang Hồ sơ Cá nhân).
+* **Sub-Steps (Proposed):**
+  - **Step 7.1:** Level Up Modal & Animation (`GAME-UI-7.1`)
+  - **Step 7.2:** Standalone Practice Workspace (`LRN-PRAC-7.2`)
+  - **Step 7.3:** Learner Profile & Achievement Badges (`GAME-PROF-7.3`)
+
+---
+
+## ⚪ Sprint 8 — Admin Content Studio (`PROPOSED`)
+
+* **Dominant Architectural Objective:** Xây dựng bộ công cụ Quản trị cho Admin để tự soạn thảo Investigation, Question, Dataset và xem trước trực tiếp.
+* **Sub-Steps (Proposed):**
+  - **Step 8.1:** Visual Investigation & Question Authoring Studio (`ADM-STUDIO-8.1`)
+  - **Step 8.2:** Dataset Importer & SQLite Schema Generator (`ADM-DATA-8.2`)
+  - **Step 8.3:** Admin Live Preview & Test Runner (`ADM-PREV-8.3`)
+
+---
+
+## ⚪ Sprint 9 — Backend API & Persistence (`PROPOSED`)
+
+* **Dominant Architectural Objective:** Triển khai FastAPI Backend, Cơ sở dữ liệu PostgreSQL, Xác thực JWT và chuyển đổi Frontend từ Mock Adapters sang Real API Adapters.
+* **Sub-Steps (Proposed):**
+  - **Step 9.1:** FastAPI Application & PostgreSQL ORM Core (`BE-CORE-9.1`)
+  - **Step 9.2:** Real API Gateway Adapters & JWT Security (`BE-GATEWAY-9.2`)
+
+---
+
+## ⚪ Sprint 10 — Production Hardening & Release (`PROPOSED`)
+
+* **Dominant Architectural Objective:** Tối ưu hóa hiệu năng, bảo mật OWASP, Admin Analytics Dashboard và phát hành Production chính thức.
+* **Sub-Steps (Proposed):**
+  - **Step 10.1:** Admin Analytics & Learner Insights Dashboard (`ANL-DASH-10.1`)
+  - **Step 10.2:** Bundle Optimization, Security Audit & Docker Packaging (`SYS-HARD-10.2`)

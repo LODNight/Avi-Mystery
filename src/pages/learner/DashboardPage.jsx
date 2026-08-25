@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import {
   Flame,
   Target,
@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
-import { missionService, courseService } from '../../services/index.js';
+import { missionService, courseService, onboardingService, ONBOARDING_STATUS } from '../../services/index.js';
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
 import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
@@ -33,6 +33,11 @@ export function DashboardPage() {
     recommended.execute(() => missionService.getRecommendedMissions(user?.id));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Route guard: Nếu user chưa chạy onboarding → điều hướng về Welcome Gate (/onboarding)
+  if (user?.id && onboardingService.getStatus(user.id) === ONBOARDING_STATUS.NOT_STARTED) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   const formattedDate = new Date().toLocaleDateString('vi-VN', {
     weekday: 'long',
     year: 'numeric',
@@ -43,6 +48,8 @@ export function DashboardPage() {
   const xpPercent = user
     ? Math.min(100, Math.round((user.xp / (user.xpToNextLevel || 1000)) * 100))
     : 0;
+
+  const onboardingStatus = user?.id ? onboardingService.getStatus(user.id) : null;
 
   if (courses.loading && recommended.loading) {
     return <DashboardSkeleton />;
@@ -63,6 +70,15 @@ export function DashboardPage() {
           <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
             Tiến độ nhỏ mỗi ngày tạo nên đột phá lớn. Bạn đang tích lũy kỹ năng phân tích dữ liệu qua từng vụ án.
           </p>
+          {onboardingStatus === ONBOARDING_STATUS.COMPLETED && (
+            <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+              <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
+              <span>Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP khởi đầu</span>
+              <Link to="/onboarding/case-0" className="ml-2 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+                Xem lại
+              </Link>
+            </div>
+          )}
         </div>
         <Link
           to="/courses"

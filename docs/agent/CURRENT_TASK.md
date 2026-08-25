@@ -4,7 +4,7 @@
 - **Module Name**: `Onboarding / First-Run Experience`
 - **Primary Path**: `src/features/onboarding/`
 - **Current Sprint**: **SPRINT 6.5 — Learner Onboarding & First-Run Experience**
-- **Current Step**: **STEP 6.5.6 — Completion + Reward (DONE — SPRINT 6.5 COMPLETED)**
+- **Current Step**: **SPRINT 6.5 COMPLETED (Steps 6.5.0 - 6.5.8)**
 
 ## Completed Objectives (Sprint 6.5)
 1. **Step 6.5.0 — First-Run UX Audit** *(DONE)*: UX audit & planning.
@@ -14,6 +14,8 @@
 5. **Step 6.5.4 — Minimal Case 0 Workspace** *(DONE)*: `TutorialCase0Page.jsx`, mounted on `/onboarding/case-0`, spotlight IDs, 8 tests PASS.
 6. **Step 6.5.5 — Guided Spotlight** *(DONE)*: `OnboardingSpotlight.jsx` pure React 4-step tour, highlight ring overlay, keyboard shortcuts, 7 tests PASS.
 7. **Step 6.5.6 — Completion + Reward** *(DONE)*: `progressService.awardXp` +50 XP integration, idempotent ledger transaction, 9 tests PASS.
+8. **Step 6.5.7 — Dashboard Handoff** *(DONE)*: Dashboard route guard for `NOT_STARTED` users + completion banner & replay CTA.
+9. **Step 6.5.8 — Full Regression Test** *(DONE)*: `onboardingRegression.test.jsx` covering 7 key onboarding flows.
 
 ## Allowed Write Paths
 - `src/features/onboarding/`

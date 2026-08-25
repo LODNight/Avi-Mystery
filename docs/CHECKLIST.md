@@ -306,11 +306,12 @@
 - [x] Direct redirect về `/dashboard` sau khi click "Hoàn thành & Vào Dashboard"
 - [x] Total onboarding tests: 84/84 tests PASS
 
-### 🔹 Step 6.5.7: Dashboard Handoff *(PLANNED)*
-- [ ] Sau completion → Dashboard với CTA "Tiếp tục học" rõ ràng
+### 🔹 Step 6.5.7: Dashboard Handoff *(HOÀN THÀNH)*
+- [x] Sau completion → Dashboard với CTA "Tiếp tục học" & Banner hoàn thành (+50 XP)
+- [x] Route guard tự động điều hướng user `NOT_STARTED` truy cập `/dashboard` sang `/onboarding`
 
-### 🔹 Step 6.5.8: Full Regression Test *(PLANNED)*
-- [ ] Kiểm tra 7 luồng: New learner, Skip, Return, Reload, Replay, Fail→Retry, Accessibility
+### 🔹 Step 6.5.8: Full Regression Test *(HOÀN THÀNH)*
+- [x] Kiểm tra 7 luồng trong `onboardingRegression.test.jsx`: New learner, Skip, Return guard, Reload persistence, Replay, Fail→Retry, XP Idempotency
 
 ---
 

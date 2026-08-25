@@ -4,9 +4,9 @@
 - **Module Name**: `Onboarding / First-Run Experience`
 - **Primary Path**: `src/features/onboarding/`
 - **Current Sprint**: **SPRINT 6.5 — Learner Onboarding & First-Run Experience**
-- **Current Step**: **SPRINT 6.5 COMPLETED (Steps 6.5.0 - 6.5.8)**
+- **Current Step**: **STEP 6.6 — Dashboard Guided Tour (DONE — SPRINT 6.5 & 6.6 COMPLETED)**
 
-## Completed Objectives (Sprint 6.5)
+## Completed Objectives (Sprint 6.5 & 6.6)
 1. **Step 6.5.0 — First-Run UX Audit** *(DONE)*: UX audit & planning.
 2. **Step 6.5.1 — First-Run State** *(DONE)*: `onboardingService.js`, 30/30 tests PASS.
 3. **Step 6.5.2 — Welcome Gate UI** *(DONE)*: `WelcomeGatePage.jsx`, 2 routes mới, 11 tests PASS.
@@ -16,6 +16,7 @@
 7. **Step 6.5.6 — Completion + Reward** *(DONE)*: `progressService.awardXp` +50 XP integration, idempotent ledger transaction, 9 tests PASS.
 8. **Step 6.5.7 — Dashboard Handoff** *(DONE)*: Dashboard route guard for `NOT_STARTED` users + completion banner & replay CTA.
 9. **Step 6.5.8 — Full Regression Test** *(DONE)*: `onboardingRegression.test.jsx` covering 7 key onboarding flows.
+10. **Step 6.6 — Dashboard Guided Tour** *(DONE)*: `dashboardTourContent.js` & `dashboardTour.test.jsx` introducing 4 key Dashboard areas with automatic first-visit trigger and manual replay CTA.
 
 ## Allowed Write Paths
 - `src/features/onboarding/`

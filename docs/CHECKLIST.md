@@ -313,6 +313,13 @@
 ### 🔹 Step 6.5.8: Full Regression Test *(HOÀN THÀNH)*
 - [x] Kiểm tra 7 luồng trong `onboardingRegression.test.jsx`: New learner, Skip, Return guard, Reload persistence, Replay, Fail→Retry, XP Idempotency
 
+### 🔹 Step 6.6: Dashboard Guided Tour *(HOÀN THÀNH)*
+- [x] Định nghĩa 4 tour steps giới thiệu 4 khu vực giao diện chính của Dashboard trong `dashboardTourContent.js`
+- [x] Gắn Spotlight target IDs: `#dashboard-welcome-header`, `#dashboard-continue-investigation`, `#dashboard-investigator-level`, `#dashboard-active-courses`
+- [x] Tự động hiển thị Spotlight tour 1 lần duy nhất cho learner lần đầu vào Dashboard (`onboardingService.hasSeenDashboardTour`)
+- [x] Nút "Hướng dẫn Dashboard" giúp learner xem lại tour bất kỳ lúc nào
+- [x] Unit tests: `dashboardTour.test.jsx` PASS
+
 ---
 
 ## ⚪ Sprint 7 — Learner Engagement & Practice Engine *(PROPOSED)*

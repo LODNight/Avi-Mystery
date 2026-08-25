@@ -162,5 +162,43 @@ export const onboardingService = {
   reset(userId) {
     if (!userId || typeof userId !== 'string') return;
     storage.remove(buildStorageKey(userId));
+    storage.remove(`onboarding_dashboard_tour:${userId}`);
+  },
+
+  // ── Dashboard Tour Helpers (Step 6.6) ──────────────────────────────────
+
+  /**
+   * Kiểm tra user đã xem Dashboard Guided Tour chưa.
+   *
+   * @param {string} userId
+   * @returns {boolean}
+   */
+  hasSeenDashboardTour(userId) {
+    if (!userId || typeof userId !== 'string') return false;
+    const record = storage.get(`onboarding_dashboard_tour:${userId}`);
+    return Boolean(record?.seen);
+  },
+
+  /**
+   * Đánh dấu user đã xem Dashboard Guided Tour.
+   *
+   * @param {string} userId
+   */
+  markDashboardTourSeen(userId) {
+    if (!userId || typeof userId !== 'string') return;
+    storage.set(`onboarding_dashboard_tour:${userId}`, {
+      seen: true,
+      updatedAt: new Date().toISOString(),
+    });
+  },
+
+  /**
+   * Reset trạng thái đã xem Dashboard Tour (cho phép xem lại tour).
+   *
+   * @param {string} userId
+   */
+  resetDashboardTour(userId) {
+    if (!userId || typeof userId !== 'string') return;
+    storage.remove(`onboarding_dashboard_tour:${userId}`);
   },
 };

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import {
   Flame,
@@ -15,6 +15,7 @@ import {
   BookOpen,
   CheckCircle2,
   LockKeyhole,
+  HelpCircle,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
@@ -22,16 +23,36 @@ import { missionService, courseService, onboardingService, ONBOARDING_STATUS } f
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
 import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
+import { OnboardingSpotlight } from '../../features/onboarding/OnboardingSpotlight.jsx';
+import { DASHBOARD_TOUR_STEPS } from '../../features/onboarding/dashboardTourContent.js';
 
 export function DashboardPage() {
   const { user } = useAuth();
   const courses = useAsync();
   const recommended = useAsync();
+  const [isTourOpen, setIsTourOpen] = useState(false);
 
   useEffect(() => {
     courses.execute(() => courseService.getCourses({ status: 'published' }));
     recommended.execute(() => missionService.getRecommendedMissions(user?.id));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (user?.id && !onboardingService.hasSeenDashboardTour(user.id)) {
+      setIsTourOpen(true);
+    }
+  }, [user?.id]);
+
+  const handleCloseTour = () => {
+    setIsTourOpen(false);
+    if (user?.id) {
+      onboardingService.markDashboardTourSeen(user.id);
+    }
+  };
+
+  const handleStartTour = () => {
+    setIsTourOpen(true);
+  };
 
   // Route guard: Nếu user chưa chạy onboarding → điều hướng về Welcome Gate (/onboarding)
   if (user?.id && onboardingService.getStatus(user.id) === ONBOARDING_STATUS.NOT_STARTED) {
@@ -58,7 +79,7 @@ export function DashboardPage() {
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
       {/* ── Section 1: Learning Pulse Header ── */}
-      <section className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+      <section id="dashboard-welcome-header" className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
         <div>
           <p className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 capitalize">
             <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -80,12 +101,22 @@ export function DashboardPage() {
             </div>
           )}
         </div>
-        <Link
-          to="/courses"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity shrink-0"
-        >
-          <Plus className="size-4" /> Khám phá khóa học
-        </Link>
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={handleStartTour}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-colors"
+            title="Xem hướng dẫn giao diện Dashboard"
+          >
+            <HelpCircle className="size-4 text-primary" />
+            <span className="hidden sm:inline">Hướng dẫn Dashboard</span>
+          </button>
+          <Link
+            to="/courses"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+          >
+            <Plus className="size-4" /> Khám phá khóa học
+          </Link>
+        </div>
       </section>
 
       {/* ── Section 2: 4 Key Stat Cards ── */}
@@ -123,7 +154,7 @@ export function DashboardPage() {
       {/* ── Section 3: Continue Learning & Quest Progress ── */}
       <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
         {/* Continue Learning */}
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6 flex flex-col justify-between">
+        <div id="dashboard-continue-investigation" className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6 flex flex-col justify-between">
           <div className="flex items-start justify-between">
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
@@ -175,7 +206,7 @@ export function DashboardPage() {
         </div>
 
         {/* Quest Progress Level Card */}
-        <div className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors">
+        <div id="dashboard-investigator-level" className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors">
           <div>
             <div className="flex items-start justify-between">
               <div className="grid size-11 place-items-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -210,7 +241,7 @@ export function DashboardPage() {
       </section>
 
       {/* ── Section 4: Active Courses ── */}
-      <section aria-busy={courses.loading ? "true" : undefined}>
+      <section id="dashboard-active-courses" aria-busy={courses.loading ? "true" : undefined}>
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -266,7 +297,13 @@ export function DashboardPage() {
             ))}
           </div>
         )}
-      </section>
+      {/* ── Dashboard Spotlight Guided Tour (Step 6.6) ── */}
+      <OnboardingSpotlight
+        isOpen={isTourOpen}
+        steps={DASHBOARD_TOUR_STEPS}
+        onClose={handleCloseTour}
+        onComplete={handleCloseTour}
+      />
     </div>
   );
 }

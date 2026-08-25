@@ -8,25 +8,23 @@
 ## 1. Tổng Quan Tiến Độ Dự Án
 
 * **Phân khúc Kiến trúc:** Tái cấu trúc thành công từ Monolithic `Mission`/`Step` sang Domain-Driven Architecture (`Course` -> `Phase` -> `Chapter` -> `Investigation` -> `Question`).
-* **Sprint Hoàn Thành:** Sprint 1–5 (100% Core Vertical Slices & Content/Dataset Decoupling).
-* **Sprint Hiện Tại:** Sprint 6 — Game Progress & Gamification Layer (`PLANNED`).
-* **Step Kế Tiếp:** Step 6.1 — Deterministic Leveling Engine & XP Ledger UI (`PLANNED`).
-* **Trạng thái Sprint:** `SPRINT 5 HOÀN THÀNH (100% STEPS 5.1 -> 5.8 PASSED)`.
+* **Sprint Hoàn Thành:** Sprint 1–6 (100% Core Vertical Slices, Content/Dataset Decoupling, Learning Map Domain & Mastery Progress Architecture).
+* **Sprint Hiện Tại:** Sprint 7 — Learner Engagement & Practice Engine (`PLANNED`).
+* **Step Đã Hoàn Thành Trong Sprint 6:**
+  - `Step 6.1` — Learning Map Domain Adapter (`DONE`).
+  - `Step 6.2` — Learning Map UX Refactor (`DONE`).
+  - `Step 6.3` — Practice Engine & Mastery Integration (`DONE`).
+* **Trạng thái Sprint:** `SPRINT 6 COMPLETED (STEPS 6.1, 6.2 & 6.3 HOÀN THÀNH 100%)`.
 
 ---
 
-## 2. Bảng Trạng Thái Sprint (Sprint 5 Hoàn Thành)
+## 2. Bảng Trạng Thái Sprint 6 (Game Progress & Progression Architecture)
 
 | Step | Khu vực | Trọng tâm | Tính năng trong Step | Trạng thái |
 |---|---|---|---|---|
-| **5.1** | `DATA` | Primary | Dataset Domain Contract & Service Binding (`datasetService`) | `DONE` |
-| **5.2** | `CNT` | Primary | Course / Phase / Chapter Content Hierarchy Contract (`contentService`) | `DONE` |
-| **5.3** | `CNT` | Primary | Investigation Domain Contract & Legacy Mission Mapping (`investigationService`) | `DONE` |
-| **5.4** | `CNT` | Primary | Question Domain Contract (`questionService`) | `DONE` |
-| **5.5** | `LRN-SUB` | Primary | Question Submission Binding (`submissionService` integration) | `DONE` |
-| **5.6** | `LRN-PRG` | Primary | Learner Progress Contract (`learnerProgress`, `progressService`) | `DONE` |
-| **5.7** | `RWD` | Primary | XP Reward Integration & Idempotent Ledger (`rewardEvaluator`) | `DONE` |
-| **5.8** | `MST` | Primary | Completion vs Mastery Foundation (`masteryEvaluator`) | `DONE` |
+| **6.1** | `MAP` | Primary | Learning Map Domain Adapter (`learningMapAdapter.js`) | `DONE` |
+| **6.2** | `MAP-UX` | Primary | Learning Map UX Refactor (Phase Navigation Tabs & Journey View) | `DONE` |
+| **6.3** | `MST` | Primary | Practice Engine & Mastery Tracking Integration (`useProgress.js`, `masteryEvaluator.js`) | `DONE` |
 
 ---
 
@@ -46,3 +44,7 @@
 | `LRN-PRG-5.6` | `LRN` | Progress | Learner Progress State (`learnerProgress.js`, `progressService.js`) | `CURRENT` | Sprint 5 | Pass | `src/domain/progress/learnerProgress.js` |
 | `RWD-XP-5.7` | `RWD` | Reward | Idempotent XP Reward Calculation & Ledger (`rewardEvaluator.js`) | `CURRENT` | Sprint 5 | Pass | `src/domain/reward/rewardEvaluator.js` |
 | `MST-SKL-5.8` | `MST` | Mastery | Skill Mastery Foundation (`masteryEvaluator.js`) | `CURRENT` | Sprint 5 | Pass | `src/domain/mastery/masteryEvaluator.js` |
+| `MAP-ADP-6.1` | `MAP` | Map | Learning Map Domain Adapter (`learningMapAdapter.js`) | `CURRENT` | Sprint 6 | Pass | `src/domain/learningMap/learningMapAdapter.js` |
+| `MAP-UX-6.2` | `MAP` | Map | Learning Map UX Refactor (Multi-Phase Journey Tabs) | `CURRENT` | Sprint 6 | Pass | `src/pages/learner/LearningMapPage.jsx` |
+| `MST-ENG-6.3` | `MST` | Mastery | Practice Engine & Mastery Integration (`useProgress.js`, Skill Mastery Summary Card) | `CURRENT` | Sprint 6 | Pass | `src/hooks/useProgress.js` |
+| `EXC-QST-6.4` | `LRN` | Content | Excel Questions & Checker Sync (Missions 001–009) | `CURRENT` | Sprint 6 | Pass | `src/services/mock/mockSubmissionService.js` |

@@ -1,50 +1,44 @@
-# Current Task
+# AVI-MYSTERY — CURRENT TASK
 
-## Identification
+## Primary Module
+- **Module Name**: `Onboarding / First-Run Experience`
+- **Primary Path**: `src/features/onboarding/`
+- **Current Sprint**: **SPRINT 6.5 — Learner Onboarding & First-Run Experience**
+- **Current Step**: **STEP 6.5.6 — Completion + Reward (DONE — SPRINT 6.5 COMPLETED)**
 
-- Project: Avi-Mystery
-- Sprint: 5 (Content Domain & Dataset Decoupling)
-- Step: 5.8 (Completion vs Mastery Foundation)
-- Task ID: `MST-5.8`
-- Status: `IN_PROGRESS`
-- Primary Module: `MST` (Learner Mastery Domain & Progress Integration)
-
-## Goal
-
-Explicitly separate Completion from Mastery by establishing mastery-ready data structures and pure evaluation logic:
-- **Completion** answers: "Has the learner completed this content?" (Keyed by `learnerId:contentId`).
-- **Mastery** answers: "How well does the learner demonstrate the associated skill?" (Keyed by `learnerId:skillId`).
-- Implement `LearnerMasteryRecord` schema and pure `evaluateSkillMastery` function.
-- Support attempt history reference per skill assessment.
-- Support skill association (`Question` references `skillId`).
-- Do NOT implement a complex adaptive algorithm.
-- Do NOT implement Practice Engine.
-- Do NOT implement recommendations or analytics.
+## Completed Objectives (Sprint 6.5)
+1. **Step 6.5.0 — First-Run UX Audit** *(DONE)*: UX audit & planning.
+2. **Step 6.5.1 — First-Run State** *(DONE)*: `onboardingService.js`, 30/30 tests PASS.
+3. **Step 6.5.2 — Welcome Gate UI** *(DONE)*: `WelcomeGatePage.jsx`, 2 routes mới, 11 tests PASS.
+4. **Step 6.5.3 — Tutorial Case 0 Content** *(DONE)*: `tutorialCase0Content.js`, 27 tests PASS.
+5. **Step 6.5.4 — Minimal Case 0 Workspace** *(DONE)*: `TutorialCase0Page.jsx`, mounted on `/onboarding/case-0`, spotlight IDs, 8 tests PASS.
+6. **Step 6.5.5 — Guided Spotlight** *(DONE)*: `OnboardingSpotlight.jsx` pure React 4-step tour, highlight ring overlay, keyboard shortcuts, 7 tests PASS.
+7. **Step 6.5.6 — Completion + Reward** *(DONE)*: `progressService.awardXp` +50 XP integration, idempotent ledger transaction, 9 tests PASS.
 
 ## Allowed Write Paths
-
-- `src/domain/mastery/masteryEvaluator.js`
-- `src/services/contracts/progressService.js`
-- `src/services/mock/mockProgressService.js`
-- `src/services/mock/mockProgressService.test.js`
-- `src/domain/mastery/masteryContract.test.js`
-- `docs/agent/MASTERY_CONTRACT.md`
+- `src/features/onboarding/`
+- `src/services/index.js`
+- `src/app/router/index.jsx`
+- `src/features/auth/AuthPage.jsx`
 - `docs/agent/CURRENT_TASK.md`
+- `docs/CHECKLIST.md`
+- `docs/PROJECT_STATUS.md`
+- `docs/agent/UI_CHANGE_INVENTORY.md`
 
-## Out of Scope (Preserved)
+## Forbidden / Read-Only Paths
+- `src/domain/**` — Không refactor domain trong Sprint 6.5
+- `src/services/mock/mockSubmissionService.js` — Contract ổn định
+- `src/utils/excelChecker.js`
+- `src/workers/**`
+- `src/mocks/data/missions.json` — Không thêm production data
+- `src/pages/learner/SqlMissionPage.jsx` — Chỉ tái sử dụng
+- `src/pages/learner/ExcelMissionPage.jsx` — Chỉ tái sử dụng
 
-- Practice engine is NOT implemented.
-- Recommendations engine is NOT implemented.
-- Analytics dashboard is NOT built.
-- Adaptive difficulty algorithms are NOT implemented.
-- Learning Map UI is NOT modified.
-- Admin UI is NOT built.
-
-## Acceptance Criteria
-
-- [ ] Completion state (`LearnerProgressRecord`) is explicitly separate from Mastery state (`LearnerMasteryRecord`).
-- [ ] Mastery records are keyed by learner + skill identity (`learnerId:skillId`).
-- [ ] `evaluateSkillMastery` calculates proficiency (`masteryScore`) deterministically without complex adaptive algorithms.
-- [ ] Attempt history/reference is preserved per skill assessment.
-- [ ] Existing completion, submission, and XP flows remain functional.
-- [ ] Contract & unit tests added and verified.
+## Next Steps
+- **Step 6.5.2**: Welcome Gate UI (`WelcomeGatePage.jsx`) — chưa có Case 0, chưa có spotlight.
+- **Step 6.5.3**: Tutorial Case 0 Content (`tutorialCase0Content.js`).
+- **Step 6.5.4**: Minimal Case 0 Workspace.
+- **Step 6.5.5**: Guided Spotlight (3–5 steps, pure CSS/custom, no library).
+- **Step 6.5.6**: Completion + Reward (+50 XP qua existing reward system).
+- **Step 6.5.7**: Dashboard Handoff (CTA "Tiếp tục học").
+- **Step 6.5.8**: Full regression test.

@@ -21,7 +21,8 @@
 | `UI-009` | SQL Code Editor MVP with Ctrl+Enter & soft Tab 2-space | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/SqlEditor.jsx` |
 | `UI-010` | Query Result Viewer with client pagination & NULL badge | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/ResultViewer.jsx` |
 | `UI-011` | SQL Mission Shell with loader & isolated route | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/pages/learner/SqlMissionPage.jsx` |
-| `UI-012` | Dynamic Learning Map node unlock & completion status | `LearningMapPage` | `GAME` | `PLANNED` | Planned | `Sprint 6` |
+| `UI-012` | Dynamic Learning Map Multi-Phase Navigation Tabs & Journey View | `LearningMapPage` | `GAME` | `CURRENT` | Tested | `src/pages/learner/LearningMapPage.jsx` |
+| `UI-016` | High-contrast Skill Mastery Badges & Level Indicators in Dark/Light Mode | `LearningMapPage` | `GAME` | `CURRENT` | Tested | `src/pages/learner/LearningMapPage.jsx` |
 | `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
 | `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
 | `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `PROPOSED` | Proposed | `Sprint 8` |

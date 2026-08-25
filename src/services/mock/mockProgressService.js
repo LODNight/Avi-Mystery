@@ -21,6 +21,12 @@ function clone(val) {
   return JSON.parse(JSON.stringify(val))
 }
 
+const DEFAULT_MOCK_MASTERY = [
+  { learnerId: 'user-001', skillId: 'excel_formula', masteryScore: 85, totalAttempts: 10, successfulAttempts: 9, lastAssessedAt: new Date().toISOString(), history: [] },
+  { learnerId: 'user-001', skillId: 'sql_query', masteryScore: 60, totalAttempts: 5, successfulAttempts: 3, lastAssessedAt: new Date().toISOString(), history: [] },
+  { learnerId: 'user-001', skillId: 'data_analysis', masteryScore: 40, totalAttempts: 4, successfulAttempts: 2, lastAssessedAt: new Date().toISOString(), history: [] },
+]
+
 export function createMockProgressService({ initialRecords = [], initialXpRecords = [], initialMasteryRecords = [] } = {}) {
   // In-memory progress store keyed by composite `${learnerId}:${contentId}`
   const progressMap = new Map()
@@ -85,7 +91,7 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
       if (!request || typeof request !== 'object') {
         return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'Yêu cầu không hợp lệ.' } }
       }
-      const { learnerId, contentId, contentType, isCorrect, score, timestamp } = request
+      const { learnerId, contentId, contentType, mode = 'main_quest', isCorrect, score, timestamp } = request
 
       if (!learnerId || typeof learnerId !== 'string') {
         return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'learnerId là bắt buộc.' } }
@@ -103,6 +109,7 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
         { learnerId, contentId, contentType },
         timestamp || new Date().toISOString()
       )
+      updatedRecord.lastMode = mode
 
       progressMap.set(key, updatedRecord)
       return { data: clone(updatedRecord), error: null }
@@ -112,7 +119,7 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
       if (!request || typeof request !== 'object') {
         return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'Yêu cầu không hợp lệ.' } }
       }
-      const { learnerId, contentId, contentType, submissionResult, question, hintsUsed = 0 } = request
+      const { learnerId, contentId, contentType, mode = 'main_quest', submissionResult, question, hintsUsed = 0 } = request
 
       if (!learnerId || typeof learnerId !== 'string') {
         return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'learnerId là bắt buộc.' } }
@@ -137,6 +144,7 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
         { learnerId, contentId, contentType },
         new Date().toISOString()
       )
+      updatedProgress.lastMode = mode
       progressMap.set(key, updatedProgress)
 
       // Calculate XP Reward based on explicit rules
@@ -294,4 +302,4 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
   }
 }
 
-export const mockProgressService = createMockProgressService()
+export const mockProgressService = createMockProgressService({ initialMasteryRecords: DEFAULT_MOCK_MASTERY })

@@ -59,3 +59,8 @@ const unavailableApiSubmissionService = {
 export const submissionService = USE_MOCK
   ? mockSubmissionService
   : unavailableApiSubmissionService;
+
+export * as learningMapAdapter from '../domain/learningMap/learningMapAdapter.js';
+
+// Sprint 6.5 — Onboarding Service (First-Run State)
+export { onboardingService, ONBOARDING_STATUS } from '../features/onboarding/onboardingService.js';

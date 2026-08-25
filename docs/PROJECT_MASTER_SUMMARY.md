@@ -1,7 +1,7 @@
 # 📓 Avi-Mystery — Báo Cáo Tổng Hợp Chi Tiết Toàn Bộ Dự Án (Project Master Summary)
 
 > **Tài liệu tổng hợp toàn diện nhất về sản phẩm Avi-Mystery**: Kiến trúc hệ thống, cấu trúc file, công dụng từng file, hợp đồng dữ liệu (contracts), danh sách tính năng hoàn thiện / chưa hoàn thiện, lộ trình Sprints mới, và hướng dẫn vận hành.
-> **Cập nhật lần cuối:** 24/08/2026 sau khi hoàn tất Architecture Plan Reconciliation.
+> **Cập nhật lần cuối:** 25/08/2026 sau khi hoàn tất Step 6.3 (Practice Engine & Mastery Integration & Sprint 6 Completion).
 
 ---
 
@@ -11,10 +11,10 @@
 * **Tên dự án**: **Avi-Mystery**
 * **Bản chất sản phẩm**: Nền tảng học tập phân tích dữ liệu theo hướng **Game hóa (Gamification)** kết hợp cốt truyện **Trinh thám (Detective Theme)**. Người học nhập vai thám tử giải quyết các vụ án dữ liệu thực tế.
 * **Định hướng chiến lược (Scope Rules)**:
-  1. **Excel First**: Ưu tiên xây dựng và ổn định công cụ thực hành Excel trước (**Sprint 3 — CURRENT**).
-  2. **SQL Second**: Tích hợp công cụ thực hành SQL trực tiếp trên trình duyệt bằng SQLite WASM In-Memory (**Sprint 4 — CURRENT**).
-  3. **Content & Dataset Decoupling**: Tái cấu trúc mô hình nội dung, bóc tách cấu hình chấm điểm khỏi submission service và độc lập hóa dataset (**Sprint 5 — PLANNED**).
-  4. **Game Progress System**: Tích hợp Progress Service, Leveling Engine và mở khóa Bản đồ Học tập động (**Sprint 6 — PLANNED**).
+  1. **Excel First**: Ưu tiên xây dựng và ổn định công cụ thực hành Excel trước (**Sprint 3 — HOÀN THÀNH**).
+  2. **SQL Second**: Tích hợp công cụ thực hành SQL trực tiếp trên trình duyệt bằng SQLite WASM In-Memory (**Sprint 4 — HOÀN THÀNH**).
+  3. **Content & Dataset Decoupling**: Tái cấu trúc mô hình nội dung, bóc tách cấu hình chấm điểm khỏi submission service và độc lập hóa dataset (**Sprint 5 — HOÀN THÀNH**).
+  4. **Game Progress System & Domain Adapter**: Tích hợp Progress Service, Leveling Engine, Idempotent XP Ledger và mở khóa Bản đồ Học tập lộ trình đa Giai đoạn Phase Navigation Tabs kết hợp Thẻ Độ thành thạo Kỹ năng Skill Mastery (**Sprint 6 — HOÀN THÀNH 100%**).
   5. **Frontend Mock First**: Toàn bộ hệ thống Frontend sử dụng kiến trúc Service Contracts & Gateway kết hợp Mock Service trước khi chuyển sang Production API thật mà không làm thay đổi UI.
 
 ### 1.2. Môi Trường Triển Khai & Demo
@@ -28,8 +28,8 @@
 ## 2. 🏛 Phân Tầng Kiến Trúc & Các Khái Niệm Domain Lõi (Architecture & Domain Hierarchy)
 
 ### 2.1. Nhãn Phân Loại Trạng Thái Kiến Trúc
-- `CURRENT`: Đã triển khai và verified hoàn tất trong mã nguồn thực tế (Sprint 1–4).
-- `PLANNED`: Kế hoạch kiến trúc đã được chốt và chia nhỏ thành từng Step cụ thể (Sprint 5–6).
+- `CURRENT`: Đã triển khai và verified hoàn tất trong mã nguồn thực tế (Sprint 1–6).
+- `PLANNED`: Kế hoạch kiến trúc đã được chốt và chia nhỏ thành từng Step cụ thể (Sprint 7.1).
 - `PROPOSED`: Định hướng phát triển tương lai đang chờ phê duyệt (Sprint 7–10).
 - `DEPRECATED`: Cấu trúc cũ trong lộ trình bóc tách.
 - `LEGACY`: Phục vụ tương thích ngược cho phiên bản ban đầu.
@@ -51,7 +51,7 @@ Learning Journey (Hành trình học tập)
 1. **Investigation vs Question**: `Investigation` sở hữu cốt truyện trinh thám và bối cảnh vụ án; `Question` sở hữu nhiệm vụ thao tác kỹ thuật (viết công thức Excel hay câu lệnh SQL).
 2. **Question vs Question Variant**: `Question` định nghĩa đề bài chuẩn; `Question Variant` định nghĩa các bộ tham số khác nhau cho rèn luyện.
 3. **Dataset (Bộ dữ liệu độc lập)**: Tồn tại độc lập với `datasetId` riêng, được tái sử dụng cho nhiều Question mà không nhân bản dữ liệu.
-4. **Course vs Learning Map**: `Course` chứa cấu trúc khóa học; `Learning Map` biểu diễn bản đồ tiến độ mở khóa theo thời gian thực.
+4. **Course vs Learning Map**: `Course` trả lời câu hỏi "Có những lộ trình/khóa học nào?"; `Learning Map` trả lời câu hỏi "Tôi đang ở đâu trên hành trình học tập?".
 5. **Main Quest vs Practice**: `Main Quest` di chuyển tuyến tính theo cốt truyện; `Practice` làm bài tự do rèn luyện kỹ năng.
 6. **Completion vs Mastery**: `Completion` là cờ Boolean (Đạt/Chưa đạt); `Mastery` là chỉ số đánh giá độ sâu (Chính xác, gợi ý, thời gian, tối ưu SQL).
 
@@ -80,6 +80,7 @@ Avi-Mystery/
 │   ├── TEST_REPORT.md                 # Báo cáo kết quả kiểm thử tự động
 │   └── agent/                         # Tài liệu chuẩn dành riêng cho AI Agent
 │       ├── CONTRACTS.md               # Quy định các Service Contract & Domain Taxonomy
+│       ├── LEARNING_MAP_CONTRACT.md   # Hợp đồng cây domain & adapter của Bản đồ Học tập
 │       ├── CURRENT_TASK.md            # Thông tin nhiệm vụ đang thực thi ở lượt làm việc
 │       ├── TEST_STRATEGY.md           # Chiến lược và quy chuẩn kiểm thử tự động
 │       ├── MODULE_MAP.md              # Bảng phân vùng trách nhiệm và sơ đồ phụ thuộc Module
@@ -127,6 +128,23 @@ Avi-Mystery/
     │       ├── EmptyState.test.jsx    # Test cases cho EmptyState
     │       ├── Skeleton.jsx           # Khung xương tải trang (Skeleton loading pattern)
     │       └── Skeleton.test.jsx      # Test cases cho Skeleton Loading
+    ├── domain/                        # Lớp quản lý Domain Logic & Entities
+    │   ├── content/                   # Entity & Contracts cho Content Domain
+    │   │   ├── contentIdentity.js     # Identity resolver cho Course/Phase/Chapter/Investigation/Question
+    │   │   └── questionDomain.js      # Configuration & schema cho Question
+    │   ├── learningMap/               # Adapter chuyển đổi dữ liệu cho Bản đồ Học tập
+    │   │   ├── learningMapAdapter.js  # Adapter xây dựng cây lộ trình đa Phase & tính toán trạng thái
+    │   │   └── learningMapAdapter.test.js # Unit tests cho adapter Bản đồ Học tập
+    │   ├── progress/                  # Tiến độ học tập & Idempotent XP Ledger
+    │   │   └── learnerProgress.js     # Progress state & records
+    │   ├── reward/                    # Đánh giá phần thưởng XP
+    │   │   └── rewardEvaluator.js     # Thưởng XP độc lập & Idempotent
+    │   └── mastery/                   # Đánh giá mức độ thành thạo
+    │       ├── masteryEvaluator.js    # Completion vs Skill Mastery evaluation
+    │       └── masteryEvaluator.test.js # Unit tests cho bộ tính toán Mastery
+    ├── hooks/                         # React Custom Hooks
+    │   ├── useProgress.js             # Hook thời gian thực quản lý Progress, XP & Skill Mastery State
+    │   └── useProgress.test.jsx       # Unit test suite cho useProgress hook
     ├── pages/                         # Các trang giao diện chính
     │   ├── learner/                   # Phân vùng trang dành cho Học viên
     │   │   ├── DashboardPage.jsx      # Trang Tổng quan Học viên (Thống kê tiến độ, Vụ án đang làm)
@@ -134,7 +152,7 @@ Avi-Mystery/
     │   │   ├── CoursesPage.test.jsx   # Test cases cho trang Khóa học
     │   │   ├── CourseDetailPage.jsx   # Trang Chi tiết Khóa học & Cây bài học
     │   │   ├── CourseDetailPage.test.jsx # Test cases cho Chi tiết Khóa học
-    │   │   ├── LearningMapPage.jsx    # Bản đồ Học tập trinh thám trực quan
+    │   │   ├── LearningMapPage.jsx    # Bản đồ Học tập lộ trình đa Giai đoạn & Skill Mastery Summary Card
     │   │   ├── LearningMapPage.test.jsx # Test cases cho Bản đồ Học tập
     │   │   ├── MissionIntroPage.jsx   # Trang Giới thiệu Vụ án & Bối cảnh cốt truyện
     │   │   ├── MissionIntroPage.test.jsx # Test cases cho Giới thiệu Vụ án
@@ -149,7 +167,7 @@ Avi-Mystery/
     │   │   └── SettingsPage.jsx       # Trang Cấu hình Hệ thống Admin
     │   └── NotFoundPage.jsx           # Trang Lỗi 404 Đường dẫn không tồn tại
     ├── services/                      # Lớp Dịch vụ & Hợp đồng Kết nối (Services & Gateway)
-    │   ├── index.js                   # Service Gateway duy nhất xuất các ServiceInstance
+    │   ├── index.js                   # Service Gateway duy nhất xuất các ServiceInstance & Adapters
     │   ├── pageStatusService.js       # Dịch vụ kiểm tra trạng thái bảo trì trang
     │   ├── contracts/                 # Định nghĩa các Hợp đồng Dữ liệu (Interfaces/Contracts)
     │   │   ├── authService.js         # Contract Xác thực Đăng nhập
@@ -157,42 +175,35 @@ Avi-Mystery/
     │   │   ├── missionService.js      # Contract Vụ án & Bài học Excel
     │   │   ├── sqlMissionService.js   # Contract Vụ án SQL & Bộ dữ liệu SQL
     │   │   ├── submissionService.js   # Contract Nộp bài & Đánh giá Kết quả (Excel/SQL)
-    │   │   ├── contentService.js      # [PLANNED - Step 5.1] Contract Nạp cấu hình nội dung & evaluator config
-    │   │   ├── datasetService.js      # [PLANNED - Step 5.3] Contract Quản lý bộ dữ liệu độc lập
-    │   │   └── progressService.js     # [PLANNED - Step 6.1] Contract Lưu trữ tiến độ & Idempotent XP
+    │   │   ├── contentService.js      # Contract Nạp cấu hình nội dung & evaluator config
+    │   │   ├── datasetService.js      # Contract Quản lý bộ dữ liệu độc lập
+    │   │   ├── investigationService.js# Contract Quản lý entity Investigation
+    │   │   ├── questionService.js     # Contract Quản lý entity Question
+    │   │   └── progressService.js     # Contract Lưu trữ tiến độ, mode-aware attempts & Skill Mastery
     │   └── mock/                      # Triển khai Mock Service chạy trên Frontend
     │       ├── mockAuthService.js     # Mock Đăng nhập & Phân quyền
-    │       ├── mockAuthService.test.js# Test cases cho Mock Auth
     │       ├── mockCourseService.js   # Mock Dữ liệu Khóa học
-    │       ├── mockCourseService.test.js # Test cases cho Mock Course
     │       ├── mockMissionService.js  # Mock Dữ liệu Vụ án Excel
-    │       ├── mockMissionService.test.js # Test cases cho Mock Mission
     │       ├── mockSqlMissionService.js # Mock Dữ liệu Vụ án SQL
-    │       ├── mockSqlMissionService.test.js # Test cases cho Mock SQL Mission
     │       ├── mockSubmissionService.js # Gateway đánh giá bài làm Excel/SQL & trả kết quả
-    │       └── mockSubmissionService.test.js # Test cases cho Mock Submission
+    │       ├── mockDatasetService.js  # Mock Bộ dữ liệu độc lập
+    │       ├── mockProgressService.js # Mock Lưu trữ tiến độ người học & Skill Mastery records
+    │       └── mockContentService.js  # Mock Nội dung phân cấp Course -> Phase -> Chapter
     ├── utils/                         # Công cụ Tính toán & Xử lý Logic Thuần túy (Pure Functions)
     │   ├── format.js                  # Hàm format định dạng Số, Tiền tệ, Ngày tháng, Thời lượng, XP
     │   ├── storage.js                 # Hàm tương tác LocalStorage an toàn
     │   ├── excelChecker.js            # Bộ đánh giá bài làm Excel thuần túy (Value & Formula checker)
     │   ├── excelChecker.test.js       # Unit tests cho Bộ đánh giá Excel
     │   ├── game/                      # Công cụ logic Game & Leveling
-    │   │   ├── levelingEngine.js      # [PLANNED - Step 6.1] Pure formula tính Level (1-50) & XP
-    │   │   └── levelingEngine.test.js # [PLANNED - Step 6.1] Unit tests cho Leveling Engine
+    │   │   ├── levelingEngine.js      # Pure formula tính Level (1-50) & XP
+    │   │   └── levelingEngine.test.js # Unit tests cho Leveling Engine
     │   └── sql/                       # Động cơ & Bộ công cụ xử lý SQL
     │       ├── index.js               # Export Factory khởi tạo SQL Engine
     │       ├── sqlEngineAdapter.js    # Adapter giao tiếp giữa Main Thread và Web Worker
-    │       ├── sqlEngineAdapter.test.js # Test cases cho Adapter
     │       ├── sqlQueryPolicy.js      # Bộ kiểm soát An toàn SQL (Read-only, Multi-statement guard)
-    │       ├── sqlQueryPolicy.test.js # Test cases cho Security Policy
     │       ├── sqlChecker.js          # Bộ đánh giá kết quả truy vấn SQL (Order/NULL/Tolerance)
-    │       ├── sqlChecker.test.js     # Unit tests cho Bộ đánh giá SQL
     │       ├── sqlDataset.js          # Công cụ tải & chuẩn hóa Dữ liệu mẫu SQLite
-    │       ├── sqlDataset.test.js     # Test cases cho Dataset Loader
-    │       ├── sqlDatabaseLifecycle.test.js # Test cases kiểm tra dọn dẹp bộ nhớ & DB lifecycle
-    │       ├── sqlErrors.js           # Định nghĩa Mã lỗi SQL chuẩn & Thông điệp tiếng Việt
-    │       ├── sqlEngine.browserSpike.js # Bản thử nghiệm SQLite trong trình duyệt
-    │       └── sql-spike.html         # HTML phục vụ Spike thử nghiệm SQLite WASM
+    │       └── sqlErrors.js           # Định nghĩa Mã lỗi SQL chuẩn & Thông điệp tiếng Việt
     ├── workers/                       # Luồng chạy ngầm cách ly (Web Workers)
     │   └── sql/
     │       └── sqlEngine.worker.js    # Web Worker thực thi SQLite WASM in-memory
@@ -201,8 +212,8 @@ Avi-Mystery/
             ├── users.json             # Danh sách Người dùng mẫu (Learner, Admin)
             ├── courses.json           # Danh sách Khóa học mẫu
             ├── chapters.json          # Danh sách Chương học mẫu
-            ├── investigations.json    # [PLANNED - Step 5.2] Danh sách Bối cảnh Vụ án trinh thám
-            ├── questions.json         # [PLANNED - Step 5.2] Danh sách Nhiệm vụ kỹ thuật & Variants
+            ├── investigations.json    # Danh sách Bối cảnh Vụ án trinh thám
+            ├── questions.json         # Danh sách Nhiệm vụ kỹ thuật & Variants
             ├── datasets.json          # Danh sách Bộ dữ liệu Excel/SQL
             ├── hints.json             # Danh sách Gợi ý có phí XP
             └── sql/                   # Dữ liệu khởi tạo SQL (.json schema & rows)
@@ -215,7 +226,7 @@ Avi-Mystery/
 
 ## 4. 📊 Danh Sách Tính Năng: Đã Hoàn Thành vs Chưa Hoàn Thành
 
-### 4.1. 🟢 Các Tính Năng Đã Hoàn Thành (Sprint 1 đến Sprint 4 — CURRENT)
+### 4.1. 🟢 Các Tính Năng Đã Hoàn Thành (Sprint 1 đến Sprint 6.3 — CURRENT)
 
 | STT | Phân Vùng | Tính Năng | Mô Tả Chi Tiết | Trạng Thái |
 |---|---|---|---|---|
@@ -223,7 +234,7 @@ Avi-Mystery/
 | 2 | **Shared** | Design System & Theme | Detective Amber Design System, hỗ trợ Light Mode / Dark Mode toàn diện, Collapsible Sidebar | **CURRENT** |
 | 3 | **Shared** | Maintenance Mode | Cho phép Admin bật/tắt bảo trì theo từng trang (`PageStatusProvider`, `UnderMaintenancePage`) | **CURRENT** |
 | 4 | **Learner** | Dashboard & Courses | Trang Tổng quan học viên, Danh sách Khóa học Excel/SQL, Trang Chi tiết Khóa học | **CURRENT** |
-| 5 | **Learner** | Learning Map Baseline | Bản đồ học tập dạng cây vụ án trinh thám (Giao diện tĩnh) | **CURRENT** |
+| 5 | **Learner** | Learning Map Domain Tree | Bản đồ học tập chuyển đổi domain (`Journey -> Phase -> Chapter -> Investigation`), hỗ trợ Phase tabs | **CURRENT** |
 | 6 | **Learner** | Mission Briefing | Trang Giới thiệu Vụ án (`MissionIntroPage`) hiển thị bối cảnh cốt truyện & mục tiêu | **CURRENT** |
 | 7 | **Excel** | Spreadsheet Grid | Bảng tính Excel hiển thị ô dữ liệu, công thức, định dạng số, chọn vùng cell | **CURRENT** |
 | 8 | **Excel** | Formula Bar & Hint Drawer | Thanh nhập công thức Excel tích hợp tính năng ghim gợi ý (Pin-to-fx), Ngăn kéo gợi ý không che màn hình | **CURRENT** |
@@ -236,22 +247,9 @@ Avi-Mystery/
 | 15 | **SQL** | Worker Memory Cleanup | Tự động dọn dẹp Web Worker khi unmount trang hoặc đổi bộ dữ liệu vụ án | **CURRENT** |
 | 16 | **SQL** | SQL Result Evaluator | Bộ đánh giá kết quả SQL (`sqlChecker.js`) thông minh: Xử lý thứ tự dòng, NULL, trùng lặp, sai số thập phân | **CURRENT** |
 | 17 | **Submission** | Submission Gateway & Modal | Tích hợp luồng nộp bài Excel & SQL, mở Modal chúc mừng khi làm đúng, hiển thị lỗi inline khi làm sai | **CURRENT** |
-| 18 | **DevOps** | Multi-Environment Deploy | Phân tách môi trường `dev` (Staging) và `main` (Production) trên Vercel tự động qua branch | **CURRENT** |
-
-### 4.2. 🟡 Kế Hoạch Tái Cấu Trúc Kiến Trúc & Tính Năng Tương Lai (Sprint 5 đến Sprint 10)
-
-| STT | Sprint | Phân Vùng | Tính Năng Dự Kiến | Mô Tả Kế Hoạch Step Granular | Trạng Thái |
-|---|---|---|---|---|---|
-| 1 | **Sprint 5** | Content | Config Extraction | Bóc tách hardcoded `EXCEL_CHECKER_CONFIG` & `SQL_CHECKER_CONFIG` khỏi submission service | **PLANNED (Step 5.1)** |
-| 2 | **Sprint 5** | Content | Investigation & Question Separation | Phân tách bối cảnh vụ án (`Investigation`) và nhiệm vụ kỹ thuật (`Question`) | **PLANNED (Step 5.2)** |
-| 3 | **Sprint 5** | Dataset | Independent Dataset Registry | Độc lập hóa Dataset cho phép tái sử dụng cho nhiều Question | **PLANNED (Step 5.3)** |
-| 4 | **Sprint 6** | Game | Leveling Engine & XP Ledger | Pure formula `levelingEngine.js` (Level 1–50) & Idempotent XP ledger | **PLANNED (Step 6.1)** |
-| 5 | **Sprint 6** | Game | Main Quest vs Practice Mastery | Phân định tiến độ tuyến tính cốt truyện và điểm rèn luyện kỹ năng Mastery | **PLANNED (Step 6.2)** |
-| 6 | **Sprint 6** | Game | Dynamic Learning Map | Kết nối `useProgress` hook mở khóa nút Bản đồ Học tập tự động | **PLANNED (Step 6.3)** |
-| 7 | **Sprint 7** | Game/Learner | Engagement & Profile | Level Up Popups, Streak Counter, Practice Workspace & Learner Profile (`/profile`) | **PROPOSED** |
-| 8 | **Sprint 8** | Admin | Content Studio | Trình soạn thảo Investigation/Question trực quan & Dataset Importer | **PROPOSED** |
-| 9 | **Sprint 9** | Backend | FastAPI & PostgreSQL | API Server thật, cơ sở dữ liệu PostgreSQL, JWT Auth & Real API Adapters | **PROPOSED** |
-| 10 | **Sprint 10** | Release | Hardening & Analytics | Learner Analytics Dashboard, bundle optimization, security audit & launch | **PROPOSED** |
+| 18 | **Content** | Domain Decoupling | Phân tách `Dataset`, `Content`, `Investigation`, `Question`, `Progress`, `Reward` & `Mastery` | **CURRENT** |
+| 19 | **Progress** | Single Source of Truth Hook | Dynamic `useProgress` React hook quản lý tập trung Progress state, XP Ledger & Skill Mastery | **CURRENT** |
+| 20 | **Mastery** | Skill Mastery Summary UI | Thẻ tổng quan trình độ thám tử kỹ năng (Novice -> Master Detective) hiển thị trên `LearningMapPage` | **CURRENT** |
 
 ---
 
@@ -261,8 +259,8 @@ Avi-Mystery/
 * **Sprint 2: Course & Learning Map Baseline** ➔ **CURRENT** (Courses, Course Details, Static Map, Briefing).
 * **Sprint 3: Excel Vertical Slice** ➔ **CURRENT** (Spreadsheet Grid, Formula Bar, Hint Drawer, Excel Checker, Submission Gateway).
 * **Sprint 4: SQL Vertical Slice** ➔ **CURRENT** (SQLite WASM Engine, Worker, Schema Browser, SqlEditor, ResultViewer, Read-only Policy, Build Gate).
-* **Sprint 5: Content Domain & Dataset Decoupling** ➔ **PLANNED / SẴN SÀNG THỰC THI** (Extract configs, Investigation vs Question separation, Independent Datasets).
-* **Sprint 6: Game Progress & Progression Architecture** ➔ **PLANNED** (Leveling Engine, XP Ledger, Main Quest vs Practice, Dynamic Map).
+* **Sprint 5: Content Domain & Dataset Decoupling** ➔ **HOÀN THÀNH 100%** (Dataset, Content, Investigation, Question, Progress, XP Reward, Mastery).
+* **Sprint 6: Game Progress & Progression Architecture** ➔ **HOÀN THÀNH 100%** (Step 6.1 Learning Map Adapter, Step 6.2 UX Refactor & Step 6.3 Practice Engine & Mastery Integration HOÀN THÀNH).
 * **Sprint 7: Learner Engagement & Practice Engine** ➔ **PROPOSED**.
 * **Sprint 8: Admin Content Studio** ➔ **PROPOSED**.
 * **Sprint 9: Backend API & Persistence** ➔ **PROPOSED**.

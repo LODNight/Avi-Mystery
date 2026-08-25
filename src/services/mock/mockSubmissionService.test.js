@@ -120,10 +120,55 @@ describe('mockSubmissionService Unit Tests (Step 3.4)', () => {
 
   it('không fallback sang đáp án mission mẫu khi checker config chưa tồn tại', async () => {
     const service = createMockSubmissionService({ delayMs: 0 });
-    const res = await service.submit(makeRequest({ missionId: 'mission-002' }));
+    const res = await service.submit(makeRequest({ missionId: 'mission-010', tool: SUBMISSION_TOOLS.EXCEL }));
 
     expect(res.data).toBeNull();
     expect(res.error.code).toBe(SUBMISSION_ERROR_CODES.CONTENT_CONFIG_MISSING);
+  });
+
+  describe('Full Excel Missions Checker Configs (001 - 009)', () => {
+    const ds001Sheet = {
+      A2: 'ORD-001', B2: 'Chuột máy tính không dây', C2: 3, D2: 150000, E2: 450000,
+      A3: 'ORD-002', B3: 'Bàn phím cơ RGB', C3: 2, D3: 450000, E3: 900000,
+      A4: 'ORD-003', B4: 'Laptop Pro', C4: 1, D4: 3200000, E4: 3200000,
+      A5: 'ORD-004', B5: 'Màn hình 24 inch 144Hz', C5: 5, D5: 250000, E5: 1250000,
+      A6: 'ORD-005', B6: 'Cáp sạc Type-C siêu bền', C6: 10, D6: 80000, E6: 800000,
+    };
+    const ds002Sheet = {
+      A2: 'KH-001', B2: 'Nguyễn Văn An', C2: 65000000, D2: 'VIP',
+      A3: 'KH-002', B3: 'Trần Thị Bình', C3: 22000000, D3: 'Regular',
+      A4: 'KH-003', B4: 'Lê Hoàng Cường', C3: 85000000, D4: 'VIP',
+      A5: 'KH-004', B5: 'Phạm Minh Đức', C5: 15000000, D5: 'Regular',
+    };
+
+    const excelAnswers = [
+      { id: 'mission-001', formula: '=C2*D2', expectedXp: 100, sheet: ds001Sheet },
+      { id: 'mission-002', formula: '=MAX(D2:D6)', expectedXp: 120, sheet: ds001Sheet },
+      { id: 'mission-003', formula: '=AVERAGE(D2:D6)', expectedXp: 100, sheet: ds001Sheet },
+      { id: 'mission-004', formula: '=COUNTIF(E2:E6, ">=10000000")', expectedXp: 150, sheet: ds001Sheet },
+      { id: 'mission-005', formula: '=SUMIF(B2:B6, "Laptop Pro", E2:E6)', expectedXp: 150, sheet: ds001Sheet },
+      { id: 'mission-006', formula: '=IF(C2>=50000000, "VIP", "Regular")', expectedXp: 150, sheet: ds002Sheet },
+      { id: 'mission-007', formula: '=VLOOKUP(A2, Customers!A2:D5, 2, 0)', expectedXp: 200, sheet: ds002Sheet },
+      { id: 'mission-008', formula: '=INDEX(B2:B6, MATCH(MIN(C2:C6), C2:C6, 0))', expectedXp: 250, sheet: ds001Sheet },
+      { id: 'mission-009', formula: '=SUM(E2:E6)', expectedXp: 300, sheet: ds001Sheet },
+    ];
+
+    excelAnswers.forEach((item) => {
+      it(`hoàn thành xuất sắc nhiệm vụ ${item.id} với công thức ${item.formula}`, async () => {
+        const service = createMockSubmissionService({ delayMs: 0 });
+        const res = await service.submit(makeRequest({
+          missionId: item.id,
+          answer: { formula: item.formula, sheetData: item.sheet },
+          clientAttemptId: `client-attempt-${item.id}`,
+        }));
+
+        expect(res.error).toBeNull();
+        expect(res.data.feedback).toBeDefined();
+        expect(res.data.isCorrect).toBe(true);
+        expect(res.data.stepCompleted).toBe(true);
+        expect(res.data.potentialXp).toBe(item.expectedXp);
+      });
+    });
   });
 
   it('mô phỏng service error và timeout bằng error code ổn định', async () => {

@@ -38,6 +38,7 @@
  * @property {string} learnerId
  * @property {string} contentId
  * @property {'question'|'investigation'|'chapter'|'course'} [contentType]
+ * @property {'main_quest'|'practice'} [mode]
  * @property {boolean} isCorrect
  * @property {number} [score]
  * @property {string} [timestamp]
@@ -48,6 +49,7 @@
  * @property {string} learnerId
  * @property {string} contentId
  * @property {'question'|'investigation'|'chapter'|'course'} [contentType]
+ * @property {'main_quest'|'practice'} [mode]
  * @property {Object} submissionResult
  * @property {Object} [question]
  * @property {number} [hintsUsed]

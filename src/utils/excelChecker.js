@@ -419,28 +419,17 @@ export function checkExcelAnswer({
   }
 
   const userNorm = normalizeFormula(userFormula);
-  const diagnostic = analyzeExcelFormula(userFormula, sheetData);
-  if (!diagnostic.valid) {
-    return {
-      isCorrect: false,
-      score: 0,
-      userFormulaNormalized: diagnostic.normalizedFormula,
-      feedbackCode: diagnostic.errorCode,
-      feedback: diagnostic.message,
-    };
-  }
 
   // Chuyển expectedFormula thành mảng danh sách các công thức chấp nhận được
   const expectedFormulasList = Array.isArray(expectedFormula)
     ? expectedFormula.map(normalizeFormula)
     : [normalizeFormula(expectedFormula)];
 
-  // 1. Kiểm tra khớp chính xác với công thức mẫu đã chuẩn hóa
+  // 1. Kiểm tra khớp chính xác với công thức mẫu đã chuẩn hóa (Hỗ trợ tất cả hàm SUM, AVERAGE, COUNTIF, SUMIF, IF, VLOOKUP, INDEX, MATCH)
   const isFormulaMatch = expectedFormulasList.some((expNorm) => {
-    // So sánh không phân biệt ký tự hoa thường hoặc hoa cả 2
     return (
       userNorm.toUpperCase() === expNorm.toUpperCase() ||
-      userNorm.replace(/\s+/g, '') === expNorm.replace(/\s+/g, '')
+      userNorm.replace(/\s+/g, '').toUpperCase() === expNorm.replace(/\s+/g, '').toUpperCase()
     );
   });
 
@@ -451,6 +440,18 @@ export function checkExcelAnswer({
       userFormulaNormalized: userNorm,
       feedbackCode: 'CORRECT_ANSWER',
       feedback: 'Chính xác! Công thức của bạn hoàn toàn hợp lệ và chính xác.',
+    };
+  }
+
+  // 2. Nếu không khớp chuỗi công thức mẫu, phân tích cú pháp & tính toán giá trị thử nghiệm
+  const diagnostic = analyzeExcelFormula(userFormula, sheetData);
+  if (!diagnostic.valid) {
+    return {
+      isCorrect: false,
+      score: 0,
+      userFormulaNormalized: diagnostic.normalizedFormula,
+      feedbackCode: diagnostic.errorCode,
+      feedback: diagnostic.message,
     };
   }
 

@@ -1,6 +1,6 @@
 # Bảng Theo Dõi Tiến Độ Chi Tiết Theo Từng Step — Avi-Mystery
 
-> **Cập nhật lần cuối:** 24/08/2026
+> **Cập nhật lần cuối:** 25/08/2026
 > **Mô tả:** Bảng danh mục công việc chi tiết chia theo từng Step cho toàn bộ các Sprint của dự án **Avi-Mystery**.
 > **Nguồn trạng thái task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md).
 
@@ -189,41 +189,128 @@
 
 ---
 
-## 🟡 Sprint 5 — Content Domain & Dataset Decoupling *(PLANNED / SẴN SÀNG THỰC THI)*
+## 🟢 Sprint 5 — Content Domain & Dataset Decoupling *(HOÀN THÀNH 100%)*
 
-### 🔹 Step 5.1: Content Schema & Evaluation Config Extraction *(PLANNED)*
-- [ ] Bóc tách `EXCEL_CHECKER_CONFIG` & `SQL_CHECKER_CONFIG` khỏi `mockSubmissionService.js`
-- [ ] Định nghĩa `contentService.js` contract cung cấp cấu hình chấm điểm động theo bài tập
-- [ ] Cập nhật `mockSubmissionService.js` sử dụng `contentService` để nạp config
-- [ ] Chạy test suite `mockSubmissionService.test.js` xác minh không còn hardcoded config
+### 🔹 Step 5.1: Dataset Domain Independence *(HOÀN THÀNH)*
+- [x] Định nghĩa `datasetService` contract & registry tách biệt với vụ án (`mockDatasetService.js`)
+- [x] Quản lý Schema, SQLite Table seed và Dataset metadata độc lập
 
-### 🔹 Step 5.2: Investigation, Question & Variant Domain Separation *(PLANNED)*
-- [ ] Tạo schema dữ liệu `Investigation` (Cốt truyện vụ án) và `Question` (Nhiệm vụ kỹ thuật)
-- [ ] Phân tách dữ liệu bài tập trong `investigations.json` và `questions.json`
-- [ ] Thêm hỗ trợ `Question Variant` cho chế độ luyện tập tự do
-- [ ] Đảm bảo backward compatibility cho các đường dẫn `/missions/:missionId` hiện tại
+### 🔹 Step 5.2: Content Domain Hierarchy Contracts *(HOÀN THÀNH)*
+- [x] Khai báo `contentService.js` contract với cấu trúc phân cấp: Course -> Phase -> Chapter
+- [x] Độc lập nội dung học tập khỏi logic người dùng/UI
 
-### 🔹 Step 5.3: Dataset Domain Independence & Schema Registry *(PLANNED)*
-- [ ] Định nghĩa `datasetService` contract quản lý danh mục bộ dữ liệu Excel/SQL
-- [ ] Cho phép 1 dataset được tái sử dụng bởi nhiều Question mà không nhân bản file JSON/Schema
-- [ ] Thử nghiệm nạp và cache schema SQLite độc lập với ID vụ án
+### 🔹 Step 5.3: Investigation Domain Contract *(HOÀN THÀNH)*
+- [x] Khai báo `investigationService.js` quản lý entity `Investigation` (Cốt truyện vụ án)
+- [x] Hỗ trợ mapper dịch chuyển legacy `Mission` thành `Investigation` giữ tương thích ngược 100%
+
+### 🔹 Step 5.4: Question Domain Contract *(HOÀN THÀNH)*
+- [x] Khai báo `questionService.js` quản lý entity `Question` (Nhiệm vụ kỹ thuật Excel/SQL)
+- [x] Bóc tách `checkerConfig` vào entity Question thay vì hardcode trong mock submission
+
+### 🔹 Step 5.5: Question Submission Integration *(HOÀN THÀNH)*
+- [x] Tích hợp `submissionService` với Question Domain entities
+- [x] Trả về kết quả đánh giá submission với `potentialXp` mà không trực tiếp trao thưởng XP
+
+### 🔹 Step 5.6: Learner Progress State *(HOÀN THÀNH)*
+- [x] Tạo `learnerProgress.js` & `progressService.js` lưu trữ tiến độ học tập độc lập
+- [x] Đánh dấu trạng thái `completed` / `in_progress` theo từng bài tập
+
+### 🔹 Step 5.7: XP Reward Integration & Idempotent Ledger *(HOÀN THÀNH)*
+- [x] Xây dựng `rewardEvaluator.js` hỗ trợ trao thưởng XP độc lập và Idempotent
+- [x] Đảm bảo nộp lại thành công bài cũ không bị lặp XP Thưởng
+
+### 🔹 Step 5.8: Completion vs Mastery Foundation *(HOÀN THÀNH)*
+- [x] Tách biệt khái niệm Hoàn thành (Completion) và Thành thạo (Mastery) với `masteryEvaluator.js`
+- [x] Thiết lập cấu trúc dữ liệu theo dõi kỹ năng (Skill association) và lịch sử lần làm bài (Attempt history)
 
 ---
 
-## ⚪ Sprint 6 — Game Progress & Progression Architecture *(PLANNED)*
+## 🟢 Sprint 6 — Game Progress & Learning Map Integration *(HOÀN THÀNH 100%)*
 
-### 🔹 Step 6.1: Leveling Engine & XP Ledger Contract *(PLANNED)*
-- [ ] Xây dựng `src/utils/game/levelingEngine.js` tính toán Level (1–50), XP required & danh hiệu
-- [ ] Khởi tạo `progressService` contract và `mockProgressService.js`
-- [ ] Thiết lập sổ cái XP (XP Ledger) hỗ trợ ghi nhận thưởng Idempotent khi nhận kết quả từ `submissionService`
+### 🔹 Step 6.1: Learning Map Domain Adapter *(HOÀN THÀNH)*
+- [x] Tạo `learningMapAdapter.js` chuyển đổi domain tree (`Journey` -> `Phase` -> `Chapter` -> `Investigation` -> `Question`)
+- [x] Tích hợp `progressService` để giải quyết trạng thái nút (`completed`, `current`, `locked`)
+- [x] Giữ tương thích 100% đường dẫn làm bài Excel/SQL hiện tại
 
-### 🔹 Step 6.2: Main Quest vs Practice Mode & Mastery Tracking *(PLANNED)*
-- [ ] Tách biệt dữ liệu tiến độ nhiệm vụ chính (Main Quest) và rèn luyện (Practice)
-- [ ] Phát triển công thức tính toán điểm thành thạo Mastery (Độ chính xác, gợi ý, thời gian)
+### 🔹 Step 6.2: Learning Map UX Refactor *(HOÀN THÀNH)*
+- [x] Loại bỏ phụ thuộc dropdown chọn khóa học nhỏ (`<select id="course-selector">`)
+- [x] Xây dựng giao diện lộ trình đa Giai đoạn (Phase Navigation Tabs) trực quan
+- [x] Trình bày toàn bộ tiến độ hành trình học tập (`Journey Progression`) giúp học viên thấy rõ vị trí hiện tại
+- [x] Viết unit & component tests cho `learningMapAdapter.test.js` & `LearningMapPage.test.jsx`
 
-### 🔹 Step 6.3: Dynamic Learning Map Progression *(PLANNED)*
-- [ ] Phát triển `useProgress` hook kết nối trực tiếp với `progressService`
-- [ ] Cập nhật `LearningMapPage.jsx` hiển thị nút Locked/Unlocked/Completed dựa trên progress thật
+### 🔹 Step 6.3: Practice Engine & Mastery Integration *(HOÀN THÀNH)*
+- [x] Tách biệt dữ liệu tiến độ nhiệm vụ chính (Main Quest) và rèn luyện (Practice) qua tham số `mode`
+- [x] Phát triển công thức tính toán điểm và danh hiệu thành thạo Mastery (`getSkillMasteryLevel`, `calculateOverallMastery`)
+- [x] Tích hợp `useProgress` hook thời gian thực làm Single Source of Truth cho Progress, XP & Mastery
+- [x] Hiển thị thẻ tổng quan thành thạo kỹ năng (**Skill Mastery Summary Card**) trên `LearningMapPage.jsx`
+- [x] Đồng bộ hóa toàn bộ 9 bộ câu hỏi Excel (`mission-001` đến `mission-009`) & cấu hình chấm điểm công thức phong phú (`SUM`, `MAX`, `AVERAGE`, `COUNTIF`, `SUMIF`, `IF`, `VLOOKUP`, `INDEX/MATCH`)
+
+---
+
+## 🔵 Sprint 6.5 — Learner Onboarding & First-Run Experience *(IN PROGRESS)*
+
+### 🔹 Step 6.5.0: First-Run UX Audit *(HOÀN THÀNH)*
+- [x] Kiểm tra luồng Register → Dashboard hiện tại (READ-ONLY)
+- [x] Đếm số CTA cạnh tranh trên Dashboard (~15–17 điểm tương tác)
+- [x] Xác nhận không có onboarding state, Welcome Gate hay tour library nào tồn tại
+- [x] Xác định `ds-001` + `mission-001` làm nền tảng Tutorial Case 0
+- [x] Xác định 2 điểm can thiệp tối thiểu: `AuthPage.jsx:132` và `router/index.jsx`
+
+### 🔹 Step 6.5.1: First-Run State *(HOÀN THÀNH)*
+- [x] Implement `onboardingService.js` — single owner của onboarding state
+- [x] State model: `NOT_STARTED | IN_PROGRESS | COMPLETED | SKIPPED`
+- [x] Transition guards: COMPLETED & SKIPPED là terminal (không lặp lại Welcome Gate)
+- [x] Persistence qua `storage.js` (prefix `avimystery:onboarding:{userId}`)
+- [x] Per-user isolation: mỗi user có state riêng biệt
+- [x] Export qua `services/index.js` (gateway pattern)
+- [x] Tests: 30/30 PASS
+
+### 🔹 Step 6.5.2: Welcome Gate UI *(HOÀN THÀNH)*
+- [x] Trang `WelcomeGatePage.jsx` full-screen (không dùng LearnerLayout)
+- [x] Redirect guard: unauthenticated → /login, terminal state → /dashboard
+- [x] CTA chính: "Bắt đầu khóa huấn luyện" → /onboarding/case-0, set IN_PROGRESS
+- [x] CTA phụ: "Bỏ qua, tôi đã có kinh nghiệm" → /dashboard, set SKIPPED
+- [x] Route `/onboarding` + `/onboarding/case-0` thêm vào `router/index.jsx`
+- [x] Redirect sau register: `AuthPage.jsx` → `/onboarding` thay vì `/dashboard`
+- [x] Tests: 12 test cases
+
+### 🔹 Step 6.5.3: Tutorial Case 0 Content *(HOÀN THÀNH)*
+- [x] Tạo `tutorialCase0Content.js` — content riêng, không import `missions.json`
+- [x] Briefing: story, objective, hint với `=C2*D2`
+- [x] Dataset: 1 dòng duy nhất (ORD-001, quantity=3, unitPrice=150000, total=null)
+- [x] Workspace config: targetCell=E2, formulaPlaceholder
+- [x] Evaluator: expectedFormula + expectedValue (450000) + 3 feedback messages
+- [x] Spotlight steps: 4 bước hướng dẫn có target CSS selector
+- [x] `checkTutorialAnswer()` helper: formula + numeric fallback, case-insensitive
+- [x] Tests: 22 test cases
+
+### 🔹 Step 6.5.4: Minimal Case 0 Workspace *(HOÀN THÀNH)*
+- [x] Trang `TutorialCase0Page.jsx` — focused workspace với low cognitive load
+- [x] Gắn các Spotlight target IDs: `#tutorial-briefing-panel`, `#tutorial-dataset-grid`, `#tutorial-formula-bar`, `#tutorial-submit-btn`
+- [x] Tái sử dụng components Excel (`SpreadsheetGrid`, `FormulaBar`)
+- [x] Mount route `/onboarding/case-0` vào `AppRouter`
+- [x] Xử lý nộp bài & cập nhật trạng thái `COMPLETED` / `SKIPPED`
+- [x] Tests: 8 test cases PASS
+
+### 🔹 Step 6.5.5: Guided Spotlight *(HOÀN THÀNH)*
+- [x] Spotlight 4 steps (pure React/custom CSS, không dùng thư viện ngoài)
+- [x] Backdrop mask + highlight ring animated xung quanh phần tử target
+- [x] Tooltip tự động căn chỉnh vị trí (dưới/trên phần tử target)
+- [x] Phím tắt bàn phím (Esc đóng, Enter/Mũi tên phải sang bước tiếp, Mũi tên trái quay lại)
+- [x] Nút "Xem lại hướng dẫn" trên header `TutorialCase0Page.jsx`
+- [x] Tests: 7 test cases PASS
+
+### 🔹 Step 6.5.6: Completion + Reward *(HOÀN THÀNH)*
+- [x] Kết nối completion với reward system hiện có: +50 XP qua `progressService.awardXp`
+- [x] Đảm bảo tính Idempotency: Không thể nhận XP 2 lần cho cùng một vụ án tutorial
+- [x] Direct redirect về `/dashboard` sau khi click "Hoàn thành & Vào Dashboard"
+- [x] Total onboarding tests: 84/84 tests PASS
+
+### 🔹 Step 6.5.7: Dashboard Handoff *(PLANNED)*
+- [ ] Sau completion → Dashboard với CTA "Tiếp tục học" rõ ràng
+
+### 🔹 Step 6.5.8: Full Regression Test *(PLANNED)*
+- [ ] Kiểm tra 7 luồng: New learner, Skip, Return, Reload, Replay, Fail→Retry, Accessibility
 
 ---
 

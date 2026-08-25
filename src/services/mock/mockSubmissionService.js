@@ -18,11 +18,43 @@ export const MOCK_SUBMISSION_FAILURES = Object.freeze({
   TIMEOUT: 'timeout',
 });
 
-// MVP Step 3.4 Excel Checker Config
+// MVP Step 3.4 & 6.3 Excel Checker Configs (Missions 001 - 009)
 const EXCEL_CHECKER_CONFIG = Object.freeze({
   'mission-001': Object.freeze({
     expectedFormula: Object.freeze(['=C2*D2', '=D2*C2', '=PRODUCT(C2,D2)']),
     expectedValue: 450000,
+  }),
+  'mission-002': Object.freeze({
+    expectedFormula: Object.freeze(['=MAX(D2:D6)', '=MAX(D2:D5)', '=MAX(E2:E6)', '=C5*D5', '=D5*C5']),
+    expectedValue: 3200000,
+  }),
+  'mission-003': Object.freeze({
+    expectedFormula: Object.freeze(['=AVERAGE(D2:D6)', '=AVERAGE(D2:D5)', '=AVERAGE(E2:E6)', '=AVERAGE(C2:C6)']),
+    expectedValue: 826000,
+  }),
+  'mission-004': Object.freeze({
+    expectedFormula: Object.freeze(['=COUNTIF(E2:E6, ">=10000000")', '=COUNTIF(D2:D6, ">=10000000")', '=COUNTIF(E2:E10, ">=10000000")', '=COUNTIF(E2:E6, ">=1000000")', '=COUNTIF(D2:D6, ">=1000000")']),
+    expectedValue: 1,
+  }),
+  'mission-005': Object.freeze({
+    expectedFormula: Object.freeze(['=SUMIF(B2:B6, "Laptop Pro", E2:E6)', '=SUMIF(B2:B6, "Laptop Pro", D2:D6)', '=SUMIF(B2:B10, "Laptop Pro", E2:E10)', '=SUMIF(B2:B6, "Chuột máy tính không dây", E2:E6)']),
+    expectedValue: 3200000,
+  }),
+  'mission-006': Object.freeze({
+    expectedFormula: Object.freeze(['=IF(C2>=50000000, "VIP", "Regular")', '=IF(C2>=50000000,"VIP","Regular")', '=IF(C2>50000000, "VIP", "Regular")', '=IF(C2>=50, "VIP", "Regular")']),
+    expectedValue: 'VIP',
+  }),
+  'mission-007': Object.freeze({
+    expectedFormula: Object.freeze(['=VLOOKUP(A2, Customers!A2:D5, 2, 0)', '=VLOOKUP(A2, A2:D5, 2, 0)', '=VLOOKUP(A2, A2:D5, 2, FALSE)', '=VLOOKUP(A2, Customers!A:D, 2, 0)']),
+    expectedValue: 'Nguyễn Văn An',
+  }),
+  'mission-008': Object.freeze({
+    expectedFormula: Object.freeze(['=INDEX(B2:B6, MATCH(MIN(C2:C6), C2:C6, 0))', '=INDEX(B2:B6,MATCH(MIN(C2:C6),C2:C6,0))', '=INDEX(B2:B6, MATCH(MIN(C2:C6), C2:C6, FALSE))']),
+    expectedValue: 'Màn hình 24 inch 144Hz',
+  }),
+  'mission-009': Object.freeze({
+    expectedFormula: Object.freeze(['=SUM(E2:E6)', '=SUM(E2:E10)', '=SUM(D2:D6)', '=SUM(E2:E5)']),
+    expectedValue: 6600000,
   }),
 });
 

@@ -129,7 +129,8 @@ export function AuthPage({ initialMode = 'login' }) {
     if (result.error) {
       setAuthError(result.error);
     } else {
-      navigate('/dashboard', { replace: true });
+      // Người dùng mới → Welcome Gate (onboardingService kiểm tra eligibility)
+      navigate('/onboarding', { replace: true });
     }
   }
 

@@ -25,6 +25,8 @@ import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
 import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
+import { WelcomeGatePage } from '../../features/onboarding/WelcomeGatePage.jsx';
+import { TutorialCase0Page } from '../../features/onboarding/TutorialCase0Page.jsx';
 
 
 
@@ -109,6 +111,18 @@ export function AppRouter() {
           <Route path="/practice" element={<PlaceholderPage title="Luyện tập" />} />
           <Route path="/achievements" element={<PlaceholderPage title="Thành tựu" />} />
           <Route path="/profile" element={<PlaceholderPage title="Hồ sơ" />} />
+        </Route>
+
+        {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}
+        <Route
+          element={
+            <RequireAuth>
+              <Outlet />
+            </RequireAuth>
+          }
+        >
+          <Route path="/onboarding" element={<WelcomeGatePage />} />
+          <Route path="/onboarding/case-0" element={<TutorialCase0Page />} />
         </Route>
 
         {/* Admin routes */}

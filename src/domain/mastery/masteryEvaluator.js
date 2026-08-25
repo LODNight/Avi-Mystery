@@ -1,7 +1,89 @@
 /**
- * Learner Mastery Domain Model & Pure Evaluation Logic (Step 5.8)
+ * Learner Mastery Domain Model & Pure Evaluation Logic (Step 5.8 & 6.3)
  * Manages skill-level proficiency calculations independently from content completion.
  */
+
+export const MASTERY_LEVELS = Object.freeze({
+  NOVICE: {
+    key: 'novice',
+    name: 'Tập sự',
+    minScore: 0,
+    badge: '🌱',
+    color: 'text-amber-600 dark:text-amber-400',
+    bg: 'bg-amber-500/10 dark:bg-amber-500/20',
+    border: 'border-amber-500/30 dark:border-amber-500/40',
+  },
+  APPRENTICE: {
+    key: 'apprentice',
+    name: 'Học việc',
+    minScore: 30,
+    badge: '🔍',
+    color: 'text-sky-600 dark:text-sky-300',
+    bg: 'bg-sky-500/10 dark:bg-sky-500/20',
+    border: 'border-sky-500/30 dark:border-sky-500/40',
+  },
+  ADVANCED: {
+    key: 'advanced',
+    name: 'Thành thạo',
+    minScore: 70,
+    badge: '⭐',
+    color: 'text-emerald-600 dark:text-emerald-300',
+    bg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+    border: 'border-emerald-500/30 dark:border-emerald-500/40',
+  },
+  MASTER: {
+    key: 'master',
+    name: 'Thám tử Bậc thầy',
+    minScore: 90,
+    badge: '🏆',
+    color: 'text-purple-600 dark:text-purple-300',
+    bg: 'bg-purple-500/10 dark:bg-purple-500/20',
+    border: 'border-purple-500/30 dark:border-purple-500/40',
+  },
+})
+
+/**
+ * Returns the Mastery Level metadata object based on a 0-100 mastery score.
+ *
+ * @param {number} masteryScore Proficiency percentage (0-100)
+ * @returns {Object} Mastery Level descriptor
+ */
+export function getSkillMasteryLevel(masteryScore = 0) {
+  const score = typeof masteryScore === 'number' ? Math.max(0, Math.min(100, masteryScore)) : 0
+  if (score >= 90) return MASTERY_LEVELS.MASTER
+  if (score >= 70) return MASTERY_LEVELS.ADVANCED
+  if (score >= 30) return MASTERY_LEVELS.APPRENTICE
+  return MASTERY_LEVELS.NOVICE
+}
+
+/**
+ * Calculates aggregate overall mastery statistics across a list of LearnerMasteryRecord items.
+ *
+ * @param {Array} [masteryRecords=[]] List of LearnerMasteryRecord
+ * @returns {Object} Aggregate mastery summary
+ */
+export function calculateOverallMastery(masteryRecords = []) {
+  if (!Array.isArray(masteryRecords) || masteryRecords.length === 0) {
+    return {
+      averageScore: 0,
+      totalSkills: 0,
+      masteredSkills: 0,
+      overallLevel: MASTERY_LEVELS.NOVICE,
+    }
+  }
+
+  const totalScore = masteryRecords.reduce((sum, r) => sum + (r.masteryScore || 0), 0)
+  const averageScore = Math.round(totalScore / masteryRecords.length)
+  const masteredSkills = masteryRecords.filter(r => (r.masteryScore || 0) >= 70).length
+  const overallLevel = getSkillMasteryLevel(averageScore)
+
+  return {
+    averageScore,
+    totalSkills: masteryRecords.length,
+    masteredSkills,
+    overallLevel,
+  }
+}
 
 /**
  * Generates a composite skill mastery lookup key.

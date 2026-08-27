@@ -32,6 +32,8 @@ import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
 import { FEATURE_FLAGS } from '../../config/envConfig.js';
 import { UnderMaintenancePage } from '../../pages/learner/UnderMaintenancePage.jsx';
 import { formatXP } from '../../utils/format.js';
+import { StreakDetailModal } from '../../features/gamification/StreakDetailModal.jsx';
+import { LevelUpModal } from '../../features/gamification/LevelUpModal.jsx';
 
 const learnerNav = [
   { label: 'Tổng quan', to: '/dashboard', icon: Home },
@@ -51,6 +53,8 @@ export function isLearnerNavPathActive(pathname, navPath) {
 
 export function LearnerLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [showStreakModal, setShowStreakModal] = useState(false);
+  const [showLevelUpModal, setShowLevelUpModal] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('avi_sidebar_collapsed') === 'true';
@@ -100,6 +104,7 @@ export function LearnerLayout({ children }) {
 
       {/* ── Sidebar ── */}
       <aside
+        id="app-sidebar"
         className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-stone-200 dark:border-stone-800 bg-sidebar py-5 shadow-sm sm:shadow-md transition-all duration-300 ease-in-out lg:translate-x-0 ${
           collapsed ? 'w-20 px-3.5' : 'w-72 px-4'
         } ${mobileOpen ? 'translate-x-0 w-72 px-4' : '-translate-x-full'}`}
@@ -246,35 +251,35 @@ export function LearnerLayout({ children }) {
 
         {/* Streak Promo Card - Subtle Surface with Amber Accent */}
         {(!collapsed || mobileOpen) ? (
-          <div className="mt-auto rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-amber-500/25 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all">
+          <div
+            onClick={() => setShowStreakModal(true)}
+            className="mt-auto rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-amber-500/25 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all cursor-pointer hover:border-amber-500/50"
+          >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="size-4 text-amber-500 fill-amber-500/20" />
-                <span className="text-xs font-bold text-stone-800 dark:text-stone-100">Chuỗi học tập</span>
+                <span className="text-xs font-bold text-stone-800 dark:text-stone-100">Chuỗi học tập 🔥</span>
               </div>
               <span className="rounded-full border border-stone-200 dark:border-amber-500/30 bg-stone-100 dark:bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-300">
                 {formatXP(user?.xp || 0)}
               </span>
             </div>
             <p className="mt-2 text-xs leading-relaxed text-stone-600 dark:text-stone-300">
-              Hoàn thành 1 nhiệm vụ hôm nay để duy trì tiến trình.
+              Hoàn thành 1 nhiệm vụ hôm nay để duy trì tiến trình. Bấm để xem chi tiết.
             </p>
-            <Link
-              to="/dashboard"
-              className="mt-2.5 inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline transition-colors"
-            >
-              Vào nhiệm vụ <ChevronRight className="size-3" />
-            </Link>
+            <div className="mt-2.5 inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
+              Xem lịch sử streak <ChevronRight className="size-3" />
+            </div>
           </div>
         ) : (
           <div className="mt-auto flex justify-center pt-2">
-            <Link
-              to="/dashboard"
-              className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-amber-500/30 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500 hover:text-amber-400 transition-all"
-              title={`XP: ${formatXP(user?.xp || 0)} · Giữ vững streak học tập`}
+            <button
+              onClick={() => setShowStreakModal(true)}
+              className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-amber-500/30 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500 hover:text-amber-400 transition-all cursor-pointer"
+              title={`XP: ${formatXP(user?.xp || 0)} · Bấm để xem Streak học tập`}
             >
               <Sparkles className="size-4" />
-            </Link>
+            </button>
           </div>
         )}
       </aside>
@@ -381,6 +386,22 @@ export function LearnerLayout({ children }) {
           )}
         </main>
       </div>
+
+      {/* Gamification Modals */}
+      <StreakDetailModal
+        isOpen={showStreakModal}
+        onClose={() => setShowStreakModal(false)}
+        streakCount={user?.streak || 1}
+      />
+
+      <LevelUpModal
+        isOpen={showLevelUpModal}
+        onClose={() => setShowLevelUpModal(false)}
+        previousLevel={1}
+        newLevel={2}
+        newTitle="Nhà Điều Tra Cấp Cao"
+        xpEarned={100}
+      />
     </div>
   );
 }

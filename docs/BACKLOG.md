@@ -90,11 +90,11 @@
 
 ---
 
-## Sprint 7 — Learner Engagement & Practice Engine Tasks (`PROPOSED`)
+## Sprint 7 — Learner Engagement & Practice Engine Tasks (`IN_PROGRESS`)
 
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
-| `GAM-UI-7.1` | Level Up Popups & Streak Counter | `GAME` | `Medium` | `PROPOSED` | Hiệu ứng hoạt họa khi thăng cấp và bộ đếm chuỗi ngày học liên tục |
+| `GAM-UI-7.1` | Level Up Popups & Streak Counter | `GAME` | `Medium` | `CURRENT` | `LevelUpModal.jsx` + `StreakDetailModal.jsx` — tích hợp Sidebar + 10/10 unit tests PASS |
 | `LRN-PRAC-7.2` | Standalone Practice Workspace & Question Bank | `LRN` | `Medium` | `PROPOSED` | Giao diện giải bài tập tự do tách biệt khỏi cốt truyện chính |
 | `GAME-PROF-7.3` | Learner Profile & Achievement Badges Page | `GAME` | `Medium` | `PROPOSED` | Trang Hồ sơ cá nhân (`/profile`) và bảng huy hiệu danh hiệu thám tử |
 

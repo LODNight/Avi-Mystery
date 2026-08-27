@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DashboardPage } from '../../pages/learner/DashboardPage.jsx';
+import { LearnerLayout } from '../../app/layouts/LearnerLayout.jsx';
 import { onboardingService, ONBOARDING_STATUS } from '../../services/index.js';
 import { DASHBOARD_TOUR_STEPS } from './dashboardTourContent.js';
 import { OnboardingSpotlight } from './OnboardingSpotlight.jsx';
@@ -15,6 +16,14 @@ vi.mock('../../hooks/useAuth.js', () => ({
 
 vi.mock('../../app/providers/ThemeProvider.jsx', () => ({
   useTheme: () => ({ theme: 'dark', toggleTheme: vi.fn() }),
+}));
+
+vi.mock('../../hooks/usePageStatus.js', () => ({
+  usePageStatus: () => ({
+    getPageStatus: vi.fn(),
+    adminBypass: false,
+    toggleAdminBypass: vi.fn(),
+  }),
 }));
 
 vi.mock('../../hooks/useAsync.js', () => ({
@@ -34,14 +43,14 @@ function renderDashboardPage() {
   return render(
     <MemoryRouter initialEntries={['/dashboard']}>
       <Routes>
-        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/dashboard" element={<LearnerLayout><DashboardPage /></LearnerLayout>} />
         <Route path="/onboarding" element={<div>Welcome Gate Page</div>} />
       </Routes>
     </MemoryRouter>
   );
 }
 
-describe('Dashboard Deep Guided Tour (Step 6.6 Refinement)', () => {
+describe('Dashboard Deep Guided Tour (5-Step Tour with Sidebar & Close Behavior)', () => {
   beforeEach(() => {
     vi.resetAllMocks();
     currentMockUser = {
@@ -72,54 +81,96 @@ describe('Dashboard Deep Guided Tour (Step 6.6 Refinement)', () => {
   // ── 2. Content Config ──────────────────────────────────────────────────────
 
   describe('dashboardTourContent Config', () => {
-    it('defines 6 valid steps with targets matching all Dashboard layout section IDs', () => {
-      expect(DASHBOARD_TOUR_STEPS).toHaveLength(6);
-      expect(DASHBOARD_TOUR_STEPS[0].targetId).toBe('dashboard-welcome-header');
-      expect(DASHBOARD_TOUR_STEPS[1].targetId).toBe('dashboard-stat-cards');
+    it('defines 5 steps with targets matching Sidebar and key Dashboard section IDs', () => {
+      expect(DASHBOARD_TOUR_STEPS).toHaveLength(5);
+      expect(DASHBOARD_TOUR_STEPS[0].targetId).toBe('app-sidebar');
+      expect(DASHBOARD_TOUR_STEPS[1].targetId).toBe('dashboard-welcome-header');
       expect(DASHBOARD_TOUR_STEPS[2].targetId).toBe('dashboard-continue-investigation');
-      expect(DASHBOARD_TOUR_STEPS[3].targetId).toBe('dashboard-investigator-level');
-      expect(DASHBOARD_TOUR_STEPS[4].targetId).toBe('dashboard-active-courses');
-      expect(DASHBOARD_TOUR_STEPS[5].targetId).toBe('dashboard-recommended-missions');
+      expect(DASHBOARD_TOUR_STEPS[3].targetId).toBe('dashboard-active-courses');
+      expect(DASHBOARD_TOUR_STEPS[4].targetId).toBe('dashboard-recommended-missions');
     });
   });
 
-  // ── 3. Core Engine Prop Alias Normalization ─────────────────────────────────
+  // ── 3. Core Engine Prop Alias Normalization & Close Handlers ─────────────
 
-  describe('OnboardingSpotlight Prop Alias Normalization', () => {
+  describe('OnboardingSpotlight Prop Normalization & Close Behavior', () => {
     it('renders step body when using "content" or "body" key', () => {
       const steps = [
         { targetId: 'test-el', title: 'Step Content Test', content: 'Văn bản sử dụng key content' },
         { target: '#test-el-2', title: 'Step Body Test', body: 'Văn bản sử dụng key body' },
       ];
 
-      const { rerender } = render(<OnboardingSpotlight isOpen={true} steps={steps} />);
+      render(<OnboardingSpotlight isOpen={true} steps={steps} />);
       expect(screen.getByText('Văn bản sử dụng key content')).toBeInTheDocument();
 
       // Click next to test step 2
       fireEvent.click(screen.getByText(/Tiếp theo/i));
       expect(screen.getByText('Văn bản sử dụng key body')).toBeInTheDocument();
     });
+
+    it('triggers onClose / onSkip when X button is clicked', () => {
+      const handleClose = vi.fn();
+      const steps = [
+        { targetId: 'test-el', title: 'Close Test', content: 'Nội dung test đóng tour' },
+      ];
+
+      render(<OnboardingSpotlight isOpen={true} steps={steps} onClose={handleClose} />);
+      const closeBtn = screen.getByRole('button', { name: /Đóng hướng dẫn/i });
+      fireEvent.click(closeBtn);
+
+      expect(handleClose).toHaveBeenCalledTimes(1);
+    });
+
+    it('triggers dismiss callback when Escape key is pressed', () => {
+      const handleSkip = vi.fn();
+      const steps = [
+        { targetId: 'test-el', title: 'Esc Test', content: 'Nội dung test phím esc' },
+      ];
+
+      render(<OnboardingSpotlight isOpen={true} steps={steps} onSkip={handleSkip} />);
+      fireEvent.keyDown(window, { key: 'Escape' });
+
+      expect(handleSkip).toHaveBeenCalledTimes(1);
+    });
   });
 
   // ── 4. Component Interactions ─────────────────────────────────────────────
 
   describe('DashboardPage Tour Spotlight Behavior', () => {
-    it('auto-triggers tour spotlight on first dashboard visit and matches all 6 section IDs', async () => {
+    it('auto-triggers tour spotlight on first dashboard visit starting with Sidebar step', async () => {
       useAuth.mockReturnValue({ user: currentMockUser, isLoading: false, isAuthenticated: true });
 
       const { container } = renderDashboardPage();
 
       await waitFor(() => {
-        expect(screen.getByText(/Trung Tâm Điều Tra/i)).toBeInTheDocument();
+        expect(screen.getByText(/Thanh Điều Hướng Sidebar/i)).toBeInTheDocument();
       });
 
-      // Target elements exist for all 6 steps
+      // Target elements exist for steps
+      expect(container.querySelector('#app-sidebar')).not.toBeNull();
       expect(container.querySelector('#dashboard-welcome-header')).not.toBeNull();
-      expect(container.querySelector('#dashboard-stat-cards')).not.toBeNull();
       expect(container.querySelector('#dashboard-continue-investigation')).not.toBeNull();
-      expect(container.querySelector('#dashboard-investigator-level')).not.toBeNull();
       expect(container.querySelector('#dashboard-active-courses')).not.toBeNull();
       expect(container.querySelector('#dashboard-recommended-missions')).not.toBeNull();
+    });
+
+    it('closes tour and marks seen when X button is clicked on Dashboard', async () => {
+      useAuth.mockReturnValue({ user: currentMockUser, isLoading: false, isAuthenticated: true });
+
+      renderDashboardPage();
+
+      await waitFor(() => {
+        expect(screen.getByText(/Thanh Điều Hướng Sidebar/i)).toBeInTheDocument();
+      });
+
+      const closeBtn = screen.getByRole('button', { name: /Đóng hướng dẫn/i });
+      fireEvent.click(closeBtn);
+
+      await waitFor(() => {
+        expect(screen.queryByText(/Thanh Điều Hướng Sidebar/i)).toBeNull();
+      });
+
+      expect(onboardingService.hasSeenDashboardTour(currentMockUser.id)).toBe(true);
     });
 
     it('does not auto-trigger tour spotlight if user has already seen it', async () => {
@@ -133,7 +184,7 @@ describe('Dashboard Deep Guided Tour (Step 6.6 Refinement)', () => {
       });
 
       // Tour tooltip should not be rendered
-      expect(screen.queryByText(/Chào mừng bạn đến với Tổng hành dinh/i)).toBeNull();
+      expect(screen.queryByText(/Thanh Điều Hướng Sidebar/i)).toBeNull();
     });
 
     it('allows re-triggering tour by clicking "Hướng dẫn Dashboard" button', async () => {
@@ -149,7 +200,7 @@ describe('Dashboard Deep Guided Tour (Step 6.6 Refinement)', () => {
       fireEvent.click(screen.getByText(/Hướng dẫn Dashboard/i));
 
       await waitFor(() => {
-        expect(screen.getByText(/Trung Tâm Điều Tra/i)).toBeInTheDocument();
+        expect(screen.getByText(/Thanh Điều Hướng Sidebar/i)).toBeInTheDocument();
       });
     });
   });

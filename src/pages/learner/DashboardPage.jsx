@@ -304,6 +304,7 @@ export function DashboardPage() {
         isOpen={isTourOpen}
         steps={DASHBOARD_TOUR_STEPS}
         onClose={handleCloseTour}
+        onSkip={handleCloseTour}
         onComplete={handleCloseTour}
       />
     </div>

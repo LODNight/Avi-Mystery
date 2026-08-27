@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Award,
   ArrowRight,
+  Play,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
@@ -24,6 +25,7 @@ import { isAdmin } from '../../constants/roles.js';
 import { FEATURE_FLAGS } from '../../config/envConfig.js';
 import { Button } from '../../components/ui/Button.jsx';
 import { Input } from '../../components/ui/Input.jsx';
+import { onboardingService } from '../onboarding/onboardingService.js';
 
 // Tài khoản demo để điền nhanh
 const DEMO_ACCOUNTS = [
@@ -140,6 +142,21 @@ export function AuthPage({ initialMode = 'login' }) {
     setLoginForm({ email: account.email, password: account.password });
     setErrors({});
     setAuthError('');
+  }
+
+  // Đăng nhập nhanh và reset state để test Onboarding Mode
+  async function handleTestOnboardingDemo() {
+    setSubmitting(true);
+    setAuthError('');
+    const demoLearner = DEMO_ACCOUNTS[0]; // Learner account
+    const result = await login({ email: demoLearner.email, password: demoLearner.password });
+    setSubmitting(false);
+    if (result.error) {
+      setAuthError(result.error);
+    } else if (result.data?.id) {
+      onboardingService.reset(result.data.id);
+      navigate('/onboarding', { replace: true });
+    }
   }
 
   // Độ mạnh mật khẩu (dành cho form Đăng ký)
@@ -337,6 +354,18 @@ export function AuthPage({ initialMode = 'login' }) {
                         <ChevronRight className="size-3 text-primary shrink-0" />
                       </button>
                     ))}
+                  </div>
+
+                  {/* Dev Testing shortcut for Onboarding */}
+                  <div className="mt-2.5 pt-2.5 border-t border-border/50">
+                    <button
+                      type="button"
+                      onClick={handleTestOnboardingDemo}
+                      className="w-full flex items-center justify-center gap-1.5 text-xs bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/30 rounded-xl px-3 py-2 transition-all shadow-sm cursor-pointer"
+                    >
+                      <Play className="size-3.5 fill-current" />
+                      <span>🧪 Test Luồng Hướng Dẫn (Welcome Gate)</span>
+                    </button>
                   </div>
                 </div>
               )}

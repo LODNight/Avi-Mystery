@@ -14,11 +14,29 @@ import { Button } from '../../components/ui/Button.jsx';
  * @param {Function} [props.onComplete]
  * @param {Function} [props.onSkip]
  */
-export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, onSkip }) {
+export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, onSkip, onClose }) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [targetRect, setTargetRect] = useState(null);
 
   const currentStep = steps[currentStepIndex];
+
+  // Helper dismiss callback hợp nhất onClose, onSkip, onComplete
+  const handleDismiss = useCallback(() => {
+    if (onClose) {
+      onClose();
+    } else if (onSkip) {
+      onSkip();
+    } else if (onComplete) {
+      onComplete();
+    }
+  }, [onClose, onSkip, onComplete]);
+
+  // Reset về bước 1 khi mở tour
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentStepIndex(0);
+    }
+  }, [isOpen]);
 
   // Helper hỗ trợ chuẩn hóa selector (chấp nhận cả target '#id' lẫn targetId 'id')
   const getTargetSelector = (step) => {
@@ -79,7 +97,7 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
 
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        if (onSkip) onSkip();
+        handleDismiss();
       } else if (e.key === 'ArrowRight' || e.key === 'Enter') {
         handleNext();
       } else if (e.key === 'ArrowLeft') {
@@ -89,7 +107,7 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentStepIndex, steps.length]);
+  }, [isOpen, currentStepIndex, steps.length, handleDismiss]);
 
   if (!isOpen || steps.length === 0 || !currentStep) return null;
 
@@ -182,7 +200,7 @@ export function OnboardingSpotlight({ steps = [], isOpen = false, onComplete, on
           </div>
 
           <button
-            onClick={onSkip}
+            onClick={handleDismiss}
             className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted cursor-pointer"
             title="Đóng hướng dẫn (Esc)"
             aria-label="Đóng hướng dẫn"

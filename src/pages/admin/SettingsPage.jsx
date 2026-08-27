@@ -15,17 +15,23 @@ import {
   Lock,
   Sparkles,
   Image as ImageIcon,
+  Play,
+  Compass,
 } from 'lucide-react';
 import { AdminPageStatusPage } from './PageStatusPage.jsx';
 import { usePageStatus } from '../../hooks/usePageStatus.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
 import { useBrand, PRESET_LOGOS, BrandLogoIcon } from '../../app/providers/BrandProvider.jsx';
+import { useAuth } from '../../hooks/useAuth.js';
+import { onboardingService } from '../../features/onboarding/onboardingService.js';
 
 export function AdminSettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const activeTabFromUrl = searchParams.get('tab') || 'pages';
   const [activeTab, setActiveTab] = useState(activeTabFromUrl);
 
+  const { user } = useAuth();
   const { adminBypass, toggleAdminBypass } = usePageStatus();
   const { theme, toggleTheme } = useTheme();
   const { brand, updateBrand, resetBrand } = useBrand();
@@ -342,6 +348,52 @@ export function AdminSettingsPage() {
                 className="rounded-xl border border-border bg-card px-4 py-2 text-xs font-bold hover:bg-muted cursor-pointer"
               >
                 {theme === 'dark' ? 'Chuyển sang Sáng' : 'Chuyển sang Tối'}
+              </button>
+            </div>
+          </div>
+
+          {/* ── Dev Onboarding Testing Card ── */}
+          <div className="rounded-3xl border border-amber-500/40 bg-amber-500/5 p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Sparkles className="size-4 text-amber-500" />
+                Công cụ Dev: Test Chế độ Hướng dẫn Onboarding
+              </h3>
+              <span className="rounded-md bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] font-extrabold uppercase text-amber-600 dark:text-amber-400">
+                DEV TESTING
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Dành riêng cho Dev/Admin để kiểm thử luồng hướng dẫn nhập môn (Welcome Gate, Tutorial Case 0) và Tour Dashboard mà <strong>không cần phải tạo tài khoản mới</strong>.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const targetUserId = user?.id || 'learner-1';
+                  onboardingService.reset(targetUserId);
+                  showToast('🧪 Đã reset trạng thái Onboarding! Đang chuyển sang trang Welcome Gate...');
+                  setTimeout(() => navigate('/onboarding'), 800);
+                }}
+                className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-amber-950 px-4 py-3 text-xs font-bold shadow-md transition-all cursor-pointer"
+              >
+                <Play className="size-4 fill-current" />
+                <span>🧪 Test Luồng Welcome Gate & Case 0</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const targetUserId = user?.id || 'learner-1';
+                  onboardingService.resetDashboardTour(targetUserId);
+                  showToast('🔄 Đã reset Tour Dashboard! Đang chuyển hướng tới Dashboard...');
+                  setTimeout(() => navigate('/dashboard'), 800);
+                }}
+                className="flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-card hover:bg-amber-500/10 text-foreground px-4 py-3 text-xs font-bold shadow-sm transition-all cursor-pointer"
+              >
+                <RotateCcw className="size-4 text-amber-500" />
+                <span>🔄 Test Tour Dashboard (5 bước)</span>
               </button>
             </div>
           </div>

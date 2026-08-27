@@ -1,6 +1,6 @@
 # Bảng Theo Dõi Tiến Độ Chi Tiết Theo Từng Step — Avi-Mystery
 
-> **Cập nhật lần cuối:** 25/08/2026
+> **Cập nhật lần cuối:** 27/08/2026
 > **Mô tả:** Bảng danh mục công việc chi tiết chia theo từng Step cho toàn bộ các Sprint của dự án **Avi-Mystery**.
 > **Nguồn trạng thái task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md).
 
@@ -320,15 +320,25 @@
 - [x] **Step 6.6.4**: Mở rộng Unit Tests `dashboardTour.test.jsx` phủ cả 6 bước tour, kiểm tra tính tương thích prop alias và định vị phần tử DOM (6/6 tests PASS).
 - [x] **Step 6.6.5**: Chạy Full Regression Suite (97/97 tests PASS), kiểm tra giao diện thực tế và hoàn thiện tài liệu.
 
+### 🔹 Step 6.7: Admin Dev Testing Tools — Reset Onboarding *(HOÀN THÀNH)*
+- [x] Card "Công cụ Dev: Test Chế độ Hướng dẫn Onboarding" trong `AdminSettingsPage.jsx` với 2 nút: Reset Welcome Gate & Reset Tour Dashboard.
+- [x] Nút "🧪 Test Onboarding Mode" ở header trang `/admin` liên kết nhanh sang khu vực dev tools.
+- [x] Nút "🧪 Test Luồng Hướng Dẫn (Welcome Gate)" trong khu vực DEV ONLY tại `AuthPage.jsx` — 1-click đăng nhập demo và reset state.
+- [x] Tất cả các nút chỉ hiện với user Admin/Dev (bảo vệ bởi `FEATURE_FLAGS`/role `admin`).
+
 ---
 
-## ⚪ Sprint 7 — Learner Engagement & Practice Engine *(PROPOSED)*
+## 🟢 Sprint 7 — Learner Engagement & Practice Engine *(IN PROGRESS)*
 
-### 🔹 Step 7.1: Level Up Popups & Streak Counter *(PROPOSED)*
-- [ ] Hiệu ứng hoạt họa Popup mừng thăng cấp và bộ đếm chuỗi ngày học liên tục
+### 🔹 Step 7.1: Level Up Popups & Streak Counter *(HOÀN THÀNH)*
+- [x] `LevelUpModal.jsx`: Modal chúc mừng thăng cấp chuẩn Detective Amber — hiển thị cấp độ cũ/mới, danh hiệu thám tử, XP tích lũy, hiệu ứng pháo hoa. Đóng bằng Escape/backdrop/nút.
+- [x] `StreakDetailModal.jsx`: Popup xem chi tiết chuỗi ngày học 7 ngày trong tuần (biểu đồ ngọn lửa 🔥, active/inactive per day).
+- [x] Tích hợp vào `LearnerLayout.jsx` — bấm thẻ "Chuỗi học tập 🔥" Sidebar để mở `StreakDetailModal`.
+- [x] Unit Tests: `LevelUpModal.test.jsx` (5/5 PASS) + `StreakDetailModal.test.jsx` (5/5 PASS).
+- [x] Full regression: **110/110 tests PASS** sau tích hợp.
 
 ### 🔹 Step 7.2: Standalone Practice Workspace & Question Bank *(PROPOSED)*
-- [ ] Giao diện giải bài tập rèn luyện kỹ năng tự do
+- [ ] Giao diện giải bài tập rèn luyện kỹ năng tự do (`/practice`)
 
 ### 🔹 Step 7.3: Learner Profile & Achievement Badges Page *(PROPOSED)*
 - [ ] Trang Hồ sơ cá nhân (`/profile`) và bảng danh hiệu thám tử (`/achievements`)

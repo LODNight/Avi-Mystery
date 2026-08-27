@@ -1,21 +1,90 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
 import { mockProgressService } from '../../services/mock/mockProgressService.js';
 import { formatXP } from '../../utils/format.js';
 import { 
   User, Award, Flame, Target, BookOpen, Clock, 
-  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info
+  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown
 } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
 
 export function ProfilePage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     xp: 2450,
     skills: [],
     recentActivity: []
   });
+
+  // Dynamic Heatmap Data: Exactly 52 weeks (364 days) ending today!
+  const heatmapData = React.useMemo(() => {
+    const today = new Date();
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - (52 * 7 - 1));
+
+    const weeks = [];
+    let currentWeek = [];
+    const monthLabels = [];
+    let lastMonth = -1;
+
+    for (let i = 0; i < 52 * 7; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      
+      const isFuture = d > today;
+      const dayNum = d.getDate();
+      const monthNum = d.getMonth();
+      
+      const seed = dayNum * 7 + monthNum * 13;
+      let count = 0;
+      if (!isFuture) {
+        if (seed % 7 === 0) count = 5;
+        else if (seed % 5 === 0) count = 3;
+        else if (seed % 3 === 0) count = 1;
+        else if (seed % 13 === 0) count = 7;
+      }
+
+      if (monthNum !== lastMonth && d.getDay() === 0) {
+        monthLabels.push({
+          weekIndex: weeks.length,
+          label: `Thg ${monthNum + 1}`
+        });
+        lastMonth = monthNum;
+      }
+
+      currentWeek.push({
+        dateObj: d,
+        formattedDate: d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' }),
+        count,
+        isFuture
+      });
+
+      if (currentWeek.length === 7) {
+        weeks.push(currentWeek);
+        currentWeek = [];
+      }
+    }
+
+    const allDays = weeks.flat();
+    const totalContributions = allDays.reduce((acc, curr) => acc + curr.count, 0);
+    const activeDays = allDays.filter(d => d.count > 0).length;
+    
+    let maxStreak = 0;
+    let tempStreak = 0;
+    for (const d of allDays) {
+      if (d.count > 0) {
+        tempStreak++;
+        if (tempStreak > maxStreak) maxStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+    }
+
+    return { weeks, monthLabels, totalContributions, activeDays, maxStreak };
+  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -71,7 +140,7 @@ export function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="space-y-6 animate-fade-in mx-auto max-w-5xl">
+      <div className="space-y-6 animate-fade-in mx-auto max-w-7xl">
         <Skeleton className="h-44 w-full rounded-3xl" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Skeleton className="h-64 rounded-3xl md:col-span-2" />
@@ -93,7 +162,7 @@ export function ProfilePage() {
   const currentRank = getRankName(stats.xp);
 
   return (
-    <div className="space-y-8 animate-fade-in mx-auto max-w-5xl pb-12">
+    <div className="space-y-8 animate-fade-in mx-auto max-w-7xl pb-12">
       
       {/* ── Profile Header ── */}
       <div className="relative rounded-3xl bg-card border border-border shadow-xs overflow-hidden">
@@ -239,6 +308,97 @@ export function ProfilePage() {
               </div>
             )}
           </div>
+          
+          {/* LeetCode-style Contribution Heatmap */}
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-2xs overflow-hidden">
+            {/* Top Bar (LeetCode Style Header & Metrics) */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
+              <div className="flex items-center gap-2">
+                <span className="text-xl font-extrabold text-foreground tracking-tight font-mono">
+                  {heatmapData.totalContributions}
+                </span>
+                <span className="text-xs font-medium text-muted-foreground">
+                  lượt phá án trong 12 tháng qua
+                </span>
+                <div 
+                  className="group/tooltip relative flex items-center justify-center cursor-help ml-0.5"
+                  aria-label="Thông tin chuỗi đóng góp"
+                >
+                  <Info className="size-3.5 text-muted-foreground hover:text-foreground transition-colors" />
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl bg-popover border border-border p-2.5 shadow-md opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-50 text-[11px] font-medium text-popover-foreground text-center leading-relaxed">
+                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong 365 ngày qua.
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side Stats & Filter (LeetCode style) */}
+              <div className="flex flex-wrap items-center gap-3.5 text-xs text-muted-foreground font-medium">
+                <div>
+                  Tổng ngày hoạt động: <span className="font-bold text-foreground font-mono">{heatmapData.activeDays}</span>
+                </div>
+                <div className="h-3 w-px bg-border" />
+                <div>
+                  Streak dài nhất: <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{heatmapData.maxStreak} ngày</span>
+                </div>
+                <div className="h-3 w-px bg-border" />
+                <button className="flex items-center gap-1 rounded-xl bg-muted/80 border border-border/80 px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-muted transition-colors">
+                  Mới nhất <ChevronDown className="size-3.5 text-muted-foreground" />
+                </button>
+              </div>
+            </div>
+
+            {/* Heatmap Grid Container */}
+            <div className="overflow-x-auto pb-1 scrollbar-hide">
+              <div className="min-w-[760px]">
+                {/* Grid Body with Day Labels on Left */}
+                <div className="flex gap-2 mb-2">
+                  {/* Day Labels */}
+                  <div className="flex flex-col justify-between text-[10px] font-medium text-muted-foreground py-0.5 pr-1 select-none shrink-0">
+                    <span>T2</span>
+                    <span>T4</span>
+                    <span>T6</span>
+                  </div>
+
+                  {/* Weeks Columns (52 weeks) */}
+                  <div className="flex-1 grid gap-1.5" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
+                    {heatmapData.weeks.map((week, wIdx) => (
+                      <div key={wIdx} className="flex flex-col gap-1.5">
+                        {week.map((day, dIdx) => {
+                          let colorClass = 'bg-stone-200/80 dark:bg-stone-800/90 border border-stone-300/40 dark:border-stone-700/40';
+                          if (day.isFuture) colorClass = 'bg-muted/30 border border-transparent';
+                          else if (day.count === 1) colorClass = 'bg-emerald-600/70 dark:bg-emerald-700/80 border border-emerald-500/30';
+                          else if (day.count >= 2 && day.count <= 3) colorClass = 'bg-emerald-500 dark:bg-emerald-500 shadow-2xs shadow-emerald-500/30';
+                          else if (day.count >= 4 && day.count <= 5) colorClass = 'bg-emerald-400 dark:bg-emerald-400 shadow-xs shadow-emerald-400/40';
+                          else if (day.count >= 6) colorClass = 'bg-emerald-300 dark:bg-emerald-300 shadow-sm shadow-emerald-300/60 ring-1 ring-emerald-200/50';
+
+                          return (
+                            <div
+                              key={dIdx}
+                              title={`${day.formattedDate}: ${day.count} lượt làm bài`}
+                              className={`aspect-square rounded-[3px] transition-all hover:scale-130 hover:z-20 cursor-pointer ${colorClass}`}
+                            />
+                          );
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Month Headers (Positioned BELOW grid like LeetCode) */}
+                <div className="relative flex text-[10px] font-semibold text-muted-foreground pl-7 h-4">
+                  {heatmapData.monthLabels.map((m, idx) => (
+                    <div 
+                      key={idx} 
+                      className="absolute" 
+                      style={{ left: `${(m.weekIndex / 52) * 100}%` }}
+                    >
+                      <span className="ml-7">{m.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         
         {/* Right Column: Left-aligned Timeline UX/UI (1/3 width) */}
@@ -283,7 +443,10 @@ export function ProfilePage() {
               </div>
             </div>
             
-            <button className="w-full mt-6 py-2.5 rounded-xl text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors">
+            <button 
+              onClick={() => navigate('/profile/history')}
+              className="w-full mt-6 py-2.5 rounded-xl text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
+            >
               Xem lịch sử đầy đủ
             </button>
           </div>

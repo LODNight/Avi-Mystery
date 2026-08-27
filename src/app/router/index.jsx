@@ -23,6 +23,7 @@ import { ExcelMissionPage } from '../../pages/learner/ExcelMissionPage.jsx';
 import { SqlMissionPage } from '../../pages/learner/SqlMissionPage.jsx';
 import { PracticePage } from '../../pages/learner/PracticePage.jsx';
 import { ProfilePage } from '../../pages/learner/ProfilePage.jsx';
+import { ActivityHistoryPage } from '../../pages/learner/ActivityHistoryPage.jsx';
 import { AchievementsPage } from '../../pages/learner/AchievementsPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
@@ -114,6 +115,7 @@ export function AppRouter() {
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/profile/history" element={<ActivityHistoryPage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}

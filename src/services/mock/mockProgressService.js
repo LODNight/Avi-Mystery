@@ -289,6 +289,47 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
       return { data: merged, error: null }
     },
 
+    async getFullHistory(learnerId) {
+      if (!learnerId || typeof learnerId !== 'string') {
+        return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'learnerId là bắt buộc.' } }
+      }
+
+      // Generate a rich set of mock history data for the timeline
+      const today = new Date();
+      const createDate = (daysAgo, hours = 10) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - daysAgo);
+        d.setHours(hours, 0, 0, 0);
+        return d.toISOString();
+      };
+
+      const mockHistory = [
+        // Today
+        { id: 'hist-001', type: 'mission', title: 'Vụ án: Bí ẩn dữ liệu doanh thu', timestamp: createDate(0, 14), xp: 120, link: '/missions/mission-001' },
+        { id: 'hist-002', type: 'levelup', title: 'Thăng cấp: Thám tử Cấp cao', timestamp: createDate(0, 14), xp: 0, link: '/profile' },
+        { id: 'hist-003', type: 'practice', title: 'Luyện tập: Hàm VLOOKUP & XLOOKUP', timestamp: createDate(0, 9), xp: 50, link: '/practice' },
+        // Yesterday
+        { id: 'hist-004', type: 'achievement', title: 'Mở khóa Danh hiệu: Bậc thầy Excel', timestamp: createDate(1, 20), xp: 100, link: '/achievements' },
+        { id: 'hist-005', type: 'practice', title: 'Luyện tập: IF lồng nhau', timestamp: createDate(1, 15), xp: 30, link: '/practice' },
+        // 2 days ago
+        { id: 'hist-006', type: 'mission', title: 'Vụ án: Dấu vết gian lận giao dịch SQL', timestamp: createDate(2, 11), xp: 200, link: '/missions/sql-mission-001' },
+        { id: 'hist-007', type: 'achievement', title: 'Mở khóa Danh hiệu: Truy vấn Siêu tốc', timestamp: createDate(2, 11), xp: 100, link: '/achievements' },
+        // 3 days ago
+        { id: 'hist-008', type: 'practice', title: 'Luyện tập: GROUP BY & HAVING', timestamp: createDate(3, 16), xp: 40, link: '/practice' },
+        { id: 'hist-009', type: 'practice', title: 'Luyện tập: Hàm xử lý chuỗi SQL', timestamp: createDate(3, 10), xp: 40, link: '/practice' },
+        // 5 days ago
+        { id: 'hist-010', type: 'mission', title: 'Vụ án: Phân tích khách hàng rời bỏ', timestamp: createDate(5, 14), xp: 150, link: '/missions/mission-002' },
+        // 7 days ago
+        { id: 'hist-011', type: 'practice', title: 'Luyện tập: Pivot Table cơ bản', timestamp: createDate(7, 9), xp: 50, link: '/practice' },
+        { id: 'hist-012', type: 'levelup', title: 'Thăng cấp: Thám tử Tập sự', timestamp: createDate(7, 9), xp: 0, link: '/profile' },
+        { id: 'hist-013', type: 'mission', title: 'Vụ án: Tutorial Case 0', timestamp: createDate(7, 8), xp: 50, link: '/onboarding/case-0' },
+        // 10 days ago
+        { id: 'hist-014', type: 'achievement', title: 'Mở khóa Danh hiệu: Bước Chân Đầu Tiên', timestamp: createDate(10, 20), xp: 100, link: '/achievements' },
+      ];
+
+      return { data: mockHistory, error: null }
+    },
+
     validateProgress(record) {
       const errors = []
       if (!record || typeof record !== 'object') {

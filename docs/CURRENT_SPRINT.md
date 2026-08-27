@@ -501,12 +501,15 @@
 - **Module Name**: `Gamification & Engagement Engine`
 - **Primary Path**: `src/features/profile/`
 - **Current Sprint**: **SPRINT 7 — Learner Engagement & Practice Engine**
-- **Current Step**: **STEP 7.3 — Learner Profile & Achievement Badges Page (`/profile` & `/achievements`) (DONE)**
+- **Current Step**: **STEP 7.4 — Activity History Page (`/profile/history`) (IN PROGRESS)**
 
 ## Completed Sub-steps
 1. **Step 7.1 — Level Up Popups & Streak Counter Engine** *(DONE)*: Modal mừng thăng cấp và chi tiết chuỗi ngày học. Tích hợp Sidebar.
 2. **Step 7.2 — Standalone Practice Workspace (`/practice`)** *(DONE)*: Ngân hàng câu hỏi thực hành tự do. Bộ lọc Excel/SQL, tích hợp route với chế độ Luyện tập.
 3. **Step 7.3 — Learner Profile & Achievement Badges** *(DONE)*: Đã tạo Mock data thành tựu (`achievements.js`), bổ sung `getLearnerAchievements` vào ProgressService, hoàn thiện `ProfilePage` và `AchievementsPage`, cập nhật Router.
+
+## Current Sub-step (In Progress)
+4. **Step 7.4 — Activity History Page** *(IN PROGRESS)*: Tạo trang `/profile/history` hiển thị dải timeline lịch sử học tập, có bộ lọc loại hoạt động và thời gian. Đã chốt UX/UI.
 
 ## Allowed Write Paths
 - `src/features/profile/`

@@ -291,7 +291,7 @@ export function LearnerLayout({ children }) {
         }`}
       >
         {/* Sticky Header */}
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 px-5 backdrop-blur-md sm:px-8 shadow-xs">
+        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
           <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             <button
@@ -378,7 +378,7 @@ export function LearnerLayout({ children }) {
         )}
 
         {/* Page Content Container */}
-        <main className="flex-1 p-5 sm:p-8">
+        <main className="flex-1 p-4 sm:p-6">
           {shouldBlockLearner ? (
             <UnderMaintenancePage pageConfig={currentPageStatus} />
           ) : (

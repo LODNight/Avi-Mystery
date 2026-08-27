@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileSpreadsheet,
@@ -8,9 +8,15 @@ import {
   Sparkles,
   AlertCircle,
   Clock,
-  Filter,
-  ChevronDown,
+  ArrowUpDown,
+  ArrowDownWideNarrow,
+  ArrowUpNarrowWide,
+  SlidersHorizontal,
   Check,
+  RotateCcw,
+  X,
+  Layers,
+  Shuffle,
 } from 'lucide-react';
 import { contentService } from '../../services/index.js';
 import { useProgress } from '../../hooks/useProgress.js';
@@ -21,9 +27,23 @@ export function PracticePage() {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Filters state (LeetCode style)
   const [filterTool, setFilterTool] = useState('all'); // all, excel, sql
+  const [filterStatus, setFilterStatus] = useState('all'); // all, uncompleted, completed
+  const [filterDifficulty, setFilterDifficulty] = useState('all'); // all, easy, medium, hard
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('default');
+
+  // LeetCode style sort state: sortKey + sortOrder
+  const [sortKey, setSortKey] = useState('default'); // 'default' | 'xp' | 'difficulty'
+  const [sortOrder, setSortOrder] = useState('desc'); // 'desc' | 'asc'
+
+  // Popovers open states
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const sortRef = useRef(null);
+  const filterRef = useRef(null);
   const navigate = useNavigate();
   const { progressList } = useProgress();
 
@@ -37,13 +57,23 @@ export function PracticePage() {
           setError(res.error);
         } else {
           // Adjust gamification logic (Difficulty -> XP & Time mapping)
-          const adjustedQuestions = (res.data || []).map(q => {
+          const adjustedQuestions = (res.data || []).map((q) => {
             const diff = q.difficulty || 'easy';
             let xp = 100;
             let time = '15-20p';
-            if (diff === 'easy' || diff === 'beginner') { xp = 50; time = '5-10p'; q.difficulty = 'easy'; }
-            else if (diff === 'medium' || diff === 'intermediate') { xp = 100; time = '15-20p'; q.difficulty = 'medium'; }
-            else if (diff === 'hard' || diff === 'advanced') { xp = 200; time = '30-45p'; q.difficulty = 'hard'; }
+            if (diff === 'easy' || diff === 'beginner') {
+              xp = 50;
+              time = '5-10p';
+              q.difficulty = 'easy';
+            } else if (diff === 'medium' || diff === 'intermediate') {
+              xp = 100;
+              time = '15-20p';
+              q.difficulty = 'medium';
+            } else if (diff === 'hard' || diff === 'advanced') {
+              xp = 200;
+              time = '30-45p';
+              q.difficulty = 'hard';
+            }
             return { ...q, rewards: { ...q.rewards, baseXp: xp }, timeEstimate: time };
           });
           setQuestions(adjustedQuestions);
@@ -57,9 +87,27 @@ export function PracticePage() {
     loadPracticeData();
   }, []);
 
+  // Handle click outside popovers
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (sortRef.current && !sortRef.current.contains(event.target)) {
+        setIsSortOpen(false);
+      }
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setIsFilterOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const isQuestionCompleted = (questionId) => {
-    return progressList?.some(p => p.contentId === questionId && p.status === 'completed');
+    return progressList?.some((p) => p.contentId === questionId && p.status === 'completed');
   };
+
+  const completedCount = useMemo(() => {
+    return questions.filter((q) => isQuestionCompleted(q.id)).length;
+  }, [questions, progressList]);
 
   const handleStartPractice = (question) => {
     const route =
@@ -69,22 +117,87 @@ export function PracticePage() {
     navigate(route, { state: { mode: 'practice' } });
   };
 
-  const filteredQuestions = questions
-    .filter((q) => {
-      const matchesTool = filterTool === 'all' || q.tool === filterTool;
-      const matchesSearch = q.prompt.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesTool && matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'xp_desc') return (b.rewards?.baseXp || 0) - (a.rewards?.baseXp || 0);
-      if (sortBy === 'xp_asc') return (a.rewards?.baseXp || 0) - (b.rewards?.baseXp || 0);
-      
-      const diffWeight = { 'easy': 1, 'medium': 2, 'hard': 3 };
-      if (sortBy === 'difficulty_asc') return (diffWeight[a.difficulty] || 0) - (diffWeight[b.difficulty] || 0);
-      if (sortBy === 'difficulty_desc') return (diffWeight[b.difficulty] || 0) - (diffWeight[a.difficulty] || 0);
-      
-      return 0; // default
-    });
+  const handleRandomPick = () => {
+    const uncompleted = questions.filter((q) => !isQuestionCompleted(q.id));
+    const pool = uncompleted.length > 0 ? uncompleted : questions;
+    if (pool.length === 0) return;
+    const randomQ = pool[Math.floor(Math.random() * pool.length)];
+    handleStartPractice(randomQ);
+  };
+
+  // Toggle sort key and order (LeetCode style)
+  const handleSortSelect = (key) => {
+    if (key === 'default') {
+      setSortKey('default');
+      setSortOrder('desc');
+      setIsSortOpen(false);
+    } else if (sortKey === key) {
+      // Toggle direction when clicking active key
+      setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
+    } else {
+      setSortKey(key);
+      setSortOrder('desc');
+    }
+  };
+
+  // LeetCode Filter & Sort Logic
+  const filteredQuestions = useMemo(() => {
+    return questions
+      .filter((q) => {
+        // Tool filter
+        if (filterTool !== 'all' && q.tool !== filterTool) return false;
+
+        // Status filter
+        if (filterStatus !== 'all') {
+          const completed = isQuestionCompleted(q.id);
+          if (filterStatus === 'completed' && !completed) return false;
+          if (filterStatus === 'uncompleted' && completed) return false;
+        }
+
+        // Difficulty filter
+        if (filterDifficulty !== 'all' && q.difficulty !== filterDifficulty) return false;
+
+        // Search query
+        if (searchQuery.trim() !== '') {
+          const query = searchQuery.toLowerCase();
+          const matchPrompt = q.prompt?.toLowerCase().includes(query);
+          const matchTool = q.tool?.toLowerCase().includes(query);
+          return matchPrompt || matchTool;
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortKey === 'xp') {
+          const xpA = a.rewards?.baseXp || 0;
+          const xpB = b.rewards?.baseXp || 0;
+          return sortOrder === 'desc' ? xpB - xpA : xpA - xpB;
+        }
+
+        if (sortKey === 'difficulty') {
+          const diffWeight = { easy: 1, medium: 2, hard: 3 };
+          const weightA = diffWeight[a.difficulty] || 0;
+          const weightB = diffWeight[b.difficulty] || 0;
+          return sortOrder === 'desc' ? weightB - weightA : weightA - weightB;
+        }
+
+        return 0;
+      });
+  }, [questions, filterTool, filterStatus, filterDifficulty, searchQuery, sortKey, sortOrder, progressList]);
+
+  const hasActiveFilters = filterStatus !== 'all' || filterDifficulty !== 'all';
+
+  const sortFields = [
+    { id: 'default', label: 'Mặc định' },
+    { id: 'xp', label: 'Mức thưởng XP', descHint: 'Cao → Thấp', ascHint: 'Thấp → Cao' },
+    { id: 'difficulty', label: 'Độ khó', descHint: 'Khó → Dễ', ascHint: 'Dễ → Khó' },
+  ];
+
+  const getSortButtonLabel = () => {
+    if (sortKey === 'xp') return 'XP';
+    if (sortKey === 'difficulty') return 'Độ khó';
+    return 'Sắp xếp';
+  };
 
   if (loading) {
     return (
@@ -132,78 +245,247 @@ export function PracticePage() {
         </div>
       </div>
 
-      {/* Filters & Search */}
-      <div className="flex flex-col xl:flex-row gap-4 items-center justify-between rounded-2xl border border-border bg-card p-4 shadow-sm">
-        <div className="flex items-center gap-2 bg-muted/50 p-1 rounded-xl w-full xl:w-auto overflow-x-auto shrink-0">
+      {/* LeetCode Style Toolbar */}
+      <div className="space-y-4">
+        {/* Top Row: Prominent Category / Skill Pills */}
+        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => setFilterTool('all')}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'all'
-                ? 'bg-background shadow-xs text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-foreground text-background border-foreground shadow-md'
+                : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground hover:bg-accent/50'
             }`}
           >
-            Tất cả
+            <Layers className="size-3.5" /> Tất cả kỹ năng
           </button>
           <button
             onClick={() => setFilterTool('excel')}
-            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'excel'
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
+                : 'bg-card/80 border-border text-muted-foreground hover:text-emerald-500 hover:border-emerald-500/50 hover:bg-emerald-500/10'
             }`}
           >
-            <FileSpreadsheet className="size-4" /> Excel
+            <FileSpreadsheet className={`size-3.5 ${filterTool === 'excel' ? 'text-white' : 'text-emerald-500'}`} /> Excel Spreadsheet
           </button>
           <button
             onClick={() => setFilterTool('sql')}
-            className={`flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'sql'
-                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-xs'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/20'
+                : 'bg-card/80 border-border text-muted-foreground hover:text-blue-500 hover:border-blue-500/50 hover:bg-blue-500/10'
             }`}
           >
-            <Database className="size-4" /> SQL
+            <Database className={`size-3.5 ${filterTool === 'sql' ? 'text-white' : 'text-blue-500'}`} /> SQL Database
           </button>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto shrink-0 items-center">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <span className="text-sm font-bold text-muted-foreground whitespace-nowrap hidden lg:inline-block">
-              Sắp xếp theo
-            </span>
-            <div className="relative w-full sm:w-[180px]">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="h-10 w-full appearance-none rounded-xl border border-input bg-background pl-4 pr-10 text-sm font-medium text-foreground outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all cursor-pointer shadow-sm"
+        {/* Bottom Row: Compact Search + Sort + Filter + Solved Stats + Shuffle */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-border/40">
+          <div className="flex items-center gap-2.5 flex-1 min-w-[280px]">
+            {/* Compact Search Box */}
+            <div className="relative w-48 sm:w-60 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search questions..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9 w-full rounded-full border border-border bg-card/90 pl-8 pr-8 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-xs"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-3" />
+                </button>
+              )}
+            </div>
+
+            {/* LeetCode Style Sort Icon Button */}
+            <div className="relative" ref={sortRef}>
+              <button
+                onClick={() => {
+                  setIsSortOpen(!isSortOpen);
+                  setIsFilterOpen(false);
+                }}
+                className={`h-9 px-3.5 rounded-full border flex items-center gap-1.5 text-xs font-semibold transition-all shadow-xs ${
+                  sortKey !== 'default'
+                    ? 'border-amber-500/60 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                }`}
+                title="Sắp xếp danh sách"
               >
-                <option value="default" className="bg-background text-foreground">Mặc định</option>
-                
-                <optgroup label="Mức thưởng XP" className="bg-muted text-muted-foreground font-bold">
-                  <option value="xp_desc" className="bg-background text-foreground font-medium">XP (Cao đến Thấp)</option>
-                  <option value="xp_asc" className="bg-background text-foreground font-medium">XP (Thấp đến Cao)</option>
-                </optgroup>
-                
-                <optgroup label="Mức độ khó" className="bg-muted text-muted-foreground font-bold">
-                  <option value="difficulty_asc" className="bg-background text-foreground font-medium">Độ khó (Dễ đến Khó)</option>
-                  <option value="difficulty_desc" className="bg-background text-foreground font-medium">Độ khó (Khó đến Dễ)</option>
-                </optgroup>
-              </select>
-              <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                <ChevronDown className="size-4" />
-              </div>
+                {sortKey === 'default' ? (
+                  <ArrowUpDown className="size-3.5" />
+                ) : sortOrder === 'desc' ? (
+                  <ArrowDownWideNarrow className="size-3.5 text-amber-500" />
+                ) : (
+                  <ArrowUpNarrowWide className="size-3.5 text-amber-500" />
+                )}
+                <span>{getSortButtonLabel()}</span>
+              </button>
+
+              {/* Sort Popover Menu (LeetCode Exact Pattern) */}
+              {isSortOpen && (
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-64 rounded-2xl border border-border bg-card/95 backdrop-blur-md p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
+                    Sắp xếp danh sách
+                  </div>
+                  <div className="space-y-0.5">
+                    {sortFields.map((field) => {
+                      const isActive = sortKey === field.id;
+                      return (
+                        <button
+                          key={field.id}
+                          onClick={() => handleSortSelect(field.id)}
+                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                            isActive
+                              ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                              : 'text-foreground hover:bg-muted'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span>{field.label}</span>
+                            {isActive && field.id !== 'default' && (
+                              <span className="text-[10px] opacity-75 font-mono">
+                                ({sortOrder === 'desc' ? field.descHint : field.ascHint})
+                              </span>
+                            )}
+                          </div>
+                          {isActive && (
+                            <div className="flex items-center gap-1 text-amber-500">
+                              {field.id === 'default' ? (
+                                <Check className="size-3.5" />
+                              ) : sortOrder === 'desc' ? (
+                                <ArrowDownWideNarrow className="size-4" />
+                              ) : (
+                                <ArrowUpNarrowWide className="size-4" />
+                              )}
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* LeetCode Style Filter Popover Button */}
+            <div className="relative" ref={filterRef}>
+              <button
+                onClick={() => {
+                  setIsFilterOpen(!isFilterOpen);
+                  setIsSortOpen(false);
+                }}
+                className={`h-9 px-2.5 rounded-full border flex items-center justify-center text-xs font-semibold transition-all shadow-xs ${
+                  hasActiveFilters
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                }`}
+                title="Bộ lọc nâng cao"
+              >
+                <SlidersHorizontal className="size-3.5" />
+                {hasActiveFilters && <span className="size-1.5 rounded-full bg-primary" />}
+              </button>
+
+              {/* Filter Popover Menu */}
+              {isFilterOpen && (
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-72 sm:w-80 rounded-2xl border border-border bg-card/95 backdrop-blur-md p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
+                    <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                      <SlidersHorizontal className="size-3.5 text-primary" /> Bộ lọc nâng cao
+                    </h4>
+                    {hasActiveFilters && (
+                      <button
+                        onClick={() => {
+                          setFilterStatus('all');
+                          setFilterDifficulty('all');
+                        }}
+                        className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+                      >
+                        <RotateCcw className="size-3" /> Đặt lại
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Status Filter */}
+                  <div className="mb-4">
+                    <label className="text-xs font-semibold text-muted-foreground mb-2 block">
+                      Trạng thái
+                    </label>
+                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/50 rounded-xl">
+                      {[
+                        { id: 'all', label: 'Tất cả' },
+                        { id: 'uncompleted', label: 'Chưa làm' },
+                        { id: 'completed', label: 'Đã làm' },
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setFilterStatus(item.id)}
+                          className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                            filterStatus === item.id
+                              ? 'bg-background text-foreground shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Difficulty Filter */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-2 block">
+                      Độ khó
+                    </label>
+                    <div className="grid grid-cols-4 gap-1.5 p-1 bg-muted/50 rounded-xl">
+                      {[
+                        { id: 'all', label: 'Tất cả' },
+                        { id: 'easy', label: 'Dễ' },
+                        { id: 'medium', label: 'Vừa' },
+                        { id: 'hard', label: 'Khó' },
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setFilterDifficulty(item.id)}
+                          className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                            filterDifficulty === item.id
+                              ? 'bg-background text-foreground shadow-xs'
+                              : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-          <div className="relative w-full sm:w-[260px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Tìm kiếm bài tập..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-xl border border-input bg-background pl-9 pr-4 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-sm"
-            />
+
+          {/* Right side stats & Shuffle button (LeetCode Style) */}
+          <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+              <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>
+                <strong className="text-foreground">{completedCount}</strong>/{questions.length} Solved
+              </span>
+            </div>
+
+            <button
+              onClick={handleRandomPick}
+              className="h-9 px-3 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary hover:bg-primary/10 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-xs"
+              title="Thử thách ngẫu nhiên một bài tập"
+            >
+              <Shuffle className="size-3.5 text-primary" />
+              <span className="hidden sm:inline">Ngẫu nhiên</span>
+            </button>
           </div>
         </div>
       </div>

@@ -19,11 +19,13 @@ import {
   Shuffle,
 } from 'lucide-react';
 import { contentService } from '../../services/index.js';
+import { useAuth } from '../../hooks/useAuth.js';
 import { useProgress } from '../../hooks/useProgress.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 
 export function PracticePage() {
+  const { user } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,7 +47,7 @@ export function PracticePage() {
   const sortRef = useRef(null);
   const filterRef = useRef(null);
   const navigate = useNavigate();
-  const { progressList } = useProgress();
+  const { progressList } = useProgress(user?.id);
 
   useEffect(() => {
     async function loadPracticeData() {
@@ -101,12 +103,21 @@ export function PracticePage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const isQuestionCompleted = (questionId) => {
-    return progressList?.some((p) => p.contentId === questionId && p.status === 'completed');
+  const isQuestionCompleted = (question) => {
+    if (!question) return false;
+    const qId = typeof question === 'object' ? (question.id || question.questionId) : question;
+    const legacyId = typeof question === 'object' ? question.legacyMissionId : null;
+    const invId = typeof question === 'object' ? question.investigationId : null;
+
+    return progressList?.some(
+      (p) =>
+        (p.contentId === qId || (legacyId && p.contentId === legacyId) || (invId && p.contentId === invId)) &&
+        p.status === 'completed'
+    );
   };
 
   const completedCount = useMemo(() => {
-    return questions.filter((q) => isQuestionCompleted(q.id)).length;
+    return questions.filter((q) => isQuestionCompleted(q)).length;
   }, [questions, progressList]);
 
   const handleStartPractice = (question) => {
@@ -118,7 +129,7 @@ export function PracticePage() {
   };
 
   const handleRandomPick = () => {
-    const uncompleted = questions.filter((q) => !isQuestionCompleted(q.id));
+    const uncompleted = questions.filter((q) => !isQuestionCompleted(q));
     const pool = uncompleted.length > 0 ? uncompleted : questions;
     if (pool.length === 0) return;
     const randomQ = pool[Math.floor(Math.random() * pool.length)];
@@ -149,7 +160,7 @@ export function PracticePage() {
 
         // Status filter
         if (filterStatus !== 'all') {
-          const completed = isQuestionCompleted(q.id);
+          const completed = isQuestionCompleted(q);
           if (filterStatus === 'completed' && !completed) return false;
           if (filterStatus === 'uncompleted' && completed) return false;
         }
@@ -254,7 +265,7 @@ export function PracticePage() {
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'all'
                 ? 'bg-foreground text-background border-foreground shadow-md'
-                : 'bg-card/80 border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground hover:bg-accent/50'
+                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground hover:bg-accent'
             }`}
           >
             <Layers className="size-3.5" /> Tất cả kỹ năng
@@ -264,7 +275,7 @@ export function PracticePage() {
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'excel'
                 ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
-                : 'bg-card/80 border-border text-muted-foreground hover:text-emerald-500 hover:border-emerald-500/50 hover:bg-emerald-500/10'
+                : 'bg-card border-border text-muted-foreground hover:text-emerald-500 hover:border-emerald-500/50 hover:bg-emerald-500/10'
             }`}
           >
             <FileSpreadsheet className={`size-3.5 ${filterTool === 'excel' ? 'text-white' : 'text-emerald-500'}`} /> Excel Spreadsheet
@@ -274,7 +285,7 @@ export function PracticePage() {
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
               filterTool === 'sql'
                 ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/20'
-                : 'bg-card/80 border-border text-muted-foreground hover:text-blue-500 hover:border-blue-500/50 hover:bg-blue-500/10'
+                : 'bg-card border-border text-muted-foreground hover:text-blue-500 hover:border-blue-500/50 hover:bg-blue-500/10'
             }`}
           >
             <Database className={`size-3.5 ${filterTool === 'sql' ? 'text-white' : 'text-blue-500'}`} /> SQL Database
@@ -292,7 +303,7 @@ export function PracticePage() {
                 placeholder="Search questions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-full border border-border bg-card/90 pl-8 pr-8 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-xs"
+                className="h-9 w-full rounded-full border border-border bg-card pl-8 pr-8 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-xs"
               />
               {searchQuery && (
                 <button
@@ -330,7 +341,7 @@ export function PracticePage() {
 
               {/* Sort Popover Menu (LeetCode Exact Pattern) */}
               {isSortOpen && (
-                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-64 rounded-2xl border border-border bg-card/95 backdrop-blur-md p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-64 rounded-2xl border border-border bg-card p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                   <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                     Sắp xếp danh sách
                   </div>
@@ -394,7 +405,7 @@ export function PracticePage() {
 
               {/* Filter Popover Menu */}
               {isFilterOpen && (
-                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-72 sm:w-80 rounded-2xl border border-border bg-card/95 backdrop-blur-md p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-72 sm:w-80 rounded-2xl border border-border bg-card p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                   <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
                     <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                       <SlidersHorizontal className="size-3.5 text-primary" /> Bộ lọc nâng cao
@@ -417,7 +428,7 @@ export function PracticePage() {
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block">
                       Trạng thái
                     </label>
-                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted/50 rounded-xl">
+                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted rounded-xl">
                       {[
                         { id: 'all', label: 'Tất cả' },
                         { id: 'uncompleted', label: 'Chưa làm' },
@@ -443,7 +454,7 @@ export function PracticePage() {
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block">
                       Độ khó
                     </label>
-                    <div className="grid grid-cols-4 gap-1.5 p-1 bg-muted/50 rounded-xl">
+                    <div className="grid grid-cols-4 gap-1.5 p-1 bg-muted rounded-xl">
                       {[
                         { id: 'all', label: 'Tất cả' },
                         { id: 'easy', label: 'Dễ' },
@@ -494,7 +505,7 @@ export function PracticePage() {
       {filteredQuestions.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredQuestions.map((q) => {
-            const completed = isQuestionCompleted(q.id);
+            const completed = isQuestionCompleted(q);
             return (
             <div
               key={q.id}

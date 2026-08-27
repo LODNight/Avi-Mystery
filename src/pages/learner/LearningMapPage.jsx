@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth.js';
 import {
   MapPin,
   CheckCircle2,
@@ -25,7 +26,8 @@ import { Badge } from '../../components/ui/Badge.jsx';
 import { getSkillMasteryLevel } from '../../domain/mastery/masteryEvaluator.js';
 
 export function LearningMapPage() {
-  const { progressList, masteryList, overallMastery, loading: progressLoading } = useProgress('user-001');
+  const { user } = useAuth();
+  const { progressList, masteryList, overallMastery, loading: progressLoading } = useProgress(user?.id);
 
   const [mapRawData, setMapRawData] = useState(null);
   const [activePhaseId, setActivePhaseId] = useState('');
@@ -304,10 +306,14 @@ export function LearningMapPage() {
             {/* Phase Banner Header */}
             <div className="rounded-3xl border border-border bg-card p-5 shadow-sm flex items-center justify-between">
               <div>
-                <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                  Giai đoạn hiện tại
-                </span>
-                <h2 className="text-xl font-bold text-foreground">{activePhase.title}</h2>
+                <div className="mb-1">
+                  <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                    Giai đoạn hiện tại
+                  </span>
+                </div>
+                <Link to={`/courses/${activePhase.courseId || activePhase.id.replace('phase-', '')}`} className="block">
+                  <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors">{activePhase.title}</h2>
+                </Link>
                 <p className="text-xs text-muted-foreground mt-0.5">{activePhase.description}</p>
               </div>
               <div className="text-right">
@@ -318,10 +324,11 @@ export function LearningMapPage() {
             </div>
 
             {/* Connecting Line */}
-            <div className="absolute left-6 top-24 bottom-10 w-1 bg-gradient-to-b from-amber-500/80 via-primary/40 to-muted rounded-full hidden sm:block" />
+            <div className="absolute left-6 top-[135px] bottom-10 w-1 bg-gradient-to-b from-amber-500/80 via-primary/40 to-muted rounded-full hidden sm:block" />
 
             {activePhase.chapters.map((chapter, chIdx) => {
               const investigations = chapter.investigations || [];
+              const cleanTitle = chapter.title ? chapter.title.replace(/^Chương \d+:\s*/i, '') : '';
 
               return (
                 <div key={chapter.id} className="relative flex flex-col gap-4">
@@ -334,7 +341,7 @@ export function LearningMapPage() {
                       <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
                         Chương {chIdx + 1}
                       </span>
-                      <h3 className="text-base font-bold text-foreground">{chapter.title}</h3>
+                      <h3 className="text-base font-bold text-foreground">{cleanTitle || chapter.title}</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">{chapter.description}</p>
                     </div>
                   </div>
@@ -414,9 +421,11 @@ function MissionNodeCard({
               </Badge>
             )}
           </div>
-          <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
-            {mission.title}
-          </h4>
+          <Link to={mission.targetUrl || `/missions/${mission.id}`} className="block mt-1">
+            <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">
+              {mission.title}
+            </h4>
+          </Link>
           <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
             {mission.objective}
           </p>

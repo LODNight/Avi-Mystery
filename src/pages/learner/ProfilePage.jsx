@@ -16,14 +16,25 @@ export function ProfilePage() {
   const [stats, setStats] = useState({
     xp: 2450,
     skills: [],
-    recentActivity: []
+    recentActivity: [],
+    fullHistory: []
   });
 
-  // Dynamic Heatmap Data: Exactly 52 weeks (364 days) ending today!
+  // Dynamic Heatmap Data based on actual fullHistory
   const heatmapData = React.useMemo(() => {
     const today = new Date();
     const startDate = new Date(today);
     startDate.setDate(today.getDate() - (52 * 7 - 1));
+
+    // Map history to date strings
+    const activityMap = {};
+    if (stats.fullHistory) {
+      stats.fullHistory.forEach(item => {
+        const d = new Date(item.timestamp);
+        const dateStr = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        activityMap[dateStr] = (activityMap[dateStr] || 0) + 1;
+      });
+    }
 
     const weeks = [];
     let currentWeek = [];
@@ -35,16 +46,12 @@ export function ProfilePage() {
       d.setDate(startDate.getDate() + i);
       
       const isFuture = d > today;
-      const dayNum = d.getDate();
       const monthNum = d.getMonth();
+      const formattedDate = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
       
-      const seed = dayNum * 7 + monthNum * 13;
       let count = 0;
       if (!isFuture) {
-        if (seed % 7 === 0) count = 5;
-        else if (seed % 5 === 0) count = 3;
-        else if (seed % 3 === 0) count = 1;
-        else if (seed % 13 === 0) count = 7;
+        count = activityMap[formattedDate] || 0;
       }
 
       if (monthNum !== lastMonth && d.getDay() === 0) {
@@ -57,7 +64,7 @@ export function ProfilePage() {
 
       currentWeek.push({
         dateObj: d,
-        formattedDate: d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' }),
+        formattedDate,
         count,
         isFuture
       });
@@ -84,15 +91,16 @@ export function ProfilePage() {
     }
 
     return { weeks, monthLabels, totalContributions, activeDays, maxStreak };
-  }, []);
+  }, [stats.fullHistory]);
 
   useEffect(() => {
     async function loadData() {
       if (!user?.id) return;
       try {
-        const [xpRes, masteryRes] = await Promise.all([
+        const [xpRes, masteryRes, historyRes] = await Promise.all([
           mockProgressService.getLearnerXp(user.id),
-          mockProgressService.listSkillMastery(user.id)
+          mockProgressService.listSkillMastery(user.id),
+          mockProgressService.getFullHistory(user.id)
         ]);
 
         const totalXp = xpRes.data?.totalXp && xpRes.data.totalXp > 0 ? xpRes.data.totalXp : 2450;
@@ -117,17 +125,36 @@ export function ProfilePage() {
           }));
         }
 
-        const recentActivity = [
-          { id: 1, type: 'mission', title: 'Vụ án: Bí ẩn dữ liệu doanh thu', date: '2 giờ trước', xp: 120 },
-          { id: 2, type: 'practice', title: 'Luyện tập: Hàm VLOOKUP & XLOOKUP nâng cao', date: 'Hôm qua', xp: 50 },
-          { id: 3, type: 'achievement', title: 'Mở khóa danh hiệu: Bậc thầy Excel', date: '3 ngày trước', xp: 100 },
-          { id: 4, type: 'mission', title: 'Vụ án: Dấu vết gian lận giao dịch SQL', date: '5 ngày trước', xp: 200 },
-        ];
+        const fullHistory = historyRes.data || [];
+
+        const getRelativeDate = (timestamp) => {
+          const dateObj = new Date(timestamp);
+          const today = new Date();
+          const yesterday = new Date(today);
+          yesterday.setDate(yesterday.getDate() - 1);
+          
+          if (dateObj.toDateString() === today.toDateString()) return 'Hôm nay';
+          if (dateObj.toDateString() === yesterday.toDateString()) return 'Hôm qua';
+          
+          const diffTime = Math.abs(today - dateObj);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+          if (diffDays <= 7) return `${diffDays} ngày trước`;
+          return dateObj.toLocaleDateString('vi-VN');
+        };
+
+        const recentActivity = fullHistory.slice(0, 4).map(h => ({
+          id: h.id,
+          type: h.type,
+          title: h.title,
+          date: getRelativeDate(h.timestamp),
+          xp: h.xp || 0
+        }));
 
         setStats({
           xp: totalXp,
           skills,
-          recentActivity
+          recentActivity,
+          fullHistory
         });
       } catch (error) {
         console.error('Failed to load profile data', error);

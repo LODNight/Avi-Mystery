@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
 import { missionService, courseService, onboardingService, ONBOARDING_STATUS } from '../../services/index.js';
+import { mockProgressService } from '../../services/mock/mockProgressService.js';
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
 import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
@@ -32,10 +33,81 @@ export function DashboardPage() {
   const recommended = useAsync();
   const [isTourOpen, setIsTourOpen] = useState(false);
 
+  const [dashboardStats, setDashboardStats] = useState({
+    streak: user?.streak || 0,
+    totalXp: user?.xp || 0,
+    weeklyXp: 0,
+    weeklyMissions: 0,
+    timeSpent: '0h 0m',
+    lastMission: null
+  });
+
   useEffect(() => {
     courses.execute(() => courseService.getCourses({ status: 'published' }));
     recommended.execute(() => missionService.getRecommendedMissions(user?.id));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    async function loadStats() {
+      if (!user?.id) return;
+      try {
+        const [xpRes, historyRes] = await Promise.all([
+          mockProgressService.getLearnerXp(user.id),
+          mockProgressService.getFullHistory(user.id)
+        ]);
+
+        const history = historyRes.data || [];
+        const totalXp = xpRes.data?.totalXp || user?.xp || 0;
+
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        startOfWeek.setHours(0,0,0,0);
+        
+        let weeklyXp = 0;
+        let weeklyMissions = 0;
+        let activeStreak = 0;
+        
+        const lastMission = history.find(h => h.type === 'mission');
+
+        const dateMap = {};
+        history.forEach(h => {
+          const d = new Date(h.timestamp);
+          if (d >= startOfWeek) {
+            weeklyXp += (h.xp || 0);
+            if (h.type === 'mission') weeklyMissions++;
+          }
+          const dStr = d.toLocaleDateString('vi-VN');
+          dateMap[dStr] = true;
+        });
+
+        for (let i = 0; i < 365; i++) {
+           const d = new Date(today);
+           d.setDate(today.getDate() - i);
+           if (dateMap[d.toLocaleDateString('vi-VN')]) {
+             activeStreak++;
+           } else if (i > 0) {
+             break;
+           }
+        }
+        
+        const weeklyMinutes = weeklyXp > 0 ? Math.floor(weeklyXp / 10) : 0;
+        const timeSpent = `${Math.floor(weeklyMinutes / 60)}h ${weeklyMinutes % 60}m`;
+
+        setDashboardStats({
+          streak: activeStreak || user?.streak || 0,
+          totalXp,
+          weeklyXp,
+          weeklyMissions,
+          timeSpent,
+          lastMission
+        });
+      } catch (err) {
+        console.error('Failed to load dashboard stats', err);
+      }
+    }
+    loadStats();
+  }, [user]);
 
   useEffect(() => {
     if (user?.id && !onboardingService.hasSeenDashboardTour(user.id)) {
@@ -66,9 +138,7 @@ export function DashboardPage() {
     day: 'numeric',
   });
 
-  const xpPercent = user
-    ? Math.min(100, Math.round((user.xp / (user.xpToNextLevel || 1000)) * 100))
-    : 0;
+  const xpPercent = Math.min(100, Math.round((dashboardStats.totalXp / (user?.xpToNextLevel || 1000)) * 100));
 
   const onboardingStatus = user?.id ? onboardingService.getStatus(user.id) : null;
 
@@ -124,28 +194,28 @@ export function DashboardPage() {
         <StatCard
           icon={Flame}
           label="Chuỗi Streak"
-          value={`${user?.streak || 0} ngày`}
+          value={`${dashboardStats.streak} ngày`}
           detail="Học liên tiếp hôm nay"
           accent="text-amber-500"
         />
         <StatCard
           icon={Target}
           label="Mục tiêu tuần"
-          value="4 / 5"
+          value={`${dashboardStats.weeklyMissions} / 5`}
           detail="nhiệm vụ hoàn thành"
           accent="text-violet-500"
         />
         <StatCard
           icon={TrendingUp}
           label="Tổng điểm XP"
-          value={formatXP(user?.xp || 0)}
-          detail="+320 XP tuần này"
+          value={formatXP(dashboardStats.totalXp)}
+          detail={`+${dashboardStats.weeklyXp} XP tuần này`}
           accent="text-emerald-500"
         />
         <StatCard
           icon={Clock3}
           label="Thời gian học"
-          value="3h 42m"
+          value={dashboardStats.timeSpent}
           detail="tuần này"
           accent="text-cyan-500"
         />
@@ -174,10 +244,10 @@ export function DashboardPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-3">
                 <Link
-                  to="/missions/mission-001"
+                  to={dashboardStats.lastMission?.link || "/missions/mission-001"}
                   className="truncate font-semibold text-foreground hover:text-primary transition-colors"
                 >
-                  Vì sao doanh thu tháng 3 giảm?
+                  {dashboardStats.lastMission ? dashboardStats.lastMission.title.replace('Vụ án: ', '') : 'Vì sao doanh thu tháng 3 giảm?'}
                 </Link>
                 <span className="shrink-0 font-mono text-xs font-bold text-primary">72%</span>
               </div>
@@ -185,11 +255,11 @@ export function DashboardPage() {
                 <div className="h-full w-[72%] rounded-full bg-primary" />
               </div>
               <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
-                Chương 1 · Excel Foundations (Phân tích dữ liệu kinh doanh)
+                Chương 1 · Dựa theo lịch sử gần nhất
               </p>
             </div>
             <Link
-              to="/missions/mission-001/workspace"
+              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : "/missions/mission-001/workspace"}
               className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               aria-label="Tiếp tục vụ án"
             >
@@ -221,7 +291,7 @@ export function DashboardPage() {
             </p>
             <h3 className="mt-1.5 text-2xl font-bold text-foreground">Data Investigator</h3>
             <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
-              Còn <span className="font-semibold text-foreground">{formatXP((user?.xpToNextLevel || 1000) - (user?.xp || 0))}</span> để mở khóa danh hiệu kế tiếp.
+              Còn <span className="font-semibold text-foreground">{formatXP(Math.max(0, (user?.xpToNextLevel || 1000) - dashboardStats.totalXp))}</span> để mở khóa danh hiệu kế tiếp.
             </p>
           </div>
 
@@ -233,7 +303,7 @@ export function DashboardPage() {
               />
             </div>
             <div className="mt-2 flex justify-between font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-400">
-              <span>{formatXP(user?.xp || 0)}</span>
+              <span>{formatXP(dashboardStats.totalXp)}</span>
               <span>{formatXP(user?.xpToNextLevel || 1000)}</span>
             </div>
           </div>

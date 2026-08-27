@@ -69,6 +69,10 @@ export function createMockContentService() {
       return mockQuestionService.getQuestion(questionId)
     },
 
+    async getPracticeQuestions() {
+      return mockQuestionService.getPracticeQuestions()
+    },
+
     async resolveLegacyMission(missionId) {
       const resolved = resolveLegacyMissionIdentity(missionId)
       if (!resolved) return { data: null, error: `Legacy mission unknown: ${missionId}` }

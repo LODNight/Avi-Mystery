@@ -21,6 +21,9 @@ import { LearningMapPage } from '../../pages/learner/LearningMapPage.jsx';
 import { MissionIntroPage } from '../../pages/learner/MissionIntroPage.jsx';
 import { ExcelMissionPage } from '../../pages/learner/ExcelMissionPage.jsx';
 import { SqlMissionPage } from '../../pages/learner/SqlMissionPage.jsx';
+import { PracticePage } from '../../pages/learner/PracticePage.jsx';
+import { ProfilePage } from '../../pages/learner/ProfilePage.jsx';
+import { AchievementsPage } from '../../pages/learner/AchievementsPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
@@ -108,9 +111,9 @@ export function AppRouter() {
           <Route path="/missions/:missionId" element={<MissionIntroPage />} />
           <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
           <Route path="/missions/:missionId/sql" element={<SqlMissionPage />} />
-          <Route path="/practice" element={<PlaceholderPage title="Luyện tập" />} />
-          <Route path="/achievements" element={<PlaceholderPage title="Thành tựu" />} />
-          <Route path="/profile" element={<PlaceholderPage title="Hồ sơ" />} />
+          <Route path="/practice" element={<PracticePage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}

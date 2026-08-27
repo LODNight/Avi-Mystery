@@ -47,6 +47,14 @@ export function createMockQuestionService() {
       return { data: clone(questions), error: null }
     },
 
+    async getPracticeQuestions() {
+      const questions = missionsData.map((mission) => {
+        const identity = getQuestionIdentity(mission.id)
+        return mapMissionToQuestion(mission, identity)
+      })
+      return { data: clone(questions), error: null }
+    },
+
     validateQuestion(question) {
       const errors = []
       if (!question || typeof question !== 'object' || Array.isArray(question)) {

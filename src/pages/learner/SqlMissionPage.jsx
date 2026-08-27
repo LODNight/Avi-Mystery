@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeft, Clock, Database, Target, AlertCircle, AlertTriangle } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
@@ -31,6 +31,8 @@ export function SqlMissionPage({
 }) {
   const { missionId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isPractice = location.state?.mode === 'practice'
   const engineRef = useRef(null)
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
@@ -183,7 +185,7 @@ export function SqlMissionPage({
 
     try {
       const res = await subService.submit({
-        mode: 'submit',
+        mode: isPractice ? 'practice' : 'submit',
         missionId: mission.id,
         tool: 'sql',
         answer: {
@@ -216,13 +218,13 @@ export function SqlMissionPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-6 animate-fade-in">
-      <Link to={`/missions/${mission.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> Quay lại hồ sơ nhiệm vụ
+      <Link to={isPractice ? '/practice' : `/missions/${mission.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
+        <ArrowLeft className="size-4" /> {isPractice ? 'Về khu luyện tập' : 'Quay lại hồ sơ nhiệm vụ'}
       </Link>
 
       <header className="rounded-3xl border border-cyan-500/25 bg-card p-6 shadow-sm">
         <div className="flex flex-wrap items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
-          <Database className="size-4" /> SQL Mission · Schema đã sẵn sàng
+          <Database className="size-4" /> {isPractice ? 'Practice Mode' : 'SQL Mission'} · Schema đã sẵn sàng
         </div>
         <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground sm:text-3xl">{mission.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{mission.story}</p>
@@ -284,7 +286,7 @@ export function SqlMissionPage({
         result={submissionResult}
         missionTitle={mission.title}
         onClose={() => setIsModalOpen(false)}
-        onNextMission={() => navigate('/learning-map')}
+        onNextMission={() => navigate(isPractice ? '/practice' : '/map')}
       />
     </div>
   )

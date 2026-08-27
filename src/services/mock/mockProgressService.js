@@ -15,6 +15,7 @@ import {
   createInitialMastery,
   evaluateSkillMastery,
 } from '../../domain/mastery/masteryEvaluator.js'
+import { getMockLearnerAchievements, ACHIEVEMENTS_DATA } from '../../domain/profile/achievements.js'
 import { PROGRESS_ERROR_CODES } from '../contracts/progressService.js'
 
 function clone(val) {
@@ -265,6 +266,27 @@ export function createMockProgressService({ initialRecords = [], initialXpRecord
 
       masteryMap.set(key, updatedMastery)
       return { data: clone(updatedMastery), error: null }
+    },
+
+    async getLearnerAchievements(learnerId) {
+      if (!learnerId || typeof learnerId !== 'string') {
+        return { data: null, error: { code: PROGRESS_ERROR_CODES.VALIDATION_ERROR, message: 'learnerId là bắt buộc.' } }
+      }
+
+      // Merge user progress with static definition
+      const userAchievements = getMockLearnerAchievements(learnerId)
+      
+      const merged = ACHIEVEMENTS_DATA.map(badge => {
+        const userProgress = userAchievements.find(a => a.achievementId === badge.id)
+        return {
+          ...badge,
+          isUnlocked: userProgress?.isUnlocked || false,
+          currentProgress: userProgress?.currentProgress || 0,
+          unlockedAt: userProgress?.unlockedAt || null,
+        }
+      })
+
+      return { data: merged, error: null }
     },
 
     validateProgress(record) {

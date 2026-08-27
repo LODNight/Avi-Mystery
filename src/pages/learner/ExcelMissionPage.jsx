@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
   Award,
@@ -30,6 +30,8 @@ function createClientAttemptId() {
 export function ExcelMissionPage() {
   const { missionId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isPractice = location.state?.mode === 'practice';
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -388,7 +390,7 @@ export function ExcelMissionPage() {
       const sheetData = getSheetDataMap();
 
       const res = await submissionService.submit({
-        mode: 'submit',
+        mode: isPractice ? 'practice' : 'submit',
         missionId,
         tool: mission?.tool || 'excel',
         answer: { formula: userFormula, sheetData },
@@ -471,19 +473,23 @@ export function ExcelMissionPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
           <Link
-            to="/map"
+            to={isPractice ? '/practice' : '/map'}
             className="grid size-10 place-items-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground transition-all shadow-sm"
-            title="Quay lại Bản đồ học tập"
+            title={isPractice ? 'Về khu luyện tập' : 'Quay lại Bản đồ học tập'}
           >
             <ArrowLeft className="size-5" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 font-mono text-[10px] font-bold text-primary uppercase">
-                <FileSpreadsheet className="size-3" /> Excel Mission
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase ${
+                isPractice 
+                  ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400' 
+                  : 'border-primary/30 bg-primary/10 text-primary'
+              }`}>
+                <FileSpreadsheet className="size-3" /> {isPractice ? 'Practice Mode' : 'Excel Mission'}
               </span>
               <span className="text-xs font-semibold text-muted-foreground">
-                Mã vụ án: {mission.id}
+                {isPractice ? 'Mã bài tập:' : 'Mã vụ án:'} {mission.id}
               </span>
             </div>
             <h1 className="mt-1 text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
@@ -715,7 +721,7 @@ export function ExcelMissionPage() {
         onClose={() => setShowResultModal(false)}
         onNextMission={() => {
           setShowResultModal(false);
-          navigate('/map');
+          navigate(isPractice ? '/practice' : '/map');
         }}
       />
     </div>

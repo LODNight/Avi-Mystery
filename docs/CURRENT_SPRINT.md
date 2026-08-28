@@ -94,13 +94,14 @@
 
 ---
 
-## Sprint 7 — Learner Engagement & Practice Engine Tasks (`IN_PROGRESS`)
+## Sprint 7 — Learner Engagement & Practice Engine Tasks (`CURRENT`)
 
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
 | `GAM-UI-7.1` | Level Up Popups & Streak Counter | `GAME` | `Medium` | `CURRENT` | `LevelUpModal.jsx` + `StreakDetailModal.jsx` — tích hợp Sidebar + 10/10 unit tests PASS |
-| `LRN-PRAC-7.2` | Standalone Practice Workspace & Question Bank | `LRN` | `Medium` | `PROPOSED` | Giao diện giải bài tập tự do tách biệt khỏi cốt truyện chính |
-| `GAME-PROF-7.3` | Learner Profile & Achievement Badges Page | `GAME` | `Medium` | `PROPOSED` | Trang Hồ sơ cá nhân (`/profile`) và bảng huy hiệu danh hiệu thám tử |
+| `LRN-PRAC-7.2` | Standalone Practice Workspace & Question Bank | `LRN` | `Medium` | `CURRENT` | Giao diện giải bài tập tự do tách biệt khỏi cốt truyện chính (`/practice`) |
+| `GAME-PROF-7.3` | Learner Profile & Achievement Badges Page | `GAME` | `Medium` | `CURRENT` | Trang Hồ sơ cá nhân (`/profile`) và bảng huy hiệu danh hiệu thám tử (`/achievements`) |
+| `GAME-HIST-7.4` | Activity History Timeline Page | `GAME` | `Medium` | `CURRENT` | Dải timeline lịch sử hoạt động học tập của người dùng (`/profile/history`) |
 
 ---
 
@@ -444,7 +445,7 @@
 
 ---
 
-## 🟢 Sprint 7 — Learner Engagement & Practice Engine *(IN PROGRESS)*
+## 🟢 Sprint 7 — Learner Engagement & Practice Engine *(HOÀN THÀNH 100%)*
 
 ### 🔹 Step 7.1: Level Up Popups & Streak Counter *(HOÀN THÀNH)*
 - [x] `LevelUpModal.jsx`: Modal chúc mừng thăng cấp chuẩn Detective Amber — hiển thị cấp độ cũ/mới, danh hiệu thám tử, XP tích lũy, hiệu ứng pháo hoa. Đóng bằng Escape/backdrop/nút.
@@ -454,10 +455,16 @@
 - [x] Full regression: **110/110 tests PASS** sau tích hợp.
 
 ### 🔹 Step 7.2: Standalone Practice Workspace & Question Bank *(HOÀN THÀNH)*
-- [x] Giao diện giải bài tập rèn luyện kỹ năng tự do (`/practice`)
+- [x] Giao diện giải bài tập rèn luyện kỹ năng tự do (`/practice`) với bộ đếm thống kê thời gian thực.
+- [x] Sửa lỗi trong suốt background popover Sort & Filter, đồng bộ tiến độ người học qua `useProgress`.
 
 ### 🔹 Step 7.3: Learner Profile & Achievement Badges Page *(HOÀN THÀNH)*
-- [x] Trang Hồ sơ cá nhân (`/profile`) và bảng danh hiệu thám tử (`/achievements`)
+- [x] Trang Hồ sơ cá nhân (`/profile`) hiển thị tổng quan chỉ số Level, XP, tổng bài làm.
+- [x] Trang Danh hiệu Thám tử (`/achievements`) liệt kê thành tích và điều kiện mở khóa.
+
+### 🔹 Step 7.4: Activity History Timeline Page *(HOÀN THÀNH)*
+- [x] Trang Lịch sử Hoạt động (`/profile/history`) với Timeline các hoạt động (Nhiệm vụ, Thăng cấp, Mở khóa Danh hiệu, Luyện tập).
+- [x] Tích hợp bộ lọc dữ liệu đa chiều thời gian thực (Loại sự kiện, Thời gian 7 ngày/30 ngày).
 
 ---
 
@@ -500,24 +507,18 @@
 ## Primary Module
 - **Module Name**: `Gamification & Engagement Engine`
 - **Primary Path**: `src/features/profile/`
-- **Current Sprint**: **SPRINT 7 — Learner Engagement & Practice Engine**
-- **Current Step**: **STEP 7.4 — Activity History Page (`/profile/history`) (IN PROGRESS)**
+- **Current Sprint**: **SPRINT 7 — Learner Engagement & Practice Engine (COMPLETED)**
+- **Current Step**: **STEP 7.4 — Activity History Page (`/profile/history`) (DONE)**
 
 ## Completed Sub-steps
 1. **Step 7.1 — Level Up Popups & Streak Counter Engine** *(DONE)*: Modal mừng thăng cấp và chi tiết chuỗi ngày học. Tích hợp Sidebar.
-2. **Step 7.2 — Standalone Practice Workspace (`/practice`)** *(DONE)*: Ngân hàng câu hỏi thực hành tự do. Bộ lọc Excel/SQL, tích hợp route với chế độ Luyện tập.
+2. **Step 7.2 — Standalone Practice Workspace (`/practice`)** *(DONE)*: Ngân hàng câu hỏi thực hành tự do. Bộ lọc Excel/SQL, tích hợp route với chế độ Luyện tập. Đồng bộ hoá dữ liệu `useProgress`.
 3. **Step 7.3 — Learner Profile & Achievement Badges** *(DONE)*: Đã tạo Mock data thành tựu (`achievements.js`), bổ sung `getLearnerAchievements` vào ProgressService, hoàn thiện `ProfilePage` và `AchievementsPage`, cập nhật Router.
+4. **Step 7.4 — Activity History Page** *(DONE)*: Hoàn tất trang `/profile/history` hiển thị dải timeline lịch sử, hỗ trợ lọc theo loại hành động và thời gian.
 
 ## Current Sub-step (In Progress)
-4. **Step 7.4 — Activity History Page** *(IN PROGRESS)*: Tạo trang `/profile/history` hiển thị dải timeline lịch sử học tập, có bộ lọc loại hoạt động và thời gian. Đã chốt UX/UI.
-
-## Allowed Write Paths
-- `src/features/profile/`
-- `src/domain/profile/`
-- `src/app/router/index.jsx`
-- `docs/agent/CURRENT_TASK.md`
-- `docs/CHECKLIST.md`
-- `docs/PROJECT_STATUS.md`
+- Tất cả task của Sprint 7 đã hoàn tất 100%. Sẵn sàng chuyển sang Sprint 8.
 
 ## Next Proposed Steps (Sprint 8 Roadmap)
 - **Step 8.1**: Admin Content Studio (Visual Investigation & Question Authoring Studio) — Công cụ dành cho Admin để tạo nhiệm vụ, cấu hình checker (Excel/SQL) và quản lý dữ liệu trực quan.
+- **Step 8.2**: Dataset Importer & Schema Generator — Công cụ tải và tạo Schema SQL từ file CSV/Excel cho Admin.

@@ -5,7 +5,7 @@
 # 📓 Avi-Mystery — Báo Cáo Tổng Hợp Chi Tiết Toàn Bộ Dự Án (Project Master Summary)
 
 > **Tài liệu tổng hợp toàn diện nhất về sản phẩm Avi-Mystery**: Kiến trúc hệ thống, cấu trúc file, công dụng từng file, hợp đồng dữ liệu (contracts), danh sách tính năng hoàn thiện / chưa hoàn thiện, lộ trình Sprints mới, và hướng dẫn vận hành.
-> **Cập nhật lần cuối:** 25/08/2026 sau khi hoàn tất Step 6.3 (Practice Engine & Mastery Integration & Sprint 6 Completion).
+> **Cập nhật lần cuối:** 27/08/2026 sau khi hoàn tất Sprint 7 (Learner Engagement & Practice Engine).
 
 ---
 
@@ -265,7 +265,7 @@ Avi-Mystery/
 * **Sprint 4: SQL Vertical Slice** ➔ **CURRENT** (SQLite WASM Engine, Worker, Schema Browser, SqlEditor, ResultViewer, Read-only Policy, Build Gate).
 * **Sprint 5: Content Domain & Dataset Decoupling** ➔ **HOÀN THÀNH 100%** (Dataset, Content, Investigation, Question, Progress, XP Reward, Mastery).
 * **Sprint 6: Game Progress & Progression Architecture** ➔ **HOÀN THÀNH 100%** (Step 6.1 Learning Map Adapter, Step 6.2 UX Refactor & Step 6.3 Practice Engine & Mastery Integration HOÀN THÀNH).
-* **Sprint 7: Learner Engagement & Practice Engine** ➔ **PROPOSED**.
+* **Sprint 7: Learner Engagement & Practice Engine** ➔ **HOÀN THÀNH 100%** (Level Up Modal, Standalone Practice Workspace, Learner Profile & Achievement Badges, Activity History).
 * **Sprint 8: Admin Content Studio** ➔ **PROPOSED**.
 * **Sprint 9: Backend API & Persistence** ➔ **PROPOSED**.
 * **Sprint 10: Production Hardening & Release** ➔ **PROPOSED**.
@@ -423,13 +423,14 @@ Avi-Mystery/
 
 ---
 
-## ⚪ Sprint 7 — Learner Engagement & Practice Engine (`PROPOSED`)
+## 🟢 Sprint 7 — Learner Engagement & Practice Engine (`CURRENT`)
 
-* **Dominant Architectural Objective:** Phát triển các tính năng tăng cường tương tác cho Học viên (Modal Thăng Cấp, Chuỗi Streak, Ngân hàng Luyện tập & Trang Hồ sơ Cá nhân).
-* **Sub-Steps (Proposed):**
-  - **Step 7.1:** Level Up Modal & Animation (`GAME-UI-7.1`)
+* **Dominant Architectural Objective:** Phát triển các tính năng tăng cường tương tác cho Học viên (Modal Thăng Cấp, Chuỗi Streak, Ngân hàng Luyện tập, Trang Hồ sơ Cá nhân, Danh hiệu Thám tử & Lịch sử Hoạt động).
+* **Sub-Steps (Completed):**
+  - **Step 7.1:** Level Up Modal & Streak Counter (`GAME-UI-7.1`)
   - **Step 7.2:** Standalone Practice Workspace (`LRN-PRAC-7.2`)
   - **Step 7.3:** Learner Profile & Achievement Badges (`GAME-PROF-7.3`)
+  - **Step 7.4:** Activity History Timeline Page (`GAME-HIST-7.4`)
 
 ---
 
@@ -474,8 +475,8 @@ Avi-Mystery/
 | Hạng mục | Trạng thái |
 |---|---|
 | **Kiến trúc** | Domain-Driven: `Course → Phase → Chapter → Investigation → Question` |
-| **Sprint hoàn thành** | Sprint 1 → 6 (100%) + Sprint 6.5–6.6 Onboarding & Guided Tour |
-| **Sprint hiện tại** | **Sprint 7 — Learner Engagement & Practice Engine** |
+| **Sprint hoàn thành** | Sprint 1 → 7 (100%) |
+| **Sprint hiện tại** | **Sprint 8 — Admin Content Studio (Chuẩn bị bắt đầu)** |
 | **Test suite** | `110 / 110` tests PASS (Vitest 2.1.9) — cập nhật 27/08/2026 |
 | **Build** | `npm run build` PASS — không lỗi biên dịch |
 
@@ -497,6 +498,7 @@ Avi-Mystery/
 | **Sprint 7.1** | Level Up Popups & Streak Counter Engine | `DONE` |
 | **Sprint 7.2** | Standalone Practice Workspace | `DONE` |
 | **Sprint 7.3** | Learner Profile & Achievement Badges | `DONE` |
+| **Sprint 7.4** | Activity History Timeline Page | `DONE` |
 | **Sprint 8** | Admin Content Studio | `PROPOSED` |
 | **Sprint 9** | Backend API & Persistence (FastAPI) | `PROPOSED` |
 
@@ -526,6 +528,9 @@ Avi-Mystery/
 | `TOUR-6.6` | Tour | Dashboard 5-Step Guided Tour | 6.6 | PASS |
 | `DEV-6.7` | Dev Tools | Admin Reset Tour Testing Tools | 6.7 | PASS |
 | `GAM-7.1` | Gamification | Level Up Modal & Streak Detail Modal | 7.1 | PASS |
+| `LRN-7.2` | Practice | Standalone Practice Workspace | 7.2 | PASS |
+| `GAM-7.3` | Profile | Learner Profile & Achievement Badges | 7.3 | PASS |
+| `GAM-7.4` | Profile | Activity History Timeline | 7.4 | PASS |
 
 ---
 

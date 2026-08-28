@@ -23,8 +23,6 @@ export function ProfilePage() {
   // Dynamic Heatmap Data based on actual fullHistory
   const heatmapData = React.useMemo(() => {
     const today = new Date();
-    const startDate = new Date(today);
-    startDate.setDate(today.getDate() - (52 * 7 - 1));
 
     // Map history to date strings
     const activityMap = {};
@@ -36,61 +34,79 @@ export function ProfilePage() {
       });
     }
 
-    const weeks = [];
-    let currentWeek = [];
-    const monthLabels = [];
-    let lastMonth = -1;
-
-    for (let i = 0; i < 52 * 7; i++) {
-      const d = new Date(startDate);
-      d.setDate(startDate.getDate() + i);
-      
-      const isFuture = d > today;
-      const monthNum = d.getMonth();
-      const formattedDate = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
-      
-      let count = 0;
-      if (!isFuture) {
-        count = activityMap[formattedDate] || 0;
-      }
-
-      if (monthNum !== lastMonth && d.getDay() === 0) {
-        monthLabels.push({
-          weekIndex: weeks.length,
-          label: `Thg ${monthNum + 1}`
-        });
-        lastMonth = monthNum;
-      }
-
-      currentWeek.push({
-        dateObj: d,
-        formattedDate,
-        count,
-        isFuture
-      });
-
-      if (currentWeek.length === 7) {
-        weeks.push(currentWeek);
-        currentWeek = [];
-      }
-    }
-
-    const allDays = weeks.flat();
-    const totalContributions = allDays.reduce((acc, curr) => acc + curr.count, 0);
-    const activeDays = allDays.filter(d => d.count > 0).length;
+    const monthsData = [];
+    let totalContributions = 0;
+    let activeDays = 0;
+    
+    // 6 months ago (including current month = 5 months prior)
+    const startMonth = new Date(today.getFullYear(), today.getMonth() - 5, 1);
     
     let maxStreak = 0;
     let tempStreak = 0;
-    for (const d of allDays) {
-      if (d.count > 0) {
-        tempStreak++;
-        if (tempStreak > maxStreak) maxStreak = tempStreak;
-      } else {
-        tempStreak = 0;
+    
+    for (let i = 0; i < 6; i++) {
+      const year = startMonth.getFullYear();
+      const monthNum = startMonth.getMonth();
+      const monthLabel = `Thg ${monthNum + 1}`;
+      const key = `${year}-${monthNum}`;
+      
+      const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
+      const monthWeeks = [];
+      let currentColumn = [];
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = new Date(year, monthNum, day);
+        const isFuture = d > today;
+        const formattedDate = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        
+        let count = 0;
+        if (!isFuture) {
+          count = activityMap[formattedDate] || 0;
+        }
+
+        const dayObj = { dateObj: d, formattedDate, count, isFuture };
+
+        // JS getDay(): 0=Sun, 1=Mon...6=Sat. Mapped to Mon=0...Sun=6
+        const dayOfWeek = (d.getDay() + 6) % 7;
+
+        // Pad start of month
+        if (day === 1) {
+          for (let p = 0; p < dayOfWeek; p++) {
+            currentColumn.push(null);
+          }
+        }
+
+        currentColumn.push(dayObj);
+
+        if (!isFuture) {
+          totalContributions += count;
+          if (count > 0) {
+            activeDays++;
+            tempStreak++;
+            if (tempStreak > maxStreak) maxStreak = tempStreak;
+          } else {
+            tempStreak = 0;
+          }
+        }
+
+        // Push column if it reaches Sunday or end of month
+        if (dayOfWeek === 6 || day === daysInMonth) {
+          // Pad end of month
+          if (day === daysInMonth && dayOfWeek !== 6) {
+            for (let p = dayOfWeek + 1; p <= 6; p++) {
+              currentColumn.push(null);
+            }
+          }
+          monthWeeks.push(currentColumn);
+          currentColumn = [];
+        }
       }
+      
+      monthsData.push({ key, label: monthLabel, weeks: monthWeeks });
+      startMonth.setMonth(startMonth.getMonth() + 1);
     }
 
-    return { weeks, monthLabels, totalContributions, activeDays, maxStreak };
+    return { totalContributions, activeDays, maxStreak, monthsData };
   }, [stats.fullHistory]);
 
   useEffect(() => {
@@ -345,7 +361,7 @@ export function ProfilePage() {
                   {heatmapData.totalContributions}
                 </span>
                 <span className="text-xs font-medium text-muted-foreground">
-                  lượt phá án trong 12 tháng qua
+                  lượt phá án trong 6 tháng qua
                 </span>
                 <div 
                   className="group/tooltip relative flex items-center justify-center cursor-help ml-0.5"
@@ -353,7 +369,7 @@ export function ProfilePage() {
                 >
                   <Info className="size-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl bg-popover border border-border p-2.5 shadow-md opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-50 text-[11px] font-medium text-popover-foreground text-center leading-relaxed">
-                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong 365 ngày qua.
+                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong 6 tháng qua.
                   </div>
                 </div>
               </div>
@@ -375,51 +391,52 @@ export function ProfilePage() {
             </div>
 
             {/* Heatmap Grid Container */}
-            <div className="overflow-x-auto pb-1 scrollbar-hide">
-              <div className="min-w-[760px]">
-                {/* Grid Body with Day Labels on Left */}
-                <div className="flex gap-2 mb-2">
-                  {/* Day Labels */}
-                  <div className="flex flex-col justify-between text-[10px] font-medium text-muted-foreground py-0.5 pr-1 select-none shrink-0">
-                    <span>T2</span>
-                    <span>T4</span>
-                    <span>T6</span>
-                  </div>
-
-                  {/* Weeks Columns (52 weeks) */}
-                  <div className="flex-1 grid gap-1.5" style={{ gridTemplateColumns: 'repeat(52, minmax(0, 1fr))' }}>
-                    {heatmapData.weeks.map((week, wIdx) => (
-                      <div key={wIdx} className="flex flex-col gap-1.5">
-                        {week.map((day, dIdx) => {
-                          let colorClass = 'bg-stone-200/80 dark:bg-stone-800/90 border border-stone-300/40 dark:border-stone-700/40';
-                          if (day.isFuture) colorClass = 'bg-muted/30 border border-transparent';
-                          else if (day.count === 1) colorClass = 'bg-emerald-600/70 dark:bg-emerald-700/80 border border-emerald-500/30';
-                          else if (day.count >= 2 && day.count <= 3) colorClass = 'bg-emerald-500 dark:bg-emerald-500 shadow-2xs shadow-emerald-500/30';
-                          else if (day.count >= 4 && day.count <= 5) colorClass = 'bg-emerald-400 dark:bg-emerald-400 shadow-xs shadow-emerald-400/40';
-                          else if (day.count >= 6) colorClass = 'bg-emerald-300 dark:bg-emerald-300 shadow-sm shadow-emerald-300/60 ring-1 ring-emerald-200/50';
-
-                          return (
-                            <div
-                              key={dIdx}
-                              title={`${day.formattedDate}: ${day.count} lượt làm bài`}
-                              className={`aspect-square rounded-[3px] transition-all hover:scale-130 hover:z-20 cursor-pointer ${colorClass}`}
-                            />
-                          );
-                        })}
-                      </div>
-                    ))}
-                  </div>
+            <div 
+              className="overflow-x-auto pb-2 scrollbar-hide"
+              style={{ direction: 'rtl' }}
+            >
+              <div className="flex gap-4 min-w-max" style={{ direction: 'ltr' }}>
+                {/* Day Labels - Sticky Left */}
+                <div className="flex flex-col justify-between text-[10px] font-medium text-muted-foreground py-0.5 sticky left-0 bg-card z-10 pr-2 select-none shrink-0">
+                  <span>T2</span>
+                  <span>T4</span>
+                  <span>T6</span>
                 </div>
 
-                {/* Month Headers (Positioned BELOW grid like LeetCode) */}
-                <div className="relative flex text-[10px] font-semibold text-muted-foreground pl-7 h-4">
-                  {heatmapData.monthLabels.map((m, idx) => (
-                    <div 
-                      key={idx} 
-                      className="absolute" 
-                      style={{ left: `${(m.weekIndex / 52) * 100}%` }}
-                    >
-                      <span className="ml-7">{m.label}</span>
+                {/* Grouped by Months */}
+                <div className="flex gap-3 pr-2">
+                  {heatmapData.monthsData.map((month) => (
+                    <div key={month.key} className="flex flex-col gap-2">
+                      {/* Weeks */}
+                      <div className="flex gap-1.5">
+                        {month.weeks.map((week, wIdx) => (
+                          <div key={wIdx} className="flex flex-col gap-1.5">
+                            {week.map((day, dIdx) => {
+                              if (!day) {
+                                return <div key={dIdx} className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0 bg-transparent" />;
+                              }
+                              let colorClass = 'bg-stone-200/80 dark:bg-stone-800/90 border border-stone-300/40 dark:border-stone-700/40';
+                              if (day.isFuture) colorClass = 'bg-muted/30 border border-transparent';
+                              else if (day.count === 1) colorClass = 'bg-emerald-600/70 dark:bg-emerald-700/80 border border-emerald-500/30';
+                              else if (day.count >= 2 && day.count <= 3) colorClass = 'bg-emerald-500 dark:bg-emerald-500 shadow-2xs shadow-emerald-500/30';
+                              else if (day.count >= 4 && day.count <= 5) colorClass = 'bg-emerald-400 dark:bg-emerald-400 shadow-xs shadow-emerald-400/40';
+                              else if (day.count >= 6) colorClass = 'bg-emerald-300 dark:bg-emerald-300 shadow-sm shadow-emerald-300/60 ring-1 ring-emerald-200/50';
+
+                              return (
+                                <div
+                                  key={dIdx}
+                                  title={`${day.formattedDate}: ${day.count} lượt làm bài`}
+                                  className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[3px] transition-all hover:scale-125 hover:z-20 cursor-pointer shrink-0 ${colorClass}`}
+                                />
+                              );
+                            })}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Month Label at Bottom */}
+                      <div className="text-[10px] font-semibold text-muted-foreground text-center">
+                        {month.label}
+                      </div>
                     </div>
                   ))}
                 </div>

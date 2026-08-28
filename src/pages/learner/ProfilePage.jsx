@@ -13,6 +13,7 @@ export function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [heatmapFilter, setHeatmapFilter] = useState('6months');
   const [stats, setStats] = useState({
     xp: 2450,
     skills: [],
@@ -20,11 +21,29 @@ export function ProfilePage() {
     fullHistory: []
   });
 
-  // Dynamic Heatmap Data based on actual fullHistory
+  // Dynamically compute available years based on actual user history and current year
+  const availableYears = React.useMemo(() => {
+    const yearsSet = new Set();
+    const currentYear = new Date().getFullYear();
+    yearsSet.add(currentYear);
+
+    if (stats.fullHistory && stats.fullHistory.length > 0) {
+      stats.fullHistory.forEach(item => {
+        if (item.timestamp) {
+          const y = new Date(item.timestamp).getFullYear();
+          if (!isNaN(y)) yearsSet.add(y);
+        }
+      });
+    }
+
+    return Array.from(yearsSet).sort((a, b) => b - a);
+  }, [stats.fullHistory]);
+
+  // Dynamic Heatmap Data based on actual fullHistory and filter
   const heatmapData = React.useMemo(() => {
     const today = new Date();
 
-    // Map history to date strings
+    // Map history to date strings strictly from stats.fullHistory
     const activityMap = {};
     if (stats.fullHistory) {
       stats.fullHistory.forEach(item => {
@@ -37,14 +56,23 @@ export function ProfilePage() {
     const monthsData = [];
     let totalContributions = 0;
     let activeDays = 0;
-    
-    // 6 months ago (including current month = 5 months prior)
-    const startMonth = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-    
     let maxStreak = 0;
     let tempStreak = 0;
     
-    for (let i = 0; i < 6; i++) {
+    let startMonth;
+    let numMonths = 6;
+
+    if (heatmapFilter === '6months') {
+      // '6months': 6 months ago (including current month = 5 months prior)
+      startMonth = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+      numMonths = 6;
+    } else {
+      const filterYear = parseInt(heatmapFilter, 10) || today.getFullYear();
+      startMonth = new Date(filterYear, 0, 1);
+      numMonths = 12;
+    }
+    
+    for (let i = 0; i < numMonths; i++) {
       const year = startMonth.getFullYear();
       const monthNum = startMonth.getMonth();
       const monthLabel = `Thg ${monthNum + 1}`;
@@ -107,7 +135,7 @@ export function ProfilePage() {
     }
 
     return { totalContributions, activeDays, maxStreak, monthsData };
-  }, [stats.fullHistory]);
+  }, [stats.fullHistory, heatmapFilter]);
 
   useEffect(() => {
     async function loadData() {
@@ -353,40 +381,49 @@ export function ProfilePage() {
           </div>
           
           {/* LeetCode-style Contribution Heatmap */}
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-2xs overflow-hidden">
+          <div className="rounded-3xl border border-border bg-card p-4 sm:p-6 shadow-2xs overflow-hidden">
             {/* Top Bar (LeetCode Style Header & Metrics) */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6 pb-4 border-b border-border/60">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-xl font-extrabold text-foreground tracking-tight font-mono">
                   {heatmapData.totalContributions}
                 </span>
                 <span className="text-xs font-medium text-muted-foreground">
-                  lượt phá án trong 6 tháng qua
+                  lượt phá án trong
                 </span>
+                
+                {/* Heatmap Time Filter */}
+                <select 
+                  value={heatmapFilter}
+                  onChange={(e) => setHeatmapFilter(e.target.value)}
+                  className="bg-muted/50 border border-border/80 px-2.5 py-1 rounded-lg text-xs font-semibold text-foreground hover:bg-muted transition-colors outline-none cursor-pointer"
+                >
+                  <option value="6months">6 tháng qua</option>
+                  {availableYears.map(yr => (
+                    <option key={yr} value={String(yr)}>Năm {yr}</option>
+                  ))}
+                </select>
+
                 <div 
-                  className="group/tooltip relative flex items-center justify-center cursor-help ml-0.5"
+                  className="group/tooltip relative flex items-center justify-center cursor-help ml-1"
                   aria-label="Thông tin chuỗi đóng góp"
                 >
                   <Info className="size-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl bg-popover border border-border p-2.5 shadow-md opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-50 text-[11px] font-medium text-popover-foreground text-center leading-relaxed">
-                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong 6 tháng qua.
+                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong khoảng thời gian đã chọn.
                   </div>
                 </div>
               </div>
 
-              {/* Right Side Stats & Filter (LeetCode style) */}
-              <div className="flex flex-wrap items-center gap-3.5 text-xs text-muted-foreground font-medium">
-                <div>
-                  Tổng ngày hoạt động: <span className="font-bold text-foreground font-mono">{heatmapData.activeDays}</span>
+              {/* Right Side Stats (Responsive Wrapper) */}
+              <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium bg-muted/30 px-3 py-2 rounded-xl border border-border/50 w-fit">
+                <div className="flex items-center gap-1.5">
+                  Ngày hoạt động: <span className="font-bold text-foreground font-mono">{heatmapData.activeDays}</span>
                 </div>
                 <div className="h-3 w-px bg-border" />
-                <div>
-                  Streak dài nhất: <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{heatmapData.maxStreak} ngày</span>
+                <div className="flex items-center gap-1.5">
+                  Streak dài nhất: <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{heatmapData.maxStreak}</span>
                 </div>
-                <div className="h-3 w-px bg-border" />
-                <button className="flex items-center gap-1 rounded-xl bg-muted/80 border border-border/80 px-2.5 py-1 text-xs font-semibold text-foreground hover:bg-muted transition-colors">
-                  Mới nhất <ChevronDown className="size-3.5 text-muted-foreground" />
-                </button>
               </div>
             </div>
 

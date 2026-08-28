@@ -14,13 +14,13 @@ export function translateLegacyMissionToInvestigation(mission) {
   if (!mission || typeof mission !== 'object') return null
   return {
     investigationId: mission.investigationId || mission.id,
-    missionId: mission.id,
+    missionId: mission.legacyMissionId || mission.missionId || mission.id,
     chapterId: mission.chapterId || 'ch-001',
     datasetId: mission.datasetId || null,
     title: mission.title || '',
     objective: mission.objective || '',
-    rewardXp: typeof mission.rewardXp === 'number' ? mission.rewardXp : 50,
-    tool: mission.tool || 'excel',
+    rewardXp: typeof mission.rewardXp === 'number' ? mission.rewardXp : (mission.rewards?.baseXp || 50),
+    tool: mission.tool || mission.metadata?.tool || 'excel',
     status: mission.status || 'published',
   }
 }

@@ -97,8 +97,14 @@ const mockMasteryRecords = [
   { learnerId: 'user-001', skillId: 'excel_formula', masteryScore: 85, totalAttempts: 10, successfulAttempts: 9 },
 ];
 
+import { AuthProvider } from '../../app/providers/AuthProvider.jsx';
+
 function renderWithRouter(ui) {
-  return render(<BrowserRouter>{ui}</BrowserRouter>);
+  return render(
+    <AuthProvider>
+      <BrowserRouter>{ui}</BrowserRouter>
+    </AuthProvider>
+  );
 }
 
 describe('LearningMapPage Component Tests (Step 6.3 Dynamic Progress & Mastery UX)', () => {

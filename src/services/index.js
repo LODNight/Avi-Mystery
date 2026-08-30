@@ -17,11 +17,15 @@ import { mockProgressService } from './mock/mockProgressService.js';
 
 import { apiAuthService, apiCourseService, apiMissionService, apiSqlMissionService } from './api/index.js';
 import { SUBMISSION_ERROR_CODES } from './contracts/submissionService.js';
+import { firebaseAuthService } from './api/firebaseAuthService.js';
 
-// Đổi thành false khi kết nối backend thật
+// Environment switch
+const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true';
+
+// Temporary mock toggle for static services
 const USE_MOCK = true;
 
-export const authService    = USE_MOCK ? mockAuthService    : apiAuthService;
+export const authService    = USE_FIREBASE ? firebaseAuthService : (USE_MOCK ? mockAuthService : apiAuthService);
 export const courseService  = USE_MOCK ? mockCourseService  : apiCourseService;
 export const missionService = USE_MOCK ? mockMissionService : apiMissionService;
 export const sqlMissionService = USE_MOCK ? mockSqlMissionService : apiSqlMissionService;

@@ -20,9 +20,14 @@ service cloud.firestore {
     match /learners/{userId} {
       allow read, write: if isOwner(userId);
       
-      // Allow access to all subcollections under the learner's document
-      match /{document=**} {
+      match /progress/{contentId} {
         allow read, write: if isOwner(userId);
+      }
+
+      match /xpLedger/{attemptId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && request.resource.data.learnerId == userId;
+        allow update, delete: if false; // Immutable ledger
       }
     }
     

@@ -25,6 +25,8 @@ const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true';
 // Temporary mock toggle for static services
 const USE_MOCK = true;
 
+import { firebaseProgressService } from './api/firebaseProgressService.js';
+
 export const authService    = USE_FIREBASE ? firebaseAuthService : (USE_MOCK ? mockAuthService : apiAuthService);
 export const courseService  = USE_MOCK ? mockCourseService  : apiCourseService;
 export const missionService = USE_MOCK ? mockMissionService : apiMissionService;
@@ -33,7 +35,7 @@ export const contentService = USE_MOCK ? mockContentService : mockContentService
 export const datasetService = USE_MOCK ? mockDatasetService : mockDatasetService;
 export const investigationService = USE_MOCK ? mockInvestigationService : mockInvestigationService;
 export const questionService = USE_MOCK ? mockQuestionService : mockQuestionService;
-export const progressService = USE_MOCK ? mockProgressService : mockProgressService;
+export const progressService = USE_FIREBASE ? firebaseProgressService : (USE_MOCK ? mockProgressService : mockProgressService);
 
 // API submission adapter is intentionally deferred to Sprint 7. This stub keeps
 // the public interface stable without silently falling back to mock data.

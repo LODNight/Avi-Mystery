@@ -191,24 +191,14 @@ export function ResultViewer({ result, isExecuting, onSubmit, isCompleted = fals
             </span>
           )}
           {onSubmit && (
-            isCompleted ? (
-              <button
-                type="button"
-                disabled
-                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 font-semibold px-3 py-1.5 text-xs shadow-xs cursor-not-allowed"
-                title="Vụ án này đã được hoàn thành thành công."
-              >
-                <CheckCircle2 className="size-3.5 text-emerald-500" /> Đã nộp bài
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={onSubmit}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
-              >
-                <Send className="size-3.5" /> Nộp bài vụ án
-              </button>
-            )
+            <button
+              type="button"
+              onClick={onSubmit}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+              title={isCompleted ? "Vụ án đã hoàn thành. Bạn có thể nộp lại bài làm để thử đáp án mới." : "Nộp kết quả bài làm để chấm điểm."}
+            >
+              <Send className="size-3.5" /> {isCompleted ? 'Nộp lại bài làm' : 'Nộp bài vụ án'}
+            </button>
           )}
         </div>
       </div>

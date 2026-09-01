@@ -62,40 +62,26 @@ export function ActionToolbar({
         )}
 
         {/* Nút Nộp bài (Submit Answer - Primary Action CTA) */}
-        {isCompleted ? (
-          <button
-            type="button"
-            disabled
-            aria-label="Vụ án đã nộp bài hoàn thành"
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-not-allowed w-full sm:w-auto shadow-xs"
-            title="Vụ án này đã được hoàn thành thành công."
-          >
-            <CheckCircle2 className="size-4 text-emerald-500" />
-            <span>Đã nộp bài</span>
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onSubmit}
-            disabled={isSubmitting}
-            aria-label={isSubmitting ? 'Đang chấm điểm' : 'Nộp bài vụ án'}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
-            title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                <span aria-hidden="true">Đang chấm điểm...</span>
-              </>
-            ) : (
-              <>
-                <Send className="size-3.5" />
-                <span aria-hidden="true" className="sm:hidden">Nộp bài</span>
-                <span aria-hidden="true" className="hidden sm:inline">Nộp bài vụ án</span>
-              </>
-            )}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          aria-label={isSubmitting ? 'Đang chấm điểm' : isCompleted ? 'Nộp lại bài làm' : 'Nộp bài vụ án'}
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
+          title={isCompleted ? "Bài tập đã hoàn thành. Bạn có thể nộp lại bài làm bất cứ lúc nào." : "Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"}
+        >
+          {isSubmitting ? (
+            <>
+              <div className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              <span aria-hidden="true">Đang chấm điểm...</span>
+            </>
+          ) : (
+            <>
+              <Send className="size-3.5" />
+              <span aria-hidden="true">{isCompleted ? 'Nộp lại bài làm' : 'Nộp bài vụ án'}</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* ── Group 2: Auxiliary Buttons (Gợi ý & Đặt lại) ── */}

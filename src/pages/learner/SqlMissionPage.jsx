@@ -290,7 +290,7 @@ export function SqlMissionPage({
           <div className="flex items-center gap-3">
             <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
             <span className="leading-relaxed">
-              <strong>Vụ án SQL đã hoàn thành!</strong> Bạn đã giải quyết thành công bài tập này. Bạn có thể tiếp tục thực thi các câu lệnh SQL khác để nâng cao trình độ.
+              <strong>Vụ án SQL đã hoàn thành!</strong> Bạn đã giải quyết thành công bài tập này. Bạn có thể tiếp tục thực thi và nộp lại bài làm để thử nghiệm các câu lệnh tối ưu hơn.
             </span>
           </div>
           <Link

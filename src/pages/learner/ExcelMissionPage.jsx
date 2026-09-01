@@ -630,7 +630,7 @@ export function ExcelMissionPage() {
           <div className="flex items-center gap-3">
             <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
             <span className="leading-relaxed">
-              <strong>Vụ án đã hoàn thành!</strong> Bạn đã giải quyết xuất sắc yêu cầu của bài học này. Bảng dữ liệu đã được cập nhật kết quả chính xác.
+              <strong>Vụ án đã hoàn thành!</strong> Bạn đã giải quyết thành công bài học này. Bạn vẫn có thể tiếp tục chỉnh sửa và nộp lại bài làm để thử nghiệm phương án tối ưu hơn.
             </span>
           </div>
           <Link

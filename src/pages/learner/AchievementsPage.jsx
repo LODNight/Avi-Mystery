@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth.js';
-import { mockProgressService } from '../../services/mock/mockProgressService.js';
+import { progressService } from '../../services/index.js';
 import { Trophy, Lock, Search, Target, FileSpreadsheet, Database, Flame, Award, Shield } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
 
@@ -14,7 +14,7 @@ export function AchievementsPage() {
     async function loadData() {
       if (!user?.id) return;
       try {
-        const res = await mockProgressService.getLearnerAchievements(user.id);
+        const res = await progressService.getLearnerAchievements(user.id);
         if (res.data) {
           setAchievements(res.data);
         }

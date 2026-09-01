@@ -19,8 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
-import { missionService, courseService, onboardingService, ONBOARDING_STATUS } from '../../services/index.js';
-import { mockProgressService } from '../../services/mock/mockProgressService.js';
+import { missionService, courseService, onboardingService, ONBOARDING_STATUS, progressService } from '../../services/index.js';
 import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
 import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
@@ -52,8 +51,8 @@ export function DashboardPage() {
       if (!user?.id) return;
       try {
         const [xpRes, historyRes] = await Promise.all([
-          mockProgressService.getLearnerXp(user.id),
-          mockProgressService.getFullHistory(user.id)
+          progressService.getLearnerXp(user.id),
+          progressService.getFullHistory(user.id)
         ]);
 
         const history = historyRes.data || [];

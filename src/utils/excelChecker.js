@@ -25,6 +25,18 @@ const SUPPORTED_AGGREGATE_FUNCTIONS = Object.freeze([
   'COUNT',
 ]);
 
+export const EXCEL_MISSION_SOLUTIONS = Object.freeze({
+  'mission-001': { formula: '=C2*D2', targetCell: 'E2' },
+  'mission-002': { formula: '=MAX(D2:D6)', targetCell: 'E5' },
+  'mission-003': { formula: '=AVERAGE(D2:D6)', targetCell: 'C20' },
+  'mission-004': { formula: '=COUNTIF(E2:E6, ">=10000000")', targetCell: 'D10' },
+  'mission-005': { formula: '=SUMIF(B2:B6, "Laptop Pro", E2:E6)', targetCell: 'F8' },
+  'mission-006': { formula: '=IF(C2>=50000000, "VIP", "Regular")', targetCell: 'D2' },
+  'mission-007': { formula: '=VLOOKUP(A2, Customers!A2:D5, 2, 0)', targetCell: 'E2' },
+  'mission-008': { formula: '=INDEX(B2:B6, MATCH(MIN(C2:C6), C2:C6, 0))', targetCell: 'B5' },
+  'mission-009': { formula: '=SUM(E2:E6)', targetCell: 'C3' },
+});
+
 function formulaError(code, message, normalizedFormula = '') {
   return {
     valid: false,

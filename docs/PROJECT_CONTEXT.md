@@ -431,6 +431,7 @@ Avi-Mystery/
   - **Step 7.2:** Standalone Practice Workspace (`LRN-PRAC-7.2`)
   - **Step 7.3:** Learner Profile & Achievement Badges (`GAME-PROF-7.3`)
   - **Step 7.4:** Activity History Timeline Page (`GAME-HIST-7.4`)
+  - **Step 7.5:** Firebase Production Infrastructure Migration (`SYS-FB-7.5`)
 
 ---
 
@@ -499,6 +500,7 @@ Avi-Mystery/
 | **Sprint 7.2** | Standalone Practice Workspace | `DONE` |
 | **Sprint 7.3** | Learner Profile & Achievement Badges | `DONE` |
 | **Sprint 7.4** | Activity History Timeline Page | `DONE` |
+| **Sprint 7.5** | Firebase Production Infrastructure Migration | `DONE` |
 | **Sprint 8** | Admin Content Studio | `PROPOSED` |
 | **Sprint 9** | Backend API & Persistence (FastAPI) | `PROPOSED` |
 
@@ -531,6 +533,7 @@ Avi-Mystery/
 | `LRN-7.2` | Practice | Standalone Practice Workspace | 7.2 | PASS |
 | `GAM-7.3` | Profile | Learner Profile & Achievement Badges | 7.3 | PASS |
 | `GAM-7.4` | Profile | Activity History Timeline | 7.4 | PASS |
+| `SYS-FB-7.5` | System | Firebase Firestore Progress & Auth Integration | 7.5 | PASS |
 
 ---
 
@@ -573,14 +576,13 @@ Các nút reset onboarding để test luồng hướng dẫn mà không cần t�
 
 - React 18 và JavaScript ES modules, build bằng Vite; Tailwind CSS cho styling và React Router v6 cho routing.
 - Vitest, React Testing Library và JSDOM cho unit/component tests.
-- Frontend dùng local React state/context và `localStorage`; không tìm thấy Redux/Zustand.
-- Service contracts hiện có tại `src/services/contracts/`; mock adapters tại `src/services/mock/`; gateway chọn adapter tại `src/services/index.js`.
-- `src/services/api/index.js` chỉ là API stub. Luồng Excel Submission đi qua gateway `src/services/index.js`; `ExcelMissionPage.jsx` không import mock adapter trực tiếp.
-- Excel workspace, evaluator, shared submission contract, mock orchestration và feedback UI của Step 3.4 đã hoàn thành. Submission chỉ trả `potentialXp`, không cập nhật XP.
-- SQL workspace, SQLite WASM Worker engine, Schema Browser (`SchemaBrowser.jsx`), SQL Editor MVP (`SqlEditor.jsx`) và tuyến đường cách ly `/missions/:missionId/sql` (`SqlMissionPage.jsx`) của Step 4.0–4.4 đã hoàn thành.
-- Không tìm thấy backend FastAPI/PostgreSQL, Admin Content Builder, Progress domain độc lập hoặc Analytics implementation.
+- Frontend dùng local React state/context. Dữ liệu trạng thái người học (Auth, Progress, XP, Achievements, History) đã được chuyển sang **Firebase Auth & Cloud Firestore** thông qua `firebaseAuthService.js` và `firebaseProgressService.js`.
+- Service contracts hiện có tại `src/services/contracts/`; gateway cấu hình nạp adapter tại `src/services/index.js` tuỳ theo biến môi trường `VITE_USE_FIREBASE`.
+- Luồng Excel/SQL Submission vẫn đi qua mock gateway `src/services/index.js` để đánh giá nhưng sau đó giao dịch phần thưởng XP và lưu tiến độ được uỷ thác an toàn qua Firebase Transaction (Idempotent XP Ledger).
+- Các dữ liệu nội dung tĩnh (Courses, Chapters, Investigations, Datasets) vẫn duy trì dưới dạng JSON mock data để chuẩn bị cho giai đoạn CMS Admin sắp tới.
+- SQL workspace, SQLite WASM Worker engine, Schema Browser, SQL Editor MVP đã hoàn thành.
 
-## Target Architecture
+## Target Architecture (Next Phase)
 
 ```text
 UI → stable service contract → Mock Service
@@ -591,15 +593,13 @@ Mock Service và API Client phải giữ cùng public interface để Sprint 7 k
 
 ## Intentionally Deferred
 
-- SQL Query Execution & Result Viewer, Result Checker: Sprint 4 Step 4.5+; engine/Worker/SchemaBrowser/SqlEditor/route đã có ở Step 4.0–4.4.
-- XP/level/streak/achievement domain hoàn chỉnh: Sprint 5.
-- Admin Content Builder: Sprint 6.
-- FastAPI, PostgreSQL, authentication/persistence phía server và API migration: Sprint 7.
-- Analytics, hardening và launch readiness: Sprint 8.
-- Hosting/deployment details, backend repository layout và production observability: TBD.
+- Admin Content Builder: Khởi tạo ở Sprint 8.
+- FastAPI, PostgreSQL backend cho nội dung cốt truyện và bài tập: Sprint 9.
+- Mặc dù Firebase đã được dùng để thay thế Database cho luồng học tập cá nhân (Auth/Progress/XP), phần cấu trúc Nội dung (Content Schema) hiện tại vẫn duy trì JSON vì Firebase Firestore không tối ưu cho mô hình dữ liệu quan hệ phức tạp như Dataset-Question-Investigation của hệ thống, sẽ chờ PostgreSQL ở Sprint 9.
+- Analytics, hardening và launch readiness: Sprint 10.
 
 ## Documentation Status
 
-Ngày 24/08/2026, Step 3.0–4.4 đã `DONE`. Step 4.4 chốt SQL Editor MVP (`SqlEditor.jsx`) với starter query initialization, Reset query, soft Tab 2-spaces, phím tắt `Ctrl+Enter` và Detective Amber theme styling. `CURRENT_TASK.md` là nguồn trạng thái duy nhất cho agent.
+Ngày 01/09/2026, toàn bộ Step 7.1–7.5 đã `DONE` (bao gồm chiến dịch chuyển đổi Firebase Firestore cho Progress Engine). `CURRENT_TASK.md` (được nhúng trong `CURRENT_SPRINT.md`) là nguồn trạng thái duy nhất cho agent.
 
-`dataquest-project-prompts.md` là reference đầu vào, không phải status tracker. Các tài liệu vận hành canonical nằm trong `docs/agent/` và bộ tracker ngắn ở `docs/`.
+Các tài liệu vận hành canonical nằm trong `docs/` và bộ tracker ngắn ở `docs/agent/`.

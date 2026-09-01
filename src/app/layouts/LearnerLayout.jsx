@@ -69,6 +69,34 @@ export function LearnerLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [liveStats, setLiveStats] = useState({
+    xp: user?.xp || 0,
+    streak: user?.streak || 0,
+    level: user?.level || 1,
+  });
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let isMounted = true;
+    async function fetchStats() {
+      try {
+        const { progressService } = await import('../../services/index.js');
+        const res = await progressService.getLearnerXp(user.id);
+        if (res.data && isMounted) {
+          setLiveStats({
+            xp: typeof res.data.totalXp === 'number' ? res.data.totalXp : (user?.xp || 0),
+            streak: res.data.streakSummary?.currentStreak ?? (user?.streak || 0),
+            level: res.data.currentLevel ?? (user?.level || 1),
+          });
+        }
+      } catch (e) {
+        console.error('Failed to load layout learner stats:', e);
+      }
+    }
+    fetchStats();
+    return () => { isMounted = false; };
+  }, [user, location.pathname]);
+
   const currentPageStatus = getPageStatus(location.pathname);
   const isMaintenance = currentPageStatus?.status === 'maintenance';
   const isNotice = currentPageStatus?.status === 'notice';
@@ -171,14 +199,14 @@ export function LearnerLayout({ children }) {
                   {user?.name || 'Học viên'}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">
-                  Cấp {user?.level || 1} · Investigator
+                  Cấp {liveStats.level} · Investigator
                 </p>
               </div>
             )}
             {(!collapsed || mobileOpen) && (
               <div className="flex items-center gap-1 text-amber-500 shrink-0">
                 <Flame className="size-4 fill-amber-500" />
-                <span className="text-xs font-bold">{user?.streak || 0}d</span>
+                <span className="text-xs font-bold">{liveStats.streak} ngày</span>
               </div>
             )}
           </div>
@@ -261,7 +289,7 @@ export function LearnerLayout({ children }) {
                 <span className="text-xs font-bold text-stone-800 dark:text-stone-100">Chuỗi học tập 🔥</span>
               </div>
               <span className="rounded-full border border-stone-200 dark:border-amber-500/30 bg-stone-100 dark:bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-300">
-                {formatXP(user?.xp || 0)}
+                {formatXP(liveStats.xp)}
               </span>
             </div>
             <p className="mt-2 text-xs leading-relaxed text-stone-600 dark:text-stone-300">
@@ -276,7 +304,7 @@ export function LearnerLayout({ children }) {
             <button
               onClick={() => setShowStreakModal(true)}
               className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-amber-500/30 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500 hover:text-amber-400 transition-all cursor-pointer"
-              title={`XP: ${formatXP(user?.xp || 0)} · Bấm để xem Streak học tập`}
+              title={`XP: ${formatXP(liveStats.xp)} · Bấm để xem Streak học tập`}
             >
               <Sparkles className="size-4" />
             </button>

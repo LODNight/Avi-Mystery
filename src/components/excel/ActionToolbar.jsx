@@ -27,6 +27,8 @@ export function ActionToolbar({
   hintsUnlockedCount = 0,
   isSubmitting = false,
   isEvaluating = false,
+  isCompleted = false,
+  canFillDown = true,
   hintButtonRef,
 }) {
   return (
@@ -50,9 +52,9 @@ export function ActionToolbar({
           <button
             type="button"
             onClick={onFillDown}
-            disabled={isEvaluating || isSubmitting}
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 px-3 py-2 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-amber-500"
-            title="Tự động kéo (Fill down) công thức ô đang chọn xuống các hàng còn lại"
+            disabled={isEvaluating || isSubmitting || !canFillDown}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20 px-3 py-2 text-xs font-bold transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-amber-500"
+            title={canFillDown ? "Tự động kéo (Fill down) công thức ô đang chọn xuống các hàng còn lại" : "Chọn ô đã có công thức hợp lệ để kéo Fill down"}
           >
             <ArrowDownCircle className="size-3.5 text-amber-600 dark:text-amber-400" />
             <span>Fill down</span>
@@ -60,27 +62,40 @@ export function ActionToolbar({
         )}
 
         {/* Nút Nộp bài (Submit Answer - Primary Action CTA) */}
-        <button
-          type="button"
-          onClick={onSubmit}
-          disabled={isSubmitting}
-          aria-label={isSubmitting ? 'Đang chấm điểm' : 'Nộp bài vụ án'}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
-          title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
-        >
-          {isSubmitting ? (
-            <>
-              <div className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              <span aria-hidden="true">Đang chấm điểm...</span>
-            </>
-          ) : (
-            <>
-              <Send className="size-3.5" />
-              <span aria-hidden="true" className="sm:hidden">Nộp bài</span>
-              <span aria-hidden="true" className="hidden sm:inline">Nộp bài vụ án</span>
-            </>
-          )}
-        </button>
+        {isCompleted ? (
+          <button
+            type="button"
+            disabled
+            aria-label="Vụ án đã nộp bài hoàn thành"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-2 text-xs font-bold text-emerald-700 dark:text-emerald-300 cursor-not-allowed w-full sm:w-auto shadow-xs"
+            title="Vụ án này đã được hoàn thành thành công."
+          >
+            <CheckCircle2 className="size-4 text-emerald-500" />
+            <span>Đã nộp bài</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            aria-label={isSubmitting ? 'Đang chấm điểm' : 'Nộp bài vụ án'}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer w-full sm:w-auto focus-visible:ring-2 focus-visible:ring-emerald-500"
+            title="Nộp kết quả bài làm để chấm điểm và xem phần thưởng dự kiến"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="size-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span aria-hidden="true">Đang chấm điểm...</span>
+              </>
+            ) : (
+              <>
+                <Send className="size-3.5" />
+                <span aria-hidden="true" className="sm:hidden">Nộp bài</span>
+                <span aria-hidden="true" className="hidden sm:inline">Nộp bài vụ án</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* ── Group 2: Auxiliary Buttons (Gợi ý & Đặt lại) ── */}

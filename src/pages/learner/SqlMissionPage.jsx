@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import { ArrowLeft, Clock, Database, Target, AlertCircle, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Clock, Database, Target, AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
 import { ResultViewer } from '../../components/sql/ResultViewer.jsx'
@@ -10,6 +10,8 @@ import { MissionResultModal } from '../../components/excel/MissionResultModal.js
 import { sqlMissionService, submissionService as defaultSubmissionService } from '../../services/index.js'
 import { createSqlEngine } from '../../utils/sql/index.js'
 import { formatDuration, formatXP } from '../../utils/format.js'
+import { useAuth } from '../../hooks/useAuth.js'
+import { useProgress } from '../../hooks/useProgress.js'
 
 function WorkspaceSkeleton() {
   return (
@@ -34,6 +36,10 @@ export function SqlMissionPage({
   const location = useLocation()
   const isPractice = location.state?.mode === 'practice'
   const engineRef = useRef(null)
+  
+  const { user } = useAuth()
+  const { progressList, awardXp } = useProgress(user?.id)
+
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
   const [query, setQuery] = useState('')
@@ -121,6 +127,11 @@ export function SqlMissionPage({
   const { mission } = state.workspace
   const starterSql = mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
 
+  const isMissionCompleted = Boolean(
+    progressList?.some((p) => p.contentId === mission?.id && p.status === 'completed') ||
+    (submissionResult?.isCorrect && (submissionResult?.stepCompleted || submissionResult?.missionCompleted))
+  )
+
   const handleRun = async () => {
     if (isExecuting || isSubmitting) return
     const engine = engineRef.current
@@ -200,6 +211,37 @@ export function SqlMissionPage({
         setSubmissionError(res.error)
         setSubmissionResult(null)
       } else {
+        // --- Progress & XP Integration Boundary ---
+        if (res.data) {
+          try {
+            const progressRes = await awardXp({
+              contentId: mission.id,
+              contentType: 'question',
+              mode: isPractice ? 'practice' : 'main_quest',
+              submissionResult: res.data,
+              hintsUsed: 0,
+            });
+
+            if (progressRes?.error) {
+              setSubmissionError({
+                code: 'PERSISTENCE_FAILED',
+                message: progressRes.error.message || 'Không thể lưu tiến trình.',
+                retryable: true,
+              });
+              setSubmissionResult(null);
+              return; // Hard block
+            }
+          } catch (progressErr) {
+            setSubmissionError({
+              code: 'PERSISTENCE_ERROR',
+              message: 'Lỗi hệ thống khi lưu tiến trình.',
+              retryable: true,
+            });
+            setSubmissionResult(null);
+            return; // Hard block
+          }
+        }
+
         setSubmissionResult(res.data)
         setSubmissionError(null)
         if (res.data?.isCorrect && (res.data?.stepCompleted || res.data?.missionCompleted)) {
@@ -223,8 +265,15 @@ export function SqlMissionPage({
       </Link>
 
       <header className="rounded-3xl border border-cyan-500/25 bg-card p-6 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
-          <Database className="size-4" /> {isPractice ? 'Practice Mode' : 'SQL Mission'} · Schema đã sẵn sàng
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+          <div className="flex items-center gap-2">
+            <Database className="size-4" /> {isPractice ? 'Practice Mode' : 'SQL Mission'} · Schema đã sẵn sàng
+          </div>
+          {isMissionCompleted && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="size-3.5" /> Đã hoàn thành
+            </span>
+          )}
         </div>
         <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground sm:text-3xl">{mission.title}</h1>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{mission.story}</p>
@@ -234,6 +283,24 @@ export function SqlMissionPage({
           <span className="rounded-xl bg-amber-500/10 px-3 py-2 font-bold text-amber-700 dark:text-amber-300">{formatXP(mission.rewardXp)}</span>
         </div>
       </header>
+
+      {/* Completed Mission Banner */}
+      {isMissionCompleted && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 sm:px-6 sm:py-4.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 animate-fade-in shadow-xs">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
+            <span className="leading-relaxed">
+              <strong>Vụ án SQL đã hoàn thành!</strong> Bạn đã giải quyết thành công bài tập này. Bạn có thể tiếp tục thực thi các câu lệnh SQL khác để nâng cao trình độ.
+            </span>
+          </div>
+          <Link
+            to={isPractice ? '/practice' : '/map'}
+            className="shrink-0 self-end sm:self-auto rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+          >
+            {isPractice ? 'Về khu luyện tập' : 'Về bản đồ học tập'}
+          </Link>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
         <div className="flex flex-col gap-6">
@@ -275,6 +342,7 @@ export function SqlMissionPage({
             result={executionResult}
             isExecuting={isExecuting || isSubmitting}
             onSubmit={handleSubmit}
+            isCompleted={isMissionCompleted}
           />
         </div>
 

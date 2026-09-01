@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
-import { mockProgressService } from '../../services/mock/mockProgressService.js';
+import { progressService } from '../../services/index.js';
 import { 
   ArrowLeft, Calendar, Filter, Target, BookOpen, 
   Sparkles, ArrowUpCircle, Trophy, History, Shield
@@ -22,7 +22,7 @@ export function ActivityHistoryPage() {
     async function loadHistory() {
       if (!user?.id) return;
       try {
-        const res = await mockProgressService.getFullHistory(user.id);
+        const res = await progressService.getFullHistory(user.id);
         if (res.data) {
           setHistory(res.data);
         }

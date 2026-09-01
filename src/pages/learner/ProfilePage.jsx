@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
-import { mockProgressService } from '../../services/mock/mockProgressService.js';
+import { progressService } from '../../services/index.js';
 import { formatXP } from '../../utils/format.js';
 import { 
   User, Award, Flame, Target, BookOpen, Clock, 
@@ -15,10 +15,13 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [heatmapFilter, setHeatmapFilter] = useState('6months');
   const [stats, setStats] = useState({
-    xp: 2450,
+    xp: 0,
     skills: [],
     recentActivity: [],
-    fullHistory: []
+    fullHistory: [],
+    completedMissionsCount: 0,
+    practiceCount: 0,
+    achievementsCount: 0
   });
 
   // Dynamically compute available years based on actual user history and current year
@@ -43,7 +46,6 @@ export function ProfilePage() {
   const heatmapData = React.useMemo(() => {
     const today = new Date();
 
-    // Map history to date strings strictly from stats.fullHistory
     const activityMap = {};
     if (stats.fullHistory) {
       stats.fullHistory.forEach(item => {
@@ -63,7 +65,6 @@ export function ProfilePage() {
     let numMonths = 6;
 
     if (heatmapFilter === '6months') {
-      // '6months': 6 months ago (including current month = 5 months prior)
       startMonth = new Date(today.getFullYear(), today.getMonth() - 5, 1);
       numMonths = 6;
     } else {
@@ -90,25 +91,8 @@ export function ProfilePage() {
         let count = 0;
         if (!isFuture) {
           count = activityMap[formattedDate] || 0;
-        }
-
-        const dayObj = { dateObj: d, formattedDate, count, isFuture };
-
-        // JS getDay(): 0=Sun, 1=Mon...6=Sat. Mapped to Mon=0...Sun=6
-        const dayOfWeek = (d.getDay() + 6) % 7;
-
-        // Pad start of month
-        if (day === 1) {
-          for (let p = 0; p < dayOfWeek; p++) {
-            currentColumn.push(null);
-          }
-        }
-
-        currentColumn.push(dayObj);
-
-        if (!isFuture) {
-          totalContributions += count;
           if (count > 0) {
+            totalContributions += count;
             activeDays++;
             tempStreak++;
             if (tempStreak > maxStreak) maxStreak = tempStreak;
@@ -117,13 +101,20 @@ export function ProfilePage() {
           }
         }
 
-        // Push column if it reaches Sunday or end of month
-        if (dayOfWeek === 6 || day === daysInMonth) {
-          // Pad end of month
-          if (day === daysInMonth && dayOfWeek !== 6) {
-            for (let p = dayOfWeek + 1; p <= 6; p++) {
-              currentColumn.push(null);
-            }
+        const dayObj = { dateObj: d, formattedDate, count, isFuture };
+        const dayOfWeek = (d.getDay() + 6) % 7;
+
+        if (day === 1 && dayOfWeek > 0) {
+          for (let p = 0; p < dayOfWeek; p++) {
+            currentColumn.push(null);
+          }
+        }
+
+        currentColumn.push(dayObj);
+
+        if (currentColumn.length === 7 || day === daysInMonth) {
+          while (currentColumn.length < 7) {
+            currentColumn.push(null);
           }
           monthWeeks.push(currentColumn);
           currentColumn = [];
@@ -134,42 +125,30 @@ export function ProfilePage() {
       startMonth.setMonth(startMonth.getMonth() + 1);
     }
 
-    return { totalContributions, activeDays, maxStreak, monthsData };
+    return { monthsData, totalContributions, activeDays, maxStreak };
   }, [stats.fullHistory, heatmapFilter]);
 
   useEffect(() => {
     async function loadData() {
       if (!user?.id) return;
       try {
-        const [xpRes, masteryRes, historyRes] = await Promise.all([
-          mockProgressService.getLearnerXp(user.id),
-          mockProgressService.listSkillMastery(user.id),
-          mockProgressService.getFullHistory(user.id)
+        const [xpRes, masteryRes, historyRes, achievementsRes, progressRes] = await Promise.all([
+          progressService.getLearnerXp(user.id),
+          progressService.listSkillMastery(user.id),
+          progressService.getFullHistory(user.id),
+          progressService.getLearnerAchievements(user.id),
+          progressService.listProgress(user.id)
         ]);
 
-        const totalXp = xpRes.data?.totalXp && xpRes.data.totalXp > 0 ? xpRes.data.totalXp : 2450;
-        
-        // Format or provide rich default skill mastery data consistent with 12 completed missions
-        let skills = (masteryRes.data && masteryRes.data.length > 0) ? masteryRes.data : [];
-        if (skills.length === 0) {
-          skills = [
-            { skillId: 'excel_formula', name: 'Công thức & Hàm Excel', masteryScore: 85 },
-            { skillId: 'sql_query', name: 'Truy vấn & Cú pháp SQL', masteryScore: 65 },
-            { skillId: 'data_cleaning', name: 'Làm sạch & Chuẩn hóa dữ liệu', masteryScore: 78 },
-            { skillId: 'data_analysis', name: 'Tư duy phân tích thám tử', masteryScore: 60 },
-          ];
-        } else {
-          // Normalize names
-          skills = skills.map(s => ({
-            ...s,
-            name: s.name || (s.skillId === 'excel_formula' ? 'Công thức & Hàm Excel' :
-                             s.skillId === 'sql_query' ? 'Truy vấn & Cú pháp SQL' :
-                             s.skillId === 'data_analysis' ? 'Tư duy phân tích thám tử' :
-                             s.skillId.replace('_', ' ').toUpperCase())
-          }));
-        }
-
+        const totalXp = typeof xpRes.data?.totalXp === 'number' ? xpRes.data.totalXp : (user?.xp || 0);
+        const skills = (masteryRes.data && masteryRes.data.length > 0) ? masteryRes.data : [];
         const fullHistory = historyRes.data || [];
+        const progressList = progressRes.data || [];
+
+        const completedMissionsList = progressList.filter(p => p.status === 'completed' && p.contentType !== 'practice');
+        const completedMissionsCount = completedMissionsList.length;
+        const practiceCount = progressList.filter(p => p.status === 'completed' && p.contentType === 'practice').length;
+        const achievementsCount = (achievementsRes.data || []).filter(a => a.isUnlocked).length;
 
         const getRelativeDate = (timestamp) => {
           const dateObj = new Date(timestamp);
@@ -191,14 +170,17 @@ export function ProfilePage() {
           type: h.type,
           title: h.title,
           date: getRelativeDate(h.timestamp),
-          xp: h.xp || 0
+          xp: typeof h.xp === 'number' ? h.xp : 0
         }));
 
         setStats({
           xp: totalXp,
           skills,
           recentActivity,
-          fullHistory
+          fullHistory,
+          completedMissionsCount,
+          practiceCount,
+          achievementsCount
         });
       } catch (error) {
         console.error('Failed to load profile data', error);
@@ -261,7 +243,7 @@ export function ProfilePage() {
             <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <span className="flex items-center gap-1"><User className="size-3.5" /> {user?.email || 'email@example.com'}</span>
               <span className="h-3 w-px bg-border hidden sm:inline-block" />
-              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> Chuỗi 3 ngày 🔥</span>
+              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> Chuỗi {user?.streak || 0} ngày 🔥</span>
             </div>
           </div>
           
@@ -283,17 +265,17 @@ export function ProfilePage() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <Target className="size-5 text-blue-500 mb-1" />
-              <span className="text-2xl font-extrabold tracking-tight font-mono">12</span>
+              <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.completedMissionsCount}</span>
               <span className="text-xs text-muted-foreground font-medium">Vụ án hoàn thành</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <BookOpen className="size-5 text-emerald-500 mb-1" />
-              <span className="text-2xl font-extrabold tracking-tight font-mono">5</span>
+              <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.practiceCount}</span>
               <span className="text-xs text-muted-foreground font-medium">Bài luyện tập</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <Star className="size-5 text-amber-500 mb-1" />
-              <span className="text-2xl font-extrabold tracking-tight font-mono">3</span>
+              <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.achievementsCount}</span>
               <span className="text-xs text-muted-foreground font-medium">Danh hiệu đạt được</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
@@ -313,7 +295,7 @@ export function ProfilePage() {
                 <h2 className="text-base sm:text-lg font-bold text-foreground">Phân tích Kỹ năng (Mastery)</h2>
               </div>
               <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-lg">
-                4 Kỹ năng đã đánh giá
+                {stats.skills.filter(s => s.masteryScore > 0).length} Kỹ năng đã đánh giá
               </span>
             </div>
             

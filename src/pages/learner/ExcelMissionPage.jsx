@@ -10,6 +10,7 @@ import {
   FileText,
   HelpCircle,
   AlertCircle,
+  CheckCircle2,
 } from 'lucide-react';
 import { missionService, submissionService } from '../../services/index.js';
 import { Skeleton } from '../../components/ui/Skeleton.jsx';
@@ -20,8 +21,9 @@ import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
 import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
-import { analyzeExcelFormula, validateGlobalExcelMission, shiftFormulaRows } from '../../utils/excelChecker.js';
-
+import { analyzeExcelFormula, validateGlobalExcelMission, shiftFormulaRows, EXCEL_MISSION_SOLUTIONS } from '../../utils/excelChecker.js';
+import { useAuth } from '../../hooks/useAuth.js';
+import { useProgress } from '../../hooks/useProgress.js';
 function createClientAttemptId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `client-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -32,6 +34,9 @@ export function ExcelMissionPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const isPractice = location.state?.mode === 'practice';
+  
+  const { user } = useAuth();
+  const { progressList, awardXp } = useProgress(user?.id);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -161,6 +166,58 @@ export function ExcelMissionPage() {
       isMounted = false;
     };
   }, [missionId]);
+
+  // Auto-populate completed solution grid data if mission is completed & grid is empty
+  useEffect(() => {
+    if (!dataset || !dataset.rows || !dataset.columns || Object.keys(cellFormulas).length > 0) return;
+
+    const isCompleted = Boolean(
+      progressList?.some((p) => p.contentId === missionId && p.status === 'completed')
+    );
+
+    if (isCompleted) {
+      const solutionInfo = EXCEL_MISSION_SOLUTIONS[missionId];
+      if (solutionInfo) {
+        const targetCell = solutionInfo.targetCell || mission?.starterContent?.targetCell || 'E2';
+        const sourceFormula = solutionInfo.formula;
+        const match = targetCell.match(/^([A-Z]+)([0-9]+)$/i);
+
+        const colLetters = dataset.columns.map((_, i) => String.fromCharCode(65 + i));
+        const map = {};
+        dataset.rows.forEach((row, rIdx) => {
+          const excelRow = rIdx + 2;
+          dataset.columns.forEach((col, cIdx) => {
+            const addr = `${colLetters[cIdx]}${excelRow}`;
+            map[addr] = row[col.key];
+          });
+        });
+
+        const newFormulas = { [targetCell]: sourceFormula };
+        const newValues = {};
+        const diag = analyzeExcelFormula(sourceFormula, map);
+        if (diag.valid) newValues[targetCell] = diag.value;
+
+        if (match) {
+          const colLetter = match[1].toUpperCase();
+          const sourceRow = parseInt(match[2], 10);
+          dataset.rows.forEach((_, idx) => {
+            const targetRow = idx + 2;
+            if (targetRow === sourceRow) return;
+            const cellAddr = `${colLetter}${targetRow}`;
+            const shifted = shiftFormulaRows(sourceFormula, sourceRow, targetRow);
+            newFormulas[cellAddr] = shifted;
+            const shiftedDiag = analyzeExcelFormula(shifted, { ...map, ...newValues });
+            if (shiftedDiag.valid) newValues[cellAddr] = shiftedDiag.value;
+          });
+        }
+
+        setCellFormulas(newFormulas);
+        setCellValues(newValues);
+        setSelectedCell(targetCell);
+        setFormulaInput(sourceFormula);
+      }
+    }
+  }, [dataset, progressList, missionId, mission, cellFormulas]);
 
   // Xử lý thông báo tạm thời (Toast Notification)
   const showNotification = (type, message) => {
@@ -405,6 +462,35 @@ export function ExcelMissionPage() {
         return;
       }
 
+      // --- Progress & XP Integration Boundary ---
+      if (res.data) {
+        try {
+          const progressRes = await awardXp({
+            contentId: missionId,
+            contentType: 'question',
+            mode: isPractice ? 'practice' : 'main_quest',
+            submissionResult: res.data,
+            hintsUsed: hintsUnlockedCount,
+          });
+
+          if (progressRes?.error) {
+            setSubmissionError({
+              code: 'PERSISTENCE_FAILED',
+              message: progressRes.error.message || 'Không thể lưu tiến trình.',
+              retryable: true,
+            });
+            return; // Hard block: DO NOT show result modal
+          }
+        } catch (progressErr) {
+          setSubmissionError({
+            code: 'PERSISTENCE_ERROR',
+            message: 'Lỗi hệ thống khi lưu tiến trình.',
+            retryable: true,
+          });
+          return; // Hard block
+        }
+      }
+
       if (res.data?.isCorrect && (res.data.stepCompleted || res.data.missionCompleted)) {
         setSubmissionResult(res.data);
         setShowResultModal(true);
@@ -457,6 +543,14 @@ export function ExcelMissionPage() {
   const hintsData = mission.starterContent?.hints || mission.starterContent?.hint;
   const potentialXp = Math.max(0, (mission.rewardXp || 100) - hintsUnlockedCount * 15);
 
+  const isMissionCompleted = Boolean(
+    progressList?.some((p) => p.contentId === missionId && p.status === 'completed') ||
+    (submissionResult?.isCorrect && (submissionResult?.stepCompleted || submissionResult?.missionCompleted))
+  );
+
+  const activeCellFormula = cellFormulas[selectedCell] || (selectedCell === starterCell && formulaInput.trim().startsWith('=') ? formulaInput : '');
+  const canFillDown = Boolean(activeCellFormula && activeCellFormula.trim());
+
   const matchStarter = starterCell.match(/^([A-Z]+)([0-9]+)$/i);
   let requiredRange = [starterCell];
   if (matchStarter && dataset?.rows) {
@@ -492,8 +586,13 @@ export function ExcelMissionPage() {
                 {isPractice ? 'Mã bài tập:' : 'Mã vụ án:'} {mission.id}
               </span>
             </div>
-            <h1 className="mt-1 text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-              {mission.title}
+            <h1 className="mt-1 text-xl sm:text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
+              <span>{mission.title}</span>
+              {isMissionCompleted && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3.5" /> Đã hoàn thành
+                </span>
+              )}
             </h1>
           </div>
         </div>
@@ -524,6 +623,24 @@ export function ExcelMissionPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Completed Mission Banner ── */}
+      {isMissionCompleted && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 sm:px-6 sm:py-4.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 animate-fade-in shadow-xs">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
+            <span className="leading-relaxed">
+              <strong>Vụ án đã hoàn thành!</strong> Bạn đã giải quyết xuất sắc yêu cầu của bài học này. Bảng dữ liệu đã được cập nhật kết quả chính xác.
+            </span>
+          </div>
+          <Link
+            to={isPractice ? '/practice' : '/map'}
+            className="shrink-0 self-end sm:self-auto rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+          >
+            {isPractice ? 'Về khu luyện tập' : 'Về bản đồ học tập'}
+          </Link>
+        </div>
+      )}
 
       {/* ── Collapsible Mission Briefing Drawer (Nằm ngay dưới Tiêu đề chính, 100% width) ── */}
       {showBriefing && (
@@ -589,6 +706,8 @@ export function ExcelMissionPage() {
           hintsUnlockedCount={hintsUnlockedCount}
           isEvaluating={isEvaluating}
           isSubmitting={isSubmitting}
+          isCompleted={isMissionCompleted}
+          canFillDown={canFillDown}
         />
       </div>
 

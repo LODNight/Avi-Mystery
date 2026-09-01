@@ -466,6 +466,11 @@
 - [x] Trang Lịch sử Hoạt động (`/profile/history`) với Timeline các hoạt động (Nhiệm vụ, Thăng cấp, Mở khóa Danh hiệu, Luyện tập).
 - [x] Tích hợp bộ lọc dữ liệu đa chiều thời gian thực (Loại sự kiện, Thời gian 7 ngày/30 ngày).
 
+### 🔹 Step 7.5: Firebase Production Infrastructure Migration *(HOÀN THÀNH)*
+- [x] Tích hợp `firebaseProgressService.js` thay thế hoàn toàn `mockProgressService.js`.
+- [x] Di chuyển hệ thống lưu trữ XP, tiến độ (Progress), danh hiệu (Achievements) và lịch sử hoạt động (Activity History) sang **Firebase Firestore**.
+- [x] Đồng bộ hóa giao diện UI (Dashboard, Profile, Sidebar) theo dữ liệu thời gian thực từ Firestore với Transaction đảm bảo tính toàn vẹn (Idempotent XP Ledger).
+
 ---
 
 ## ⚪ Sprint 8 — Admin Content Studio *(PROPOSED)*
@@ -515,9 +520,10 @@
 2. **Step 7.2 — Standalone Practice Workspace (`/practice`)** *(DONE)*: Ngân hàng câu hỏi thực hành tự do. Bộ lọc Excel/SQL, tích hợp route với chế độ Luyện tập. Đồng bộ hoá dữ liệu `useProgress`.
 3. **Step 7.3 — Learner Profile & Achievement Badges** *(DONE)*: Đã tạo Mock data thành tựu (`achievements.js`), bổ sung `getLearnerAchievements` vào ProgressService, hoàn thiện `ProfilePage` và `AchievementsPage`, cập nhật Router.
 4. **Step 7.4 — Activity History Page** *(DONE)*: Hoàn tất trang `/profile/history` hiển thị dải timeline lịch sử, hỗ trợ lọc theo loại hành động và thời gian.
+5. **Step 7.5 — Firebase Production Infrastructure Migration** *(DONE)*: Đã thay thế hoàn toàn hệ thống mock progress bằng `firebaseProgressService.js`. Dữ liệu về tổng số XP, tiến độ nhiệm vụ (Progress), lịch sử nhận thưởng (XP Ledger), và mở khóa Danh hiệu đều được đồng bộ hai chiều trực tiếp với Firebase Auth và Firestore theo thời gian thực (Idempotent Transaction).
 
 ## Current Sub-step (In Progress)
-- Tất cả task của Sprint 7 đã hoàn tất 100%. Sẵn sàng chuyển sang Sprint 8.
+- Tất cả task của Sprint 7 bao gồm cả Firebase Integration đã hoàn tất 100%. Sẵn sàng chuyển sang Sprint 8.
 
 ## Next Proposed Steps (Sprint 8 Roadmap)
 - **Step 8.1**: Admin Content Studio (Visual Investigation & Question Authoring Studio) — Công cụ dành cho Admin để tạo nhiệm vụ, cấu hình checker (Excel/SQL) và quản lý dữ liệu trực quan.

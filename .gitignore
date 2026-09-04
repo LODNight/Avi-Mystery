@@ -22,3 +22,4 @@ data-quest/
 firestore-debug.log
 ui-debug.log
 firebase-debug.log
+firebase-export-*/

@@ -48,13 +48,35 @@ describe('MissionResultModal Component Tests (Step 3.4)', () => {
     );
 
     expect(screen.getByText(/Chúc Mừng Trinh Thám!/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phần thưởng dự kiến: \+85 XP/i)).toBeInTheDocument();
-    expect(screen.getByText(/XP chưa được trao trong Step 3.4/i)).toBeInTheDocument();
+    expect(screen.getByText(/Phần thưởng: \+85 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tiến trình đã được lưu/i)).toBeInTheDocument();
     expect(screen.getByText('Công thức hoàn toàn chính xác!')).toBeInTheDocument();
     expect(screen.queryByText(/THĂNG CẤP/i)).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Về bản đồ học tập/i }));
     expect(handleNext).toHaveBeenCalledTimes(1);
+  });
+
+  it('hiển thị +0 XP khi người dùng nộp lại bài đã làm trước đó', () => {
+    render(
+      <MissionResultModal
+        isOpen={true}
+        result={{
+          isCorrect: true,
+          stepCompleted: true,
+          missionCompleted: true,
+          potentialXp: 85,
+          xpAwarded: 0,
+          isFirstCompletion: false,
+          feedback: 'Nộp lại bài làm thành công!',
+        }}
+        missionTitle="Nộp lại vụ án Excel"
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/Phần thưởng: \+0 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Bạn đã nộp bài và nhận XP cho vụ án này trước đó \(\+0 XP\)\./i)).toBeInTheDocument();
   });
 
   it('focus dialog, đóng bằng Escape và trả focus về trigger', async () => {

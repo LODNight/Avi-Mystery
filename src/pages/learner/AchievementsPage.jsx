@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { progressService } from '../../services/index.js';
 import { Trophy, Lock, Search, Target, FileSpreadsheet, Database, Flame, Award, Shield } from 'lucide-react';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, AchievementsSkeleton } from '../../components/ui/Skeleton.jsx';
 
 export function AchievementsPage() {
   const { user } = useAuth();
@@ -61,16 +61,7 @@ export function AchievementsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-8 animate-fade-in mx-auto max-w-5xl">
-        <Skeleton className="h-40 w-full rounded-3xl" />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-            <Skeleton key={i} className="h-64 rounded-3xl" />
-          ))}
-        </div>
-      </div>
-    );
+    return <AchievementsSkeleton />;
   }
 
   return (

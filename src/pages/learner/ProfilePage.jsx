@@ -7,7 +7,7 @@ import {
   User, Award, Flame, Target, BookOpen, Clock, 
   Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown
 } from 'lucide-react';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, ProfileSkeleton } from '../../components/ui/Skeleton.jsx';
 
 export function ProfilePage() {
   const { user } = useAuth();
@@ -16,6 +16,7 @@ export function ProfilePage() {
   const [heatmapFilter, setHeatmapFilter] = useState('6months');
   const [stats, setStats] = useState({
     xp: 0,
+    streak: user?.streak || 0,
     skills: [],
     recentActivity: [],
     fullHistory: [],
@@ -46,12 +47,20 @@ export function ProfilePage() {
   const heatmapData = React.useMemo(() => {
     const today = new Date();
 
+    const formatDateKey = (dateObj) => {
+      return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
+    };
+
     const activityMap = {};
     if (stats.fullHistory) {
       stats.fullHistory.forEach(item => {
-        const d = new Date(item.timestamp);
-        const dateStr = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
-        activityMap[dateStr] = (activityMap[dateStr] || 0) + 1;
+        if (item.timestamp) {
+          const d = new Date(item.timestamp);
+          if (!isNaN(d.getTime())) {
+            const dateStr = formatDateKey(d);
+            activityMap[dateStr] = (activityMap[dateStr] || 0) + 1;
+          }
+        }
       });
     }
 
@@ -87,10 +96,11 @@ export function ProfilePage() {
         const d = new Date(year, monthNum, day);
         const isFuture = d > today;
         const formattedDate = d.toLocaleDateString('vi-VN', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        const mapKey = formatDateKey(d);
         
         let count = 0;
         if (!isFuture) {
-          count = activityMap[formattedDate] || 0;
+          count = activityMap[mapKey] || 0;
           if (count > 0) {
             totalContributions += count;
             activeDays++;
@@ -141,6 +151,7 @@ export function ProfilePage() {
         ]);
 
         const totalXp = typeof xpRes.data?.totalXp === 'number' ? xpRes.data.totalXp : (user?.xp || 0);
+        const currentStreak = xpRes.data?.streakSummary?.currentStreak ?? (user?.streak || 0);
         const skills = (masteryRes.data && masteryRes.data.length > 0) ? masteryRes.data : [];
         const fullHistory = historyRes.data || [];
         const progressList = progressRes.data || [];
@@ -175,6 +186,7 @@ export function ProfilePage() {
 
         setStats({
           xp: totalXp,
+          streak: currentStreak,
           skills,
           recentActivity,
           fullHistory,
@@ -192,15 +204,7 @@ export function ProfilePage() {
   }, [user]);
 
   if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in mx-auto max-w-7xl">
-        <Skeleton className="h-44 w-full rounded-3xl" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Skeleton className="h-64 rounded-3xl md:col-span-2" />
-          <Skeleton className="h-64 rounded-3xl" />
-        </div>
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   const initials = user?.name ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2) : 'US';
@@ -243,7 +247,7 @@ export function ProfilePage() {
             <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <span className="flex items-center gap-1"><User className="size-3.5" /> {user?.email || 'email@example.com'}</span>
               <span className="h-3 w-px bg-border hidden sm:inline-block" />
-              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> Chuỗi {user?.streak || 0} ngày 🔥</span>
+              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> Chuỗi {stats.streak} ngày 🔥</span>
             </div>
           </div>
           

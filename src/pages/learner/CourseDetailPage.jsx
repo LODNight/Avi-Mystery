@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -13,15 +13,21 @@ import {
   ChevronUp,
   Sparkles,
   Zap,
+  RotateCcw,
 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth.js';
+import { useProgress } from '../../hooks/useProgress.js';
 import { courseService, missionService } from '../../services/index.js';
 import { formatDuration, difficultyLabel, toolLabel, formatXP } from '../../utils/format.js';
-import { Skeleton, PageSkeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, PageSkeleton, CourseDetailSkeleton } from '../../components/ui/Skeleton.jsx';
 import { EmptyState, ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 
 export function CourseDetailPage() {
   const { slug } = useParams();
+  const { user } = useAuth();
+  const { progressList, loading: progressLoading } = useProgress(user?.id);
+
   const [course, setCourse] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [missionsByChapter, setMissionsByChapter] = useState({});
@@ -88,14 +94,49 @@ export function CourseDetailPage() {
     }));
   };
 
+  // Set of completed content/mission IDs for current user
+  const completedContentIds = useMemo(() => {
+    const set = new Set();
+    (progressList || []).forEach((p) => {
+      if (p.status === 'completed') {
+        set.add(p.contentId);
+      }
+    });
+    return set;
+  }, [progressList]);
+
+  // Calculate total XP and all missions list
+  const allMissions = useMemo(
+    () => Object.values(missionsByChapter).flat(),
+    [missionsByChapter]
+  );
+  const totalXp = useMemo(
+    () => allMissions.reduce((sum, m) => sum + (m.rewardXp || 0), 0),
+    [allMissions]
+  );
+
+  // Calculate user course completion stats
+  const completedMissionsCount = useMemo(() => {
+    return allMissions.filter((m) => completedContentIds.has(m.id)).length;
+  }, [allMissions, completedContentIds]);
+
+  const totalMissionsCount = allMissions.length || course?.totalMissions || 9;
+  const progressPercentage =
+    totalMissionsCount > 0
+      ? Math.round((completedMissionsCount / totalMissionsCount) * 100)
+      : 0;
+  const isCourseFullyCompleted =
+    totalMissionsCount > 0 && completedMissionsCount === totalMissionsCount;
+
+  // Next uncompleted mission or fallback to first mission
+  const nextUncompletedMission = useMemo(() => {
+    return allMissions.find((m) => !completedContentIds.has(m.id)) || allMissions[0];
+  }, [allMissions, completedContentIds]);
+
+  const targetMissionId = nextUncompletedMission?.id || 'mission-001';
+
   if (loading) {
-    return (
-      <div className="mx-auto max-w-7xl flex flex-col gap-6 animate-fade-in" aria-busy="true">
-        <div className="h-6 w-32 bg-muted rounded animate-pulse" />
-        <div className="h-64 rounded-3xl bg-muted/60 animate-pulse" />
-        <PageSkeleton />
-      </div>
-    );
+    return <CourseDetailSkeleton />;
   }
 
   if (error || !course) {
@@ -122,11 +163,6 @@ export function CourseDetailPage() {
       : course.difficulty === 'intermediate'
       ? 'warning'
       : 'danger';
-
-  // Calculate total XP available in course and get first mission ID
-  const allMissions = Object.values(missionsByChapter).flat();
-  const totalXp = allMissions.reduce((sum, m) => sum + (m.rewardXp || 0), 0);
-  const firstMissionId = allMissions[0]?.id || 'mission-001';
 
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
@@ -171,7 +207,7 @@ export function CourseDetailPage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <BookOpen className="size-4 text-emerald-500" />
-                {course.totalMissions || 9} Nhiệm vụ vụ án
+                {totalMissionsCount} Nhiệm vụ vụ án
               </span>
               <span className="flex items-center gap-1.5">
                 <Clock className="size-4 text-cyan-500" />
@@ -186,21 +222,56 @@ export function CourseDetailPage() {
 
           {/* Action Card Box */}
           <div className="flex flex-col gap-3 rounded-2xl border border-border bg-muted/40 p-5 shrink-0 lg:w-72">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              Tiến độ cá nhân
-            </p>
             <div className="flex items-center justify-between">
-              <span className="text-2xl font-bold text-foreground">0%</span>
-              <span className="text-xs text-muted-foreground">0 / {course.totalMissions || 9} bài</span>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                Tiến độ cá nhân
+              </p>
+              {isCourseFullyCompleted && (
+                <Badge variant="success" size="sm" className="gap-1 text-[10px]">
+                  <CheckCircle2 className="size-3" /> Hoàn thành
+                </Badge>
+              )}
             </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-2xl font-bold text-foreground">
+                {progressPercentage}%
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {completedMissionsCount} / {totalMissionsCount} bài
+              </span>
+            </div>
+
             <div className="h-2 overflow-hidden rounded-full bg-muted">
-              <div className="h-full w-0 rounded-full bg-primary" />
+              <div
+                className={`h-full rounded-full transition-all duration-500 ${
+                  isCourseFullyCompleted ? 'bg-emerald-500' : 'bg-primary'
+                }`}
+                style={{ width: `${progressPercentage}%` }}
+              />
             </div>
+
             <Link
-              to={`/missions/${firstMissionId}`}
-              className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-bold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+              to={`/missions/${targetMissionId}`}
+              className={`mt-2 inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-xs font-bold shadow-lg transition-all ${
+                isCourseFullyCompleted
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-600/20'
+                  : 'bg-primary text-primary-foreground hover:opacity-90 shadow-primary/20'
+              }`}
             >
-              <Play className="size-4 fill-current" /> Bắt đầu khóa học
+              {isCourseFullyCompleted ? (
+                <>
+                  <RotateCcw className="size-4" /> Ôn tập lại khóa học
+                </>
+              ) : completedMissionsCount > 0 ? (
+                <>
+                  <Play className="size-4 fill-current" /> Tiếp tục học bài
+                </>
+              ) : (
+                <>
+                  <Play className="size-4 fill-current" /> Bắt đầu khóa học
+                </>
+              )}
             </Link>
           </div>
         </div>
@@ -211,7 +282,7 @@ export function CourseDetailPage() {
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-xl font-bold text-foreground">Cấu Trúc Chương Học & Vụ Án</h2>
           <span className="text-xs text-muted-foreground">
-            {chapters.length} Chương · {Object.values(missionsByChapter).flat().length} Bài học
+            {chapters.length} Chương · {allMissions.length} Bài học
           </span>
         </div>
 
@@ -270,13 +341,21 @@ export function CourseDetailPage() {
                         Chưa có nhiệm vụ trong chương này.
                       </p>
                     ) : (
-                      missions.map((mission, mIdx) => (
-                        <MissionListItem
-                          key={mission.id}
-                          mission={mission}
-                          index={mIdx + 1}
-                        />
-                      ))
+                      missions.map((mission, mIdx) => {
+                        const isCompleted = completedContentIds.has(mission.id);
+                        const isNext =
+                          nextUncompletedMission?.id === mission.id && !isCompleted;
+
+                        return (
+                          <MissionListItem
+                            key={mission.id}
+                            mission={mission}
+                            index={mIdx + 1}
+                            isCompleted={isCompleted}
+                            isNext={isNext}
+                          />
+                        );
+                      })
                     )}
                   </div>
                 )}
@@ -290,20 +369,49 @@ export function CourseDetailPage() {
 }
 
 /* ── Mission List Item Sub-component ── */
-function MissionListItem({ mission, index }) {
+function MissionListItem({ mission, index, isCompleted, isNext }) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-primary/40 hover:shadow-md">
+    <div
+      className={`flex items-center justify-between gap-4 rounded-2xl border p-4 transition-all ${
+        isCompleted
+          ? 'border-emerald-500/30 bg-emerald-500/5 hover:border-emerald-500/50'
+          : isNext
+          ? 'border-primary/60 bg-primary/5 ring-1 ring-primary/40 shadow-sm'
+          : 'border-border bg-card hover:border-primary/40 hover:shadow-md'
+      }`}
+    >
       <div className="flex items-center gap-3.5 min-w-0">
-        <div className="grid size-8 shrink-0 place-items-center rounded-xl bg-muted font-mono text-xs font-bold text-muted-foreground">
-          {index}
+        <div
+          className={`grid size-8 shrink-0 place-items-center rounded-xl font-mono text-xs font-bold transition-colors ${
+            isCompleted
+              ? 'bg-emerald-500 text-white'
+              : isNext
+              ? 'bg-primary text-primary-foreground animate-pulse'
+              : 'bg-muted text-muted-foreground'
+          }`}
+        >
+          {isCompleted ? <CheckCircle2 className="size-4" /> : index}
         </div>
+
         <div className="min-w-0">
-          <Link
-            to={`/missions/${mission.id}`}
-            className="truncate font-bold text-sm text-foreground hover:text-primary transition-colors block"
-          >
-            {mission.title}
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/missions/${mission.id}`}
+              className="truncate font-bold text-sm text-foreground hover:text-primary transition-colors block"
+            >
+              {mission.title}
+            </Link>
+            {isCompleted && (
+              <Badge variant="success" size="sm" className="hidden sm:inline-flex gap-1 text-[10px] py-0 px-2">
+                <CheckCircle2 className="size-3" /> Đã làm
+              </Badge>
+            )}
+            {isNext && (
+              <Badge variant="warning" size="sm" className="hidden sm:inline-flex text-[10px] py-0 px-2">
+                Bài tiếp theo
+              </Badge>
+            )}
+          </div>
           <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
             {mission.objective}
           </p>
@@ -320,12 +428,23 @@ function MissionListItem({ mission, index }) {
 
         <Link
           to={`/missions/${mission.id}`}
-          className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
-          title="Xem hồ sơ vụ án & bắt đầu làm bài"
+          className={`grid size-9 place-items-center rounded-xl transition-colors ${
+            isCompleted
+              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500 hover:text-white'
+              : isNext
+              ? 'bg-primary text-primary-foreground hover:opacity-90 shadow-md shadow-primary/20'
+              : 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'
+          }`}
+          title={isCompleted ? 'Ôn tập lại vụ án này' : 'Xem hồ sơ vụ án & bắt đầu làm bài'}
         >
-          <Play className="size-4 fill-current" />
+          {isCompleted ? (
+            <RotateCcw className="size-4" />
+          ) : (
+            <Play className="size-4 fill-current" />
+          )}
         </Link>
       </div>
     </div>
   );
 }
+

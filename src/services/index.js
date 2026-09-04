@@ -14,13 +14,16 @@ import { mockDatasetService } from './mock/mockDatasetService.js';
 import { mockInvestigationService } from './mock/mockInvestigationService.js';
 import { mockQuestionService } from './mock/mockQuestionService.js';
 import { mockProgressService } from './mock/mockProgressService.js';
+import { mockLearningMapService } from './mock/mockLearningMapService.js';
 
 import { apiAuthService, apiCourseService, apiMissionService, apiSqlMissionService } from './api/index.js';
+import { apiLearningMapService } from './api/apiLearningMapService.js';
 import { SUBMISSION_ERROR_CODES } from './contracts/submissionService.js';
 import { firebaseAuthService } from './api/firebaseAuthService.js';
 
 // Environment switch
-const USE_FIREBASE = import.meta.env.VITE_USE_FIREBASE === 'true';
+const IS_TEST = import.meta.env.MODE === 'test';
+const USE_FIREBASE = !IS_TEST && import.meta.env.VITE_USE_FIREBASE === 'true';
 
 // Temporary mock toggle for static services
 const USE_MOCK = true;
@@ -36,6 +39,7 @@ export const datasetService = USE_MOCK ? mockDatasetService : mockDatasetService
 export const investigationService = USE_MOCK ? mockInvestigationService : mockInvestigationService;
 export const questionService = USE_MOCK ? mockQuestionService : mockQuestionService;
 export const progressService = USE_FIREBASE ? firebaseProgressService : (USE_MOCK ? mockProgressService : mockProgressService);
+export const learningMapService = USE_MOCK ? mockLearningMapService : apiLearningMapService;
 
 // API submission adapter is intentionally deferred to Sprint 7. This stub keeps
 // the public interface stable without silently falling back to mock data.

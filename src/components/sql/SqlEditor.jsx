@@ -46,6 +46,7 @@ export function SqlEditor({
   onChange,
   onRun,
   onReset,
+  onDevFill,
   disabled = false,
   isRunning = false,
   className = '',
@@ -125,6 +126,19 @@ export function SqlEditor({
             >
               <RotateCcw className="size-3.5" />
               <span className="hidden sm:inline">Đặt lại</span>
+            </button>
+          )}
+
+          {onDevFill && (
+            <button
+              type="button"
+              onClick={onDevFill}
+              disabled={disabled || isRunning}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/50 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors disabled:opacity-50"
+              title="DEV: Tự động điền đáp án để test"
+            >
+              <Code2 className="size-3.5" />
+              <span className="hidden sm:inline">Dev Fill</span>
             </button>
           )}
 

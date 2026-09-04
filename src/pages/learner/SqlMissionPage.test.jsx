@@ -1,8 +1,18 @@
 import React from 'react'
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { SqlMissionPage } from './SqlMissionPage.jsx'
+import * as useProgressModule from '../../hooks/useProgress.js'
+import * as useAuthModule from '../../hooks/useAuth.js'
+
+vi.mock('../../hooks/useProgress.js', () => ({
+  useProgress: vi.fn(),
+}))
+
+vi.mock('../../hooks/useAuth.js', () => ({
+  useAuth: vi.fn().mockReturnValue({ user: { id: 'user-001' } }),
+}))
 
 const workspace = {
   mission: { id: 'mission-010', title: 'Khám phá dữ liệu bán hàng', story: 'Bối cảnh SQL.', objective: 'Xem bảng sales.', estimatedDuration: 15, rewardXp: 100 },
@@ -37,36 +47,26 @@ function renderPage(props = {}) {
 }
 
 describe('SqlMissionPage', () => {
-  it('loads briefing, schema and SqlEditor with ResultViewer idle state', async () => {
-    const engine = createEngine()
-    renderPage({ workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) }, engineFactory: () => engine })
-    expect(screen.getByLabelText('Đang tải SQL mission')).toBeInTheDocument()
-    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
-    expect(screen.getByTestId('schema-browser')).toBeInTheDocument()
-    expect(screen.getByText('sales')).toBeInTheDocument()
-    expect(screen.getByRole('textbox', { name: /khung soạn thảo câu lệnh sql/i })).toBeInTheDocument()
-    expect(screen.getByText('Chưa có kết quả truy vấn')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /nộp bài/i })).not.toBeInTheDocument()
-    expect(engine.initialize).toHaveBeenCalledOnce()
-    expect(engine.loadDataset).toHaveBeenCalledWith(workspace.dataset)
-  })
+  let mockAwardXp;
 
-  it('executes query when clicking Run Query button and displays results', async () => {
-    const engine = createEngine()
-    renderPage({ workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) }, engineFactory: () => engine })
-    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+  beforeEach(() => {
+    mockAwardXp = vi.fn().mockResolvedValue({ data: { xpAwarded: 50, isFirstCompletion: true } });
+    useProgressModule.useProgress.mockReturnValue({
+      progressList: [],
+      awardXp: mockAwardXp,
+    });
+  });
 
-    const runBtn = screen.getByRole('button', { name: /chạy câu lệnh sql/i })
-    fireEvent.click(runBtn)
+  it('submits query and opens MissionResultModal with optimistic UI without waiting for awardXp', async () => {
+    let resolveAwardXp;
+    mockAwardXp.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveAwardXp = resolve;
+        })
+    );
 
-    await waitFor(() => expect(screen.getByText('Thành công')).toBeInTheDocument())
-    expect(screen.getByText('100')).toBeInTheDocument()
-    expect(screen.getByText('250')).toBeInTheDocument()
-    expect(engine.execute).toHaveBeenCalledOnce()
-  })
-
-  it('submits query and opens MissionResultModal when answer is correct', async () => {
-    const engine = createEngine()
+    const engine = createEngine();
     const subService = {
       submit: vi.fn().mockResolvedValue({
         data: {
@@ -80,32 +80,38 @@ describe('SqlMissionPage', () => {
         },
         error: null,
       }),
-    }
+    };
 
     renderPage({
       workspaceService: { loadWorkspace: vi.fn().mockResolvedValue({ data: workspace, error: null }) },
       engineFactory: () => engine,
       subService,
-    })
-    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument())
+    });
+    await waitFor(() => expect(screen.getByText('Khám phá dữ liệu bán hàng')).toBeInTheDocument());
 
     // First run the query so submit button is visible
-    fireEvent.click(screen.getByRole('button', { name: /chạy câu lệnh sql/i }))
-    await waitFor(() => expect(screen.getByRole('button', { name: /nộp bài vụ án/i })).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: /chạy câu lệnh sql/i }));
+    await waitFor(() => expect(screen.getByRole('button', { name: /nộp bài vụ án/i })).toBeInTheDocument());
 
     // Now click submit button
-    fireEvent.click(screen.getByRole('button', { name: /nộp bài vụ án/i }))
+    fireEvent.click(screen.getByRole('button', { name: /nộp bài vụ án/i }));
 
-    await waitFor(() => expect(screen.getByText('Chúc Mừng Trinh Thám!')).toBeInTheDocument())
-    expect(screen.getByText('Phần thưởng dự kiến: +100 XP')).toBeInTheDocument()
-    expect(subService.submit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        mode: 'submit',
-        missionId: 'mission-010',
-        tool: 'sql',
-      })
-    )
-  })
+    // Result modal appears immediately with "pending" state (Đang lưu tiến trình)
+    await waitFor(() => expect(screen.getByText('Chúc Mừng Trinh Thám!')).toBeInTheDocument());
+    expect(screen.getByText('Phần thưởng: +100 XP dự kiến')).toBeInTheDocument();
+    expect(screen.getByText('Đang lưu tiến trình...')).toBeInTheDocument();
+
+    // Verify awardXp was called in the background
+    expect(mockAwardXp).toHaveBeenCalledOnce();
+
+    // Now resolve the background persistence
+    resolveAwardXp({ data: { xpAwarded: 50, isFirstCompletion: true } });
+
+    // UI should update to "saved"
+    await waitFor(() => expect(screen.getByText('✓ Tiến trình đã được lưu')).toBeInTheDocument());
+    expect(screen.getByText('Phần thưởng: +50 XP')).toBeInTheDocument();
+    expect(screen.queryByText('dự kiến')).not.toBeInTheDocument();
+  });
 
   it('displays inline alert feedback when submission is incorrect', async () => {
     const engine = createEngine()

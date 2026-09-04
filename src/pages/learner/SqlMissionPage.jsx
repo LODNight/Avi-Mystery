@@ -5,13 +5,17 @@ import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
 import { ResultViewer } from '../../components/sql/ResultViewer.jsx'
 import { ErrorState } from '../../components/ui/EmptyState.jsx'
-import { Skeleton } from '../../components/ui/Skeleton.jsx'
+import { Skeleton, SqlMissionSkeleton } from '../../components/ui/Skeleton.jsx'
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx'
 import { sqlMissionService, submissionService as defaultSubmissionService } from '../../services/index.js'
 import { createSqlEngine } from '../../utils/sql/index.js'
 import { formatDuration, formatXP } from '../../utils/format.js'
 import { useAuth } from '../../hooks/useAuth.js'
 import { useProgress } from '../../hooks/useProgress.js'
+import { FEATURE_FLAGS } from '../../config/envConfig.js'
+import { isAdmin } from '../../constants/roles.js'
+
+const DEFAULT_SQL = '-- Viết câu lệnh SQL của bạn tại đây...\n'
 
 function WorkspaceSkeleton() {
   return (
@@ -39,6 +43,7 @@ export function SqlMissionPage({
   
   const { user } = useAuth()
   const { progressList, awardXp } = useProgress(user?.id)
+  const isDevUser = isAdmin(user?.role) || (typeof FEATURE_FLAGS !== 'undefined' && FEATURE_FLAGS.enableDevShortcuts)
 
   const [attempt, setAttempt] = useState(0)
   const [state, setState] = useState({ phase: 'loading', workspace: null, schema: null, error: null })
@@ -94,8 +99,7 @@ export function SqlMissionPage({
         const schema = await engine.getSchema({ sampleRowLimit: 3 })
         if (cancelled) return
 
-        const initialQuery = workspaceResult.data.mission?.starterContent?.starterSql || 'SELECT * FROM sales;'
-        setQuery(initialQuery)
+        setQuery(DEFAULT_SQL)
         setState({ phase: 'ready', workspace: workspaceResult.data, schema, error: null })
       } catch (error) {
         if (cancelled) return
@@ -113,7 +117,7 @@ export function SqlMissionPage({
     }
   }, [attempt, disposeCurrentEngine, engineFactory, missionId, workspaceService])
 
-  if (state.phase === 'loading') return <WorkspaceSkeleton />
+  if (state.phase === 'loading') return <SqlMissionSkeleton />;
   if (state.phase === 'error') {
     return (
       <ErrorState
@@ -157,7 +161,7 @@ export function SqlMissionPage({
   }
 
   const handleReset = () => {
-    setQuery(starterSql)
+    setQuery(DEFAULT_SQL)
     setExecutionResult(null)
     setSubmissionResult(null)
     setSubmissionError(null)
@@ -211,41 +215,50 @@ export function SqlMissionPage({
         setSubmissionError(res.error)
         setSubmissionResult(null)
       } else {
-        // --- Progress & XP Integration Boundary ---
+        // --- Progress & XP Integration Boundary (Optimistic) ---
         if (res.data) {
-          try {
-            const progressRes = await awardXp({
-              contentId: mission.id,
-              contentType: 'question',
-              mode: isPractice ? 'practice' : 'main_quest',
-              submissionResult: res.data,
-              hintsUsed: 0,
-            });
+          const isAlreadyCompleted = progressList.some(p => p.contentId === mission.id && p.status === 'completed');
+          const optimisticXpAwarded = isAlreadyCompleted ? 0 : (res.data.potentialXp || 50);
+          const optimisticIsFirstCompletion = !isAlreadyCompleted;
 
-            if (progressRes?.error) {
-              setSubmissionError({
-                code: 'PERSISTENCE_FAILED',
-                message: progressRes.error.message || 'Không thể lưu tiến trình.',
-                retryable: true,
-              });
-              setSubmissionResult(null);
-              return; // Hard block
-            }
-          } catch (progressErr) {
-            setSubmissionError({
-              code: 'PERSISTENCE_ERROR',
-              message: 'Lỗi hệ thống khi lưu tiến trình.',
-              retryable: true,
-            });
-            setSubmissionResult(null);
-            return; // Hard block
+          const initialSubmissionResult = {
+            ...res.data,
+            optimisticXp: optimisticXpAwarded,
+            isFirstCompletion: optimisticIsFirstCompletion,
+            persistenceStatus: 'pending',
+          };
+
+          setSubmissionResult(initialSubmissionResult);
+          setSubmissionError(null);
+
+          if (res.data?.isCorrect && (res.data?.stepCompleted || res.data?.missionCompleted)) {
+            setIsModalOpen(true);
           }
-        }
 
-        setSubmissionResult(res.data)
-        setSubmissionError(null)
-        if (res.data?.isCorrect && (res.data?.stepCompleted || res.data?.missionCompleted)) {
-          setIsModalOpen(true)
+          // Background Persistence
+          awardXp({
+            contentId: mission.id,
+            contentType: 'question',
+            mode: isPractice ? 'practice' : 'main_quest',
+            submissionResult: res.data,
+            hintsUsed: 0,
+          }).then(progressRes => {
+            if (progressRes?.error) {
+              setSubmissionResult(prev => prev ? { ...prev, persistenceStatus: 'failed' } : prev);
+            } else if (progressRes?.data) {
+              setSubmissionResult(prev => prev ? {
+                ...prev,
+                xpAwarded: progressRes.data.xpAwarded,
+                isFirstCompletion: progressRes.data.isFirstCompletion,
+                persistenceStatus: 'saved',
+              } : prev);
+            }
+          }).catch(() => {
+            setSubmissionResult(prev => prev ? { ...prev, persistenceStatus: 'failed' } : prev);
+          });
+        } else {
+          setSubmissionResult(res.data);
+          setSubmissionError(null);
         }
       }
     } catch (error) {
@@ -309,6 +322,7 @@ export function SqlMissionPage({
             onChange={setQuery}
             onRun={handleRun}
             onReset={handleReset}
+            onDevFill={isDevUser ? () => setQuery(starterSql) : undefined}
             isRunning={isExecuting || isSubmitting}
           />
 

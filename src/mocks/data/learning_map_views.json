@@ -1,0 +1,254 @@
+[
+  {
+    "courseId": "course-001",
+    "schemaVersion": 1,
+    "contentVersion": 1,
+    "title": "Excel Adventure",
+    "status": "published",
+    "order": 1,
+    "chapters": [
+      {
+        "chapterId": "ch-001",
+        "title": "Chương 1: Những con số biết nói",
+        "order": 1,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-001",
+            "nodeType": "mission",
+            "title": "Vì sao doanh thu tháng 3 giảm?",
+            "objective": "Tính tổng doanh thu tháng 3 và so sánh với tháng 2.",
+            "rewardXp": 100,
+            "tool": "excel",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-002",
+            "nodeType": "mission",
+            "title": "Chi nhánh nào bán tốt nhất?",
+            "objective": "Tìm chi nhánh có tổng doanh thu cao nhất bằng SUM và MAX.",
+            "rewardXp": 120,
+            "tool": "excel",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-003",
+            "nodeType": "mission",
+            "title": "Trung bình đơn hàng của chúng ta là bao nhiêu?",
+            "objective": "Tính giá trị đơn hàng trung bình và phân phối theo nhóm.",
+            "rewardXp": 100,
+            "tool": "excel",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      },
+      {
+        "chapterId": "ch-002",
+        "title": "Chương 2: Điều kiện và logic",
+        "order": 2,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-004",
+            "nodeType": "mission",
+            "title": "Bao nhiêu đơn hàng vượt chỉ tiêu?",
+            "objective": "Đếm số đơn hàng có doanh thu >= 10,000,000 VNĐ.",
+            "rewardXp": 150,
+            "tool": "excel",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-005",
+            "nodeType": "mission",
+            "title": "Tổng doanh thu của sản phẩm A",
+            "objective": "Tính tổng doanh thu chỉ cho sản phẩm 'Laptop Pro' bằng SUMIF.",
+            "rewardXp": 150,
+            "tool": "excel",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-006",
+            "nodeType": "mission",
+            "title": "Khách hàng VIP của chúng ta",
+            "objective": "Dùng hàm IF để gắn nhãn VIP / Regular cho từng khách hàng.",
+            "rewardXp": 150,
+            "tool": "excel",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      },
+      {
+        "chapterId": "ch-003",
+        "title": "Chương 3: Tìm kiếm và kết hợp",
+        "order": 3,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-007",
+            "nodeType": "mission",
+            "title": "Tìm thông tin khách hàng từ mã đơn hàng",
+            "objective": "Dùng VLOOKUP để lấy tên và email khách hàng từ bảng Orders sang bảng Customers.",
+            "rewardXp": 200,
+            "tool": "excel",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-008",
+            "nodeType": "mission",
+            "title": "Hàng tồn kho nào cần nhập thêm?",
+            "objective": "Kết hợp INDEX + MATCH để tìm sản phẩm có tồn kho thấp nhất.",
+            "rewardXp": 250,
+            "tool": "excel",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-009",
+            "nodeType": "mission",
+            "title": "Báo cáo tổng hợp cuối kỳ",
+            "objective": "Hoàn thành báo cáo tổng hợp sử dụng SUM, MAX, SUMIF, IF, VLOOKUP.",
+            "rewardXp": 300,
+            "tool": "excel",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      }
+    ],
+    "generatedAt": "2026-09-03T11:23:00.624Z",
+    "updatedAt": "2026-08-10T12:00:00Z"
+  },
+  {
+    "courseId": "course-002",
+    "schemaVersion": 1,
+    "contentVersion": 1,
+    "title": "SQL Investigation",
+    "status": "published",
+    "order": 1,
+    "chapters": [
+      {
+        "chapterId": "ch-004",
+        "title": "Chương 1: Bắt đầu điều tra",
+        "order": 1,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-010",
+            "nodeType": "mission",
+            "title": "Khám phá dữ liệu bán hàng",
+            "objective": "Viết câu SELECT * FROM sales; để chọn tất cả các cột và dòng trong bảng sales.",
+            "rewardXp": 100,
+            "tool": "sql",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-011",
+            "nodeType": "mission",
+            "title": "Tìm đơn hàng có giá trị cao",
+            "objective": "Dùng mệnh đề WHERE để lọc các đơn hàng có revenue > 5,000,000.",
+            "rewardXp": 100,
+            "tool": "sql",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-012",
+            "nodeType": "mission",
+            "title": "Sản phẩm nào chúng ta đang bán?",
+            "objective": "Dùng từ khóa DISTINCT để lấy danh sách tên sản phẩm (product_name) không trùng lặp.",
+            "rewardXp": 80,
+            "tool": "sql",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      },
+      {
+        "chapterId": "ch-005",
+        "title": "Chương 2: Tổng hợp manh mối",
+        "order": 2,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-013",
+            "nodeType": "mission",
+            "title": "Doanh thu theo từng chi nhánh",
+            "objective": "Dùng GROUP BY branch và ORDER BY total_revenue ASC để tính tổng doanh thu theo chi nhánh.",
+            "rewardXp": 180,
+            "tool": "sql",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-014",
+            "nodeType": "mission",
+            "title": "Chi nhánh nào dưới chỉ tiêu?",
+            "objective": "Dùng HAVING SUM(revenue) < 18,000,000 sau khi GROUP BY branch để tìm các chi nhánh chưa đạt chỉ tiêu.",
+            "rewardXp": 180,
+            "tool": "sql",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-015",
+            "nodeType": "mission",
+            "title": "Top 2 sản phẩm bán nhiều đơn nhất",
+            "objective": "Dùng COUNT, GROUP BY product_name, ORDER BY order_count DESC và LIMIT 2 để tìm top 2 sản phẩm.",
+            "rewardXp": 150,
+            "tool": "sql",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      },
+      {
+        "chapterId": "ch-006",
+        "title": "Chương 3: Kết nối bằng chứng",
+        "order": 3,
+        "status": "published",
+        "nodes": [
+          {
+            "nodeId": "mission-016",
+            "nodeType": "mission",
+            "title": "Ai là khách hàng của chúng ta?",
+            "objective": "Dùng INNER JOIN kết hợp bảng orders với customers qua orders.customer_id = customers.id.",
+            "rewardXp": 250,
+            "tool": "sql",
+            "order": 1,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-017",
+            "nodeType": "mission",
+            "title": "Khách hàng nào chưa từng mua hàng?",
+            "objective": "Dùng LEFT JOIN giữa customers và orders, kết hợp điều kiện WHERE orders.id IS NULL.",
+            "rewardXp": 280,
+            "tool": "sql",
+            "order": 2,
+            "targetUrl": null
+          },
+          {
+            "nodeId": "mission-018",
+            "nodeType": "mission",
+            "title": "Báo cáo tổng hợp khách hàng VIP",
+            "objective": "Kết hợp JOIN, GROUP BY customers.name, HAVING SUM(orders.order_value) >= 50,000,000.",
+            "rewardXp": 400,
+            "tool": "sql",
+            "order": 3,
+            "targetUrl": null
+          }
+        ]
+      }
+    ],
+    "generatedAt": "2026-09-03T11:23:00.633Z",
+    "updatedAt": "2026-08-12T10:00:00Z"
+  }
+]

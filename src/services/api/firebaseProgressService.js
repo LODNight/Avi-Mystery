@@ -207,12 +207,18 @@ export const firebaseProgressService = {
       const historyRes = await this.getFullHistory(learnerId)
       const history = historyRes.data || []
 
+      const formatDateKey = (dateObj) => {
+        return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
+      };
+
       const today = new Date()
       const dateMap = {}
       history.forEach(h => {
         if (h.timestamp) {
           const d = new Date(h.timestamp)
-          dateMap[d.toLocaleDateString('vi-VN')] = true
+          if (!isNaN(d.getTime())) {
+            dateMap[formatDateKey(d)] = true
+          }
         }
       })
 
@@ -220,7 +226,7 @@ export const firebaseProgressService = {
       for (let i = 0; i < 365; i++) {
         const d = new Date(today)
         d.setDate(today.getDate() - i)
-        if (dateMap[d.toLocaleDateString('vi-VN')]) {
+        if (dateMap[formatDateKey(d)]) {
           currentStreak++
         } else if (i > 0) {
           break
@@ -290,47 +296,73 @@ export const firebaseProgressService = {
       const { ACHIEVEMENTS_DATA } = await import('../../domain/profile/achievements.js')
       const progressRes = await this.listProgress(learnerId)
       const progressList = progressRes.data || []
-      const learnerDoc = await getDoc(doc(db, 'learners', learnerId))
-      const learnerData = learnerDoc.exists() ? learnerDoc.data() : {}
+      
+      const skillsRes = await this.listSkillMastery(learnerId)
+      const skills = skillsRes.data || []
 
-      const completedMissions = progressList.filter(p => p.status === 'completed')
+      const historyRes = await this.getFullHistory(learnerId)
+      const history = historyRes.data || []
+      
+      const today = new Date()
+      const dateMap = {}
+      history.forEach(h => {
+        if (h.timestamp) {
+          const d = new Date(h.timestamp)
+          dateMap[d.toLocaleDateString('vi-VN')] = true
+        }
+      })
+
+      let streak = 0
+      for (let i = 0; i < 365; i++) {
+        const d = new Date(today)
+        d.setDate(today.getDate() - i)
+        if (dateMap[d.toLocaleDateString('vi-VN')]) {
+          streak++
+        } else if (i > 0) {
+          break
+        }
+      }
+
+      const completedMissions = progressList.filter(p => p.status === 'completed' && p.contentType !== 'course')
       const completedCount = completedMissions.length
-      const excelCompletedMissions = completedMissions.filter(p => p.contentType === 'course' || p.contentId === 'mission-001' || p.contentType === 'question')
-      const sqlCompletedMissions = completedMissions.filter(p => p.contentId === 'sql-mission-001' || p.contentId?.includes('sql'))
+      
+      const excelCompletedMissions = completedMissions.filter(p => !p.contentId?.includes('sql') && (p.contentId?.includes('mission') || p.contentType === 'question'))
+      const sqlCompletedMissions = completedMissions.filter(p => p.contentId?.includes('sql'))
       
       const excelCompletedCount = excelCompletedMissions.length
       const sqlCompletedCount = sqlCompletedMissions.length
-      const streak = learnerData.streakSummary?.currentStreak || 0
 
       const merged = ACHIEVEMENTS_DATA.map(badge => {
         let isUnlocked = false
         let currentProgress = 0
 
         if (badge.id === 'badge-first-blood') {
-          isUnlocked = completedCount >= 1
-          currentProgress = Math.min(completedCount, 1)
+          isUnlocked = completedCount >= badge.maxProgress
+          currentProgress = Math.min(completedCount, badge.maxProgress)
         } else if (badge.id === 'badge-excel-novice') {
-          isUnlocked = excelCompletedCount >= 5
+          isUnlocked = excelCompletedCount >= badge.maxProgress
           currentProgress = Math.min(excelCompletedCount, badge.maxProgress)
         } else if (badge.id === 'badge-excel-master') {
-          isUnlocked = excelCompletedCount >= 10
-          currentProgress = Math.min(excelCompletedCount * 10, badge.maxProgress)
+          const excelMastery = skills.find(s => s.skillId === 'excel_formula')?.masteryScore || 0
+          isUnlocked = excelMastery >= badge.maxProgress
+          currentProgress = Math.min(excelMastery, badge.maxProgress)
         } else if (badge.id === 'badge-sql-novice') {
-          isUnlocked = sqlCompletedCount >= 1
+          isUnlocked = sqlCompletedCount >= badge.maxProgress
           currentProgress = Math.min(sqlCompletedCount, badge.maxProgress)
         } else if (badge.id === 'badge-sql-master') {
-          isUnlocked = sqlCompletedCount >= 10
-          currentProgress = Math.min(sqlCompletedCount * 10, badge.maxProgress)
+          const sqlMastery = skills.find(s => s.skillId === 'sql_query')?.masteryScore || 0
+          isUnlocked = sqlMastery >= badge.maxProgress
+          currentProgress = Math.min(sqlMastery, badge.maxProgress)
         } else if (badge.id === 'badge-streak-3') {
-          isUnlocked = streak >= 3
-          currentProgress = Math.min(streak, 3)
+          isUnlocked = streak >= badge.maxProgress
+          currentProgress = Math.min(streak, badge.maxProgress)
         } else if (badge.id === 'badge-streak-7') {
-          isUnlocked = streak >= 7
-          currentProgress = Math.min(streak, 7)
+          isUnlocked = streak >= badge.maxProgress
+          currentProgress = Math.min(streak, badge.maxProgress)
         } else if (badge.id === 'badge-flawless') {
           const flawlessCount = completedMissions.filter(p => !p.hintsUsed || p.hintsUsed === 0).length
-          isUnlocked = flawlessCount >= 1
-          currentProgress = Math.min(flawlessCount, 1)
+          isUnlocked = flawlessCount >= badge.maxProgress
+          currentProgress = Math.min(flawlessCount, badge.maxProgress)
         }
 
         return {
@@ -416,7 +448,7 @@ export const firebaseProgressService = {
             id: docSnap.id,
             type: d.mode === 'practice' ? 'practice' : 'mission',
             title: getTitle(d.contentId),
-            timestamp: d.createdAt || new Date().toISOString(),
+            timestamp: d.awardedAt || d.createdAt || new Date().toISOString(),
             xp: xp,
             link: getLink(d.contentId),
           })

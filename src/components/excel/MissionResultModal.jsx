@@ -56,8 +56,46 @@ export function MissionResultModal({
 
   const {
     potentialXp = 0,
+    optimisticXp,
+    xpAwarded,
+    isFirstCompletion,
     feedback,
-  } = result;
+    persistenceStatus = 'saved', // backward compatible
+  } = result || {};
+
+  const isFinal = persistenceStatus === 'saved' || persistenceStatus === 'failed';
+  const displayXp = isFinal && typeof xpAwarded === 'number' 
+    ? xpAwarded 
+    : (typeof optimisticXp === 'number' ? optimisticXp : potentialXp);
+
+  const isResubmission = isFinal ? (isFirstCompletion === false || xpAwarded === 0) : (displayXp === 0);
+
+  const statusConfig = {
+    pending: {
+      text: 'Đang lưu tiến trình...',
+      iconClass: 'animate-spin border-amber-500 border-t-transparent',
+      textColor: 'text-amber-500',
+    },
+    retrying: {
+      text: 'Đang đồng bộ lại...',
+      iconClass: 'animate-spin border-amber-500 border-t-transparent',
+      textColor: 'text-amber-500',
+    },
+    saved: {
+      text: isResubmission 
+        ? 'Bạn đã nộp bài và nhận XP cho vụ án này trước đó (+0 XP).'
+        : '✓ Tiến trình đã được lưu',
+      iconClass: 'border-emerald-500 bg-emerald-500',
+      textColor: 'text-emerald-500',
+    },
+    failed: {
+      text: '⚠️ Chưa thể đồng bộ tiến trình',
+      iconClass: 'border-red-500 bg-red-500',
+      textColor: 'text-red-500',
+    }
+  };
+
+  const currentStatus = statusConfig[persistenceStatus] || statusConfig.saved;
 
   return (
     <div
@@ -106,17 +144,29 @@ export function MissionResultModal({
           </div>
         </div>
 
-        {/* Reward preview only. Progress owns the actual award in Sprint 5. */}
-        <div className="mt-6 space-y-2 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-center animate-fade-in">
+        {/* Reward Card: Displays +XP for first completion, +0 XP for re-submissions */}
+        <div
+          className={`mt-6 space-y-2 rounded-2xl border p-4 text-center animate-fade-in transition-colors duration-500 ${
+            isResubmission
+              ? 'border-amber-500/20 bg-muted/40'
+              : 'border-emerald-500/30 bg-emerald-500/10'
+          }`}
+        >
           <div className="flex items-center justify-center gap-2">
-            <Sparkles className="size-5 fill-amber-500 text-amber-500" />
-            <span className="font-mono text-xl font-black text-emerald-700 dark:text-emerald-300">
-              Phần thưởng dự kiến: +{potentialXp} XP
+            <Sparkles className={`size-5 ${isResubmission ? 'text-amber-500/70' : 'fill-amber-500 text-amber-500'}`} />
+            <span className={`font-mono text-xl font-black ${isResubmission ? 'text-muted-foreground' : 'text-emerald-700 dark:text-emerald-300'}`}>
+              Phần thưởng: +{displayXp} XP {!isFinal && 'dự kiến'}
             </span>
           </div>
-          <p className="text-[11px] text-muted-foreground">
-            XP chưa được trao trong Step 3.4.
-          </p>
+          
+          <div className="flex items-center justify-center gap-1.5 mt-1">
+             {(!isFinal) && (
+               <div className={`size-3 rounded-full border-2 ${currentStatus.iconClass}`} />
+             )}
+             <p className={`text-[11px] ${isFinal ? 'text-muted-foreground' : currentStatus.textColor}`}>
+               {currentStatus.text}
+             </p>
+          </div>
         </div>
 
         {/* ── Feedback Message ── */}

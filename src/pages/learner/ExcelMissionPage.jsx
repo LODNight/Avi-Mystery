@@ -13,7 +13,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { missionService, submissionService } from '../../services/index.js';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, ExcelMissionSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDuration } from '../../utils/format.js';
 import { FormulaBar } from '../../components/excel/FormulaBar.jsx';
@@ -462,43 +462,52 @@ export function ExcelMissionPage() {
         return;
       }
 
-      // --- Progress & XP Integration Boundary ---
+      // --- Progress & XP Integration Boundary (Optimistic) ---
       if (res.data) {
-        try {
-          const progressRes = await awardXp({
+        if (res.data?.isCorrect && (res.data.stepCompleted || res.data.missionCompleted)) {
+          const isAlreadyCompleted = progressList.some(p => p.contentId === missionId && p.status === 'completed');
+          const optimisticXpAwarded = isAlreadyCompleted ? 0 : (res.data.potentialXp || 50);
+          const optimisticIsFirstCompletion = !isAlreadyCompleted;
+
+          const initialSubmissionResult = {
+            ...res.data,
+            optimisticXp: optimisticXpAwarded,
+            isFirstCompletion: optimisticIsFirstCompletion,
+            persistenceStatus: 'pending',
+          };
+
+          setSubmissionResult(initialSubmissionResult);
+          setShowResultModal(true);
+
+          // Background Persistence
+          awardXp({
             contentId: missionId,
             contentType: 'question',
             mode: isPractice ? 'practice' : 'main_quest',
             submissionResult: res.data,
             hintsUsed: hintsUnlockedCount,
+          }).then(progressRes => {
+            if (!isMountedRef.current) return;
+            if (progressRes?.error) {
+              setSubmissionResult(prev => prev ? { ...prev, persistenceStatus: 'failed' } : prev);
+            } else if (progressRes?.data) {
+              setSubmissionResult(prev => prev ? {
+                ...prev,
+                xpAwarded: progressRes.data.xpAwarded,
+                isFirstCompletion: progressRes.data.isFirstCompletion,
+                persistenceStatus: 'saved',
+              } : prev);
+            }
+          }).catch(() => {
+            if (!isMountedRef.current) return;
+            setSubmissionResult(prev => prev ? { ...prev, persistenceStatus: 'failed' } : prev);
           });
-
-          if (progressRes?.error) {
-            setSubmissionError({
-              code: 'PERSISTENCE_FAILED',
-              message: progressRes.error.message || 'Không thể lưu tiến trình.',
-              retryable: true,
-            });
-            return; // Hard block: DO NOT show result modal
-          }
-        } catch (progressErr) {
-          setSubmissionError({
-            code: 'PERSISTENCE_ERROR',
-            message: 'Lỗi hệ thống khi lưu tiến trình.',
-            retryable: true,
+        } else {
+          setSubmissionFeedback({
+            type: 'incorrect',
+            message: res.data?.feedback || 'Câu trả lời chưa chính xác. Hãy kiểm tra và thử lại.',
           });
-          return; // Hard block
         }
-      }
-
-      if (res.data?.isCorrect && (res.data.stepCompleted || res.data.missionCompleted)) {
-        setSubmissionResult(res.data);
-        setShowResultModal(true);
-      } else {
-        setSubmissionFeedback({
-          type: 'incorrect',
-          message: res.data?.feedback || 'Câu trả lời chưa chính xác. Hãy kiểm tra và thử lại.',
-        });
       }
     } catch (submitError) {
       if (!isMountedRef.current) return;
@@ -514,18 +523,7 @@ export function ExcelMissionPage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in p-4 sm:p-6" aria-busy="true" aria-label="Đang tải dữ liệu bài học">
-        <div className="flex items-center justify-between gap-4">
-          <Skeleton className="h-10 w-48 rounded-xl" />
-          <Skeleton className="h-10 w-32 rounded-xl" />
-        </div>
-        <div className="space-y-4">
-          <Skeleton className="h-14 w-full rounded-2xl" />
-          <Skeleton className="h-[420px] w-full rounded-2xl" />
-        </div>
-      </div>
-    );
+    return <ExcelMissionSkeleton />;
   }
 
   if (error || !mission) {

@@ -6,7 +6,7 @@ import {
   ArrowLeft, Calendar, Filter, Target, BookOpen, 
   Sparkles, ArrowUpCircle, Trophy, History, Shield
 } from 'lucide-react';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, ActivityHistorySkeleton } from '../../components/ui/Skeleton.jsx';
 
 export function ActivityHistoryPage() {
   const { user } = useAuth();
@@ -109,17 +109,7 @@ export function ActivityHistoryPage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in mx-auto max-w-4xl pt-6">
-        <Skeleton className="h-24 w-full rounded-3xl" />
-        <Skeleton className="h-12 w-full max-w-md rounded-xl" />
-        <div className="space-y-8 mt-8">
-          <Skeleton className="h-6 w-32 rounded-lg" />
-          <Skeleton className="h-20 w-full rounded-2xl" />
-          <Skeleton className="h-20 w-full rounded-2xl" />
-        </div>
-      </div>
-    );
+    return <ActivityHistorySkeleton />;
   }
 
   const totalFilteredXp = filteredHistory.reduce((acc, curr) => acc + (curr.xp || 0), 0);

@@ -69,21 +69,28 @@ export function DashboardPage() {
         
         const lastMission = history.find(h => h.type === 'mission');
 
+        const formatDateKey = (dateObj) => {
+          return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
+        };
+
         const dateMap = {};
         history.forEach(h => {
-          const d = new Date(h.timestamp);
-          if (d >= startOfWeek) {
-            weeklyXp += (h.xp || 0);
-            if (h.type === 'mission') weeklyMissions++;
+          if (h.timestamp) {
+            const d = new Date(h.timestamp);
+            if (!isNaN(d.getTime())) {
+              if (d >= startOfWeek) {
+                weeklyXp += (h.xp || 0);
+                if (h.type === 'mission') weeklyMissions++;
+              }
+              dateMap[formatDateKey(d)] = true;
+            }
           }
-          const dStr = d.toLocaleDateString('vi-VN');
-          dateMap[dStr] = true;
         });
 
         for (let i = 0; i < 365; i++) {
            const d = new Date(today);
            d.setDate(today.getDate() - i);
-           if (dateMap[d.toLocaleDateString('vi-VN')]) {
+           if (dateMap[formatDateKey(d)]) {
              activeStreak++;
            } else if (i > 0) {
              break;
@@ -93,8 +100,10 @@ export function DashboardPage() {
         const weeklyMinutes = weeklyXp > 0 ? Math.floor(weeklyXp / 10) : 0;
         const timeSpent = `${Math.floor(weeklyMinutes / 60)}h ${weeklyMinutes % 60}m`;
 
+        const streak = xpRes.data?.streakSummary?.currentStreak ?? (activeStreak || user?.streak || 0);
+
         setDashboardStats({
-          streak: activeStreak || user?.streak || 0,
+          streak,
           totalXp,
           weeklyXp,
           weeklyMissions,

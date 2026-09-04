@@ -364,3 +364,141 @@ export function buildFullJourneyMapTree({
   }
 }
 
+/**
+ * Assembles a unified Multi-Phase Learning Journey Map Tree using the new Read Model.
+ *
+ * @param {Object} params
+ * @param {Array} [params.courseViews=[]] List of CourseView documents from learning_map_views
+ * @param {Array} [params.progressList=[]] Learner progress records
+ * @returns {Object} Full Learning Journey Tree
+ */
+export function buildJourneyMapFromReadModel({
+  courseViews = [],
+  progressList = [],
+}) {
+  const pMap = new Map((progressList || []).map(p => [p.contentId, p]))
+
+  let totalChaptersCount = 0
+  let totalInvestigationsCount = 0
+  let completedInvestigationsCount = 0
+  let totalXpAmount = 0
+  let globalCurrentFound = false
+
+  const processedPhases = courseViews.map((courseView, pIdx) => {
+    let phaseInvestigationsCount = 0
+    let phaseCompletedCount = 0
+    let phaseXpAmount = 0
+
+    const chapters = (courseView.chapters || []).map((ch, chIdx) => {
+      const isChapterLocked = ch.unlockRule === 'complete_previous' && (pIdx > 0 || chIdx > 1)
+
+      const nodes = (ch.nodes || []).map((node, invIdx) => {
+        const invProgress = pMap.get(node.nodeId) || null
+        const isCompleted = invProgress?.status === 'completed'
+
+        let isCurrent = false
+        if (!isCompleted && !globalCurrentFound && !isChapterLocked) {
+          isCurrent = true
+          globalCurrentFound = true
+        }
+        
+        const targetUrl = node.targetUrl || (
+          isCurrent 
+            ? node.tool === 'sql' ? `/missions/${node.nodeId}/sql` : `/missions/${node.nodeId}/workspace`
+            : `/missions/${node.nodeId}`
+        );
+
+        const processedNode = {
+          id: node.nodeId,
+          investigationId: node.nodeId,
+          missionId: node.nodeId,
+          title: node.title,
+          objective: node.objective,
+          rewardXp: node.rewardXp || 0,
+          tool: node.tool || 'excel',
+          targetUrl,
+          status: isCompleted ? 'completed' : isCurrent ? 'current' : isChapterLocked ? 'locked' : 'available',
+          isCompleted,
+          isCurrent,
+          isLocked: isChapterLocked,
+          chapterIndex: chIdx + 1,
+          nodeIndex: invIdx + 1,
+          questions: []
+        }
+
+        phaseInvestigationsCount += 1
+        totalInvestigationsCount += 1
+        if (isCompleted) {
+          phaseCompletedCount += 1
+          completedInvestigationsCount += 1
+        }
+        phaseXpAmount += processedNode.rewardXp
+        totalXpAmount += processedNode.rewardXp
+
+        return processedNode
+      })
+
+      totalChaptersCount += 1
+
+      return {
+        id: ch.chapterId,
+        phaseId: `phase-${courseView.courseId}`,
+        title: ch.title,
+        description: ch.description || '',
+        orderIndex: ch.order || chIdx + 1,
+        unlockRule: ch.unlockRule || 'none',
+        investigations: nodes,
+      }
+    })
+
+    const phaseProgress = phaseInvestigationsCount > 0
+      ? Math.round((phaseCompletedCount / phaseInvestigationsCount) * 100)
+      : 0
+
+    return {
+      id: `phase-${courseView.courseId}`,
+      courseId: courseView.courseId,
+      title: `Phase ${pIdx + 1}: ${courseView.title}`,
+      description: courseView.tool === 'excel'
+        ? 'Nhiệm vụ điều tra dữ liệu trên bảng tính Excel'
+        : courseView.tool === 'sql' 
+          ? 'Nhiệm vụ truy vấn dữ liệu chuyên sâu với SQL Engine' 
+          : courseView.description || '',
+      tool: courseView.tool || 'excel',
+      orderIndex: courseView.order || pIdx + 1,
+      totalChapters: chapters.length,
+      totalInvestigations: phaseInvestigationsCount,
+      totalXp: phaseXpAmount,
+      completionPercentage: phaseProgress,
+      status: phaseProgress === 100 ? 'completed' : phaseProgress > 0 ? 'in_progress' : 'available',
+      chapters,
+    }
+  })
+
+  // Set fallback current if none set
+  if (!globalCurrentFound && processedPhases.length > 0 && processedPhases[0].chapters.length > 0) {
+    const firstCh = processedPhases[0].chapters[0]
+    if (firstCh.investigations.length > 0 && !firstCh.investigations[0].isCompleted) {
+      firstCh.investigations[0].isCurrent = true
+      firstCh.investigations[0].status = 'current'
+      
+      const node = firstCh.investigations[0];
+      node.targetUrl = node.tool === 'sql' ? `/missions/${node.id}/sql` : `/missions/${node.id}/workspace`;
+    }
+  }
+
+  const overallProgress = totalInvestigationsCount > 0
+    ? Math.round((completedInvestigationsCount / totalInvestigationsCount) * 100)
+    : 0
+
+  return {
+    journeySummary: {
+      totalPhases: processedPhases.length,
+      totalChapters: totalChaptersCount,
+      totalInvestigations: totalInvestigationsCount,
+      totalXp: totalXpAmount,
+      overallProgress,
+    },
+    phases: processedPhases,
+  }
+}

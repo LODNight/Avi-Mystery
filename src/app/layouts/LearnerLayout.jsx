@@ -419,7 +419,7 @@ export function LearnerLayout({ children }) {
       <StreakDetailModal
         isOpen={showStreakModal}
         onClose={() => setShowStreakModal(false)}
-        streakCount={user?.streak || 1}
+        streakCount={liveStats.streak || 1}
       />
 
       <LevelUpModal

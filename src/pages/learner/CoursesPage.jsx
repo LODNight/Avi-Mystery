@@ -13,7 +13,7 @@ import {
 import { useAsync } from '../../hooks/useAsync.js';
 import { courseService } from '../../services/index.js';
 import { formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
-import { SkeletonCard } from '../../components/ui/Skeleton.jsx';
+import { SkeletonCard, CoursesSkeleton } from '../../components/ui/Skeleton.jsx';
 import { EmptyState, ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 
@@ -115,9 +115,7 @@ export function CoursesPage() {
 
         {courses.loading ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+            <SkeletonCard /><SkeletonCard /><SkeletonCard />
           </div>
         ) : courses.error ? (
           <ErrorState message={courses.error} onRetry={fetchCourses} />

@@ -16,6 +16,17 @@ vi.mock('../../services/index.js', async () => {
   };
 });
 
+import * as useProgressModule from '../../hooks/useProgress.js'
+import * as useAuthModule from '../../hooks/useAuth.js'
+
+vi.mock('../../hooks/useProgress.js', () => ({
+  useProgress: vi.fn(),
+}))
+
+vi.mock('../../hooks/useAuth.js', () => ({
+  useAuth: vi.fn().mockReturnValue({ user: { id: 'user-001' } }),
+}))
+
 import { ExcelMissionPage } from './ExcelMissionPage.jsx';
 
 const successResponse = {
@@ -62,7 +73,7 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     renderMissionPage();
 
     // Kiểm tra loading state
-    expect(screen.getByLabelText(/đang tải dữ liệu bài học/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Đang tải dữ liệu/i)).toBeInTheDocument();
 
     // Chờ load thành công
     await waitFor(() => {
@@ -181,7 +192,27 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     expect(screen.getByText(/Thử lại/i)).toBeInTheDocument();
   });
 
-  it('submit đúng hiển thị success modal với potentialXp chưa được trao', async () => {
+  let mockAwardXp;
+
+  beforeEach(() => {
+    mockAwardXp = vi.fn().mockResolvedValue({ data: { xpAwarded: 50, isFirstCompletion: true } });
+    useProgressModule.useProgress.mockReturnValue({
+      progressList: [],
+      awardXp: mockAwardXp,
+    });
+    submitMock.mockReset();
+    submitMock.mockResolvedValue(successResponse);
+  });
+
+  it('submit đúng hiển thị success modal với potentialXp dự kiến và cập nhật khi persist xong', async () => {
+    let resolveAwardXp;
+    mockAwardXp.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveAwardXp = resolve;
+        })
+    );
+
     renderMissionPage();
 
     await waitFor(() => {
@@ -203,12 +234,23 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
     expect(screen.getByText(/Phá Án Thành Công/i)).toBeInTheDocument();
     expect(screen.getByText(/Chúc Mừng Trinh Thám!/i)).toBeInTheDocument();
-    expect(screen.getByText(/Phần thưởng dự kiến: \+100 XP/i)).toBeInTheDocument();
+    expect(screen.getByText(/Phần thưởng: \+100 XP dự kiến/i)).toBeInTheDocument();
+    expect(screen.getByText(/Đang lưu tiến trình.../i)).toBeInTheDocument();
+    
     expect(submitMock).toHaveBeenCalledWith(expect.objectContaining({
       mode: 'submit',
       missionId: 'mission-001',
       tool: 'excel',
     }));
+    
+    expect(mockAwardXp).toHaveBeenCalledOnce();
+
+    await act(async () => {
+      resolveAwardXp({ data: { xpAwarded: 50, isFirstCompletion: true } });
+    });
+
+    await waitFor(() => expect(screen.getByText('✓ Tiến trình đã được lưu')).toBeInTheDocument());
+    expect(screen.getByText('Phần thưởng: +50 XP')).toBeInTheDocument();
   });
 
   it('validation rỗng hiển thị inline và không gọi service', async () => {

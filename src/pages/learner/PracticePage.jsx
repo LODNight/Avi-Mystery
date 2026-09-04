@@ -21,7 +21,7 @@ import {
 import { contentService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useProgress } from '../../hooks/useProgress.js';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, PracticePageSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 
 export function PracticePage() {
@@ -211,19 +211,7 @@ export function PracticePage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-10 w-48 rounded-xl" />
-          <Skeleton className="h-10 w-32 rounded-xl" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-40 w-full rounded-2xl" />
-          ))}
-        </div>
-      </div>
-    );
+    return <PracticePageSkeleton />;
   }
 
   if (error) {

@@ -3,15 +3,25 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { CourseDetailPage } from './CourseDetailPage.jsx';
-import { courseService, missionService } from '../../services/index.js';
+import { courseService, missionService, progressService, authService } from '../../services/index.js';
+
+import { AuthProvider } from '../../app/providers/AuthProvider.jsx';
 
 vi.mock('../../services/index.js', () => ({
+  authService: {
+    getCurrentUser: vi.fn().mockResolvedValue({ data: { id: 'u1', name: 'Test' } }),
+  },
   courseService: {
     getCourse: vi.fn(),
     getChaptersByCourse: vi.fn(),
   },
   missionService: {
     getMissionsByChapter: vi.fn(),
+  },
+  progressService: {
+    listProgress: vi.fn().mockResolvedValue({ data: [], error: null }),
+    getLearnerXp: vi.fn().mockResolvedValue({ data: { totalXp: 0 }, error: null }),
+    listSkillMastery: vi.fn().mockResolvedValue({ data: [], error: null }),
   },
 }));
 
@@ -50,17 +60,23 @@ const mockMissions = [
 
 function renderCourseDetail(slug = 'excel-adventure') {
   return render(
-    <MemoryRouter initialEntries={[`/courses/${slug}`]}>
-      <Routes>
-        <Route path="/courses/:slug" element={<CourseDetailPage />} />
-      </Routes>
-    </MemoryRouter>
+    <AuthProvider>
+      <MemoryRouter initialEntries={[`/courses/${slug}`]}>
+        <Routes>
+          <Route path="/courses/:slug" element={<CourseDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    </AuthProvider>
   );
 }
 
 describe('CourseDetailPage Component Tests', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    authService.getCurrentUser.mockResolvedValue({ data: { id: 'u1', name: 'Test' } });
+    progressService.listProgress.mockResolvedValue({ data: [], error: null });
+    progressService.getLearnerXp.mockResolvedValue({ data: { totalXp: 0 }, error: null });
+    progressService.listSkillMastery.mockResolvedValue({ data: [], error: null });
   });
 
   it('hiển thị chi tiết khóa học và danh sách chương sau khi load thành công', async () => {
@@ -106,6 +122,25 @@ describe('CourseDetailPage Component Tests', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Không tìm thấy course "invalid-slug".')).toBeInTheDocument();
+    });
+  });
+
+  it('tính toán và hiển thị tiến độ 100% và badge hoàn thành khi bài học đã completed', async () => {
+    courseService.getCourse.mockResolvedValueOnce({ data: mockCourse, error: null });
+    courseService.getChaptersByCourse.mockResolvedValueOnce({ data: mockChapters, error: null });
+    missionService.getMissionsByChapter.mockResolvedValueOnce({ data: mockMissions, error: null });
+    progressService.listProgress.mockResolvedValueOnce({
+      data: [{ contentId: 'mission-001', status: 'completed' }],
+      error: null,
+    });
+
+    renderCourseDetail();
+
+    await waitFor(() => {
+      expect(screen.getByText('100%')).toBeInTheDocument();
+      expect(screen.getByText('1 / 1 bài')).toBeInTheDocument();
+      expect(screen.getByText('Ôn tập lại khóa học')).toBeInTheDocument();
+      expect(screen.getByText('Đã làm')).toBeInTheDocument();
     });
   });
 });

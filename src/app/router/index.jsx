@@ -10,7 +10,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { isAdmin, isLearner } from '../../constants/roles.js';
 import { LearnerLayout } from '../layouts/LearnerLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
-import { PageLoader, PageSkeleton } from '../../components/ui/Skeleton.jsx';
+import { PageLoader, PageSkeleton, AppShellSkeleton } from '../../components/ui/Skeleton.jsx';
 
 // Pages
 import { LoginPage, RegisterPage } from '../../features/auth/LoginPage.jsx';
@@ -41,7 +41,7 @@ import { TutorialCase0Page } from '../../features/onboarding/TutorialCase0Page.j
  */
 function RequireAuth({ children }) {
   const { isLoading, isAuthenticated } = useAuth();
-  if (isLoading) return <PageSkeleton />;
+  if (isLoading) return <AppShellSkeleton />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 }
@@ -77,7 +77,7 @@ function RequireAdmin() {
  */
 function RootRedirect() {
   const { isLoading, isAuthenticated, user } = useAuth();
-  if (isLoading) return <PageSkeleton />;
+  if (isLoading) return <AppShellSkeleton />;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return isAdmin(user?.role)
     ? <Navigate to="/admin" replace />

@@ -14,13 +14,11 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import {
-  courseService,
-  investigationService,
-  missionService,
+  learningMapService,
   learningMapAdapter,
 } from '../../services/index.js';
 import { useProgress } from '../../hooks/useProgress.js';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, LearningMapSkeleton } from '../../components/ui/Skeleton.jsx';
 import { EmptyState, ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 import { getSkillMasteryLevel } from '../../domain/mastery/masteryEvaluator.js';
@@ -38,56 +36,30 @@ export function LearningMapPage() {
     let isMounted = true;
 
     async function loadMapData() {
+      const fetchStart = performance.now();
+      console.log('[Map Benchmark] Navigated -> Fetch Started');
       setLoading(true);
       setError(null);
       try {
-        // 1. Fetch published courses
-        const coursesRes = await courseService.getCourses({ status: 'published' });
-        if (coursesRes?.error || !coursesRes?.data || coursesRes.data.length === 0) {
+        // Fetch the materialized Read Model
+        const res = await learningMapService.getLearningMapTree();
+        if (res?.error || !res?.data || res.data.length === 0) {
           if (isMounted) {
-            setError(coursesRes?.error || 'Không tìm thấy dữ liệu lộ trình học tập.');
+            setError(res?.error || 'Không tìm thấy dữ liệu lộ trình học tập.');
             setLoading(false);
           }
           return;
         }
-        const courseList = coursesRes.data;
-
-        // 2. Fetch chapters for all courses
-        const chaptersByCourse = {};
-        const investigationsMap = {};
-        for (const course of courseList) {
-          const chRes = await courseService.getChaptersByCourse(course.id);
-          const chList = chRes?.data || [];
-          chaptersByCourse[course.id] = chList;
-
-          // Fetch investigations per chapter
-          for (const ch of chList) {
-            try {
-              const invRes = await investigationService.getInvestigationsByChapter(ch.id);
-              if (invRes?.data && invRes.data.length > 0) {
-                investigationsMap[ch.id] = invRes.data;
-              } else {
-                const mRes = await missionService.getMissionsByChapter(ch.id);
-                investigationsMap[ch.id] = mRes?.data || [];
-              }
-            } catch (_e) {
-              const mRes = await missionService.getMissionsByChapter(ch.id);
-              investigationsMap[ch.id] = mRes?.data || [];
-            }
-          }
-        }
 
         if (isMounted) {
-          setMapRawData({
-            courses: courseList,
-            chaptersByCourse,
-            investigationsByChapter: investigationsMap,
-          });
+          setMapRawData(res.data);
         }
       } catch (err) {
         if (isMounted) setError('Không thể tải dữ liệu bản đồ lộ trình học tập.');
       } finally {
         if (isMounted) setLoading(false);
+        const fetchEnd = performance.now();
+        console.log(`[Map Benchmark] Data Fetch Complete in ${(fetchEnd - fetchStart).toFixed(0)} ms`);
       }
     }
 
@@ -101,10 +73,8 @@ export function LearningMapPage() {
   // Synchronously calculate journeyMap from raw map data and dynamic progressList
   const journeyMap = useMemo(() => {
     if (!mapRawData) return null;
-    return learningMapAdapter.buildFullJourneyMapTree({
-      courses: mapRawData.courses,
-      chaptersByCourse: mapRawData.chaptersByCourse,
-      investigationsByChapter: mapRawData.investigationsByChapter,
+    return learningMapAdapter.buildJourneyMapFromReadModel({
+      courseViews: mapRawData,
       progressList,
     });
   }, [mapRawData, progressList]);
@@ -128,6 +98,16 @@ export function LearningMapPage() {
   };
 
   const isInitialLoading = loading || progressLoading;
+
+  useEffect(() => {
+    if (!isInitialLoading) {
+      console.log('[Map Benchmark] Data Rendered / Page Usable');
+    } else {
+      console.log('[Map Benchmark] Skeleton Rendered');
+    }
+  }, [isInitialLoading]);
+
+  if (isInitialLoading) return <LearningMapSkeleton />;
 
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-8 animate-fade-in">

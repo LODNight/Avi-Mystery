@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { missionService, courseService } from '../../services/index.js';
 import { formatDuration, difficultyLabel, toolLabel, formatXP } from '../../utils/format.js';
-import { Skeleton } from '../../components/ui/Skeleton.jsx';
+import { Skeleton, MissionIntroSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 
@@ -73,16 +73,7 @@ export function MissionIntroPage() {
   }, [missionId]);
 
   if (loading) {
-    return (
-      <div className="mx-auto max-w-4xl flex flex-col gap-6 animate-fade-in" aria-busy="true">
-        <Skeleton className="h-6 w-36 rounded-lg" />
-        <Skeleton className="h-48 rounded-3xl" />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton className="h-40 rounded-2xl" />
-          <Skeleton className="h-40 rounded-2xl" />
-        </div>
-      </div>
-    );
+    return <MissionIntroSkeleton />;
   }
 
   if (error || !mission) {

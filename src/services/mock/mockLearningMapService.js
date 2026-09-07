@@ -1,4 +1,6 @@
-import mapViews from '../../mocks/data/learning_map_views.json';
+import initialMapViews from '../../mocks/data/learning_map_views.json';
+import { LEARNING_MAP_VIEWS_KEY } from '../../domain/learningMap/learningMapProjector.js';
+import { storage } from '../../utils/storage.js';
 
 let cachedMapTree = null;
 let inFlightPromise = null;
@@ -23,7 +25,10 @@ export const mockLearningMapService = {
       await new Promise(resolve => setTimeout(resolve, 300));
       
       try {
-        cachedMapTree = mapViews;
+        const storedViews = storage.get(LEARNING_MAP_VIEWS_KEY);
+        cachedMapTree = storedViews && Array.isArray(storedViews) && storedViews.length > 0
+          ? storedViews
+          : initialMapViews;
         return {
           data: cachedMapTree,
           error: null

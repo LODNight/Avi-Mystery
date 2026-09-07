@@ -25,14 +25,22 @@ import { PracticePage } from '../../pages/learner/PracticePage.jsx';
 import { ProfilePage } from '../../pages/learner/ProfilePage.jsx';
 import { ActivityHistoryPage } from '../../pages/learner/ActivityHistoryPage.jsx';
 import { AchievementsPage } from '../../pages/learner/AchievementsPage.jsx';
+import { KnowledgeHubPage } from '../../pages/learner/KnowledgeHubPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
+import { AdminCoursesPage } from '../../pages/admin/AdminCoursesPage.jsx';
+import { AdminChaptersPage } from '../../pages/admin/AdminChaptersPage.jsx';
+import { AdminMissionsPage } from '../../pages/admin/AdminMissionsPage.jsx';
+import { AdminMissionEditorPage } from '../../pages/admin/AdminMissionEditorPage.jsx';
+import { AdminDatasetsPage } from '../../pages/admin/AdminDatasetsPage.jsx';
+import { AdminKnowledgePage } from '../../pages/admin/AdminKnowledgePage.jsx';
+import { AdminKnowledgeEditorPage } from '../../pages/admin/AdminKnowledgeEditorPage.jsx';
 import { NotFoundPage } from '../../pages/NotFoundPage.jsx';
 import { WelcomeGatePage } from '../../features/onboarding/WelcomeGatePage.jsx';
 import { TutorialCase0Page } from '../../features/onboarding/TutorialCase0Page.jsx';
 
-
+import { AdminGuidePage } from '../../pages/admin/AdminGuidePage.jsx';
 
 /* ─────────────────── Route Guards ─────────────────── */
 
@@ -47,11 +55,9 @@ function RequireAuth({ children }) {
 }
 
 /**
- * RequireLearner — chỉ cho learner vào, admin redirect về /admin
+ * RequireLearner — cho phép learner và admin xem giao diện learner
  */
 function RequireLearner() {
-  const { user } = useAuth();
-  if (isAdmin(user?.role)) return <Navigate to="/admin" replace />;
   return (
     <LearnerLayout>
       <Outlet />
@@ -116,6 +122,8 @@ export function AppRouter() {
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/history" element={<ActivityHistoryPage />} />
+          <Route path="/knowledge" element={<KnowledgeHubPage />} />
+          <Route path="/knowledge/:topicId" element={<KnowledgeHubPage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}
@@ -139,11 +147,17 @@ export function AppRouter() {
           }
         >
           <Route path="/admin" element={<AdminOverviewPage />} />
+          <Route path="/admin/guide" element={<AdminGuidePage />} />
           <Route path="/admin/pages" element={<AdminPageStatusPage />} />
-          <Route path="/admin/courses" element={<PlaceholderPage title="Quản lý khóa học" />} />
-          <Route path="/admin/chapters" element={<PlaceholderPage title="Quản lý chương học" />} />
-          <Route path="/admin/missions" element={<PlaceholderPage title="Quản lý nhiệm vụ" />} />
-          <Route path="/admin/datasets" element={<PlaceholderPage title="Quản lý Dataset" />} />
+          <Route path="/admin/courses" element={<AdminCoursesPage />} />
+          <Route path="/admin/chapters" element={<AdminChaptersPage />} />
+          <Route path="/admin/missions" element={<AdminMissionsPage />} />
+          <Route path="/admin/missions/new" element={<AdminMissionEditorPage />} />
+          <Route path="/admin/missions/:missionId/edit" element={<AdminMissionEditorPage />} />
+          <Route path="/admin/datasets" element={<AdminDatasetsPage />} />
+          <Route path="/admin/knowledge" element={<AdminKnowledgePage />} />
+          <Route path="/admin/knowledge/new" element={<AdminKnowledgeEditorPage />} />
+          <Route path="/admin/knowledge/:topicId/edit" element={<AdminKnowledgeEditorPage />} />
           <Route path="/admin/learners" element={<PlaceholderPage title="Quản lý học viên" />} />
           <Route path="/admin/analytics" element={<PlaceholderPage title="Phân tích" />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />

@@ -58,7 +58,7 @@
   - Bóc tách cấu hình chấm điểm ra khỏi Submission Adapter đưa về `contentService`.
   - Chuẩn hóa mô hình phân tầng: `Learning Journey` → `Phase` → `Chapter` → `Investigation` → `Question` → `Question Variant` → `Submission` → `Result` → `Progress` → `XP / Mastery`.
   - Độc lập hóa `Dataset` thành tài sản có thể tái sử dụng cho nhiều Question khác nhau.
-* **Trạng thái:** `PLANNED` (Sẵn sàng thực thi trong Sprint 5).
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 5).
 
 ---
 
@@ -68,7 +68,41 @@
 * **Quyết định:**
   - `Submission Service` chỉ chịu trách nhiệm đánh giá tính đúng/sai của câu trả lời, trả về `SubmissionResult` chứa kết quả và `potentialXp` (không mutate state).
   - `Progress Service` chịu trách nhiệm độc lập trong việc tiếp nhận `SubmissionResult`, thực hiện trao thưởng XP theo cơ chế **Idempotent** (chống cộng trùng), thăng cấp và cập nhật mở khóa trên Bản đồ Học tập.
-* **Trạng thái:** `PLANNED` (Sẵn sàng thực thi trong Sprint 6).
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 6).
+
+---
+
+## ADR-007: Di Chuyển Tiến Độ & Sổ Cái XP Sang Firebase Firestore Production
+
+* **Bối cảnh:** Cần hệ thống lưu trữ bền vững cho tiến độ học viên, điểm XP, huy hiệu thành tích và lịch sử hoạt động, sẵn sàng cho môi trường người dùng thật thay vì chỉ lưu tạm trên mock/localStorage.
+* **Quyết định:**
+  - Tích hợp `firebaseProgressService.js` giao tiếp trực tiếp với Firebase Firestore.
+  - Sử dụng Firestore Transaction để đảm bảo tính toàn vẹn (Idempotent XP Ledger), ngăn chặn race condition và cộng trùng XP.
+  - Đồng bộ real-time với các thành phần giao diện (Dashboard, Sidebar, Profile, Achievements) qua `useProgress` hook.
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 7).
+
+---
+
+## ADR-008: Materialized Read Model `learning_map_views` Cho Bản Đồ Học Tập
+
+* **Bối cảnh:** Luồng lấy dữ liệu Bản đồ Học tập (`/map`) trước đây thực hiện N+1 queries (Course -> Chapters -> Missions), gây quá tải document reads trên Firestore và kéo theo toàn bộ payload nặng của Mission (starterContent, dataset, solution).
+* **Quyết định:**
+  - Thiết lập collection chuyên biệt `learning_map_views` làm Materialized Read Model.
+  - Mỗi Document đại diện cho 1 Khóa học chứa cây rút gọn (Phase -> Chapter -> Node tóm tắt gồm ID, Title, Objective, XP, Tool).
+  - Xây dựng `learningMapProjector.js` để tự động tổng hợp và ghi Read Model mỗi khi Admin xuất bản Khóa học/Chương học/Vụ án.
+  - Giao diện `/map` chỉ cần đọc 1 Document duy nhất cho mỗi khóa học, giảm hơn 90% số lượng read operations.
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 8).
+
+---
+
+## ADR-009: Admin Content Studio & In-Browser Sandbox Test Runner
+
+* **Bối cảnh:** Quản trị viên cần tự soạn thảo, chỉnh sửa vụ án và kiểm tra ngay tính chính xác của bộ chấm điểm (Excel/SQL) mà không làm ô nhiễm tiến độ hoặc ghi nhận XP vào tài khoản học viên.
+* **Quyết định:**
+  - Xây dựng Admin Content Studio trực quan với 4 tabs: Hồ sơ vụ án, Không gian làm việc, Cấu hình bộ chấm điểm, Hệ thống gợi ý.
+  - Tích hợp `AdminTestRunnerModal`: chạy công thức Excel qua `excelChecker` và câu lệnh SQL qua Web Worker SQLite WASM trực tiếp trong phiên làm việc.
+  - Đảm bảo cơ chế Sandbox Isolation: không gọi `progressService`, không mutate dữ liệu học viên thật.
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 8).
 
 ---
 

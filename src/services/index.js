@@ -29,6 +29,10 @@ const USE_FIREBASE = !IS_TEST && import.meta.env.VITE_USE_FIREBASE === 'true';
 const USE_MOCK = true;
 
 import { firebaseProgressService } from './api/firebaseProgressService.js';
+import { firebaseKnowledgeService } from './api/firebaseKnowledgeService.js';
+
+import { mockAdminContentService } from './mock/mockAdminContentService.js';
+import { mockKnowledgeService } from './mock/mockKnowledgeService.js';
 
 export const authService    = USE_FIREBASE ? firebaseAuthService : (USE_MOCK ? mockAuthService : apiAuthService);
 export const courseService  = USE_MOCK ? mockCourseService  : apiCourseService;
@@ -40,6 +44,8 @@ export const investigationService = USE_MOCK ? mockInvestigationService : mockIn
 export const questionService = USE_MOCK ? mockQuestionService : mockQuestionService;
 export const progressService = USE_FIREBASE ? firebaseProgressService : (USE_MOCK ? mockProgressService : mockProgressService);
 export const learningMapService = USE_MOCK ? mockLearningMapService : apiLearningMapService;
+export const adminContentService = USE_MOCK ? mockAdminContentService : mockAdminContentService;
+export const knowledgeService = USE_FIREBASE ? firebaseKnowledgeService : (USE_MOCK ? mockKnowledgeService : mockKnowledgeService);
 
 // API submission adapter is intentionally deferred to Sprint 7. This stub keeps
 // the public interface stable without silently falling back to mock data.

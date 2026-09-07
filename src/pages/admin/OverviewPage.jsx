@@ -68,12 +68,18 @@ export function AdminOverviewPage() {
           >
             <Sparkles className="size-4 text-amber-500" /> 🧪 Test Onboarding Mode
           </Link>
-          <button className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
+          <Link
+            to="/admin/datasets"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+          >
             <Upload className="size-4" /> Upload Dataset
-          </button>
-          <button className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity">
+          </Link>
+          <Link
+            to="/admin/missions/new"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity cursor-pointer"
+          >
             <Plus className="size-4" /> Tạo Mission
-          </button>
+          </Link>
         </div>
       </section>
 

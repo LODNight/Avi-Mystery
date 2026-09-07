@@ -20,30 +20,69 @@ import {
   Layers,
   Globe,
   ShieldCheck,
+  Target,
+  BookOpen,
+  Book
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
 import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
 import { FEATURE_FLAGS } from '../../config/envConfig.js';
 
-const adminNav = [
-  { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
-  { label: 'Quản lý khóa học', to: '/admin/courses', icon: FileSpreadsheet },
-  { label: 'Quản lý chương', to: '/admin/chapters', icon: Layers },
-  { label: 'Quản lý Dataset', to: '/admin/datasets', icon: Database },
-  { label: 'Học viên', to: '/admin/learners', icon: Users },
-  { label: 'Phân tích', to: '/admin/analytics', icon: BarChart3 },
+const adminNavGroups = [
   {
-    label: 'Cài đặt',
-    to: '/admin/settings',
-    icon: Settings,
-    children: [
-      { label: 'Quản lý trang & Bảo trì', to: '/admin/settings?tab=pages', icon: Globe },
-      { label: 'Cấu hình hệ thống', to: '/admin/settings?tab=system', icon: Settings },
-      { label: 'Bảo mật & Phân quyền', to: '/admin/settings?tab=security', icon: ShieldCheck },
+    category: 'Tổng quan',
+    items: [
+      { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
+      { label: 'Hướng dẫn sử dụng', to: '/admin/guide', icon: BookOpen },
+    ],
+  },
+  {
+    category: 'Quản trị nội dung',
+    items: [
+      {
+        id: 'content',
+        label: 'Nội dung đào tạo',
+        icon: Layers,
+        children: [
+          { label: 'Khóa học & Lộ trình', to: '/admin/courses', icon: FileSpreadsheet },
+          { label: 'Chương học', to: '/admin/chapters', icon: Layers },
+          { label: 'Vụ án điều tra', to: '/admin/missions', icon: Target },
+          { label: 'Dữ liệu Dataset', to: '/admin/datasets', icon: Database },
+          { label: 'Knowledge Studio', to: '/admin/knowledge', icon: Book },
+        ],
+      },
+      { label: 'Học viên', to: '/admin/learners', icon: Users },
+      { label: 'Báo cáo phân tích', to: '/admin/analytics', icon: BarChart3 },
+    ],
+  },
+  {
+    category: 'Hệ thống',
+    items: [
+      {
+        id: 'settings',
+        label: 'Cài đặt hệ thống',
+        to: '/admin/settings',
+        icon: Settings,
+        children: [
+          { label: 'Quản lý trang & Bảo trì', to: '/admin/settings?tab=pages', icon: Globe },
+          { label: 'Cấu hình hệ thống', to: '/admin/settings?tab=system', icon: Settings },
+          { label: 'Bảo mật & Phân quyền', to: '/admin/settings?tab=security', icon: ShieldCheck },
+        ],
+      },
     ],
   },
 ];
+
+const flatAdminItems = [];
+adminNavGroups.forEach((group) => {
+  group.items.forEach((item) => {
+    flatAdminItems.push(item);
+    if (item.children) {
+      flatAdminItems.push(...item.children);
+    }
+  });
+});
 
 export function AdminLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -60,12 +99,40 @@ export function AdminLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isSettingsActive = location.pathname.startsWith('/admin/settings') || location.pathname.startsWith('/admin/pages');
-  const [settingsOpen, setSettingsOpen] = useState(isSettingsActive);
+  const isContentActive = [
+    '/admin/courses',
+    '/admin/chapters',
+    '/admin/missions',
+    '/admin/datasets',
+    '/admin/knowledge',
+  ].some((path) => location.pathname.startsWith(path));
+
+  const isSettingsActive =
+    location.pathname.startsWith('/admin/settings') ||
+    location.pathname.startsWith('/admin/pages');
+
+  const [openGroups, setOpenGroups] = useState({
+    content: true,
+    settings: isSettingsActive,
+  });
 
   useEffect(() => {
-    if (isSettingsActive) setSettingsOpen(true);
-  }, [location.pathname]);
+    if (isContentActive) {
+      setOpenGroups((prev) => ({ ...prev, content: true }));
+    }
+    if (isSettingsActive) {
+      setOpenGroups((prev) => ({ ...prev, settings: true }));
+    }
+  }, [location.pathname, isContentActive, isSettingsActive]);
+
+  const toggleGroup = (groupId) => {
+    if (collapsed) {
+      setCollapsed(false);
+      setOpenGroups((prev) => ({ ...prev, [groupId]: true }));
+      return;
+    }
+    setOpenGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
+  };
 
   useEffect(() => {
     localStorage.setItem('avi_admin_sidebar_collapsed', collapsed ? 'true' : 'false');
@@ -80,7 +147,11 @@ export function AdminLayout({ children }) {
     ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'AD';
 
-  const activeNavItem = adminNav.find((item) => item.to === location.pathname);
+  const activeNavItem = flatAdminItems.find((item) => {
+    if (!item.to) return false;
+    if (item.to === '/admin') return location.pathname === '/admin';
+    return location.pathname === item.to || location.pathname.startsWith(`${item.to}/`);
+  });
   const pageTitle = activeNavItem ? activeNavItem.label : 'Quản trị hệ thống';
 
   return (
@@ -168,111 +239,113 @@ export function AdminLayout({ children }) {
         </div>
 
         {/* Navigation items */}
-        <nav className="mt-6 flex flex-col gap-1 overflow-y-auto flex-1" aria-label="Menu Admin">
-          {(!collapsed || mobileOpen) && (
-            <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
-              Quản lý
-            </p>
-          )}
-          {adminNav.map((item) => {
-            const Icon = item.icon;
-            const hasChildren = Boolean(item.children?.length);
-            const isItemActive = hasChildren
-              ? isSettingsActive
-              : location.pathname === item.to;
+        <nav className="mt-6 flex flex-col gap-4 overflow-y-auto flex-1" aria-label="Menu Admin">
+          {adminNavGroups.map((group) => (
+            <div key={group.category} className="flex flex-col gap-1">
+              {(!collapsed || mobileOpen) && (
+                <p className="px-3 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
+                  {group.category}
+                </p>
+              )}
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const hasChildren = Boolean(item.children?.length);
+                const groupId = item.id || (item.to ? item.to.replace('/admin/', '') : 'group');
+                const isOpen = Boolean(openGroups[groupId]);
 
-            if (hasChildren) {
-              return (
-                <div key={item.to} className="flex flex-col gap-1">
-                  <div className="flex items-center justify-between">
-                    <NavLink
-                      to={item.to}
-                      onClick={() => {
-                        setSettingsOpen((prev) => !prev);
-                      }}
-                      title={collapsed && !mobileOpen ? item.label : undefined}
-                      className={`flex-1 flex items-center justify-between gap-3 rounded-xl transition-all ${
-                        collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
+                const isGroupActive = hasChildren && item.children.some((child) => {
+                  if (child.to.includes('?')) {
+                    const [base, query] = child.to.split('?');
+                    return location.pathname === base && location.search.includes(query);
+                  }
+                  return location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
+                });
+
+                if (hasChildren) {
+                  return (
+                    <div key={item.id || item.label} className="flex flex-col gap-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(groupId)}
+                        title={collapsed && !mobileOpen ? item.label : undefined}
+                        className={`w-full flex items-center justify-between gap-3 rounded-xl transition-all ${
+                          collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-sm font-medium'
+                        } ${
+                          isGroupActive
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold border-l-2 border-amber-500'
+                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <Icon className={`size-[18px] shrink-0 ${isGroupActive ? 'text-amber-500' : ''}`} />
+                          {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+                        </div>
+                        {(!collapsed || mobileOpen) && (
+                          <ChevronDown
+                            className={`size-4 text-muted-foreground transition-transform duration-200 ${
+                              isOpen ? 'rotate-180' : ''
+                            }`}
+                          />
+                        )}
+                      </button>
+
+                      {/* Dropdown Sub-menu Items */}
+                      {isOpen && (!collapsed || mobileOpen) && (
+                        <div className="ml-4 pl-3 border-l border-sidebar-border flex flex-col gap-1 my-1 animate-fade-in">
+                          {item.children.map((child) => {
+                            const ChildIcon = child.icon;
+                            const isChildActive = child.to.includes('?')
+                              ? location.pathname === child.to.split('?')[0] && location.search.includes(child.to.split('?')[1])
+                              : location.pathname === child.to || location.pathname.startsWith(`${child.to}/`);
+
+                            return (
+                              <NavLink
+                                key={child.to}
+                                to={child.to}
+                                onClick={() => setMobileOpen(false)}
+                                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                                  isChildActive
+                                    ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold'
+                                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                                }`}
+                              >
+                                <ChildIcon className="size-3.5 shrink-0" />
+                                <span className="truncate">{child.label}</span>
+                              </NavLink>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    end={item.to === '/admin'}
+                    onClick={() => setMobileOpen(false)}
+                    title={collapsed && !mobileOpen ? item.label : undefined}
+                    className={({ isActive }) =>
+                      `flex items-center gap-3 rounded-xl transition-all ${
+                        collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-sm font-medium'
                       } ${
-                        isItemActive
+                        isActive
                           ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
                           : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <Icon className="size-[18px] shrink-0" />
-                        {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
-                      </div>
-                      {(!collapsed || mobileOpen) && (
-                        <ChevronDown
-                          className={`size-4 transition-transform duration-200 ${
-                            settingsOpen ? 'rotate-180' : ''
-                          }`}
-                        />
-                      )}
-                    </NavLink>
-                  </div>
+                      }`
+                    }
+                  >
+                    <Icon className="size-[18px] shrink-0" />
+                    {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+                  </NavLink>
+                );
+              })}
+            </div>
+          ))}
 
-                  {/* Dropdown Sub-menu Items */}
-                  {settingsOpen && (!collapsed || mobileOpen) && (
-                    <div className="ml-4 pl-3 border-l border-sidebar-border flex flex-col gap-1 my-1 animate-fade-in">
-                      {item.children.map((child) => {
-                        const ChildIcon = child.icon;
-                        const isChildActive =
-                          location.search.includes(child.to.split('?')[1]) ||
-                          (location.pathname === '/admin/pages' && child.to.includes('tab=pages'));
-
-                        return (
-                          <Link
-                            key={child.to}
-                            to={child.to}
-                            onClick={() => setMobileOpen(false)}
-                            className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
-                              isChildActive
-                                ? 'bg-primary/15 text-primary font-bold'
-                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                            }`}
-                          >
-                            <ChildIcon className="size-3.5 shrink-0" />
-                            <span className="truncate">{child.label}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            }
-
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                onClick={() => setMobileOpen(false)}
-                title={collapsed && !mobileOpen ? item.label : undefined}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl transition-all ${
-                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-sm font-medium'
-                  } ${
-                    isActive
-                      ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                      : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                  }`
-                }
-              >
-                <Icon className="size-[18px] shrink-0" />
-                {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
-              </NavLink>
-            );
-          })}
-
-          <div className="my-3 h-px bg-sidebar-border" />
-
-          {(!collapsed || mobileOpen) && (
-            <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
-              Hệ thống
-            </p>
-          )}
+          <div className="my-2 h-px bg-sidebar-border" />
           <button
             onClick={handleLogout}
             title={collapsed && !mobileOpen ? 'Đăng xuất' : undefined}

@@ -318,6 +318,37 @@ export function DashboardPage() {
         </div>
       </section>
 
+      {/* ── Section 3.5: Knowledge Hub Banner ── */}
+      <section>
+        <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-background to-background p-6 sm:p-8">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <BookOpen className="size-5 text-amber-500" />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  Thư Viện Kiến Thức
+                </span>
+              </div>
+              <h3 className="text-2xl font-bold text-foreground">Học lý thuyết trước khi thực hành</h3>
+              <p className="mt-2 text-sm text-muted-foreground max-w-xl">
+                Củng cố kiến thức về các hàm Excel, cú pháp SQL và các khái niệm phân tích dữ liệu cơ bản. 
+                Hoàn thành bài học để mở khóa huy hiệu và hỗ trợ giải quyết vụ án nhanh hơn.
+              </p>
+            </div>
+            <Link
+              to="/knowledge"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/20 hover:bg-amber-700 transition-colors"
+            >
+              Vào Thư Viện
+              <ArrowUpRight className="size-4" />
+            </Link>
+          </div>
+          
+          <div className="absolute right-0 top-0 -mt-16 -mr-16 size-64 rounded-full bg-amber-500/5 blur-3xl" />
+          <div className="absolute right-32 bottom-0 -mb-16 size-48 rounded-full bg-amber-500/5 blur-2xl" />
+        </div>
+      </section>
+
       {/* ── Section 4: Active Courses ── */}
       <section id="dashboard-active-courses" aria-busy={courses.loading ? "true" : undefined}>
         <div className="flex items-center justify-between">

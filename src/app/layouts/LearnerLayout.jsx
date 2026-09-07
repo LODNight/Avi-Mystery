@@ -18,12 +18,15 @@ import {
   PanelLeftOpen,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
+  GraduationCap,
   Sparkles,
   Dumbbell,
   AlertTriangle,
   Info,
   Wrench,
   Eye,
+  Library,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
@@ -34,19 +37,42 @@ import { UnderMaintenancePage } from '../../pages/learner/UnderMaintenancePage.j
 import { formatXP } from '../../utils/format.js';
 import { StreakDetailModal } from '../../features/gamification/StreakDetailModal.jsx';
 import { LevelUpModal } from '../../features/gamification/LevelUpModal.jsx';
+import { isAdmin } from '../../constants/roles.js';
 
-const learnerNav = [
-  { label: 'Tổng quan', to: '/dashboard', icon: Home },
-  { label: 'Bản đồ học', to: '/map', icon: Map },
-  { label: 'Khóa học', to: '/courses', icon: BookOpen },
-  { label: 'Luyện tập', to: '/practice', icon: Dumbbell },
-  { label: 'Thành tựu', to: '/achievements', icon: Trophy },
-  { label: 'Hồ sơ', to: '/profile', icon: User },
+export const learnerNavItems = [
+  {
+    label: 'Tổng quan',
+    to: '/dashboard',
+    icon: Home,
+  },
+  {
+    id: 'learning',
+    label: 'Không gian học tập',
+    icon: GraduationCap,
+    children: [
+      { label: 'Bản đồ học', to: '/map', icon: Map },
+      { label: 'Khóa học', to: '/courses', icon: BookOpen },
+      { label: 'Thư viện kiến thức', to: '/knowledge', icon: Library },
+      { label: 'Phòng luyện tập', to: '/practice', icon: Dumbbell },
+    ],
+  },
+  {
+    id: 'detective',
+    label: 'Hồ sơ thám tử',
+    icon: User,
+    children: [
+      { label: 'Thành tựu & Huy hiệu', to: '/achievements', icon: Trophy },
+      { label: 'Hồ sơ cá nhân', to: '/profile', icon: User },
+    ],
+  },
 ];
+
+export const learnerNav = learnerNavItems.flatMap((item) => item.children || [item]);
 
 export function isLearnerNavPathActive(pathname, navPath) {
   if (pathname === navPath) return true;
   if (navPath === '/map' && /^\/missions(?:\/|$)/.test(pathname)) return true;
+  if (navPath === '/knowledge' && /^\/knowledge(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/dashboard') return false;
   return pathname.startsWith(`${navPath}/`);
 }
@@ -62,12 +88,49 @@ export function LearnerLayout({ children }) {
     return false;
   });
 
+  const location = useLocation();
+
+  const isLearningActive = [
+    '/map',
+    '/courses',
+    '/knowledge',
+    '/practice',
+    '/missions',
+  ].some((path) => location.pathname.startsWith(path));
+
+  const isDetectiveActive = [
+    '/achievements',
+    '/profile',
+  ].some((path) => location.pathname.startsWith(path));
+
+  const [openGroups, setOpenGroups] = useState({
+    learning: true, // Mặc định mở để học viên thấy lộ trình học
+    detective: isDetectiveActive,
+  });
+
+  useEffect(() => {
+    if (isLearningActive) {
+      setOpenGroups((prev) => ({ ...prev, learning: true }));
+    }
+    if (isDetectiveActive) {
+      setOpenGroups((prev) => ({ ...prev, detective: true }));
+    }
+  }, [location.pathname, isLearningActive, isDetectiveActive]);
+
+  const toggleGroup = (groupId) => {
+    if (collapsed) {
+      setCollapsed(false);
+      setOpenGroups((prev) => ({ ...prev, [groupId]: true }));
+      return;
+    }
+    setOpenGroups((prev) => ({ ...prev, [groupId]: !prev[groupId] }));
+  };
+
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { getPageStatus, adminBypass, toggleAdminBypass } = usePageStatus();
   const { brand } = useBrand();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [liveStats, setLiveStats] = useState({
     xp: user?.xp || 0,
@@ -100,7 +163,7 @@ export function LearnerLayout({ children }) {
   const currentPageStatus = getPageStatus(location.pathname);
   const isMaintenance = currentPageStatus?.status === 'maintenance';
   const isNotice = currentPageStatus?.status === 'notice';
-  const isAdminUser = user?.role === 'admin';
+  const isAdminUser = isAdmin(user?.role);
   const shouldBlockLearner = isMaintenance && (!isAdminUser || !adminBypass);
 
   useEffect(() => {
@@ -214,36 +277,108 @@ export function LearnerLayout({ children }) {
 
         {/* Navigation items */}
         <nav className="mt-6 flex flex-col gap-1 overflow-y-auto flex-1" aria-label="Menu chính">
-          {(!collapsed || mobileOpen) && (
-            <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
-              Học tập
-            </p>
-          )}
-          {learnerNav.map(({ label, to, icon: Icon }) => {
-            const navStatus = getPageStatus(to);
+          {learnerNavItems.map((item) => {
+            const Icon = item.icon;
+            const hasChildren = Boolean(item.children?.length);
+            const groupId = item.id || 'group';
+            const isOpen = Boolean(openGroups[groupId]);
+
+            if (hasChildren) {
+              const isGroupActive = item.children.some((child) =>
+                isLearnerNavPathActive(location.pathname, child.to)
+              );
+
+              return (
+                <div key={item.id || item.label} className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(groupId)}
+                    title={collapsed && !mobileOpen ? item.label : undefined}
+                    className={`w-full flex items-center justify-between gap-3 rounded-xl transition-all ${
+                      collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-2.5 text-sm font-medium'
+                    } ${
+                      isGroupActive
+                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold border-l-4 border-amber-500 shadow-xs'
+                        : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <Icon className={`size-[18px] shrink-0 ${isGroupActive ? 'text-amber-500 dark:text-amber-400' : ''}`} />
+                      {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
+                    </div>
+                    {(!collapsed || mobileOpen) && (
+                      <ChevronDown
+                        className={`size-4 text-muted-foreground transition-transform duration-200 ${
+                          isOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    )}
+                  </button>
+
+                  {/* Dropdown Sub-menu Items */}
+                  {isOpen && (!collapsed || mobileOpen) && (
+                    <div className="ml-4 pl-3 border-l border-sidebar-border flex flex-col gap-1 my-1 animate-fade-in">
+                      {item.children.map(({ label, to, icon: ChildIcon }) => {
+                        const navStatus = getPageStatus(to);
+                        const isItemMaintenance = navStatus?.status === 'maintenance';
+                        const isItemNotice = navStatus?.status === 'notice';
+                        const isPathActive = isLearnerNavPathActive(location.pathname, to);
+
+                        return (
+                          <NavLink
+                            key={to}
+                            to={to}
+                            onClick={() => setMobileOpen(false)}
+                            className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                              isPathActive
+                                ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold'
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <ChildIcon className={`size-3.5 shrink-0 ${isPathActive ? 'text-amber-500 dark:text-amber-400' : ''}`} />
+                              <span className="truncate">{label}</span>
+                            </div>
+                            {isItemMaintenance && (
+                              <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
+                                Bảo trì
+                              </span>
+                            )}
+                            {!isItemMaintenance && isItemNotice && (
+                              <span className="size-1.5 rounded-full bg-amber-500 shrink-0 animate-ping" title="Có thông báo mới" />
+                            )}
+                          </NavLink>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            // Single item (Dashboard)
+            const isPathActive = isLearnerNavPathActive(location.pathname, item.to);
+            const navStatus = getPageStatus(item.to);
             const isItemMaintenance = navStatus?.status === 'maintenance';
             const isItemNotice = navStatus?.status === 'notice';
-            const isPathActive = isLearnerNavPathActive(location.pathname, to);
 
             return (
               <NavLink
-                key={to}
-                to={to}
+                key={item.to}
+                to={item.to}
                 onClick={() => setMobileOpen(false)}
-                title={collapsed && !mobileOpen ? `${label}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
-                className={
-                  `relative flex items-center justify-between gap-2 rounded-xl transition-all ${
-                    collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-3 text-sm'
-                  } ${
-                    isPathActive
-                      ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold border-l-4 border-primary dark:border-amber-400 shadow-xs'
-                      : 'text-sidebar-foreground/75 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
-                  }`
-                }
+                title={collapsed && !mobileOpen ? `${item.label}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
+                className={`relative flex items-center justify-between gap-2 rounded-xl transition-all ${
+                  collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-2.5 text-sm'
+                } ${
+                  isPathActive
+                    ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold border-l-4 border-primary dark:border-amber-400 shadow-xs'
+                    : 'text-sidebar-foreground/75 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary dark:text-amber-400' : ''}`} />
-                  {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
+                  {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
                 </div>
 
                 {(!collapsed || mobileOpen) && isItemMaintenance && (
@@ -258,7 +393,7 @@ export function LearnerLayout({ children }) {
             );
           })}
 
-          <div className="my-3 h-px bg-sidebar-border" />
+          <div className="my-2 h-px bg-sidebar-border" />
 
           {(!collapsed || mobileOpen) && (
             <p className="px-3 pb-2 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
@@ -363,10 +498,11 @@ export function LearnerLayout({ children }) {
             {isAdminUser && (
               <Link
                 to="/admin"
-                className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted lg:flex"
+                className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors shadow-xs"
               >
-                <PanelLeft className="size-4 text-primary" />
-                Chuyển sang Admin
+                <PanelLeft className="size-4 text-amber-500" />
+                <span className="hidden sm:inline">Chuyển sang Admin</span>
+                <span className="sm:hidden">Admin</span>
               </Link>
             )}
 

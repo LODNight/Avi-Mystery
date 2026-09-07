@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -14,7 +14,9 @@ import {
   Award,
   Sparkles,
 } from 'lucide-react';
-import { missionService, courseService } from '../../services/index.js';
+import { missionService, courseService, knowledgeService } from '../../services/index.js';
+import { AuthContext } from '../../hooks/useAuth.js';
+import { PrerequisiteAlert } from '../../components/knowledge/PrerequisiteAlert.jsx';
 import { formatDuration, difficultyLabel, toolLabel, formatXP } from '../../utils/format.js';
 import { Skeleton, MissionIntroSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
@@ -26,8 +28,13 @@ export function MissionIntroPage() {
 
   const [mission, setMission] = useState(null);
   const [course, setCourse] = useState(null);
+  const [topics, setTopics] = useState([]);
+  const [readTopics, setReadTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const authCtx = useContext(AuthContext);
+  const user = authCtx?.user || null;
 
   useEffect(() => {
     let isMounted = true;
@@ -50,6 +57,20 @@ export function MissionIntroPage() {
 
         const missionData = res.data;
         if (isMounted) setMission(missionData);
+
+        // Fetch related topics and read progress
+        if (user && isMounted && knowledgeService?.getTopicsByMission) {
+          try {
+            const [topicsRes, readRes] = await Promise.all([
+              knowledgeService.getTopicsByMission(idToFetch),
+              knowledgeService.getReadTopics(user.uid || user.id || '')
+            ]);
+            if (topicsRes?.data) setTopics(topicsRes.data);
+            if (readRes?.data) setReadTopics(readRes.data);
+          } catch {
+            // Non-critical, ignore
+          }
+        }
 
         // Optional: fetch associated course info
         if (missionData.courseId) {
@@ -171,6 +192,11 @@ export function MissionIntroPage() {
           "{mission.story}"
         </blockquote>
       </section>
+
+      {/* ── Knowledge Alert ── */}
+      {topics.length > 0 && (
+        <PrerequisiteAlert topics={topics} readTopics={readTopics} />
+      )}
 
       {/* ── Section 3: Objectives & Technical Details Grid ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

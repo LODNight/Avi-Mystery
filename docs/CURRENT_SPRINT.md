@@ -74,23 +74,38 @@
 
 ---
 
-## Sprint 5 — Content Domain & Dataset Decoupling Tasks (`PLANNED`)
+## Sprint 5 — Content Domain & Dataset Decoupling Tasks (`CURRENT`)
 
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
-| `CNT-CFG-5.1` | Evaluation Config Extraction out of Submission Adapter | `CNT` | `Critical` | `PLANNED` | Bóc tách hardcoded `EXCEL_CHECKER_CONFIG` & `SQL_CHECKER_CONFIG` khỏi submission service |
-| `CNT-SEP-5.2` | Investigation, Question & Variant Domain Separation | `CNT` | `High` | `PLANNED` | Chuẩn hóa schema phân tách bối cảnh vụ án (`Investigation`) và nhiệm vụ kỹ thuật (`Question`) |
-| `DATA-REG-5.3` | Dataset Domain Independence & Schema Registry | `DATA` | `High` | `PLANNED` | Tạo `datasetService` cho phép nạp và dùng chung dataset cho nhiều Question mà không nhân bản dữ liệu |
+| `CNT-CFG-5.1` | Evaluation Config Extraction out of Submission Adapter | `CNT` | `Critical` | `CURRENT` | Bóc tách hardcoded `EXCEL_CHECKER_CONFIG` & `SQL_CHECKER_CONFIG` khỏi submission service |
+| `CNT-SEP-5.2` | Investigation, Question & Variant Domain Separation | `CNT` | `High` | `CURRENT` | Chuẩn hóa schema phân tách bối cảnh vụ án (`Investigation`) và nhiệm vụ kỹ thuật (`Question`) |
+| `DATA-REG-5.3` | Dataset Domain Independence & Schema Registry | `DATA` | `High` | `CURRENT` | Tạo `datasetService` cho phép nạp và dùng chung dataset cho nhiều Question mà không nhân bản dữ liệu |
+| `LRN-PROG-5.6` | Learner Progress State & Records | `GAME` | `High` | `CURRENT` | Tạo `learnerProgress.js` & `progressService.js` theo dõi trạng thái hoàn thành bài học |
+| `GAM-REWD-5.7` | XP Reward Integration & Idempotent Ledger | `GAME` | `Critical` | `CURRENT` | Xây dựng `rewardEvaluator.js` hỗ trợ trao thưởng XP độc lập và Idempotent |
 
 ---
 
-## Sprint 6 — Game Progress & Progression Architecture Tasks (`PLANNED`)
+## Sprint 6 — Game Progress & Progression Architecture Tasks (`CURRENT`)
 
 | Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
 |---|---|---|---|---|---|
-| `GAM-XP-6.1` | Deterministic Leveling Engine & Idempotent XP Ledger | `GAME` | `Critical` | `PLANNED` | Xây dựng pure `levelingEngine.js` (Level 1–50) và contract `progressService` trao thưởng idempotent |
-| `GAM-MST-6.2` | Main Quest vs Practice Mode & Mastery Tracking | `GAME` | `High` | `PLANNED` | Phân biệt tiến độ Main Quest cốt truyện và Practice tự do; tính điểm thành thạo Mastery |
-| `GAM-MAP-6.3` | Dynamic Learning Map Progression Hook | `GAME` | `High` | `PLANNED` | Thay thế dữ liệu locked/unlocked hardcode bằng `useProgress` hook thời gian thực trên `LearningMapPage` |
+| `GAM-XP-6.1` | Deterministic Leveling Engine & Idempotent XP Ledger | `GAME` | `Critical` | `CURRENT` | Xây dựng pure `levelingEngine.js` (Level 1–50) và contract `progressService` trao thưởng idempotent |
+| `GAM-MST-6.2` | Main Quest vs Practice Mode & Mastery Tracking | `GAME` | `High` | `CURRENT` | Phân biệt tiến độ Main Quest cốt truyện và Practice tự do; tính điểm thành thạo Mastery (`masteryEvaluator.js`) |
+| `GAM-MAP-6.3` | Dynamic Learning Map Progression Hook | `GAME` | `High` | `CURRENT` | Tích hợp `useProgress` hook thời gian thực và `learningMapAdapter` trên `LearningMapPage` |
+
+---
+
+## Sprint 6.5 — Learner Onboarding & First-Run Experience Tasks (`CURRENT`)
+
+| Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
+|---|---|---|---|---|---|
+| `LRN-ONB-6.5.1` | Onboarding State & Service Engine | `LRN` | `High` | `CURRENT` | `onboardingService.js` quản lý state cách ly per-user, transition guards |
+| `LRN-ONB-6.5.2` | Welcome Gate Screen & Route Guard | `LRN` | `High` | `CURRENT` | Màn hình `WelcomeGatePage.jsx` full-screen, chuyển hướng sau đăng ký |
+| `LRN-ONB-6.5.3` | Tutorial Case 0 Content & Evaluator | `LRN` | `High` | `CURRENT` | Nội dung Tutorial Case 0 (`tutorialCase0Content.js`), bộ chấm điểm tối giản |
+| `LRN-ONB-6.5.4` | Minimal Case 0 Workspace & Guided Spotlight | `LRN` | `High` | `CURRENT` | `TutorialCase0Page.jsx` với spotlight 4 bước dẫn dắt trực quan |
+| `LRN-ONB-6.6` | Dashboard Deep Guided Tour 5-Step Spotlight | `LRN` | `High` | `CURRENT` | Guided Tour 5 bước giới thiệu toàn diện các khu vực trên Dashboard |
+| `ADM-ONB-6.7` | Admin Dev Testing Tools for Onboarding | `ADM` | `Medium` | `CURRENT` | Công cụ 1-click reset state onboarding và tour cho Admin |
 
 ---
 
@@ -102,6 +117,19 @@
 | `LRN-PRAC-7.2` | Standalone Practice Workspace & Question Bank | `LRN` | `Medium` | `CURRENT` | Giao diện giải bài tập tự do tách biệt khỏi cốt truyện chính (`/practice`) |
 | `GAME-PROF-7.3` | Learner Profile & Achievement Badges Page | `GAME` | `Medium` | `CURRENT` | Trang Hồ sơ cá nhân (`/profile`) và bảng huy hiệu danh hiệu thám tử (`/achievements`) |
 | `GAME-HIST-7.4` | Activity History Timeline Page | `GAME` | `Medium` | `CURRENT` | Dải timeline lịch sử hoạt động học tập của người dùng (`/profile/history`) |
+| `SYS-FB-7.5` | Firebase Production Infrastructure Migration | `SHR` | `Critical` | `CURRENT` | Di chuyển lưu trữ XP, Progress, Achievements, History sang Firebase Firestore thời gian thực |
+
+---
+
+## Sprint 8 — Admin Content Studio Tasks (`CURRENT`)
+
+| Task ID | Tiêu đề Task | Area | Mức ưu tiên | Trạng thái | Ghi chú / Acceptance Criteria |
+|---|---|---|---|---|---|
+| `ADM-STUDIO-8.1` | Visual Investigation & Question Authoring Studio | `ADM` | `Critical` | `CURRENT` | `adminContentService`, `AdminMissionsPage`, `AdminMissionEditorPage`, `AdminCoursesPage`, `AdminChaptersPage` |
+| `ADM-DATA-8.2` | Dataset Importer & SQLite Schema Generator | `ADM` | `High` | `CURRENT` | `AdminDatasetsPage`, trình phân tích CSV/text, tự động đoán kiểu dữ liệu và sinh DDL SQLite |
+| `ADM-PREV-8.3` | Admin Live Preview & Test Runner Sandbox | `ADM` | `High` | `CURRENT` | Modal `AdminTestRunnerModal.jsx`, kiểm thử Excel/SQL sandbox an toàn độc lập |
+| `ADM-READMODEL-8.4`| Materialized Learning Map Read Model & Sync | `ADM` | `Critical` | `CURRENT` | `learningMapProjector.js`, tạo collection `learning_map_views` giải quyết triệt để N+1 queries |
+| `ADM-GUIDE-8.5` | Admin Workflow & Operational Guide Page | `ADM` | `Medium` | `CURRENT` | Trang `AdminGuidePage.jsx` giải thích trực quan luồng tạo và xuất bản dữ liệu |
 
 ---
 
@@ -111,6 +139,8 @@
 |---|---|---|---|---|---|
 | `SHR-DEBT-001` | Chuẩn hóa Toast Notification System | `SHR` | Nông | `Low` | `PLANNED` | Thay thế `alert()` bằng custom Toast component cho feedback thao tác |
 | `CNT-DEBT-002` | Thu dọn legacy missionId alias mapping | `CNT` | Vừa | `Medium` | `PROPOSED` | Loại bỏ hoàn toàn alias missionId khi bóc tách xong `InvestigationId` / `QuestionId` |
+| `LRN-DEBT-003` | Knowledge Hub Markdown Parser Performance | `LRN` | Vừa | `Medium` | `PROPOSED` | Nâng cấp `KnowledgeViewer` từ custom regex sang `react-markdown` để render ổn định hơn |
+| `BE-DEBT-004` | Knowledge Service Pagination & Indexing | `BE` | Vừa | `Low` | `PROPOSED` | Thêm pagination và Firestore index cho `knowledgeService` khi lượng bài học tăng lên |
 
 
 --- Content of docs/CHECKLIST.md ---
@@ -364,7 +394,7 @@
 
 ---
 
-## 🔵 Sprint 6.5 — Learner Onboarding & First-Run Experience *(IN PROGRESS)*
+## 🟢 Sprint 6.5 — Learner Onboarding & First-Run Experience *(CURRENT — Hoàn thành 100%)*
 
 ### 🔹 Step 6.5.0: First-Run UX Audit *(HOÀN THÀNH)*
 - [x] Kiểm tra luồng Register → Dashboard hiện tại (READ-ONLY)
@@ -473,58 +503,72 @@
 
 ---
 
-## ⚪ Sprint 8 — Admin Content Studio *(PROPOSED)*
+## 🟢 Sprint 8 — Admin Content Studio *(CURRENT — Hoàn thành 100%)*
 
-### 🔹 Step 8.1: Visual Investigation & Question Authoring Studio *(PROPOSED)*
-- [ ] Giao diện tạo và chỉnh sửa vụ án/câu hỏi trực quan cho Quản trị viên
+### 🔹 Step 8.1: Visual Investigation & Question Authoring Studio *(HOÀN THÀNH)*
+- [x] Định nghĩa `adminContentService.js` contract & `mockAdminContentService.js` adapter hỗ trợ CRUD Course, Chapter, Mission, Dataset.
+- [x] Trang Danh sách Vụ án (`/admin/missions`): Bộ lọc đa chiều (Course, Tool, Status, Difficulty, Search), chuyển đổi Publish/Draft tức thì và thống kê tổng quan.
+- [x] Trình Soạn Thảo Vụ Án Trực Quan (`/admin/missions/new` & `/admin/missions/:id/edit`): 4 tabs (Hồ sơ & Bối cảnh, Không gian làm việc, Bộ chấm điểm Checker, Hệ thống gợi ý nhiều cấp độ).
+- [x] Trang Quản lý Khóa học (`/admin/courses`) & Chương học (`/admin/chapters`): Tạo mới, sửa, xuất bản và nút 1-click đồng bộ lại Bản đồ Học tập Read Model (`learning_map_views`).
 
-### 🔹 Step 8.2: Dataset Importer & Schema Generator *(PROPOSED)*
-- [ ] Công cụ chuyển đổi CSV/Excel thành Dataset schema tự động
+### 🔹 Step 8.2: Dataset Importer & Schema Generator *(HOÀN THÀNH)*
+- [x] Trang Quản lý Dataset (`/admin/datasets`): Xem danh sách, thông tin bảng và modal Schema Viewer.
+- [x] Trình nhập CSV & Tạo Schema Tự động: Tự động đoán kiểu dữ liệu (`INTEGER`, `REAL`, `DATE`, `TEXT`), xem trước dữ liệu mẫu và sinh lệnh SQLite DDL (`CREATE TABLE ...`, `INSERT INTO ...`).
 
-### 🔹 Step 8.3: Admin Live Preview & Test Runner *(PROPOSED)*
-- [ ] Chế độ chạy thử nghiệm bài tập trực tiếp trong giao diện Admin
-
----
-
-## ⚪ Sprint 9 — Backend API & Persistence *(PROPOSED)*
-
-### 🔹 Step 9.1: FastAPI Server & PostgreSQL Database *(PROPOSED)*
-- [ ] Xây dựng RESTful API với Python FastAPI & PostgreSQL database
-
-### 🔹 Step 9.2: Real API Client Adapters & JWT Auth *(PROPOSED)*
-- [ ] Thay thế các Mock Services bằng API Client thực tế giữ nguyên Frontend contracts
+### 🔹 Step 8.3: Admin Live Preview & Test Runner Sandbox *(HOÀN THÀNH)*
+- [x] Modal `AdminTestRunnerModal.jsx`: Chạy thử công thức Excel qua `excelChecker` và câu lệnh SQL qua engine Web Worker SQLite WASM trực tiếp trong Studio.
+- [x] Sandbox Isolation: Đảm bảo kiểm thử an toàn, không kích hoạt `progressService`, không ghi nhận XP hay ảnh hưởng dữ liệu học viên thật.
 
 ---
 
-## ⚪ Sprint 10 — Production Hardening & Release *(PROPOSED)*
+## 🟢 Sprint 8.5 — Education / Knowledge Hub *(HOÀN THÀNH 100%)*
 
-### 🔹 Step 10.1: Learner Analytics & Insights Dashboard *(PROPOSED)*
-- [ ] Trang phân tích chỉ số học tập dành cho Quản trị viên
+### 🔹 Step 8.5.1: Markdown Renderer & UI Improvements
+- [x] Tích hợp `react-markdown` và `remark-gfm` cho trang bài học.
+- [x] Hỗ trợ đầy đủ UI hiển thị Code Block có tính năng copy, bảng (tables), danh sách và trích dẫn.
 
-### 🔹 Step 10.2: Bundle Optimization, Security Audit & Launch *(PROPOSED)*
-- [ ] Tối ưu hóa bundle, audit bảo mật OWASP và phát hành ứng dụng
+### 🔹 Step 8.5.2: Admin Editor & Firebase Offline Persistence
+- [x] Cải thiện Admin Knowledge Editor: Sử dụng Mission Selector trực quan (Checkboxes, filter, search) thay vì text input.
+- [x] Bật `persistentLocalCache` IndexedDB đa tab cho Firestore giúp xem bài học mượt mà cả khi offline.
+- [x] Nâng cấp UI/UX trang `KnowledgeHubPage`: Thêm thanh tìm kiếm và Sidebar Drawer responsive trên di động.
 
+---
+
+## 🟡 Sprint 9 — Academy Mode & Interactive Sandbox *(PROPOSED - NEXT)*
+
+*Mục tiêu: Mở rộng định hướng sang mô hình W3Schools (Bên cạnh nhánh cốt truyện Game Mystery), cho phép học viên học lý thuyết kết hợp thực hành ngay lập tức (Try it Yourself).*
+
+### 🔹 Step 9.1: Interactive Data Sandbox (Try It Yourself)
+- [ ] Xây dựng màn hình `PracticeSandboxPage`: Trình soạn thảo chia đôi màn hình (Split-pane) với Lý thuyết bên trái và Editor/Terminal (SQL/Excel) bên phải.
+- [ ] Cho phép chạy thử (execute) code/công thức tự do hoặc theo kịch bản mini-task, trả về kết quả thời gian thực qua `excelChecker` / `sql-wasm`.
+
+### 🔹 Step 9.2: Academy Course Structure (W3Schools Style)
+- [ ] Xây dựng lại giao diện danh sách khóa học `/academy` với Sidebar Menu tổ chức theo dạng "Bài học tuần tự" thay vì "Vụ án trinh thám".
+- [ ] Liên kết thư viện kiến thức (`KnowledgeHub`) trực tiếp vào Sandbox, tạo vòng lặp học tập: Đọc lý thuyết ➡ Try it ➡ Giải bài tập củng cố.
+
+---
+
+## ⚪ Sprint 10 — Backend API & Persistence *(PROPOSED)*
+
+### 🔹 Step 10.1: FastAPI Server & PostgreSQL Database
+- [ ] Xây dựng RESTful API với Python FastAPI & PostgreSQL database.
+- [ ] Thay thế các Mock Services bằng API Client thực tế giữ nguyên Frontend contracts.
+
+---
 
 --- Content of docs/agent/CURRENT_TASK.md ---
 
 # AVI-MYSTERY — CURRENT TASK
 
 ## Primary Module
-- **Module Name**: `Gamification & Engagement Engine`
-- **Primary Path**: `src/features/profile/`
-- **Current Sprint**: **SPRINT 7 — Learner Engagement & Practice Engine (COMPLETED)**
-- **Current Step**: **STEP 7.4 — Activity History Page (`/profile/history`) (DONE)**
+- **Module Name**: `Academy Mode & Interactive Sandbox`
+- **Primary Path**: `src/pages/learner/`, `src/components/sandbox/`
+- **Current Sprint**: **SPRINT 9 — Academy Mode & Interactive Sandbox (PROPOSED)**
+- **Current Step**: **STEP 9.1 - Interactive Data Sandbox**
 
 ## Completed Sub-steps
-1. **Step 7.1 — Level Up Popups & Streak Counter Engine** *(DONE)*: Modal mừng thăng cấp và chi tiết chuỗi ngày học. Tích hợp Sidebar.
-2. **Step 7.2 — Standalone Practice Workspace (`/practice`)** *(DONE)*: Ngân hàng câu hỏi thực hành tự do. Bộ lọc Excel/SQL, tích hợp route với chế độ Luyện tập. Đồng bộ hoá dữ liệu `useProgress`.
-3. **Step 7.3 — Learner Profile & Achievement Badges** *(DONE)*: Đã tạo Mock data thành tựu (`achievements.js`), bổ sung `getLearnerAchievements` vào ProgressService, hoàn thiện `ProfilePage` và `AchievementsPage`, cập nhật Router.
-4. **Step 7.4 — Activity History Page** *(DONE)*: Hoàn tất trang `/profile/history` hiển thị dải timeline lịch sử, hỗ trợ lọc theo loại hành động và thời gian.
-5. **Step 7.5 — Firebase Production Infrastructure Migration** *(DONE)*: Đã thay thế hoàn toàn hệ thống mock progress bằng `firebaseProgressService.js`. Dữ liệu về tổng số XP, tiến độ nhiệm vụ (Progress), lịch sử nhận thưởng (XP Ledger), và mở khóa Danh hiệu đều được đồng bộ hai chiều trực tiếp với Firebase Auth và Firestore theo thời gian thực (Idempotent Transaction).
+1. **Sprint 8.5 — Knowledge Hub Technical Debt** *(DONE)*: Hoàn tất dọn dẹp kỹ thuật, Markdown renderer chuẩn GFM, Firebase offline persistence và giao diện UI/UX hoàn chỉnh.
 
-## Current Sub-step (In Progress)
-- Tất cả task của Sprint 7 bao gồm cả Firebase Integration đã hoàn tất 100%. Sẵn sàng chuyển sang Sprint 8.
-
-## Next Proposed Steps (Sprint 8 Roadmap)
-- **Step 8.1**: Admin Content Studio (Visual Investigation & Question Authoring Studio) — Công cụ dành cho Admin để tạo nhiệm vụ, cấu hình checker (Excel/SQL) và quản lý dữ liệu trực quan.
-- **Step 8.2**: Dataset Importer & Schema Generator — Công cụ tải và tạo Schema SQL từ file CSV/Excel cho Admin.
+## Next Proposed Steps (Sprint 9 Roadmap)
+- **Step 9.1**: Interactive Data Sandbox (Try It Yourself)
+- **Step 9.2**: Academy Course Structure (W3Schools Style)

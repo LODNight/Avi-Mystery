@@ -17,10 +17,10 @@
 | `LRN-EXCEL` | Excel Learner Workspace | `CURRENT` | `src/components/excel/`, `src/pages/learner/ExcelMissionPage.jsx`, `src/utils/excelChecker.js` | `SHR`, `LRN-SUB` | 1–3 |
 | `LRN-SQL` | SQL Learner Workspace | `CURRENT` | `src/utils/sql/`, `src/workers/sql/`, `src/components/sql/`, `src/pages/learner/SqlMissionPage.jsx` | `SHR`, `LRN-SUB` | 4 |
 | `LRN-SUB` | Submission Gateway | `CURRENT` | `src/services/contracts/submissionService.js`, `src/services/mock/mockSubmissionService.js` | `LRN-EXCEL`, `LRN-SQL` | 3–4 |
-| `CNT` | Content Domain | `PLANNED` | `src/services/contracts/contentService.js` [PLANNED], `src/mocks/data/` | `SHR` | Sprint 5 |
-| `DATA` | Dataset Domain | `PLANNED` | `src/services/contracts/datasetService.js` [PLANNED], `src/utils/sql/sqlDataset.js` | `SHR` | Sprint 5 |
-| `GAME` | Game Progress Domain | `PLANNED` | `src/utils/game/levelingEngine.js` [PLANNED], `src/services/contracts/progressService.js` [PLANNED] | `LRN-SUB`, `SHR` | Sprint 6 |
-| `ADM` | Admin Content Studio | `PROPOSED` | `src/pages/admin/` | `SHR`, `CNT` | Sprint 8 |
+| `CNT` | Content Domain | `CURRENT` | `src/services/contracts/contentService.js`, `src/services/mock/mockContentService.js`, `src/mocks/data/` | `SHR` | Sprint 5 |
+| `DATA` | Dataset Domain | `CURRENT` | `src/services/contracts/datasetService.js`, `src/services/mock/mockDatasetService.js`, `src/utils/sql/sqlDataset.js` | `SHR` | Sprint 5 |
+| `GAME` | Game Progress Domain | `CURRENT` | `src/utils/game/levelingEngine.js`, `src/services/contracts/progressService.js`, `src/services/api/firebaseProgressService.js` | `LRN-SUB`, `SHR` | Sprint 6–7 |
+| `ADM` | Admin Content Studio | `CURRENT` | `src/pages/admin/`, `src/services/contracts/adminContentService.js`, `src/domain/learningMap/learningMapProjector.js` | `SHR`, `CNT` | Sprint 8 |
 | `BE` | Backend API (FastAPI) | `PROPOSED` | `src/services/api/` [STUB] | Service Contracts | Sprint 9 |
 | `ANL` | Analytics & Insights | `PROPOSED` | `/admin/analytics` [PLACEHOLDER] | `GAME`, `BE` | Sprint 10 |
 
@@ -49,10 +49,17 @@ flowchart TD
     SubmissionService[submissionService.js]
   end
 
-  subgraph Progress Domain [GAME Domain - Sprint 6]
-    ProgressService[progressService.js]
+  subgraph Progress Domain [GAME Domain - Sprint 6-7]
+    ProgressService[progressService.js / firebaseProgressService.js]
     LevelingEngine[levelingEngine.js]
     LearningMapUI[LearningMapPage.jsx]
+  end
+
+  subgraph Admin Studio [ADM Domain - Sprint 8]
+    AdminPages[Admin Studio Pages]
+    AdminContentService[adminContentService.js]
+    ReadModelProjector[learningMapProjector.js]
+    ReadModel[learning_map_views]
   end
 
   Question --> ExcelWorkspace
@@ -66,6 +73,9 @@ flowchart TD
   SubmissionService -- "SubmissionResult (No XP Mutation)" --> ProgressService
   ProgressService --> LevelingEngine
   ProgressService -- "useProgress Hook" --> LearningMapUI
+
+  AdminPages --> AdminContentService --> ReadModelProjector --> ReadModel
+  ReadModel -. "Materialized Fast Fetch" .-> LearningMapUI
 ```
 
 ---
@@ -83,6 +93,9 @@ flowchart TD
 3. **Ranh Giới Dataset (`Dataset Independence Rule`)**:
    - Bộ dữ liệu `Dataset` thuộc sở hữu của `DATA` Domain, độc lập với `missionId` hay `questionId`.
 
+4. **Ranh Giới Read Model (`Learning Map Read Model Rule`)**:
+   - Giao diện Learning Map đọc từ collection `learning_map_views` đã được chiếu sẵn cấu trúc cây rút gọn thay vì tải toàn bộ mission payload.
+
 ---
 
 ## 4. 🔗 Đường Dẫn Verified & Placeholders
@@ -91,14 +104,27 @@ flowchart TD
 |---|---|---|---|
 | `/courses` | `src/pages/learner/CoursesPage.jsx` | `LRN` | `CURRENT` |
 | `/courses/:slug` | `src/pages/learner/CourseDetailPage.jsx` | `LRN` | `CURRENT` |
-| `/map` | `src/pages/learner/LearningMapPage.jsx` | `LRN` / `GAME` | `CURRENT` (Static UI) → Dynamic `Sprint 6` |
+| `/map` | `src/pages/learner/LearningMapPage.jsx` | `LRN` / `GAME` | `CURRENT` (Dynamic Read Model) |
 | `/missions/:missionId` | `src/pages/learner/MissionIntroPage.jsx` | `LRN` / `CNT` | `CURRENT` |
 | `/missions/:missionId/workspace` | `src/pages/learner/ExcelMissionPage.jsx` | `LRN-EXCEL` | `CURRENT` |
 | `/missions/:missionId/sql` | `src/pages/learner/SqlMissionPage.jsx` | `LRN-SQL` | `CURRENT` |
-| `/profile` | `src/app/router/index.jsx` | `GAME` | `PLANNED` (Placeholder) |
-| `/achievements` | `src/app/router/index.jsx` | `GAME` | `PLANNED` (Placeholder) |
+| `/practice` | `src/pages/learner/PracticePage.jsx` | `LRN` | `CURRENT` |
+| `/profile` | `src/pages/learner/ProfilePage.jsx` | `GAME` | `CURRENT` |
+| `/achievements` | `src/pages/learner/AchievementsPage.jsx` | `GAME` | `CURRENT` |
+| `/profile/history` | `src/pages/learner/ActivityHistoryPage.jsx` | `GAME` | `CURRENT` |
+| `/onboarding` | `src/features/onboarding/WelcomeGatePage.jsx` | `LRN` | `CURRENT` |
+| `/onboarding/case-0` | `src/features/onboarding/TutorialCase0Page.jsx` | `LRN` | `CURRENT` |
+| `/admin` | `src/pages/admin/OverviewPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/guide` | `src/pages/admin/AdminGuidePage.jsx` | `ADM` | `CURRENT` |
+| `/admin/courses` | `src/pages/admin/AdminCoursesPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/chapters` | `src/pages/admin/AdminChaptersPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/missions` | `src/pages/admin/AdminMissionsPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/missions/new` | `src/pages/admin/AdminMissionEditorPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/missions/:missionId/edit` | `src/pages/admin/AdminMissionEditorPage.jsx` | `ADM` | `CURRENT` |
+| `/admin/datasets` | `src/pages/admin/AdminDatasetsPage.jsx` | `ADM` | `CURRENT` |
 | `/admin/settings` | `src/pages/admin/PageStatusPage.jsx` | `ADM` | `CURRENT` |
-| `/admin/courses` | Placeholder | `ADM` | `PROPOSED` |
+| `/admin/learners` | Placeholder | `ADM` | `PLANNED` |
+| `/admin/analytics` | Placeholder | `ANL` | `PROPOSED` |
 
 
 --- Content of docs/agent/TEST_STRATEGY.md ---
@@ -148,9 +174,10 @@ npm test -- --run src/utils/sql/sqlQueryPolicy.test.js src/utils/sql/sqlEngineAd
 | `LRN-EXCEL` | Excel Workspace | `excelChecker.js` pure logic, `SpreadsheetGrid`, `FormulaBar`, `HintPanel` pin-to-fx | `CURRENT` |
 | `LRN-SQL` | SQL Workspace | `sqlQueryPolicy.js` (12 keywords & multi-statement guard), SQLite Worker lifecycle, `SchemaBrowser`, `SqlEditor`, `ResultViewer`, `sqlChecker.js` | `CURRENT` |
 | `LRN-SUB` | Submission Gateway | `submissionService` contract, `mockSubmissionService` mode `run`/`submit`, `clientAttemptId` replay guard, `potentialXp` preview (No XP mutation) | `CURRENT` |
-| `CNT` | Content Domain | Content config extraction, `contentService` dynamic evaluation config loading | `PLANNED / Sprint 5` |
-| `DATA` | Dataset Domain | Independent dataset registry loading & schema caching across questions | `PLANNED / Sprint 5` |
-| `GAME` | Game Progress | Deterministic `levelingEngine.js` (Level 1–50), `progressService` idempotent XP ledger, dynamic `LearningMapPage` unlocking | `PLANNED / Sprint 6` |
+| `CNT` | Content Domain | Content config extraction, `contentService` dynamic evaluation config loading | `CURRENT` |
+| `DATA` | Dataset Domain | Independent dataset registry loading & schema caching across questions | `CURRENT` |
+| `GAME` | Game Progress | Deterministic `levelingEngine.js` (Level 1–50), `progressService` idempotent XP ledger, dynamic `LearningMapPage` unlocking, `firebaseProgressService` | `CURRENT` |
+| `ADM` | Admin Content Studio | `adminContentService` contract & mock adapter, `learningMapProjector`, `AdminMissionsPage`, `AdminMissionEditorPage`, `AdminCoursesPage`, `AdminDatasetsPage` | `CURRENT` |
 
 ---
 
@@ -169,11 +196,11 @@ npm test -- --run src/utils/sql/sqlQueryPolicy.test.js src/utils/sql/sqlEngineAd
 
 ---
 
-## 4. 📊 Last Verified Baseline (Sprint 4 Gate)
+## 4. 📊 Last Verified Baseline (Sprint 8 Gate)
 
-- **Total Tests:** 222+ tests pass 100% trên 30+ test files.
-- **WASM Production Build Gate:** Vite build thành công, `.wasm` asset đóng gói chính xác, preview server hoạt động ổn định.
-- **Zero Regression Rule:** Không được phép làm vỡ bất kỳ test case nào của các Sprint 1–4 trước khi đóng bất kỳ Step nào trong tương lai.
+- **Total Tests:** **529 tests pass 100% trên 66 test files** (`npm test -- --run`).
+- **Production Build Gate:** Vite build thành công không lỗi (`dist/` asset packaging pass 100%).
+- **Zero Regression Rule:** Không được phép làm vỡ bất kỳ test case nào của các Sprint 1–8 trước khi đóng bất kỳ Step nào trong tương lai.
 
 
 --- Content of docs/agent/INVESTIGATION_MAPPING.md ---

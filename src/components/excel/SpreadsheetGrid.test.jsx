@@ -40,19 +40,22 @@ describe('SpreadsheetGrid Component Tests (LRN-EXCEL-002)', () => {
       />
     );
 
-    const targetCellElement = screen.getByText('Mục tiêu').closest('td');
+    const targetCellElement = screen.getByTestId('target-cell-marker').closest('td');
     fireEvent.click(targetCellElement);
 
     expect(handleCellSelect).toHaveBeenCalledWith('E2');
   });
 
-  it('hiển thị badge "Mục tiêu" khi ô target chưa có dữ liệu (Trạng thái 1)', () => {
+  it('hiển thị marker và viền accent cho ô target mà KHÔNG dùng badge chữ "Mục tiêu" che khuất ô', () => {
     render(<SpreadsheetGrid dataset={mockDataset} selectedCell="E2" targetCell="E2" />);
 
-    expect(screen.getByText('Mục tiêu')).toBeInTheDocument();
+    // Marker ô mục tiêu hiển thị
+    expect(screen.getByTestId('target-cell-marker')).toBeInTheDocument();
+    // Không còn chữ "Mục tiêu" gây che khuất dữ liệu trong ô tính
+    expect(screen.queryByText('Mục tiêu')).not.toBeInTheDocument();
   });
 
-  it('ẩn chữ "Mục tiêu" và hiển thị giá trị kết quả rõ ràng khi đã có dữ liệu (Trạng thái 2 - Smart Visibility)', () => {
+  it('hiển thị giá trị kết quả rõ ràng khi đã có dữ liệu tính toán', () => {
     const cellValues = { E2: 450000 };
     render(
       <SpreadsheetGrid

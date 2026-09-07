@@ -26,6 +26,7 @@ export function MissionResultModal({
   missionTitle = 'Vụ án trinh thám Excel',
   onClose,
   onNextMission,
+  hasNextMission = false,
 }) {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
@@ -188,7 +189,7 @@ export function MissionResultModal({
             className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-muted/30 px-4 py-2.5 text-xs font-bold text-foreground transition-all hover:bg-muted sm:w-auto"
           >
             <Map className="size-4 text-muted-foreground" />
-            <span>Đóng kết quả</span>
+            <span>{hasNextMission ? 'Về bản đồ học tập' : 'Đóng kết quả'}</span>
           </button>
 
           <button
@@ -196,7 +197,7 @@ export function MissionResultModal({
             onClick={onNextMission || onClose}
             className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:bg-emerald-700 sm:w-auto"
           >
-            <span>Về bản đồ học tập</span>
+            <span>{hasNextMission ? 'Nhiệm vụ tiếp theo' : 'Về bản đồ học tập'}</span>
             <ArrowRight className="size-4" />
           </button>
         </div>

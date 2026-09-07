@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ArrowLeft,
+  ArrowRight,
   Award,
   Sparkles,
   Clock,
@@ -18,12 +19,15 @@ import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { formatDuration } from '../../utils/format.js';
 import { FormulaBar } from '../../components/excel/FormulaBar.jsx';
 import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
-import { ActionToolbar } from '../../components/excel/ActionToolbar.jsx';
 import { HintPanel } from '../../components/excel/HintPanel.jsx';
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx';
+import { WorkspaceSplitPane } from '../../components/workspace/WorkspaceSplitPane.jsx';
+import { ProblemPane } from '../../components/workspace/ProblemPane.jsx';
+import { MissionActionBar } from '../../components/workspace/MissionActionBar.jsx';
 import { analyzeExcelFormula, validateGlobalExcelMission, shiftFormulaRows, EXCEL_MISSION_SOLUTIONS } from '../../utils/excelChecker.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useProgress } from '../../hooks/useProgress.js';
+import { useFocusMode } from '../../app/layouts/FocusLayout.jsx';
 function createClientAttemptId() {
   if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `client-${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -37,11 +41,13 @@ export function ExcelMissionPage() {
   
   const { user } = useAuth();
   const { progressList, awardXp } = useProgress(user?.id);
+  const { isFocusMode, toggleFocusMode } = useFocusMode();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [mission, setMission] = useState(null);
   const [dataset, setDataset] = useState(null);
+  const [adjacentMissions, setAdjacentMissions] = useState({ prev: null, next: null });
 
   // State quản lý việc ẩn/hiện Hồ sơ bối cảnh vụ án & Bảng gợi ý (Step 3.3)
   const [showBriefing, setShowBriefing] = useState(false);
@@ -63,6 +69,7 @@ export function ExcelMissionPage() {
   const notificationTimerRef = useRef(null);
   const hintTriggerRef = useRef(null);
   const hintCloseButtonRef = useRef(null);
+  const formulaInputRef = useRef(null);
 
   // State quản lý Popup Kết quả nộp bài (Step 3.4)
   const [submissionResult, setSubmissionResult] = useState(null);
@@ -151,6 +158,24 @@ export function ExcelMissionPage() {
           setDataset(datasetRes.data);
         }
 
+        // Tải danh sách nhiệm vụ trong cùng chương để hỗ trợ điều hướng trước/sau
+        if (loadedMission.chapterId) {
+          try {
+            const chapRes = await missionService.getMissionsByChapter(loadedMission.chapterId);
+            if (chapRes?.data && chapRes.data.length > 0) {
+              const list = chapRes.data;
+              const idx = list.findIndex((m) => m.id === loadedMission.id);
+              const prevM = idx > 0 ? list[idx - 1] : null;
+              const nextM = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
+              if (isMounted) {
+                setAdjacentMissions({ prev: prevM, next: nextM });
+              }
+            }
+          } catch {
+            // Không chặn việc học nếu lỗi lấy danh sách phụ
+          }
+        }
+
         setLoading(false);
       } catch (err) {
         if (isMounted) {
@@ -233,6 +258,7 @@ export function ExcelMissionPage() {
     setSelectedCell(cellAddr);
     setFormulaInput(cellFormulas[cellAddr] || '');
     setFormulaDiagnostic(null);
+    setTimeout(() => formulaInputRef.current?.focus(), 0);
   };
 
   // Trích xuất dữ liệu gốc của sheet để phục vụ tính toán công thức
@@ -558,277 +584,163 @@ export function ExcelMissionPage() {
   }
 
   return (
-    <div className={`flex flex-col min-h-[calc(100vh-5rem)] space-y-5 animate-fade-in pb-12 transition-all duration-300 ${
-      showHintPanel ? 'xl:pr-[410px]' : ''
-    }`}>
-      {/* ── Top Bar Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-        <div className="flex items-center gap-3">
-          <Link
-            to={isPractice ? '/practice' : '/map'}
-            className="grid size-10 place-items-center rounded-xl border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground transition-all shadow-sm"
-            title={isPractice ? 'Về khu luyện tập' : 'Quay lại Bản đồ học tập'}
-          >
-            <ArrowLeft className="size-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase ${
-                isPractice 
-                  ? 'border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400' 
-                  : 'border-primary/30 bg-primary/10 text-primary'
-              }`}>
-                <FileSpreadsheet className="size-3" /> {isPractice ? 'Practice Mode' : 'Excel Mission'}
-              </span>
-              <span className="text-xs font-semibold text-muted-foreground">
-                {isPractice ? 'Mã bài tập:' : 'Mã vụ án:'} {mission.id}
-              </span>
-            </div>
-            <h1 className="mt-1 text-xl sm:text-2xl font-extrabold tracking-tight text-foreground flex items-center gap-2.5">
-              <span>{mission.title}</span>
-              {isMissionCompleted && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-0.5 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3.5" /> Đã hoàn thành
-                </span>
-              )}
-            </h1>
-          </div>
-        </div>
-
-        {/* Action Controls & Badges */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Toggle Briefing Button */}
-          <button
-            onClick={() => setShowBriefing(!showBriefing)}
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all shadow-sm cursor-pointer"
-          >
-            <FileText className="size-4" />
-            <span>{showBriefing ? 'Ẩn hồ sơ vụ án' : 'Xem hồ sơ vụ án & bối cảnh'}</span>
-            <ChevronDown className={`size-4 transition-transform duration-200 ${showBriefing ? 'rotate-180' : ''}`} />
-          </button>
-
-          {/* Potential XP preview */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-            <Award className="size-4" />
-            <span>Dự kiến +{potentialXp} XP</span>
-            {hintsUnlockedCount > 0 && (
-              <span className="text-[10px] text-rose-500 font-semibold">(-{hintsUnlockedCount * 15})</span>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-xs font-semibold text-muted-foreground">
-            <Clock className="size-3.5" />
-            <span>{formatDuration(mission.estimatedDuration)}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Completed Mission Banner ── */}
-      {isMissionCompleted && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 sm:px-6 sm:py-4.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 animate-fade-in shadow-xs">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
-            <span className="leading-relaxed">
-              <strong>Vụ án đã hoàn thành!</strong> Bạn đã giải quyết thành công bài học này. Bạn vẫn có thể tiếp tục chỉnh sửa và nộp lại bài làm để thử nghiệm phương án tối ưu hơn.
-            </span>
-          </div>
-          <Link
-            to={isPractice ? '/practice' : '/map'}
-            className="shrink-0 self-end sm:self-auto rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
-          >
-            {isPractice ? 'Về khu luyện tập' : 'Về bản đồ học tập'}
-          </Link>
-        </div>
-      )}
-
-      {/* ── Collapsible Mission Briefing Drawer (Nằm ngay dưới Tiêu đề chính, 100% width) ── */}
-      {showBriefing && (
-        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 sm:p-5 shadow-xs space-y-3 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-amber-500/20 pb-2.5">
-            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-              <Sparkles className="size-4 text-amber-500" />
-              <span>Hồ sơ bối cảnh vụ án</span>
-            </div>
-            <button
-              onClick={() => setShowBriefing(false)}
-              className="text-xs font-semibold text-muted-foreground hover:text-foreground cursor-pointer"
+    <div className="flex flex-col h-full w-full min-h-0 overflow-hidden bg-background text-foreground animate-fade-in">
+      {/* ── Khu vực thông báo phản hồi (nếu có lỗi hoặc feedback) ── */}
+      {(feedbackToast || submissionFeedback || submissionError) && (
+        <div className="shrink-0 space-y-1.5 pb-1.5 px-1" role="region" aria-label="Thông báo hệ thống">
+          {feedbackToast && (
+            <div
+              className={`flex items-center justify-between gap-3 rounded-xl border p-2 text-xs sm:text-sm font-semibold shadow-xs ${
+                feedbackToast.type === 'success'
+                  ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                  : feedbackToast.type === 'warning'
+                  ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                  : feedbackToast.type === 'error'
+                  ? 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+                  : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300'
+              }`}
             >
-              Thu gọn ▲
-            </button>
-          </div>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="size-4 shrink-0" />
+                <span>{feedbackToast.message}</span>
+              </div>
+              <button
+                onClick={() => setFeedbackToast(null)}
+                className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+          )}
 
-          <div className="space-y-2">
-            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground">
-              Câu chuyện trinh thám
-            </h3>
-            <p className="text-sm leading-relaxed text-foreground italic border-l-2 border-primary/50 pl-3.5 py-1 bg-muted/30 rounded-r-xl">
-              "{mission.story}"
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Hãy chọn ô <strong className="text-foreground font-mono">{starterCell}</strong> trên bảng tính phía dưới và nhập công thức thích hợp để giải quyết nghi vấn.
-            </p>
-          </div>
+          {submissionFeedback && (
+            <div
+              role="status"
+              className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs sm:text-sm font-semibold ${
+                submissionFeedback.type === 'validation'
+                  ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                  : 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
+              }`}
+            >
+              <AlertCircle className="mt-0.5 size-4 shrink-0" />
+              <span>{submissionFeedback.message}</span>
+            </div>
+          )}
+
+          {submissionError && (
+            <div
+              role="alert"
+              className="flex flex-col gap-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs sm:text-sm font-semibold text-rose-700 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex items-start gap-2">
+                <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                <span>{submissionError.message}</span>
+              </div>
+              {submissionError.retryable && (
+                <button
+                  type="button"
+                  onClick={handleSubmitAnswer}
+                  disabled={isSubmitting}
+                  className="shrink-0 rounded-lg border border-current px-2.5 py-1 text-xs font-bold hover:bg-rose-500/10 disabled:opacity-50 cursor-pointer"
+                >
+                  Thử nộp lại
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
-      {/* ── Nhóm 1: Mục tiêu vụ án & Thanh thao tác hành động ── */}
-      <div className="rounded-2xl border border-stone-200 dark:border-stone-800 bg-stone-50/60 dark:bg-card p-3 space-y-3 shadow-xs">
-        {/* 1. Compact Sticky Objective Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3.5 py-2.5 shadow-2xs">
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1 rounded-lg bg-amber-500 px-2.5 py-1 font-mono text-xs font-bold text-amber-950 shadow-2xs shrink-0">
-              <Sparkles className="size-3.5 fill-current" /> Ô mục tiêu: {starterCell}
-            </span>
-            <p className="text-xs sm:text-sm font-semibold text-foreground">
-              {mission.objective}
-            </p>
-          </div>
-
-          <button
-            onClick={() => setShowBriefing(!showBriefing)}
-            className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1 shrink-0 self-end sm:self-auto cursor-pointer"
-          >
-            <HelpCircle className="size-3.5" />
-            <span>{showBriefing ? 'Thu gọn hồ sơ' : 'Chi tiết vụ án'}</span>
-          </button>
-        </div>
-
-        {/* Action Toolbar Component */}
-        <ActionToolbar
-          onRun={handleRunFormula}
-          onFillDown={() => handleFillDown(selectedCell)}
-          onSubmit={handleSubmitAnswer}
-          onReset={handleResetGrid}
-          onToggleHint={() => setShowHintPanel(!showHintPanel)}
-          hintButtonRef={hintTriggerRef}
-          hintCount={3}
-          hintsUnlockedCount={hintsUnlockedCount}
-          isEvaluating={isEvaluating}
-          isSubmitting={isSubmitting}
-          isCompleted={isMissionCompleted}
-          canFillDown={canFillDown}
-        />
-      </div>
-
-      {/* ── Nhóm 2: Thông báo phản hồi & Thanh nhập công thức ── */}
-      <div className="space-y-2.5">
-        {/* Khu vực hiển thị thông báo (Luôn nằm phía trên Thanh nhập công thức) */}
-        {(feedbackToast || submissionFeedback || submissionError) && (
-          <div className="space-y-2 animate-fade-in" role="region" aria-label="Thông báo hệ thống">
-            {feedbackToast && (
-              <div
-                className={`flex items-center justify-between gap-3 rounded-xl border p-3 text-xs sm:text-sm font-semibold shadow-xs ${feedbackToast.type === 'success'
-                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                    : feedbackToast.type === 'warning'
-                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                      : feedbackToast.type === 'error'
-                        ? 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
-                        : 'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-300'
-                  }`}
-              >
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="size-4 shrink-0" />
-                  <span>{feedbackToast.message}</span>
-                </div>
-                <button
-                  onClick={() => setFeedbackToast(null)}
-                  className="text-xs opacity-70 hover:opacity-100 cursor-pointer"
-                >
-                  Đóng
-                </button>
-              </div>
-            )}
-
-            {submissionFeedback && (
-              <div
-                role="status"
-                className={`flex items-start gap-2 rounded-xl border px-3.5 py-3 text-sm font-semibold ${submissionFeedback.type === 'validation'
-                    ? 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                    : 'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-300'
-                  }`}
-              >
-                <AlertCircle className="mt-0.5 size-4 shrink-0" />
-                <span>{submissionFeedback.message}</span>
-              </div>
-            )}
-
-            {submissionError && (
-              <div
-                role="alert"
-                className="flex flex-col gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3.5 py-3 text-sm font-semibold text-rose-700 dark:text-rose-300 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="mt-0.5 size-4 shrink-0" />
-                  <span>{submissionError.message}</span>
-                </div>
-                {submissionError.retryable && (
-                  <button
-                    type="button"
-                    onClick={handleSubmitAnswer}
-                    disabled={isSubmitting}
-                    className="shrink-0 rounded-lg border border-current px-3 py-1.5 text-xs font-bold hover:bg-rose-500/10 disabled:opacity-50"
-                  >
-                    Thử nộp lại
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Formula Bar Component (Thanh nhập công thức dính liền trực tiếp phía trên Bảng tính) */}
-        <FormulaBar
-          selectedCell={selectedCell}
-          formula={formulaInput}
-          onChange={handleFormulaChange}
-          onSubmit={handleFormulaSubmit}
-          isTargetCell={selectedCell === starterCell}
-          diagnostic={formulaDiagnostic}
-          activeHint={activeUnlockedHint}
-          onClearActiveHint={() => {
-            setActiveUnlockedHint(null);
-            setPinnedHint(null);
-          }}
-          disabled={isSubmitting}
-        />
-      </div>
-
-      {/* ── Progressive Hint Side Drawer (Non-modal / No dark backdrop overlay) ── */}
-      {showHintPanel && (
-        <aside
-          aria-label="Khung gợi ý"
-          className="fixed bottom-0 right-0 top-20 z-40 w-full sm:w-[400px] max-w-full bg-card border-l border-amber-500/30 shadow-2xl p-4 sm:p-5 overflow-y-auto animate-in slide-in-from-right duration-300"
-        >
-          <HintPanel
-            hints={hintsData}
+      {/* ── Split-Pane IDE Architecture (Sprint 9) ── */}
+      <WorkspaceSplitPane
+        className="flex-1 min-h-0"
+        leftTitle="Hồ sơ vụ án"
+        rightTitle="Bảng tính Excel"
+        isFocusMode={isFocusMode}
+        onToggleFocusMode={toggleFocusMode}
+        leftContent={
+          <ProblemPane
+            title={mission.title}
+            tool="excel"
+            isPractice={isPractice}
+            missionId={mission.id}
+            story={mission.story}
+            objective={mission.objective}
+            targetCell={starterCell}
+            isCompleted={isMissionCompleted}
+            rewardXp={mission.rewardXp || 100}
             hintsUnlockedCount={hintsUnlockedCount}
+            estimatedDuration={mission.estimatedDuration}
+            adjacentMissions={adjacentMissions}
+            hints={hintsData}
             onUnlockNextHint={handleUnlockNextHint}
-            baseXp={mission.rewardXp || 100}
-            penaltyPerHint={15}
-            onClose={closeHintPanel}
-            closeButtonRef={hintCloseButtonRef}
             pinnedHint={pinnedHint}
             onPinHint={handlePinHint}
           />
-        </aside>
-      )}
+        }
+        rightContent={
+          <div className="flex flex-col h-full overflow-hidden bg-background">
+            {/* Top: Formula Bar (Thanh nhập fx chuẩn bảng tính) */}
+            <div className="p-2 border-b border-border bg-card shrink-0">
+              <FormulaBar
+                selectedCell={selectedCell}
+                formula={formulaInput}
+                onChange={handleFormulaChange}
+                onSubmit={handleFormulaSubmit}
+                isTargetCell={selectedCell === starterCell}
+                diagnostic={formulaDiagnostic}
+                activeHint={activeUnlockedHint}
+                onClearActiveHint={() => {
+                  setActiveUnlockedHint(null);
+                  setPinnedHint(null);
+                }}
+                disabled={isSubmitting}
+                inputRef={formulaInputRef}
+                onRun={handleRunFormula}
+                onSubmitAnswer={handleSubmitAnswer}
+                onReset={handleResetGrid}
+                onFillDown={() => handleFillDown(selectedCell)}
+                canFillDown={canFillDown}
+                isEvaluating={isEvaluating}
+                isSubmitting={isSubmitting}
+                isCompleted={isMissionCompleted}
+                showActions={true}
+              />
+            </div>
 
-      {/* ── Full Width Spreadsheet Grid Component (Dính liền phía dưới FormulaBar) ── */}
-      {dataset ? (
-        <SpreadsheetGrid
-          dataset={dataset}
-          selectedCell={selectedCell}
-          onCellSelect={handleCellSelect}
-          onFillDown={handleFillDown}
-          targetCell={starterCell}
-          cellFormulas={cellFormulas}
-          cellValues={cellValues}
-          editableCells={requiredRange}
-        />
-      ) : (
-        <div className="flex h-64 items-center justify-center rounded-3xl border border-dashed border-border bg-card p-6">
-          <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
-        </div>
-      )}
+            {/* Middle: Spreadsheet Grid (Canvas lấp đầy không gian làm việc) */}
+            <div className="flex-1 min-h-0 overflow-hidden p-2">
+              {dataset ? (
+                <SpreadsheetGrid
+                  dataset={dataset}
+                  selectedCell={selectedCell}
+                  onCellSelect={handleCellSelect}
+                  onFillDown={handleFillDown}
+                  targetCell={starterCell}
+                  cellFormulas={cellFormulas}
+                  cellValues={cellValues}
+                  editableCells={requiredRange}
+                />
+              ) : (
+                <div className="flex h-64 items-center justify-center rounded-xl border border-dashed border-border bg-card p-6">
+                  <p className="text-xs text-muted-foreground">Không có dữ liệu bảng tính.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        }
+      />
+
+      {/* ── LeetCode-style Isolated Action Footer ── */}
+      <MissionActionBar
+        onSubmit={handleSubmitAnswer}
+        isSubmitting={isSubmitting}
+        isCompleted={isMissionCompleted}
+        adjacentMissions={adjacentMissions}
+        isPractice={isPractice}
+        missionProgress={mission?.id ? `Vụ án: ${mission.id}` : null}
+        submitIcon="zap"
+      />
 
       {/* ── Mission Result Modal Popup (Step 3.4) ── */}
       <MissionResultModal
@@ -836,9 +748,17 @@ export function ExcelMissionPage() {
         result={submissionResult}
         missionTitle={mission.title}
         onClose={() => setShowResultModal(false)}
+        hasNextMission={Boolean(adjacentMissions.next)}
         onNextMission={() => {
           setShowResultModal(false);
-          navigate(isPractice ? '/practice' : '/map');
+          if (adjacentMissions.next) {
+            const nextPath = adjacentMissions.next.tool === 'sql'
+              ? `/missions/${adjacentMissions.next.id}/sql`
+              : `/missions/${adjacentMissions.next.id}/workspace`;
+            navigate(isPractice ? `/practice?mission=${adjacentMissions.next.id}` : nextPath);
+          } else {
+            navigate(isPractice ? '/practice' : '/map');
+          }
         }}
       />
     </div>

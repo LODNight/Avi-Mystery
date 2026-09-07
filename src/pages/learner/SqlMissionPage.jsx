@@ -1,13 +1,16 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
-import { ArrowLeft, Clock, Database, Target, AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock, Database, Target, AlertCircle, AlertTriangle, CheckCircle2 } from 'lucide-react'
 import { SchemaBrowser } from '../../components/sql/SchemaBrowser.jsx'
 import { SqlEditor } from '../../components/sql/SqlEditor.jsx'
 import { ResultViewer } from '../../components/sql/ResultViewer.jsx'
+import { WorkspaceSplitPane } from '../../components/workspace/WorkspaceSplitPane.jsx'
+import { ProblemPane } from '../../components/workspace/ProblemPane.jsx'
+import { MissionActionBar } from '../../components/workspace/MissionActionBar.jsx'
 import { ErrorState } from '../../components/ui/EmptyState.jsx'
 import { Skeleton, SqlMissionSkeleton } from '../../components/ui/Skeleton.jsx'
 import { MissionResultModal } from '../../components/excel/MissionResultModal.jsx'
-import { sqlMissionService, submissionService as defaultSubmissionService } from '../../services/index.js'
+import { sqlMissionService, submissionService as defaultSubmissionService, missionService } from '../../services/index.js'
 import { createSqlEngine } from '../../utils/sql/index.js'
 import { formatDuration, formatXP } from '../../utils/format.js'
 import { useAuth } from '../../hooks/useAuth.js'
@@ -54,6 +57,7 @@ export function SqlMissionPage({
   const [submissionResult, setSubmissionResult] = useState(null)
   const [submissionError, setSubmissionError] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [adjacentMissions, setAdjacentMissions] = useState({ prev: null, next: null })
 
   const disposeCurrentEngine = useCallback(async () => {
     const engine = engineRef.current
@@ -97,10 +101,26 @@ export function SqlMissionPage({
         await engine.initialize()
         await engine.loadDataset(workspaceResult.data.dataset)
         const schema = await engine.getSchema({ sampleRowLimit: 3 })
-        if (cancelled) return
-
         setQuery(DEFAULT_SQL)
         setState({ phase: 'ready', workspace: workspaceResult.data, schema, error: null })
+
+        // Tải danh sách nhiệm vụ cùng chương để hỗ trợ điều hướng trước/sau
+        if (workspaceResult.data?.mission?.chapterId) {
+          try {
+            const chapRes = await missionService.getMissionsByChapter(workspaceResult.data.mission.chapterId);
+            if (chapRes?.data && chapRes.data.length > 0) {
+              const list = chapRes.data;
+              const idx = list.findIndex((m) => m.id === workspaceResult.data.mission.id);
+              const prevM = idx > 0 ? list[idx - 1] : null;
+              const nextM = idx >= 0 && idx < list.length - 1 ? list[idx + 1] : null;
+              if (!cancelled) {
+                setAdjacentMissions({ prev: prevM, next: nextM });
+              }
+            }
+          } catch {
+            // Bỏ qua lỗi phụ trợ
+          }
+        }
       } catch (error) {
         if (cancelled) return
         setState({
@@ -272,103 +292,109 @@ export function SqlMissionPage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 animate-fade-in">
-      <Link to={isPractice ? '/practice' : `/missions/${mission.id}`} className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
-        <ArrowLeft className="size-4" /> {isPractice ? 'Về khu luyện tập' : 'Quay lại hồ sơ nhiệm vụ'}
-      </Link>
-
-      <header className="rounded-3xl border border-cyan-500/25 bg-card p-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
-          <div className="flex items-center gap-2">
-            <Database className="size-4" /> {isPractice ? 'Practice Mode' : 'SQL Mission'} · Schema đã sẵn sàng
-          </div>
-          {isMissionCompleted && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="size-3.5" /> Đã hoàn thành
-            </span>
-          )}
-        </div>
-        <h1 className="mt-3 text-2xl font-black tracking-tight text-foreground sm:text-3xl">{mission.title}</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">{mission.story}</p>
-        <div className="mt-5 flex flex-wrap gap-3 text-xs">
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-muted px-3 py-2"><Target className="size-3.5" /> {mission.objective}</span>
-          <span className="inline-flex items-center gap-1.5 rounded-xl bg-muted px-3 py-2"><Clock className="size-3.5" /> {formatDuration(mission.estimatedDuration)}</span>
-          <span className="rounded-xl bg-amber-500/10 px-3 py-2 font-bold text-amber-700 dark:text-amber-300">{formatXP(mission.rewardXp)}</span>
-        </div>
-      </header>
-
-      {/* Completed Mission Banner */}
-      {isMissionCompleted && (
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4 sm:px-6 sm:py-4.5 text-xs font-semibold text-emerald-700 dark:text-emerald-300 animate-fade-in shadow-xs">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="size-5 shrink-0 text-emerald-500" />
-            <span className="leading-relaxed">
-              <strong>Vụ án SQL đã hoàn thành!</strong> Bạn đã giải quyết thành công bài tập này. Bạn có thể tiếp tục thực thi và nộp lại bài làm để thử nghiệm các câu lệnh tối ưu hơn.
-            </span>
-          </div>
-          <Link
-            to={isPractice ? '/practice' : '/map'}
-            className="shrink-0 self-end sm:self-auto rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
-          >
-            {isPractice ? 'Về khu luyện tập' : 'Về bản đồ học tập'}
-          </Link>
-        </div>
-      )}
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="flex flex-col gap-6">
-          <SqlEditor
-            value={query}
-            onChange={setQuery}
-            onRun={handleRun}
-            onReset={handleReset}
-            onDevFill={isDevUser ? () => setQuery(starterSql) : undefined}
-            isRunning={isExecuting || isSubmitting}
-          />
-
-          {/* Submission Feedback Banner for Incorrect Submissions */}
-          {submissionResult && !submissionResult.isCorrect && (
-            <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-medium text-amber-800 dark:text-amber-200 animate-fade-in">
-              <div className="flex items-start gap-2.5">
-                <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
-                <div>
-                  <strong className="font-bold">Chưa chính xác: </strong>
-                  <span>{submissionResult.feedback}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Submission Service Error Banner */}
-          {submissionError && (
-            <div role="alert" className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-medium text-rose-800 dark:text-rose-200 animate-fade-in">
-              <div className="flex items-start gap-2.5">
-                <AlertCircle className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-400" />
-                <div>
-                  <strong className="font-bold">Lỗi nộp bài: </strong>
-                  <span>{submissionError.message}</span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <ResultViewer
-            result={executionResult}
-            isExecuting={isExecuting || isSubmitting}
-            onSubmit={handleSubmit}
+    <div className="flex flex-col h-[calc(100vh-4.5rem)] max-h-[calc(100vh-4.5rem)] overflow-hidden bg-background text-foreground animate-fade-in">
+      <WorkspaceSplitPane
+        className="flex-1 min-h-0"
+        leftTitle="Hồ sơ SQL"
+        rightTitle="Truy vấn & Kết quả"
+        leftContent={
+          <ProblemPane
+            title={mission.title}
+            tool="sql"
+            isPractice={isPractice}
+            missionId={mission.id}
+            story={mission.story}
+            objective={mission.objective}
             isCompleted={isMissionCompleted}
+            rewardXp={mission.rewardXp || 100}
+            estimatedDuration={mission.estimatedDuration}
+            adjacentMissions={adjacentMissions}
+            schemaSlot={
+              <div className="mt-4">
+                <SchemaBrowser schema={state.schema} className="min-h-[20rem]" />
+              </div>
+            }
           />
-        </div>
+        }
+        rightContent={
+          <div className="flex flex-col h-full overflow-hidden">
+            {/* Top: SQL Editor */}
+            <div className="p-2 sm:p-3 border-b border-stone-200 dark:border-stone-800 shrink-0">
+              <SqlEditor
+                value={query}
+                onChange={setQuery}
+                onRun={handleRun}
+                onReset={handleReset}
+                onDevFill={isDevUser ? () => setQuery(starterSql) : undefined}
+                isRunning={isExecuting || isSubmitting}
+              />
+            </div>
 
-        <SchemaBrowser schema={state.schema} className="min-h-[28rem]" />
-      </div>
+            {/* Middle: Feedback Banners & Result Viewer (Scrollable) */}
+            <div className="flex-1 overflow-auto p-2 sm:p-3 space-y-3">
+              {/* Submission Feedback Banner for Incorrect Submissions */}
+              {submissionResult && !submissionResult.isCorrect && (
+                <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-xs font-medium text-amber-800 dark:text-amber-200 animate-fade-in">
+                  <div className="flex items-start gap-2.5">
+                    <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <div>
+                      <strong className="font-bold">Chưa chính xác: </strong>
+                      <span>{submissionResult.feedback}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Submission Service Error Banner */}
+              {submissionError && (
+                <div role="alert" className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs font-medium text-rose-800 dark:text-rose-200 animate-fade-in">
+                  <div className="flex items-start gap-2.5">
+                    <AlertCircle className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                    <div>
+                      <strong className="font-bold">Lỗi nộp bài: </strong>
+                      <span>{submissionError.message}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <ResultViewer
+                result={executionResult}
+                isExecuting={isExecuting || isSubmitting}
+                isCompleted={isMissionCompleted}
+              />
+            </div>
+          </div>
+        }
+      />
+
+      {/* ── LeetCode-style Isolated Action Footer ── */}
+      <MissionActionBar
+        onSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        isCompleted={isMissionCompleted}
+        adjacentMissions={adjacentMissions}
+        isPractice={isPractice}
+        submitIcon="send"
+      />
 
       <MissionResultModal
         isOpen={isModalOpen}
         result={submissionResult}
         missionTitle={mission.title}
         onClose={() => setIsModalOpen(false)}
-        onNextMission={() => navigate(isPractice ? '/practice' : '/map')}
+        hasNextMission={Boolean(adjacentMissions.next)}
+        onNextMission={() => {
+          setIsModalOpen(false);
+          if (adjacentMissions.next) {
+            const nextPath = adjacentMissions.next.tool === 'sql'
+              ? `/missions/${adjacentMissions.next.id}/sql`
+              : `/missions/${adjacentMissions.next.id}/workspace`;
+            navigate(isPractice ? `/practice?mission=${adjacentMissions.next.id}` : nextPath);
+          } else {
+            navigate(isPractice ? '/practice' : '/map');
+          }
+        }}
       />
     </div>
   )

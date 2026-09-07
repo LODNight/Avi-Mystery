@@ -120,7 +120,7 @@ describe('ResultViewer Component', () => {
     expect(screen.getByText('Trang 2 / 2')).toBeInTheDocument();
   });
 
-  it('10. Hiển thị nút "Nộp bài vụ án" và gọi callback onSubmit khi người dùng click', () => {
+  it('10. Không hiển thị nút "Nộp bài" trong ResultViewer (đã chuyển sang MissionActionBar)', () => {
     const onSubmitMock = vi.fn();
     const successResult = {
       columns: ['id'],
@@ -130,11 +130,9 @@ describe('ResultViewer Component', () => {
     };
 
     render(<ResultViewer result={successResult} isExecuting={false} onSubmit={onSubmitMock} />);
-    const submitBtn = screen.getByRole('button', { name: /Nộp bài vụ án/i });
-    expect(submitBtn).toBeInTheDocument();
-
-    fireEvent.click(submitBtn);
-    expect(onSubmitMock).toHaveBeenCalledTimes(1);
+    // Submit button has been moved to MissionActionBar — not in ResultViewer
+    const submitBtn = screen.queryByRole('button', { name: /Nộp bài vụ án/i });
+    expect(submitBtn).not.toBeInTheDocument();
   });
 
   it('11. Căn phải dữ liệu số và định dạng dấu phân cách hàng nghìn (12,500,000)', () => {

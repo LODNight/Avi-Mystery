@@ -534,15 +534,96 @@
 
 ---
 
-## 🟡 Sprint 9 — Academy Mode & Interactive Sandbox *(PROPOSED - NEXT)*
+## 🟢 Sprint 8.6 — UX/UI "Don't Make Me Think" & Contextual Layout *(HOÀN THÀNH 100%)*
+
+*Mục tiêu: Giảm thiểu năng lượng nhận thức của học viên ("Bây giờ làm gì? Tiếp theo làm gì?"), tối ưu hóa sự tập trung khi giải vụ án bằng Focus Mode.*
+
+### 🔹 Step 8.6.1: Contextual Layout & Focus Mode
+- [x] Tạo `FocusLayout.jsx`: Chế độ toàn màn hình không sidebar, loại bỏ xao nhãng cho các trang làm bài `/missions/:missionId/workspace` và `/missions/:missionId/sql`.
+- [x] Top Bar Focus Mode tinh gọn (`h-14`) với nút thoát nhanh, chỉ số XP và Dark/Light mode toggle.
+
+### 🔹 Step 8.6.2: Hero Primary CTA & Guided Progression
+- [x] Nâng cấp Dashboard: Thiết kế lại Banner "Nhiệm vụ ưu tiên hiện tại" nổi bật full-width với nút CTA "Tiến vào Bàn làm việc" giải quyết câu hỏi "Bây giờ làm gì?".
+- [x] Khử ngõ cụt tại `KnowledgeHubPage`: Thêm card Guided Progression với nút "Vào giải vụ án ngay" (nếu có vụ án liên quan) và cặp nút "Bài trước / Bài tiếp theo".
+- [x] Cải tiến Microcopy & Affordance tại `MissionIntroPage`: Nút hành động rõ ràng và hỗ trợ phím tắt `Enter ↵` để vào bàn làm việc ngay lập tức.
+
+### 🔹 Step 8.6.3: Mission Solving Screen Interaction Flow & Unified Action Bar
+- [x] **Thanh Action & Formula Bar duy nhất**: Hợp nhất thanh công cụ rời rạc (Chạy thử, Nộp bài, Gợi ý, Đặt lại) vào cùng 1 hàng với thanh nhập công thức `fx`, đặt sát phía trên Bảng tính `SpreadsheetGrid`.
+- [x] **Tối ưu Keyboard UX**: Bấm `Enter` tự động kích hoạt Chạy thử công thức; bấm `Ctrl + Enter` (hoặc `Cmd + Enter`) kích hoạt Nộp bài vụ án; hiển thị tooltip mẹo phím tắt trực quan bên dưới input.
+- [x] **Tinh gọn không gian chiều dọc (Viewport Optimization)**: Giảm padding và margin-bottom của header vụ án và khối tóm tắt mục tiêu, đảm bảo trên màn hình $\ge 1366 \times 768$ hiển thị trọn vẹn Tiêu đề $\to$ Mục tiêu $\to$ Thanh công cụ $\to$ ít nhất 6 hàng đầu tiên của Bảng tính mà không cần cuộn chuột.
+- [x] **Target Highlight & Auto-focus**: Làm nổi bật ô mục tiêu trên bảng tính với viền 2px màu Hổ phách/Cam, hiệu ứng pulse nhẹ và box-shadow; tự động focus con trỏ vào ô nhập `fx` khi click chọn ô.
+- [x] **Kiểm thử hồi quy 100%**: 66 test suites với 529 tests pass, build production thành công.
+
+---
+
+## 🟢 Sprint 9 — Split-Pane IDE Layout & Mission Workspace Architecture *(HOÀN THÀNH 100%)*
+
+*Mục tiêu: Tái cấu trúc các trang giải đố (Excel & SQL) từ bố cục xếp chồng dọc sang kiến trúc chia khung (Split-Pane IDE Layout) chuẩn LeetCode / VS Code Web, tối ưu không gian desktop, thanh công cụ cố định và tích hợp hệ thống gợi ý vào luồng đọc.*
+
+### 🔹 Step 9.1: Component Chia Khung Split-Pane (`WorkspaceSplitPane.jsx`)
+- [x] Cài đặt và tích hợp thư viện `react-resizable-panels` (v4.12.4).
+- [x] Tạo `WorkspaceSplitPane.jsx` hỗ trợ chia khung 40:60 trên Desktop kèm thanh divider có thể kéo thả linh hoạt.
+- [x] Cơ chế Fallback Responsive cho Mobile/Tablet (< 1024px) với Tab Switcher giữa "Hồ sơ vụ án" và "Không gian làm việc".
+
+### 🔹 Step 9.2: Problem Statement Pane & Embedded Hint System (`ProblemPane.jsx`)
+- [x] Xây dựng `ProblemPane.jsx` độc lập cuộn mượt mà: Header thông tin, huy hiệu chế độ (Mission/Practice), Cốt truyện trinh thám, Mục tiêu ô đích và Lược đồ CSDL (SQL).
+- [x] Tích hợp Hệ thống Gợi ý (Progressive Hints) trực tiếp vào cột đọc, loại bỏ Side Drawer che khuất bảng tính. Hỗ trợ mở gợi ý, trừ XP và Ghim gợi ý lên FormulaBar.
+
+### 🔹 Step 9.3: Workspace Pane & Sticky Action Footer (`WorkspaceFooter.jsx`)
+- [x] Xây dựng `WorkspaceFooter.jsx` neo cố định ở đáy cột phải: Chứa cụm nút Chạy thử, Nộp bài vụ án, Đặt lại và Fill down.
+- [x] Tối ưu `FormulaBar.jsx`: Hỗ trợ `showActions={false}` giúp thanh nhập `fx` chiếm 100% chiều ngang cột phải như phần mềm Excel thực thụ.
+- [x] Refactor `ExcelMissionPage.jsx` và `SqlMissionPage.jsx` sang kiến trúc Split-Pane IDE mới.
+
+### 🔹 Step 9.4: Kiểm thử và Kiểm định Hệ thống
+- [x] Cập nhật test suites và bổ sung mock `ResizeObserver` cho môi trường jsdom.
+- [x] **68 test suites PASSED (100%)** với **535 tests** toàn dự án.
+- [x] Build production hoàn tất thành công (`npm run build`).
+
+---
+
+## 🟢 Sprint 9.1 — Excel Mission Workspace UI/UX Refactor *(HOÀN THÀNH 100%)*
+
+*Mục tiêu: Tái cấu trúc toàn diện không gian giải đố Excel Mission Screen theo chuẩn Senior Product UI/UX (21 Sections: 3-Layer Architecture, Split 34:66, 4-Tier Hierarchy, Authentic Spreadsheet Canvas, Focus Mode & Typography).*
+
+### 🔹 Step 9.1.1: Design Tokens & Semantic Theming
+- [x] Cập nhật bảng màu đa tầng (Multi-layer surfaces) cho Dark Mode: Background (`#0F0F0F`), Surface (`#151515`), Workspace (`#181818`), Elevated (`#202020`), Border (`#303030`), Text (`#F5F5F5` / `#A1A1AA`).
+- [x] Thiết kế Light Mode chuẩn mực hạng nhất: Background (`#F5F6F8`), Surface & Workspace (`#FFFFFF`), Border (`#E5E7EB`), Text (`#18181B` / `#52525B` / `#71717A`).
+- [x] Định nghĩa đầy đủ token ngữ nghĩa: `--color-background`, `--color-surface`, `--color-workspace`, `--color-border`, `--color-success`, `--color-warning`, `--color-error`, loại bỏ hoàn toàn hardcoded colors trong components.
+
+### 🔹 Step 9.1.2: Kiến trúc 3 Lớp & Phân bổ Viewport (34% : 66%)
+- [x] **Layer A (Top App Bar)**: Tinh gọn chiều cao `h-13`/`h-14`, chứa nút thoát, thương hiệu, nút bật/tắt Focus Mode, chỉ số XP, Dark/Light mode toggle và avatar người dùng.
+- [x] **Layer B (Main Workspace)**: Split-Pane chuẩn LeetCode với tỷ lệ Cột Trái 34% (Context) : Cột Phải 66% (Primary Spreadsheet Canvas).
+- [x] **Layer C (Bottom Action Bar)**: Thanh footer độc lập dưới Split-Pane với nút Bài trước / Bài kế tiếp, huy hiệu tiến độ vụ án, shortcut hint (`Ctrl + Enter`) và nút primary CTA "Nộp bài vụ án".
+- [x] Loại bỏ padding dư thừa ở layout cấp cao (`FocusLayout`), chuyển container sang `flex-1 min-h-0 overflow-hidden` để bảng tính tận dụng 100% chiều cao màn hình.
+
+### 🔹 Step 9.1.3: Cột Trái - Phân tầng Thông tin 4 Cấp (`ProblemPane.jsx`)
+- [x] **Cấp 1 (Mission Identity)**: Nhãn `EXCEL MISSION` uppercase, mã vụ án `mission-001`, tiêu đề `h1` lớn nhất (`text-xl sm:text-2xl font-black font-sans`), huy hiệu `+XP`.
+- [x] **Cấp 2 (Case File)**: Bề mặt elevated nhẹ (`bg-card/60`), chữ nghiêng trần thuật vụ án, giảm bớt sức nặng thị giác để người học tập trung vào mục tiêu.
+- [x] **Cấp 3 (Objective - Trọng tâm)**: Phần tử nổi bật nhất sidebar với viền hổ phách, tiêu đề `🎯 MỤC TIÊU PHÁ ÁN (OBJECTIVE)`, nội dung nhiệm vụ đậm nét và huy hiệu tọa độ `Ô đích: [ E2 ]` hiển thị trực tiếp.
+- [x] **Cấp 4 (Progressive Hints)**: Thu gọn thẻ gợi ý lũy tiến theo dạng disclosure card, ghi rõ chi phí trừ XP (`-15 XP`), nút ghim lên thanh công thức, tránh lồng card quá sâu.
+
+### 🔹 Step 9.1.4: Cột Phải - Bảng tính Thực thụ & Xóa bỏ Badge Trong Ô (`SpreadsheetGrid.jsx`, `FormulaBar.jsx`)
+- [x] **Loại bỏ hoàn toàn badge chữ "Mục tiêu" bên trong ô tính**: Thay thế bằng viền sáng Hổ phách (`ring-2 ring-amber-500 ring-inset`), nền mờ (`bg-amber-500/15`) và chấm marker nhỏ ở góc. Tuyệt đối không che khuất dữ liệu số/chữ trong ô.
+- [x] **Khắc phục khoảng trống bên dưới (Ghost Rows)**: Tự động render các hàng trống liên tục (tối thiểu 16 hàng) với số thứ tự và đường lưới chuẩn mực, giúp bảng tính lấp đầy không gian làm việc như Microsoft Excel / Google Sheets thật.
+- [x] **Sticky Headers & Chuẩn Typography**: Cố định hàng tên cột (A, B, C...) ở trên cùng và cột số thứ tự (1, 2, 3...) ở bên trái khi cuộn chuột; căn phải chặt chẽ cho số liệu/tiền tệ (`tabular-nums font-mono text-right`), căn trái cho văn bản (`font-sans text-left`).
+- [x] **Formula Toolbar Chuẩn Bảng tính**: Thanh Name Box `[ E2 ]` $\to$ `fx` $\to$ Input công thức $\to$ `[ ↺ Đặt lại ]` $\to$ `[ Fill Down ]` $\to$ `[ ▶ Chạy thử ]`.
+
+### 🔹 Step 9.1.5: Focus Mode Tương tác & Responsive Polish
+- [x] **Interactive Focus Mode**: Nút `FOCUS MODE` trên Top Bar trở thành nút toggle tương tác. Khi BẬT, Cột Trái thu gọn hoàn toàn, Cột Phải mở rộng chiếm 100% chiều ngang kèm nút nổi `"Xem đề bài"` ở góc để mở lại bất kỳ lúc nào.
+- [x] **Responsive Protection**: Thu gọn nhãn nút trên Formula Bar (`hidden xl:inline`) ở màn hình trung bình để tránh tràn thanh công cụ hoặc che khuất ô nhập `fx`.
+- [x] **Kiểm thử hồi quy 100%**: **69 test suites PASSED (100%)** với **537 tests**, bổ sung unit test cho `FocusLayout.test.jsx`, build production thành công trong 13s.
+
+---
+
+## 🟡 Sprint 9.5 — Academy Mode & Interactive Sandbox *(PROPOSED - NEXT)*
 
 *Mục tiêu: Mở rộng định hướng sang mô hình W3Schools (Bên cạnh nhánh cốt truyện Game Mystery), cho phép học viên học lý thuyết kết hợp thực hành ngay lập tức (Try it Yourself).*
 
-### 🔹 Step 9.1: Interactive Data Sandbox (Try It Yourself)
+### 🔹 Step 9.5.1: Interactive Data Sandbox (Try It Yourself)
 - [ ] Xây dựng màn hình `PracticeSandboxPage`: Trình soạn thảo chia đôi màn hình (Split-pane) với Lý thuyết bên trái và Editor/Terminal (SQL/Excel) bên phải.
 - [ ] Cho phép chạy thử (execute) code/công thức tự do hoặc theo kịch bản mini-task, trả về kết quả thời gian thực qua `excelChecker` / `sql-wasm`.
 
-### 🔹 Step 9.2: Academy Course Structure (W3Schools Style)
+### 🔹 Step 9.5.2: Academy Course Structure (W3Schools Style)
 - [ ] Xây dựng lại giao diện danh sách khóa học `/academy` với Sidebar Menu tổ chức theo dạng "Bài học tuần tự" thay vì "Vụ án trinh thám".
 - [ ] Liên kết thư viện kiến thức (`KnowledgeHub`) trực tiếp vào Sandbox, tạo vòng lặp học tập: Đọc lý thuyết ➡ Try it ➡ Giải bài tập củng cố.
 
@@ -561,14 +642,15 @@
 # AVI-MYSTERY — CURRENT TASK
 
 ## Primary Module
-- **Module Name**: `Academy Mode & Interactive Sandbox`
-- **Primary Path**: `src/pages/learner/`, `src/components/sandbox/`
-- **Current Sprint**: **SPRINT 9 — Academy Mode & Interactive Sandbox (PROPOSED)**
-- **Current Step**: **STEP 9.1 - Interactive Data Sandbox**
+- **Module Name**: `Excel Mission Workspace UI/UX Refactor & Split-Pane Architecture`
+- **Primary Path**: `src/pages/learner/`, `src/components/excel/`, `src/components/workspace/`, `src/app/layouts/`
+- **Current Sprint**: **SPRINT 9.1 — Excel Mission Workspace UI/UX Refactor (COMPLETED)**
+- **Next Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox**
 
 ## Completed Sub-steps
-1. **Sprint 8.5 — Knowledge Hub Technical Debt** *(DONE)*: Hoàn tất dọn dẹp kỹ thuật, Markdown renderer chuẩn GFM, Firebase offline persistence và giao diện UI/UX hoàn chỉnh.
+1. **Step 9.1.1: Design Tokens & Semantic Theming**: Cập nhật bảng màu đa tầng Dark mode (`#0F0F0F`, `#151515`, `#181818`, `#202020`, `#303030`) và Light mode (`#F5F6F8`, `#FFFFFF`, `#E5E7EB`).
+2. **Step 9.1.2: Kiến trúc 3 Lớp & Viewport 34:66**: Cấu trúc Top Bar $\to$ Split-Pane 34:66 $\to$ Bottom Action Bar, tối đa hóa chiều cao khả dụng cho bảng tính.
+3. **Step 9.1.3: ProblemPane 4-Tier Hierarchy**: Identity $\to$ Case File $\to$ Objective trọng tâm $\to$ Compact Progressive Hints.
+4. **Step 9.1.4: Authentic Spreadsheet Canvas**: Loại bỏ badge chữ che khuất ô, bổ sung Ghost rows lấp đầy khoảng trống, sticky headers và căn chỉnh số liệu chuẩn Excel.
+5. **Step 9.1.5: Interactive Focus Mode & Responsive**: Bật/tắt chế độ tập trung mở rộng 100% bảng tính, bảo vệ thanh công cụ trên mọi breakpoint, pass toàn bộ 537/537 tests (69 suites).
 
-## Next Proposed Steps (Sprint 9 Roadmap)
-- **Step 9.1**: Interactive Data Sandbox (Try It Yourself)
-- **Step 9.2**: Academy Course Structure (W3Schools Style)

@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Award,
   Sparkles,
+  ArrowUpRight,
 } from 'lucide-react';
 import { missionService, courseService, knowledgeService } from '../../services/index.js';
 import { AuthContext } from '../../hooks/useAuth.js';
@@ -92,6 +93,19 @@ export function MissionIntroPage() {
       isMounted = false;
     };
   }, [missionId]);
+
+  // Phím tắt Enter để tiến thẳng vào bàn làm việc (Affordance & Speed)
+  useEffect(() => {
+    if (!mission) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const targetPath = mission.tool === 'sql' ? `/missions/${mission.id}/sql` : `/missions/${mission.id}/workspace`;
+        navigate(targetPath);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mission, navigate]);
 
   if (loading) {
     return <MissionIntroSkeleton />;
@@ -279,20 +293,32 @@ export function MissionIntroPage() {
         </section>
       </div>
 
-      {/* ── Section 4: Action Launch Bar ── */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-3xl border border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10 p-6 shadow-xs">
+      {/* ── Section 4: Action Launch Bar (Action-oriented Microcopy & Affordance) ── */}
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-5 rounded-3xl border border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10 p-6 sm:p-7 shadow-xs">
         <div>
-          <h3 className="font-bold text-base text-foreground">Bạn đã sẵn sàng phá án?</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Bấm nút bên dưới để mở không gian làm bài interactive và bắt đầu thực thi.
+          <div className="flex items-center gap-2">
+            <span className="rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+              Focus Mode
+            </span>
+            <h3 className="font-bold text-base text-foreground">Bạn đã sẵn sàng bước vào giải vụ án?</h3>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1.5">
+            Hệ thống sẽ mở bàn làm việc không gian rộng (ẩn menu sidebar) giúp bạn tập trung cao độ để truy vấn và lập công thức.
           </p>
         </div>
 
         <Link
           to={mission.tool === 'sql' ? `/missions/${mission.id}/sql` : `/missions/${mission.id}/workspace`}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/35 transition-all transform hover:-translate-y-0.5 shrink-0 active:translate-y-0"
+          aria-label="Bắt đầu điều tra ngay - Tiến vào Bàn làm việc"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-7 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/35 transition-all transform hover:-translate-y-0.5 shrink-0 active:translate-y-0"
+          title="Tiến vào bàn làm việc (Phím tắt: Enter)"
         >
-          <Play className="size-4 fill-current" /> Bắt đầu điều tra ngay
+          <Play className="size-4 fill-current" />
+          <span>Tiến vào Bàn làm việc</span>
+          <span className="hidden md:inline-flex rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider">
+            Enter ↵
+          </span>
+          <ArrowUpRight className="size-4" />
         </Link>
       </section>
     </div>

@@ -197,94 +197,103 @@ export function DashboardPage() {
         </div>
       </section>
 
-      {/* ── Section 2: 4 Key Stat Cards ── */}
-      <section id="dashboard-stat-cards" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={Flame}
-          label="Chuỗi Streak"
-          value={`${dashboardStats.streak} ngày`}
-          detail="Học liên tiếp hôm nay"
-          accent="text-amber-500"
-        />
-        <StatCard
-          icon={Target}
-          label="Mục tiêu tuần"
-          value={`${dashboardStats.weeklyMissions} / 5`}
-          detail="nhiệm vụ hoàn thành"
-          accent="text-violet-500"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="Tổng điểm XP"
-          value={formatXP(dashboardStats.totalXp)}
-          detail={`+${dashboardStats.weeklyXp} XP tuần này`}
-          accent="text-emerald-500"
-        />
-        <StatCard
-          icon={Clock3}
-          label="Thời gian học"
-          value={dashboardStats.timeSpent}
-          detail="tuần này"
-          accent="text-cyan-500"
-        />
-      </section>
-
-      {/* ── Section 3: Continue Learning & Quest Progress ── */}
-      <section className="grid gap-6 xl:grid-cols-[1.5fr_1fr]">
-        {/* Continue Learning */}
-        <div id="dashboard-continue-investigation" className="rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6 flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
-                Tiếp tục cuộc điều tra
-              </p>
-              <h3 className="mt-2 text-xl font-bold text-foreground">Trở lại vụ án gần nhất</h3>
-            </div>
-            <button className="rounded-lg p-2 text-muted-foreground hover:bg-muted" aria-label="Tùy chọn">
-              <MoreHorizontal className="size-5" />
-            </button>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-muted/60 p-4 sm:flex-row sm:items-center">
-            <div className="grid size-14 shrink-0 place-items-center rounded-2xl bg-amber-500/15 font-mono text-2xl text-amber-500">
+      {/* ── Section 2: Hero Primary Action (Clear "Bây giờ tui cần làm gì?") ── */}
+      <section
+        id="dashboard-continue-investigation"
+        className="relative overflow-hidden rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-md"
+      >
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="flex items-start gap-4 sm:gap-5 min-w-0">
+            <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground font-mono text-3xl shadow-lg shadow-primary/25">
               📊
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center justify-between gap-3">
-                <Link
-                  to={dashboardStats.lastMission?.link || "/missions/mission-001"}
-                  className="truncate font-semibold text-foreground hover:text-primary transition-colors"
-                >
-                  {dashboardStats.lastMission ? dashboardStats.lastMission.title.replace('Vụ án: ', '') : 'Vì sao doanh thu tháng 3 giảm?'}
-                </Link>
-                <span className="shrink-0 font-mono text-xs font-bold text-primary">72%</span>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-0.5 font-mono text-[11px] font-extrabold uppercase tracking-wider text-primary">
+                  Nhiệm vụ ưu tiên hiện tại
+                </span>
+                <span className="text-xs text-muted-foreground font-medium">
+                  Chương 1 · Dựa theo lịch sử gần nhất
+                </span>
               </div>
-              <div className="mt-3 h-2 overflow-hidden rounded-full bg-background">
-                <div className="h-full w-[72%] rounded-full bg-primary" />
-              </div>
-              <p className="mt-2 text-xs font-medium text-slate-600 dark:text-slate-400">
-                Chương 1 · Dựa theo lịch sử gần nhất
+              <h3 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-foreground truncate">
+                {dashboardStats.lastMission ? dashboardStats.lastMission.title.replace('Vụ án: ', '') : 'Vì sao doanh thu tháng 3 giảm?'}
+              </h3>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+                Nhiệm vụ tiếp theo: <strong className="text-foreground">Truy vấn và xử lý số liệu bảng tính</strong> để phân tích nguyên nhân tụt giảm doanh số.
               </p>
+
+              {/* Mini progress */}
+              <div className="mt-4 flex items-center gap-3 max-w-md">
+                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full w-[72%] rounded-full bg-primary" />
+                </div>
+                <span className="font-mono text-xs font-bold text-primary shrink-0">72% hoàn thành</span>
+              </div>
             </div>
-            <Link
-              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : "/missions/mission-001/workspace"}
-              className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
-              aria-label="Tiếp tục vụ án"
-            >
-              <Play className="size-4 fill-current" />
-            </Link>
           </div>
 
-          <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
-              Nhiệm vụ tiếp theo: <span className="font-semibold text-foreground">Truy vấn bảng dữ liệu SQL</span>
-            </p>
-            <ChevronRight className="size-4 text-muted-foreground" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+            <Link
+              to={dashboardStats.lastMission?.link || "/missions/mission-001"}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors text-center"
+            >
+              Xem hồ sơ vụ án
+            </Link>
+            <Link
+              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : "/missions/mission-001/workspace"}
+              className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-95 hover:scale-[1.02] transition-all text-center"
+              title="Mở ngay bàn làm việc toàn màn hình (Focus Mode)"
+            >
+              <Play className="size-4 fill-current" />
+              <span>Tiến vào Bàn làm việc (Focus Mode)</span>
+              <ArrowUpRight className="size-4" />
+            </Link>
           </div>
         </div>
 
+        {/* Subtle decorative glow */}
+        <div className="absolute right-0 top-0 -mt-12 -mr-12 size-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+      </section>
+
+      {/* ── Section 3: 4 Key Stat Cards & Investigator Quest Progress ── */}
+      <section className="grid gap-6 xl:grid-cols-[2fr_1fr]">
+        <div id="dashboard-stat-cards" className="grid gap-4 sm:grid-cols-2">
+          <StatCard
+            icon={Flame}
+            label="Chuỗi Streak"
+            value={`${dashboardStats.streak} ngày`}
+            detail="Học liên tiếp hôm nay"
+            accent="text-amber-500"
+          />
+          <StatCard
+            icon={Target}
+            label="Mục tiêu tuần"
+            value={`${dashboardStats.weeklyMissions} / 5`}
+            detail="nhiệm vụ hoàn thành"
+            accent="text-violet-500"
+          />
+          <StatCard
+            icon={TrendingUp}
+            label="Tổng điểm XP"
+            value={formatXP(dashboardStats.totalXp)}
+            detail={`+${dashboardStats.weeklyXp} XP tuần này`}
+            accent="text-emerald-500"
+          />
+          <StatCard
+            icon={Clock3}
+            label="Thời gian học"
+            value={dashboardStats.timeSpent}
+            detail="tuần này"
+            accent="text-cyan-500"
+          />
+        </div>
+
         {/* Quest Progress Level Card */}
-        <div id="dashboard-investigator-level" className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors">
+        <div
+          id="dashboard-investigator-level"
+          className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors"
+        >
           <div>
             <div className="flex items-start justify-between">
               <div className="grid size-11 place-items-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
@@ -294,16 +303,16 @@ export function DashboardPage() {
                 Cấp {user?.level || 1}
               </span>
             </div>
-            <p className="mt-6 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
+            <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
               Tiến trình danh hiệu
             </p>
-            <h3 className="mt-1.5 text-2xl font-bold text-foreground">Data Investigator</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
+            <h3 className="mt-1 text-xl font-bold text-foreground">Data Investigator</h3>
+            <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-400 font-normal">
               Còn <span className="font-semibold text-foreground">{formatXP(Math.max(0, (user?.xpToNextLevel || 1000) - dashboardStats.totalXp))}</span> để mở khóa danh hiệu kế tiếp.
             </p>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-5">
             <div className="h-2.5 overflow-hidden rounded-full bg-amber-500/15">
               <div
                 className="h-full rounded-full bg-amber-500 transition-all duration-300"

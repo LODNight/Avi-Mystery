@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../../hooks/useAuth.js';
 import { isAdmin, isLearner } from '../../constants/roles.js';
 import { LearnerLayout } from '../layouts/LearnerLayout.jsx';
+import { FocusLayout } from '../layouts/FocusLayout.jsx';
 import { AdminLayout } from '../layouts/AdminLayout.jsx';
 import { PageLoader, PageSkeleton, AppShellSkeleton } from '../../components/ui/Skeleton.jsx';
 
@@ -53,7 +54,6 @@ function RequireAuth({ children }) {
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   return children;
 }
-
 /**
  * RequireLearner — cho phép learner và admin xem giao diện learner
  */
@@ -62,6 +62,17 @@ function RequireLearner() {
     <LearnerLayout>
       <Outlet />
     </LearnerLayout>
+  );
+}
+
+/**
+ * RequireFocus — không gian làm việc tập trung (không sidebar) cho bài thực hành / giải vụ án
+ */
+function RequireFocus() {
+  return (
+    <FocusLayout>
+      <Outlet />
+    </FocusLayout>
   );
 }
 
@@ -103,7 +114,7 @@ export function AppRouter() {
         {/* Root redirect */}
         <Route path="/" element={<RootRedirect />} />
 
-        {/* Learner routes */}
+        {/* Learner standard routes (Browse Mode with Sidebar) */}
         <Route
           element={
             <RequireAuth>
@@ -116,14 +127,24 @@ export function AppRouter() {
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:slug" element={<CourseDetailPage />} />
           <Route path="/missions/:missionId" element={<MissionIntroPage />} />
-          <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
-          <Route path="/missions/:missionId/sql" element={<SqlMissionPage />} />
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/history" element={<ActivityHistoryPage />} />
           <Route path="/knowledge" element={<KnowledgeHubPage />} />
           <Route path="/knowledge/:topicId" element={<KnowledgeHubPage />} />
+        </Route>
+
+        {/* Focus Mode routes (Distraction-free workspace without Sidebar) */}
+        <Route
+          element={
+            <RequireAuth>
+              <RequireFocus />
+            </RequireAuth>
+          }
+        >
+          <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
+          <Route path="/missions/:missionId/sql" element={<SqlMissionPage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}

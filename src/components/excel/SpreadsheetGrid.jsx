@@ -75,36 +75,43 @@ export function SpreadsheetGrid({
     return String(rawValue);
   };
 
+  // Tính toán ghost rows để làm đầy không gian làm việc (tối thiểu 16 hàng như Excel thật)
+  const minTotalRows = 16;
+  const currentDataRowCount = rows.length;
+  const ghostRowCount = Math.max(0, minTotalRows - currentDataRowCount - 1);
+  const ghostRows = Array.from({ length: ghostRowCount }, (_, i) => currentDataRowCount + 2 + i);
+
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-card shadow-md">
-      {/* Excel Sheet Title Bar */}
+    <div className="w-full h-full flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+      {/* Excel Sheet Info Bar */}
       {dataset.name && (
-        <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-stone-100/80 dark:bg-stone-900/80 px-4 py-2.5 text-xs font-semibold text-stone-600 dark:text-stone-400 shrink-0">
+        <div className="flex items-center justify-between border-b border-border bg-muted/40 px-3.5 py-2 text-xs font-semibold text-muted-foreground shrink-0 select-none">
           <div className="flex items-center gap-2">
-            <Database className="size-3.5 text-stone-600 dark:text-stone-300" />
-            <span className="font-bold text-stone-900 dark:text-stone-100">{dataset.name}</span>
+            <Database className="size-3.5 text-foreground" />
+            <span className="font-bold text-foreground">{dataset.name}</span>
           </div>
-          <span className="text-[10px] font-mono bg-white dark:bg-stone-800 px-2 py-0.5 rounded border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 font-bold">
+          <span className="text-[10px] font-mono bg-background px-2 py-0.5 rounded border border-border text-muted-foreground font-bold">
             {rows.length} hàng x {columns.length} cột
           </span>
         </div>
       )}
 
-      {/* Responsive Horizontal Scroll Container with Min-Width Protection */}
-      <div className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-stone-300 dark:scrollbar-thumb-stone-700 pb-1">
+      {/* Spreadsheet Canvas Scroll Container */}
+      <div className="flex-1 min-h-0 w-full overflow-auto scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/40 pb-1">
         <table className="w-full min-w-[580px] border-collapse font-mono text-xs select-none">
           {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
-          <thead>
-            <tr className="bg-stone-200/90 dark:bg-stone-900 text-foreground border-b-2 border-stone-300 dark:border-stone-700">
-              <th className="w-10 border-r border-stone-300 dark:border-stone-700 p-2 text-center text-[10px] font-extrabold uppercase tracking-wider bg-stone-300/80 dark:bg-stone-950 text-stone-700 dark:text-stone-300 shrink-0">
+          <thead className="sticky top-0 z-20">
+            <tr className="bg-muted/90 dark:bg-card/95 backdrop-blur-xs text-foreground border-b border-border">
+              {/* Corner # sticky cell */}
+              <th className="w-11 sticky left-0 z-30 border-r border-b border-border p-1.5 text-center text-[10px] font-black uppercase tracking-wider bg-muted text-muted-foreground shrink-0">
                 #
               </th>
               {colLetters.map((letter) => (
                 <th
                   key={letter}
-                  className="border-r border-stone-300 dark:border-stone-700 py-2 px-3 text-center font-extrabold text-stone-800 dark:text-stone-200 last:border-r-0 min-w-[130px] sm:min-w-[150px] text-xs bg-stone-200/90 dark:bg-stone-900"
+                  className="border-r border-b border-border py-1.5 px-3 text-center font-extrabold text-foreground last:border-r-0 min-w-[130px] sm:min-w-[150px] text-xs bg-muted/80 dark:bg-card/90"
                 >
-                  <span className="rounded-md bg-stone-300/90 text-stone-900 border border-stone-400/60 dark:bg-stone-800 dark:text-stone-100 dark:border-stone-700 px-2.5 py-0.5 text-xs font-mono font-extrabold shadow-sm">
+                  <span className="inline-block rounded bg-background text-foreground border border-border px-2.5 py-0.5 text-xs font-mono font-black shadow-2xs">
                     {letter}
                   </span>
                 </th>
@@ -114,8 +121,8 @@ export function SpreadsheetGrid({
 
           <tbody>
             {/* Hàng 1: Dòng Tiêu đề Tên Cột Trong Dataset (Header Row 1) */}
-            <tr className="border-b border-border bg-background dark:bg-card/30 text-foreground font-semibold">
-              <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
+            <tr className="border-b border-border bg-background/80 text-foreground font-semibold">
+              <td className="sticky left-0 z-10 w-11 border-r border-border p-1.5 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
                 1
               </td>
               {columns.map((col, cIdx) => {
@@ -127,12 +134,12 @@ export function SpreadsheetGrid({
                   <td
                     key={cellAddr}
                     onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                    className={`border-r border-border px-3 py-2 font-sans font-bold text-foreground transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
+                    className={`border-r border-border px-3 py-1.5 font-sans font-bold text-foreground transition-colors cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
                       isNumeric ? 'text-right' : 'text-left'
                     } ${
                       isSelected
                         ? 'bg-primary/10 ring-2 ring-primary ring-inset'
-                        : 'hover:bg-muted/60'
+                        : 'hover:bg-muted/40'
                     }`}
                   >
                     {col.label || col.name}
@@ -148,10 +155,10 @@ export function SpreadsheetGrid({
               return (
                 <tr
                   key={excelRowNumber}
-                  className="border-b border-border/70 hover:bg-muted/20 transition-colors last:border-b-0"
+                  className="border-b border-border/70 hover:bg-muted/20 transition-colors"
                 >
-                  {/* Excel Row Index Label (2, 3, 4...) */}
-                  <td className="border-r border-border p-2 text-center text-[10px] font-bold bg-muted/40 text-muted-foreground">
+                  {/* Excel Row Index Label (2, 3, 4...) sticky left */}
+                  <td className="sticky left-0 z-10 w-11 border-r border-border p-1.5 text-center text-[10px] font-bold bg-muted/50 text-muted-foreground">
                     {excelRowNumber}
                   </td>
 
@@ -165,22 +172,18 @@ export function SpreadsheetGrid({
                     const colType = col.dataType || col.type;
                     const isNumeric = colType === 'currency' || colType === 'number' || colType === 'integer' || colType === 'float' || ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
 
-                    const hasCellData =
-                      (cellValues[cellAddr] !== undefined && cellValues[cellAddr] !== null) ||
-                      Boolean(cellFormulas[cellAddr] && cellFormulas[cellAddr].trim()) ||
-                      (rawVal !== null && rawVal !== undefined && rawVal !== '');
-
                     return (
                       <td
                         key={cellAddr}
+                        data-cell-addr={cellAddr}
                         onClick={() => onCellSelect && onCellSelect(cellAddr)}
-                        className={`relative border-r border-border/80 px-3 py-2 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
+                        className={`relative border-r border-border/70 px-3 py-1.5 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
                           isNumeric ? 'text-right' : 'text-left'
                         } ${
                           isTarget
                             ? isSelected
-                              ? 'bg-amber-500/20 ring-2 ring-amber-500 shadow-xs'
-                              : 'bg-amber-500/10 border-amber-400/80 ring-1 ring-amber-400/40'
+                              ? 'bg-amber-500/25 ring-2 ring-amber-500 ring-inset shadow-xs'
+                              : 'bg-amber-500/15 ring-2 ring-amber-500/90 ring-inset'
                             : isSelected
                             ? 'bg-primary/10 ring-2 ring-primary ring-inset'
                             : editable
@@ -188,28 +191,21 @@ export function SpreadsheetGrid({
                             : 'hover:bg-muted/40'
                         }`}
                       >
-                        {/* Smart Visibility Target Cell Badge Indicator */}
+                        {/* Target Cell Subtle Corner Dot Marker (NO text badge covering cell) */}
                         {isTarget && (
-                          !hasCellData ? (
-                            /* Trạng thái 1 (Ô trống): Hiển thị đầy đủ badge "✦ Mục tiêu" */
-                            <div className="absolute top-1 right-1 z-10 flex items-center gap-0.5 rounded-md bg-amber-500/90 px-1.5 py-0.5 text-[9px] font-bold text-amber-950 shadow-xs pointer-events-none">
-                              <Sparkles className="size-2.5 fill-current" />
-                              <span>Mục tiêu</span>
-                            </div>
-                          ) : (
-                            /* Trạng thái 2 (Đã có dữ liệu): Ẩn chữ "Mục tiêu", giữ icon ✦ nhỏ góc trái để trả không gian hiển thị con số */
-                            <div className="absolute top-1 left-1.5 z-10 flex items-center text-amber-600 dark:text-amber-400 pointer-events-none" title="Ô mục tiêu vụ án">
-                              <Sparkles className="size-2.5 fill-amber-500/40" />
-                            </div>
-                          )
+                          <div
+                            className="absolute top-1 right-1 size-1.5 rounded-full bg-amber-500 pointer-events-none"
+                            title="Ô mục tiêu phá án"
+                            data-testid="target-cell-marker"
+                          />
                         )}
 
                         {/* Editable Indicator Icon */}
                         {editable && !isTarget && (
-                          <Edit3 className="absolute right-1.5 top-1.5 size-3 text-amber-500/60 pointer-events-none" />
+                          <Edit3 className="absolute right-1 top-1 size-2.5 text-amber-500/60 pointer-events-none" />
                         )}
 
-                        {/* Interactive Excel Fill Handle Square (Góc dưới bên phải ô đang chọn) */}
+                        {/* Interactive Excel Fill Handle Square */}
                         {isSelected && editable && (
                           <div
                             onClick={(e) => {
@@ -220,8 +216,8 @@ export function SpreadsheetGrid({
                               e.stopPropagation();
                               if (onFillDown) onFillDown(cellAddr);
                             }}
-                            title="Bấm hoặc nhấp đúp để Kéo (Fill down) công thức xuống các hàng bên dưới"
-                            className="absolute -bottom-1.5 -right-1.5 z-30 size-3 rounded-sm bg-amber-500 hover:bg-amber-400 border-2 border-white dark:border-stone-900 shadow-sm cursor-pointer transition-transform hover:scale-125 flex items-center justify-center"
+                            title="Kéo (Fill down) công thức xuống các hàng bên dưới"
+                            className="absolute -bottom-1.5 -right-1.5 z-30 size-2.5 rounded-[1px] bg-amber-500 hover:bg-amber-400 border-2 border-background shadow-xs cursor-pointer transition-transform hover:scale-125 flex items-center justify-center"
                           >
                             <span className="sr-only">Fill down</span>
                           </div>
@@ -229,8 +225,8 @@ export function SpreadsheetGrid({
 
                         <span
                           className={`${
-                            isTarget ? 'font-bold text-amber-600 dark:text-amber-400' : 'text-foreground'
-                          }`}
+                            isTarget ? 'font-black text-amber-700 dark:text-amber-400' : 'text-foreground'
+                          } ${isNumeric ? 'tabular-nums font-mono' : 'font-sans'}`}
                         >
                           {renderCellValue(col, rawVal, cellAddr)}
                         </span>
@@ -240,6 +236,37 @@ export function SpreadsheetGrid({
                 </tr>
               );
             })}
+
+            {/* ── Realistic Empty Ghost Rows (Làm đầy bảng tính chuẩn Excel) ── */}
+            {ghostRows.map((ghostRowNumber) => (
+              <tr
+                key={`ghost-row-${ghostRowNumber}`}
+                className="border-b border-border/40 hover:bg-muted/10 transition-colors"
+              >
+                <td className="sticky left-0 z-10 w-11 border-r border-border/60 p-1.5 text-center text-[10px] font-medium bg-muted/30 text-muted-foreground/60">
+                  {ghostRowNumber}
+                </td>
+                {columns.map((col, cIdx) => {
+                  const cellAddr = `${colLetters[cIdx]}${ghostRowNumber}`;
+                  const isSelected = selectedCell === cellAddr;
+
+                  return (
+                    <td
+                      key={cellAddr}
+                      data-cell-addr={cellAddr}
+                      onClick={() => onCellSelect && onCellSelect(cellAddr)}
+                      className={`relative border-r border-border/40 px-3 py-1.5 h-7 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
+                        isSelected
+                          ? 'bg-primary/10 ring-2 ring-primary ring-inset'
+                          : 'hover:bg-muted/20'
+                      }`}
+                    >
+                      &nbsp;
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -9,7 +9,6 @@ import {
   ChevronRight,
   FileSpreadsheet,
   AlertCircle,
-  Send,
 } from 'lucide-react';
 
 const PAGE_SIZE = 50;
@@ -85,7 +84,7 @@ function formatCellValue(val) {
  * @param {boolean} props.isExecuting - Trạng thái Worker đang thực thi
  * @param {Function} [props.onSubmit] - Callback khi bấm nút "Nộp bài vụ án"
  */
-export function ResultViewer({ result, isExecuting, onSubmit, isCompleted = false }) {
+export function ResultViewer({ result, isExecuting, isCompleted = false }) {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Reset trang về 1 khi có kết quả mới
@@ -189,16 +188,6 @@ export function ResultViewer({ result, isExecuting, onSubmit, isCompleted = fals
             <span className="flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
               <AlertTriangle className="size-3" /> Đã giới hạn 500 dòng
             </span>
-          )}
-          {onSubmit && (
-            <button
-              type="button"
-              onClick={onSubmit}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-3 py-1.5 text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
-              title={isCompleted ? "Vụ án đã hoàn thành. Bạn có thể nộp lại bài làm để thử đáp án mới." : "Nộp kết quả bài làm để chấm điểm."}
-            >
-              <Send className="size-3.5" /> {isCompleted ? 'Nộp lại bài làm' : 'Nộp bài vụ án'}
-            </button>
           )}
         </div>
       </div>

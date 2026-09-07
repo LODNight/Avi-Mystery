@@ -128,11 +128,11 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
       expect(screen.getByText(/Vì sao doanh thu tháng 3 giảm\?/i)).toBeInTheDocument();
     }, { timeout: 3000 });
 
-    // Bấm mở bảng Gợi ý
-    const hintBtn = screen.getByRole('button', { name: /Gợi ý/i });
+    // Bấm mở bảng Gợi ý (Accordion header trong ProblemPane)
+    const hintBtn = screen.getByRole('button', { name: /^Gợi ý/i });
     fireEvent.click(hintBtn);
 
-    expect(screen.getByText(/Hệ thống Gợi ý Trinh thám/i)).toBeInTheDocument();
+    expect(screen.getByText(/Hệ thống Gợi ý Trinh thám|Gợi ý trinh thám/i)).toBeInTheDocument();
 
     // Bấm Đặt lại
     const resetBtn = screen.getByRole('button', { name: /Đặt lại/i });
@@ -147,7 +147,6 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     renderMissionPage();
     await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Gợi ý/i }));
     fireEvent.click(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1/i }));
     expect(screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).toBeInTheDocument();
 
@@ -155,25 +154,30 @@ describe('ExcelMissionPage Component Tests (LRN-EXCEL-002)', () => {
     expect(screen.queryByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).not.toBeInTheDocument();
   });
 
-  it('đưa focus vào drawer gợi ý, đóng bằng Escape và trả focus về nút mở', async () => {
+  it('hỗ trợ thu gọn/mở rộng accordion gợi ý và ghim gợi ý lên thanh công thức', async () => {
     renderMissionPage();
     await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
 
     const hintButton = screen.getByRole('button', { name: /^Gợi ý/i });
-    fireEvent.click(hintButton);
-    const closeButton = screen.getByRole('button', { name: /Đóng bảng gợi ý/i });
-    expect(closeButton).toHaveFocus();
+    expect(hintButton).toHaveAttribute('aria-expanded', 'true');
 
-    fireEvent.keyDown(document, { key: 'Escape' });
-    expect(screen.queryByRole('complementary', { name: /Khung gợi ý/i })).not.toBeInTheDocument();
-    expect(hintButton).toHaveFocus();
+    // Thu gọn accordion
+    fireEvent.click(hintButton);
+    expect(hintButton).toHaveAttribute('aria-expanded', 'false');
+
+    // Mở lại accordion
+    fireEvent.click(hintButton);
+    expect(hintButton).toHaveAttribute('aria-expanded', 'true');
+
+    // Mở gợi ý cấp 1
+    fireEvent.click(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1/i }));
+    expect(screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).toBeInTheDocument();
   });
 
   it('xóa state gợi ý cũ khi route chuyển sang mission khác', async () => {
     renderMissionPage('mission-001', true);
     await screen.findByText(/Vì sao doanh thu tháng 3 giảm\?/i);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Gợi ý/i }));
     fireEvent.click(screen.getByRole('button', { name: /Mở Gợi ý Cấp 1/i }));
     expect(screen.getByRole('button', { name: /Ẩn gợi ý nội tuyến/i })).toBeInTheDocument();
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X, ArrowLeft, ArrowRight, Play } from 'lucide-react';
 import { knowledgeService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
@@ -264,27 +264,88 @@ export function KnowledgeHubPage() {
 
               <KnowledgeViewer markdown={activeTopic.contentMarkdown} />
 
-              <div className="mt-16 pt-8 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div>
-                  {activeTopic.relatedMissions?.length > 0 && (
-                    <p className="text-sm text-muted-foreground">
-                      Kiến thức này hỗ trợ cho các vụ án: <strong className="text-foreground">{activeTopic.relatedMissions.join(', ')}</strong>
-                    </p>
-                  )}
-                </div>
-                <button
-                  onClick={handleMarkAsRead}
-                  disabled={readTopics.includes(activeTopic.id)}
-                  className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-medium transition-colors ${
-                    readTopics.includes(activeTopic.id)
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 cursor-default'
-                      : 'bg-amber-600 text-white hover:bg-amber-700 shadow-sm'
-                  }`}
-                >
-                  <CheckCircle2 className="size-5" />
-                  {readTopics.includes(activeTopic.id) ? 'Đã hiểu bài này' : 'Đánh dấu đã hiểu'}
-                </button>
-              </div>
+              {/* ── Guided Progression / Up Next Card (Step 3: Không để người dùng vào ngõ cụt) ── */}
+              {(() => {
+                const currentIdx = filteredTopics.findIndex(t => t.id === activeTopic.id);
+                const nextTopic = currentIdx >= 0 && currentIdx < filteredTopics.length - 1 ? filteredTopics[currentIdx + 1] : null;
+                const prevTopic = currentIdx > 0 ? filteredTopics[currentIdx - 1] : null;
+
+                return (
+                  <div className="mt-14 rounded-3xl border border-border bg-card p-6 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-border">
+                      <div>
+                        <h3 className="font-bold text-foreground text-base">Hoàn thành bài đọc này?</h3>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          Đánh dấu đã hiểu để lưu tiến độ và chuẩn bị vận dụng vào các vụ án.
+                        </p>
+                      </div>
+                      <button
+                        onClick={handleMarkAsRead}
+                        disabled={readTopics.includes(activeTopic.id)}
+                        className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                          readTopics.includes(activeTopic.id)
+                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 cursor-default'
+                            : 'bg-primary text-primary-foreground hover:opacity-90 shadow-sm'
+                        }`}
+                      >
+                        <CheckCircle2 className="size-4" />
+                        <span>{readTopics.includes(activeTopic.id) ? 'Đã hiểu bài học này' : 'Đánh dấu đã hiểu'}</span>
+                      </button>
+                    </div>
+
+                    {/* Next Steps: Related Mission or Next Topic */}
+                    <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                      {activeTopic.relatedMissions?.length > 0 ? (
+                        <div className="flex-1 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                          <div>
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                              Áp dụng kiến thức vào thực tế
+                            </span>
+                            <p className="text-sm font-semibold text-foreground mt-0.5">
+                              Vụ án liên quan: {activeTopic.relatedMissions[0]}
+                            </p>
+                          </div>
+                          <Link
+                            to={`/missions/${activeTopic.relatedMissions[0]}/workspace`}
+                            className="inline-flex items-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-colors shrink-0"
+                          >
+                            <Play className="size-3.5 fill-current" />
+                            <span>Vào giải Vụ án ngay</span>
+                          </Link>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-muted-foreground flex-1">
+                          Bạn đã nắm vững phần lý thuyết này. Hãy tiếp tục với các bài học kế tiếp!
+                        </p>
+                      )}
+
+                      {/* Previous / Next Lesson Navigation Buttons */}
+                      <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+                        {prevTopic && (
+                          <button
+                            onClick={() => handleSelectTopic(prevTopic.id)}
+                            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card px-3.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                            title={`Bài trước: ${prevTopic.title}`}
+                          >
+                            <ArrowLeft className="size-3.5" />
+                            <span className="hidden sm:inline">Bài trước</span>
+                          </button>
+                        )}
+                        {nextTopic && (
+                          <button
+                            onClick={() => handleSelectTopic(nextTopic.id)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity"
+                            title={`Bài tiếp: ${nextTopic.title}`}
+                          >
+                            <span>Bài tiếp theo</span>
+                            <ArrowRight className="size-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">

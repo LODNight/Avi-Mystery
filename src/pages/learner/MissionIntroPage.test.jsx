@@ -67,9 +67,7 @@ describe('MissionIntroPage Component Tests', () => {
       expect(screen.getByText(/Giám đốc tài chính gọi điện cho bạn/i)).toBeInTheDocument();
       expect(screen.getByText('Tính tổng doanh thu tháng 3 và so sánh với tháng 2.')).toBeInTheDocument();
       expect(screen.getAllByText(/100 XP/i).length).toBeGreaterThan(0);
-      expect(screen.getByText('Sales')).toBeInTheDocument();
-      expect(screen.getByText('B15')).toBeInTheDocument();
-      expect(screen.getByRole('link', { name: /bắt đầu điều tra ngay/i })).toHaveAttribute('href', '/missions/mission-001/workspace');
+      expect(screen.getByRole('link', { name: /tiến vào bàn làm việc|bắt đầu điều tra ngay/i })).toHaveAttribute('href', '/missions/mission-001/workspace');
     });
   });
 
@@ -78,7 +76,7 @@ describe('MissionIntroPage Component Tests', () => {
     courseService.getCourse.mockResolvedValue({ data: mockCourse, error: null });
     renderWithRouter('/missions/mission-010');
     await waitFor(() => {
-      expect(screen.getByRole('link', { name: /bắt đầu điều tra ngay/i })).toHaveAttribute('href', '/missions/mission-010/sql');
+      expect(screen.getByRole('link', { name: /tiến vào bàn làm việc|bắt đầu điều tra ngay/i })).toHaveAttribute('href', '/missions/mission-010/sql');
     });
   });
 

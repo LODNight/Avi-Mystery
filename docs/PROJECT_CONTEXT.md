@@ -468,7 +468,7 @@ Avi-Mystery/
 
 # Trạng Thái Dự Án Avi-Mystery
 
-> **Cập nhật lần cuối:** 27/08/2026
+> **Cập nhật lần cuối:** 08/09/2026
 > **Nguồn task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md)
 
 ---
@@ -477,11 +477,11 @@ Avi-Mystery/
 
 | Hạng mục | Trạng thái |
 |---|---|
-| **Kiến trúc** | Domain-Driven: `Course → Phase → Chapter → Investigation → Question` |
-| **Sprint hoàn thành** | Sprint 1 → 7 (100%) |
-| **Sprint hiện tại** | **Sprint 8 — Admin Content Studio (Chuẩn bị bắt đầu)** |
-| **Test suite** | `110 / 110` tests PASS (Vitest 2.1.9) — cập nhật 27/08/2026 |
-| **Build** | `npm run build` PASS — không lỗi biên dịch |
+| **Kiến trúc** | Domain-Driven: `Course → Phase → Chapter → Investigation → Question` + Academy Syllabus |
+| **Sprint hoàn thành** | Sprint 1 → 8 (100%), Sprint 9.1 (100%), Sprint 9.5 (Step 9.5.1 & 9.5.2) |
+| **Sprint hiện tại** | **Sprint 9.5 — Academy Mode & Interactive Sandbox (Step 9.5.3 chuẩn bị bắt đầu)** |
+| **Test suite** | `71 / 71` test suites, `562 / 562` tests PASS (Vitest) — cập nhật 08/09/2026 |
+| **Build & Deploy** | `npm run build` PASS (0 errors) — Vercel Production LIVE (`https://avi-mystery.vercel.app`) |
 
 ---
 
@@ -503,8 +503,10 @@ Avi-Mystery/
 | **Sprint 7.3** | Learner Profile & Achievement Badges | `DONE` |
 | **Sprint 7.4** | Activity History Timeline Page | `DONE` |
 | **Sprint 7.5** | Firebase Production Infrastructure Migration | `DONE` |
-| **Sprint 8** | Admin Content Studio | `PROPOSED` |
-| **Sprint 9** | Backend API & Persistence (FastAPI) | `PROPOSED` |
+| **Sprint 8** | Admin Content Studio & Materialized Read Model | `DONE` |
+| **Sprint 9.1** | Excel Mission Workspace UI/UX Refactor | `DONE` |
+| **Sprint 9.5** | Academy Mode & Interactive Sandbox (W3Schools Style) | `IN PROGRESS` |
+| **Sprint 10** | Backend API & Persistence (FastAPI) | `PROPOSED` |
 
 ---
 
@@ -536,6 +538,11 @@ Avi-Mystery/
 | `GAM-7.3` | Profile | Learner Profile & Achievement Badges | 7.3 | PASS |
 | `GAM-7.4` | Profile | Activity History Timeline | 7.4 | PASS |
 | `SYS-FB-7.5` | System | Firebase Firestore Progress & Auth Integration | 7.5 | PASS |
+| `ADM-8.x` | Admin | Admin Content Studio & Materialized Read Model | 8 | PASS |
+| `LRN-UX-9.1` | Excel | Excel Mission 3-Layer Split-Pane & Authentic Canvas | 9.1 | PASS |
+| `LRN-SND-9.5` | Sandbox | Interactive Data Sandbox (Split-pane, In-Cell Overlay, Zero Re-render) | 9.5 | PASS |
+| `LRN-ACD-9.5` | Academy | W3Schools Academy Syllabus, Checkpoint Quiz & Progression | 9.5 | PASS |
+| `SYS-VRC-9.5` | Deploy | Vercel Cloud Safe Fallback to Mock Services | 9.5 | PASS |
 
 ---
 
@@ -558,6 +565,11 @@ Các nút reset onboarding để test luồng hướng dẫn mà không cần t�
 | ADR-004 | SQLite WASM Worker + Policy Guard | [`DECISIONS.md`](./DECISIONS.md) |
 | ADR-005 | Domain-Driven Architecture Sprint 5 | [`DECISIONS.md`](./DECISIONS.md) |
 | ADR-006 | Submission ≠ XP; Progress trao XP | [`DECISIONS.md`](./DECISIONS.md) |
+| ADR-007 | Firebase Firestore Progress & XP Ledger | [`DECISIONS.md`](./DECISIONS.md) |
+| ADR-008 | Materialized Read Model `learning_map_views` | [`DECISIONS.md`](./DECISIONS.md) |
+| ADR-009 | Admin Content Studio & Live Sandbox Runner | [`DECISIONS.md`](./DECISIONS.md) |
+| ADR-010 | In-Cell Editor Overlay & Session State Machine | [`DECISIONS.md`](./DECISIONS.md) |
+| ADR-011 | Safe Firebase Init & Graceful Mock Fallback | [`DECISIONS.md`](./DECISIONS.md) |
 
 > Xem chi tiết quyết định agent tại [`agent/DECISIONS.md`](./agent/DECISIONS.md) và [`agent/CONTRACTS.md`](./agent/CONTRACTS.md).
 

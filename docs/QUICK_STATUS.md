@@ -19,6 +19,10 @@
       - Đã kích hoạt cơ chế `renderCellValue` cho toàn bộ các hàng ghost rows (hàng 10 trở đi), đảm bảo các ô tính toán như `D10`, `F10` hiển thị kết quả và định dạng tiền tệ trực tiếp trong ô.
     - **Kiểm thử tự động:** 19/19 tests Sandbox và 71/71 test suites toàn dự án (562/562 tests) vượt qua 100%. Xác thực runtime trên trình duyệt ở cả 2 giao diện Light và Dark mode.
 
+* **Hotfix Triển khai Production Vercel (`auth/invalid-api-key`):**
+  - **Khắc phục lỗi màn hình trắng (White screen crash):** Xử lý triệt để lỗi `Uncaught FirebaseError: Firebase: Error (auth/invalid-api-key)` phát sinh khi deploy lên Vercel do thiếu biến môi trường Firebase ở top-level module evaluation.
+  - **Cơ chế Fallback & Graceful Degradation:** Bổ sung flag `isFirebaseConfigured` và fallback an toàn trong `src/lib/firebase.js`. Tự động chuyển hướng sang Mock Services chuẩn mực nếu thiếu biến môi trường Firebase (`VITE_FIREBASE_API_KEY`).
+  - **Xác thực Production:** Đã deploy thành công lên Vercel (`https://avi-mystery.vercel.app/dashboard`), giao diện đăng nhập, điều hướng và dashboard tải mượt mà không lỗi.
 
 * **Hoàn thành Sprint 9.5 — Step 9.5.2: Xây dựng Cấu Trúc Khóa Học Academy Mode (W3Schools Style):**
   - **Cơ sở dữ liệu giáo trình phân cấp chuẩn hóa (`academySyllabus.js`):**
@@ -37,8 +41,8 @@
     - Thêm mục `"Học viện Academy"` vào thanh điều hướng Sidebar (`LearnerLayout.jsx`).
   - **Chất lượng kiểm thử & biên dịch:**
     - Test suite `AcademyCoursePage.test.jsx`: **6/6 tests PASS 100%**.
-    - Toàn bộ test suite dự án: **71/71 test suites, 549/549 tests PASS 100%**.
-    - Build production `npm run build`: Thành công 100% (1969 modules, 0 errors).
+    - Toàn bộ test suite dự án: **71/71 test suites, 562/562 tests PASS 100%**.
+    - Build production `npm run build`: Thành công 100% (0 errors).
 
 ---
 

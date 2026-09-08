@@ -623,7 +623,16 @@
 - [x] Xây dựng màn hình `PracticeSandboxPage`: Trình soạn thảo chia đôi màn hình (Split-pane) với Lý thuyết bên trái và Editor/Terminal (SQL/Excel) bên phải.
 - [x] Cho phép chạy thử (execute) code/công thức tự do hoặc theo kịch bản mini-task, trả về kết quả thời gian thực qua `analyzeExcelFormula` và Web Worker SQLite WASM (`createSqlEngine`).
 - [x] Tích hợp liên thông 2 chiều: Thêm nút "Thực hành Sandbox (Try it Yourself)" trong `KnowledgeHubPage`, nút "Thử ngay" trên `SyntaxBlock`, và mục "Sandbox Thực hành" trên Sidebar `LearnerLayout`.
-- [x] Hoàn thiện bộ unit/component test `PracticeSandboxPage.test.jsx`, pass 70/70 test suites (543/543 tests), build production thành công 100%.
+- [x] **Excel Practice Sandbox UX Refactor & Hardening (Final Verification Gate PASS):**
+  - **In-cell Overlay (`CellEditorOverlay`)**: Nhấp đúp mở editor nổi render qua `createPortal` vào scroll container, tự động mở rộng theo nội dung (`max-content`), đồng bộ 2 chiều tức thì với `FormulaBar`.
+  - **Session State Machine độc lập**: Phân tách rõ ràng giữa `originalValue`, `draftValue` và `committedValue`. Nhấn `Escape` hoàn tác 100% không làm biến dạng dữ liệu.
+  - **Validation P0 & Điều hướng bàn phím**: Giữ editor mở khi công thức lỗi (viền đỏ `border-rose-500`), phím `Enter` commit và nhảy xuống ô dưới, `Tab` nhảy sang ô phải.
+  - **Zero Unnecessary Re-renders**: `SpreadsheetGrid` và các thẻ `<td>` không bị re-render khi gõ phím trong ô hoặc Formula Bar (đã xác thực qua `window.__SPREADSHEET_GRID_RENDER_COUNT__`).
+  - **Fix Split-Pane & Ghost Rows**: Khắc phục lỗi co hẹp thanh đề bài (`react-resizable-panels`), hiển thị kết quả tính toán định dạng tiền tệ trên toàn bộ ghost rows (hàng 10+).
+- [x] **Hotfix Triển khai Production Vercel (`auth/invalid-api-key`)**:
+  - Bổ sung `isFirebaseConfigured` và fallback mock config an toàn trong `src/lib/firebase.js` chống lỗi vỡ app ở top-level evaluation.
+  - Tự động fallback sang Mock Services chuẩn mực khi thiếu biến môi trường Firebase trên Vercel.
+- [x] Hoàn thiện bộ unit/component test `PracticeSandboxPage.test.jsx`, pass 71/71 test suites (562/562 tests), build production thành công 100%.
 
 ### 🔹 Step 9.5.2: Academy Course Structure (W3Schools Style) *(HOÀN THÀNH 100%)*
 - [x] Cấu trúc dữ liệu giáo trình `academySyllabus.js`: Cung cấp 2 khóa học chính thức **Excel Academy** và **SQL Academy**, tổ chức thành các chương mục (Chapters & Lessons) và câu đố checkpoint.
@@ -631,7 +640,7 @@
   - Sidebar mục lục W3Schools Style: Bộ chuyển đổi khóa học tabs, thanh % tiến độ học tập, cây bài học accordion với tick xanh hoàn thành `CheckCircle2`.
   - Vòng lặp học tập khép kín: Lý thuyết Markdown ➡ Thẻ Try it Yourself mở sang Sandbox ➡ Quick Checkpoint câu đố trắc nghiệm tương tác +20 XP ➡ Footer điều hướng tuần tự Bài trước / Bài tiếp theo.
 - [x] Cấu hình routes trong `src/app/router/index.jsx` và thêm mục `"Học viện Academy"` vào thanh điều hướng Sidebar (`LearnerLayout.jsx`).
-- [x] Test suite `AcademyCoursePage.test.jsx` đạt 6/6 tests PASS; toàn dự án đạt **71/71 test suites (549/549 tests PASS 100%)**, build production hoàn tất thành công.
+- [x] Test suite `AcademyCoursePage.test.jsx` đạt 6/6 tests PASS; toàn dự án đạt **71/71 test suites (562/562 tests PASS 100%)**, build production hoàn tất thành công.
 
 ### 🔹 Step 9.5.3: Academy Certification & Mini-Exams *(NEXT)*
 - [ ] Xây dựng bài kiểm tra tổng hợp cuối khóa (Final Exam / Assessment) cho từng khóa học (Excel Academy & SQL Academy).
@@ -653,15 +662,19 @@
 
 ## Primary Module
 - **Module Name**: `Academy Mode & Interactive Sandbox (W3Schools Style)`
-- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/mocks/data/academy/academySyllabus.js`
+- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/PracticeSandboxPage.jsx`, `src/mocks/data/academy/academySyllabus.js`
 - **Current Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox**
 - **Current Step**: **STEP 9.5.2: Academy Course Structure (W3Schools Style) — COMPLETED**
 - **Next Step**: **STEP 9.5.3: Academy Certification & Mini-Exams**
 
 ## Completed Sub-steps
-1. **Step 9.5.2.1: Academy Syllabus Data**: Tạo `academySyllabus.js` với cây cấu trúc giáo trình cho Excel Academy và SQL Academy kèm câu hỏi checkpoint và presets sandbox.
-2. **Step 9.5.2.2: AcademyCoursePage UI**: Giao diện học viện chuẩn W3Schools với sidebar mục lục, thanh % tiến độ, nội dung bài học, thẻ Try it Yourself và câu đố Quick Checkpoint.
-3. **Step 9.5.2.3: Closed-Loop Progression**: Tích hợp trả lời câu hỏi trắc nghiệm, phản hồi Đúng/Sai, thưởng +20 XP và tự động đánh dấu hoàn thành qua `knowledgeService`.
-4. **Step 9.5.2.4: Routing & Navigation**: Đăng ký `/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId` và mục menu `Học viện Academy` trên Sidebar.
-5. **Step 9.5.2.5: Full Regression Testing & Build**: Bổ sung `AcademyCoursePage.test.jsx`, pass 549/549 tests (71 suites), Vite build production hoàn tất 100%.
+1. **Step 9.5.1.1: Sandbox Split-Pane & Engine**: Xây dựng `PracticeSandboxPage`, tích hợp tính toán Excel Formula & SQLite WASM.
+2. **Step 9.5.1.2: Sandbox UX Refactor & Verification**: In-cell Editor Overlay (`createPortal`), state machine draft/commit/cancel, keyboard nav, ghost row currency format.
+3. **Step 9.5.1.3: Production Hotfix**: Khắc phục lỗi crash `auth/invalid-api-key` trên Vercel khi thiếu env vars; graceful fallback sang Mock Services.
+4. **Step 9.5.2.1: Academy Syllabus Data**: Tạo `academySyllabus.js` với cây cấu trúc giáo trình cho Excel Academy và SQL Academy kèm câu hỏi checkpoint và presets sandbox.
+5. **Step 9.5.2.2: AcademyCoursePage UI**: Giao diện học viện chuẩn W3Schools với sidebar mục lục, thanh % tiến độ, nội dung bài học, thẻ Try it Yourself và câu đố Quick Checkpoint.
+6. **Step 9.5.2.3: Closed-Loop Progression**: Tích hợp trả lời câu hỏi trắc nghiệm, phản hồi Đúng/Sai, thưởng +20 XP và tự động đánh dấu hoàn thành qua `knowledgeService`.
+7. **Step 9.5.2.4: Routing & Navigation**: Đăng ký `/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId` và mục menu `Học viện Academy` trên Sidebar.
+8. **Step 9.5.2.5: Full Regression Testing & Build**: Bổ sung test suites, pass 562/562 tests (71 suites), Vite build production hoàn tất 100%.
+
 

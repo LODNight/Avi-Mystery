@@ -42,3 +42,19 @@
    - *Vấn đề:* Thiếu thanh tìm kiếm bài học và thanh sidebar danh mục cố định không tối ưu trên di động.
    - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Đã bổ sung ô tìm kiếm thời gian thực theo từ khóa/công cụ và hỗ trợ Drawer Sidebar kèm menu toggle/backdrop overlay chuẩn responsive cho tablet/smartphone.
 
+---
+
+## Hạng mục tồn đọng từ Sprint 9.5 (Academy & Practice Sandbox) — [ĐÃ HOÀN TẤT DỌN DẸP]
+
+1. **Trải nghiệm Chỉnh sửa Ô Bảng Tính Excel (In-Cell Editor UX & Grid Distortion):**
+   - *Vấn đề:* Chỉnh sửa trực tiếp bên trong thẻ `<td>` làm vỡ kích thước ô và giật lưới bảng tính; thiếu state machine đồng bộ giữa ô và thanh công thức (Formula Bar); gõ phím gây re-render toàn bộ `SpreadsheetGrid`.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Xây dựng `CellEditorOverlay` render qua `createPortal` vào scroll container, tự động mở rộng theo nội dung (`max-content`). Thiết lập Session State Machine độc lập (`originalValue`, `draftValue`, `committedValue`). Hỗ trợ phím Enter, Tab, Escape, giữ editor mở khi công thức sai. Không gây bất kỳ re-render thừa nào trên lưới bảng tính.
+
+2. **Lỗi Co Hẹp Split-Pane & Định Dạng Tiền Tệ Hàng Trống (Ghost Rows):**
+   - *Vấn đề:* Panel lý thuyết/đề bài bị co hẹp thành 42px do sai kiểu dữ liệu kích thước (`react-resizable-panels`); các ô tính toán như `D10`, `F10` trên ghost rows không hiển thị kết quả và định dạng tiền tệ.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Chuẩn hóa props kích thước dạng chuỗi phần trăm (`'38%'`, `'62%'`); kích hoạt `renderCellValue` cho toàn bộ các hàng ghost rows để hiển thị kết quả tính toán tức thì.
+
+3. **Khởi Tạo Firebase & Crash Màn Hình Trắng trên Vercel (`auth/invalid-api-key`):**
+   - *Vấn đề:* Khởi tạo `getAuth(app)` top-level trong `firebase.js` khi thiếu biến môi trường Firebase khiến Firebase SDK v10+ ném ngoại lệ `auth/invalid-api-key`, gây màn hình trắng (white screen) khi deploy lên Vercel.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Bổ sung flag `isFirebaseConfigured` và cấu hình fallback an toàn. Tự động chuyển hướng sang Mock Services nội bộ nếu môi trường không có Firebase API key, giúp ứng dụng luôn chạy mượt mà 100%.
+

@@ -106,9 +106,34 @@
 
 ---
 
+## ADR-010: Kiến Trúc In-Cell Spreadsheet Editor Overlay & Session State Machine
+
+* **Bối cảnh:** Việc chỉnh sửa trực tiếp bên trong thẻ `<td>` của bảng tính gây vỡ layout lưới, giật giật kích thước ô khi công thức dài, và mỗi ký tự gõ lại buộc toàn bộ bảng tính re-render.
+* **Quyết định:**
+  - Triển khai `CellEditorOverlay` render qua `createPortal` neo vào scroll container của bảng tính.
+  - Tự động định vị tuyệt đối theo tọa độ ô tính mục tiêu, co giãn chiều rộng linh hoạt theo nội dung (`width: max-content`).
+  - Thiết lập Session State Machine độc lập với 3 tầng giá trị: `originalValue`, `draftValue` và `committedValue`.
+  - Đồng bộ 2 chiều tức thì giữa `CellEditorOverlay` và `FormulaBar` qua draft value mà không làm re-render lưới bảng tính (`SpreadsheetGrid`).
+  - Hỗ trợ đầy đủ phím Enter (commit và nhảy xuống), Tab (commit và nhảy sang phải), Escape (hủy bỏ hoàn tác). Giữ editor mở kèm viền đỏ `border-rose-500` khi công thức không hợp lệ.
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 9.5).
+
+---
+
+## ADR-011: Khởi Tạo Firebase An Toàn & Fallback Sang Mock Services Trên Hosted Cloud
+
+* **Bối cảnh:** Khi triển khai lên nền tảng đám mây (như Vercel) chưa cấu hình biến môi trường Firebase, Firebase SDK v10+ ném lỗi ngoại lệ đồng bộ `auth/invalid-api-key` ở top-level module import của `firebase.js`, làm ứng dụng bị vỡ và hiển thị màn hình trắng trước khi React kịp khởi chạy.
+* **Quyết định:**
+  - Thêm cờ kiểm tra `isFirebaseConfigured` dựa trên tính hợp lệ của `VITE_FIREBASE_API_KEY`.
+  - Cung cấp cấu hình fallback dummy an toàn cho `initializeApp` và `getAuth(app)` để ngăn chặn lỗi ném ngoại lệ ở top-level module evaluation.
+  - Tự động chuyển hướng toàn bộ service layer (`authService`, `progressService`, `knowledgeService`) sang Mock Services nội bộ khi `isFirebaseConfigured` là false hoặc `VITE_USE_FIREBASE !== 'true'`.
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Sprint 9.5).
+
+---
+
 ## Agent-facing Decisions
 
 Các quyết định scope/contract chi tiết dành cho AI Agent tiếp tục được duy trì tại [`agent/CONTRACTS.md`](./agent/CONTRACTS.md) và [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md).
+
 
 
 --- Content of docs/agent/DECISIONS.md ---
@@ -199,12 +224,30 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: `run` không complete, `submit` chỉ trả `potentialXp`, không mutate XP; contract changes cần path và Acceptance Criteria rõ.
 - Related modules: LRN-SQL, LRN-SUB, GAME, BE
 
+## ADR-AGT-010 — In-cell Editor Overlay độc lập khỏi SpreadsheetGrid
+
+- Status: Accepted
+- Date: 2026-09-08
+- Context: Gõ phím trong ô hoặc Formula Bar không được phép làm giật lag hoặc re-render toàn bộ bảng tính.
+- Decision: Render `CellEditorOverlay` qua React Portal, dùng state session riêng biệt (`originalValue`, `draftValue`, `committedValue`) và chỉ update committed state vào bảng tính khi kết thúc phiên edit.
+- Consequences: Phải kiểm tra và duy trì chỉ số `window.__SPREADSHEET_GRID_RENDER_COUNT__` bằng 0 trong suốt quá trình gõ phím.
+- Related modules: LRN-EXCEL, LRN-SANDBOX
+
+## ADR-AGT-011 — Graceful Fallback khi thiếu biến môi trường Firebase trên Cloud
+
+- Status: Accepted
+- Date: 2026-09-08
+- Context: Các bản build production preview hoặc user deployment trên Vercel có thể thiếu credentials Firebase dẫn đến `auth/invalid-api-key`.
+- Decision: Cung cấp fallback credentials dummy an toàn trong `firebase.js` để `initializeApp`/`getAuth` không ném exception fatal; tự động chuyển sang Mock Services nếu `isFirebaseConfigured` là false hoặc `VITE_USE_FIREBASE !== 'true'`.
+- Consequences: Tránh lỗi màn hình trắng trên Vercel; người dùng luôn có trải nghiệm demo mượt mà.
+- Related modules: SYS-FB, BE, SHR
+
 
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
 
-> **Cập nhật lần cuối:** 24/08/2026
+> **Cập nhật lần cuối:** 08/09/2026
 > **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
 > **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
@@ -227,6 +270,8 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-011` | SQL Mission Shell with loader & isolated route | SQL Mission Workspace | `LRN-SQL` | `CURRENT` | Tested | `src/pages/learner/SqlMissionPage.jsx` |
 | `UI-012` | Dynamic Learning Map Multi-Phase Navigation Tabs & Journey View | `LearningMapPage` | `GAME` | `CURRENT` | Tested | `src/pages/learner/LearningMapPage.jsx` |
 | `UI-016` | High-contrast Skill Mastery Badges & Level Indicators in Dark/Light Mode | `LearningMapPage` | `GAME` | `CURRENT` | Tested | `src/pages/learner/LearningMapPage.jsx` |
+| `UI-017` | In-cell Editor Overlay (`CellEditorOverlay`) with portal & auto-expanding width | Excel Sandbox Workspace | `LRN-SANDBOX` | `CURRENT` | Tested | `src/components/excel/CellEditorOverlay.jsx` |
+| `UI-018` | Academy Course Page with W3Schools syllabus tree & checkpoint quiz | Academy Course Page | `LRN-ACADEMY` | `CURRENT` | Tested | `src/pages/learner/AcademyCoursePage.jsx` |
 | `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
 | `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
 | `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `PROPOSED` | Proposed | `Sprint 8` |

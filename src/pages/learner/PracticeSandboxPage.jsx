@@ -98,7 +98,7 @@ export function PracticeSandboxPage() {
 
   // Sync tool from URL params if changed
   useEffect(() => {
-    setIsFocusMode(true); // Tự động bật Focus Mode khi vào trang Sandbox
+    setIsFocusMode(false); // Mặc định hiển thị đầy đủ cả 2 cột: Đề bài / Lý thuyết & Không gian thực hành
   }, [setIsFocusMode]);
 
   useEffect(() => {

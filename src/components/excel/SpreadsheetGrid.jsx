@@ -15,16 +15,25 @@ import { formatCurrency, formatNumber } from '../../utils/format.js';
  * @param {Object} [props.cellValues] - Bản đồ giá trị sau khi tính toán { 'E2': 450000 }
  * @param {Array<string>} [props.editableCells] - Danh sách dải các ô người học được phép sửa
  */
-export function SpreadsheetGrid({
+export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
   dataset,
   selectedCell = 'A1',
   onCellSelect,
+  onCellDoubleClick,
   onFillDown,
   targetCell = 'E2',
   cellFormulas = {},
   cellValues = {},
   editableCells = ['E2'],
+  containerRef,
+  editorOverlay,
 }) {
+  // Render counter phục vụ Performance Verification Gate
+  if (typeof window !== 'undefined') {
+    window.__SPREADSHEET_GRID_RENDER_COUNT__ =
+      (window.__SPREADSHEET_GRID_RENDER_COUNT__ || 0) + 1;
+  }
+
   if (!dataset || !dataset.columns || dataset.columns.length === 0) {
     return (
       <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-xs text-muted-foreground">
@@ -45,7 +54,7 @@ export function SpreadsheetGrid({
   };
 
   // Format hiển thị giá trị trong ô tính
-  const renderCellValue = (column, rawValue, cellAddr) => {
+  const renderCellValue = (column, rawValue, cellAddr, isGhost = false) => {
     const colType = column.dataType || column.type;
     const isCurrencyCol =
       colType === 'currency' ||
@@ -64,7 +73,11 @@ export function SpreadsheetGrid({
       return cellFormulas[cellAddr];
     }
 
-    // 3. Hiển thị giá trị gốc trong dataset
+    // 3. Hiển thị giá trị gốc trong dataset (nếu là ghost row thì để trống)
+    if (isGhost) {
+      return '';
+    }
+
     if (rawValue === null || rawValue === undefined || rawValue === '') {
       return <span className="text-muted-foreground/50 italic">Chưa có</span>;
     }
@@ -97,7 +110,10 @@ export function SpreadsheetGrid({
       )}
 
       {/* Spreadsheet Canvas Scroll Container */}
-      <div className="flex-1 min-h-0 w-full overflow-auto scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/40 pb-1">
+      <div 
+        ref={containerRef}
+        className="flex-1 min-h-0 w-full overflow-auto scrollbar-thin scrollbar-thumb-border hover:scrollbar-thumb-muted-foreground/40 pb-1 relative"
+      >
         <table className="w-full min-w-[580px] border-collapse font-mono text-xs select-none">
           {/* Header hàng tên Cột Excel (A, B, C, D...) chuẩn giao diện Excel */}
           <thead className="sticky top-0 z-20">
@@ -177,6 +193,7 @@ export function SpreadsheetGrid({
                         key={cellAddr}
                         data-cell-addr={cellAddr}
                         onClick={() => onCellSelect && onCellSelect(cellAddr)}
+                        onDoubleClick={() => onCellDoubleClick && onCellDoubleClick(cellAddr)}
                         className={`relative border-r border-border/70 px-3 py-1.5 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
                           isNumeric ? 'text-right' : 'text-left'
                         } ${
@@ -249,19 +266,44 @@ export function SpreadsheetGrid({
                 {columns.map((col, cIdx) => {
                   const cellAddr = `${colLetters[cIdx]}${ghostRowNumber}`;
                   const isSelected = selectedCell === cellAddr;
+                  const isTarget = cellAddr === targetCell;
+                  const editable = isCellEditable(cellAddr);
+                  const colType = col.dataType || col.type;
+                  const isNumeric =
+                    colType === 'currency' ||
+                    colType === 'number' ||
+                    colType === 'integer' ||
+                    colType === 'float' ||
+                    ['unitPrice', 'total', 'spending', 'price', 'quantity', 'amount', 'count'].includes(col.key);
+                  const displayContent = renderCellValue(col, '', cellAddr, true);
 
                   return (
                     <td
                       key={cellAddr}
                       data-cell-addr={cellAddr}
                       onClick={() => onCellSelect && onCellSelect(cellAddr)}
+                      onDoubleClick={() => onCellDoubleClick && onCellDoubleClick(cellAddr)}
                       className={`relative border-r border-border/40 px-3 py-1.5 h-7 transition-all cursor-pointer min-w-[130px] sm:min-w-[150px] last:border-r-0 ${
-                        isSelected
+                        isNumeric ? 'text-right' : 'text-left'
+                      } ${
+                        isTarget
+                          ? isSelected
+                            ? 'bg-amber-500/25 ring-2 ring-amber-500 ring-inset shadow-xs'
+                            : 'bg-amber-500/15 ring-2 ring-amber-500/90 ring-inset'
+                          : isSelected
                           ? 'bg-primary/10 ring-2 ring-primary ring-inset'
+                          : editable
+                          ? 'bg-amber-500/5 hover:bg-amber-500/10'
                           : 'hover:bg-muted/20'
                       }`}
                     >
-                      &nbsp;
+                      <span
+                        className={`${
+                          isTarget ? 'font-black text-amber-700 dark:text-amber-400' : 'text-foreground'
+                        } ${isNumeric ? 'tabular-nums font-mono' : 'font-sans'}`}
+                      >
+                        {displayContent || '\u00A0'}
+                      </span>
                     </td>
                   );
                 })}
@@ -269,7 +311,9 @@ export function SpreadsheetGrid({
             ))}
           </tbody>
         </table>
+        {/* Render overlay bên trong scroll container để cuộn mượt mà */}
+        {editorOverlay}
       </div>
     </div>
   );
-}
+});

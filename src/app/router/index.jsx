@@ -27,6 +27,8 @@ import { ProfilePage } from '../../pages/learner/ProfilePage.jsx';
 import { ActivityHistoryPage } from '../../pages/learner/ActivityHistoryPage.jsx';
 import { AchievementsPage } from '../../pages/learner/AchievementsPage.jsx';
 import { KnowledgeHubPage } from '../../pages/learner/KnowledgeHubPage.jsx';
+import { AcademyCoursePage } from '../../pages/learner/AcademyCoursePage.jsx';
+import { PracticeSandboxPage } from '../../pages/learner/PracticeSandboxPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
@@ -133,6 +135,9 @@ export function AppRouter() {
           <Route path="/profile/history" element={<ActivityHistoryPage />} />
           <Route path="/knowledge" element={<KnowledgeHubPage />} />
           <Route path="/knowledge/:topicId" element={<KnowledgeHubPage />} />
+          <Route path="/academy" element={<AcademyCoursePage />} />
+          <Route path="/academy/:courseSlug" element={<AcademyCoursePage />} />
+          <Route path="/academy/:courseSlug/:topicId" element={<AcademyCoursePage />} />
         </Route>
 
         {/* Focus Mode routes (Distraction-free workspace without Sidebar) */}
@@ -145,6 +150,9 @@ export function AppRouter() {
         >
           <Route path="/missions/:missionId/workspace" element={<ExcelMissionPage />} />
           <Route path="/missions/:missionId/sql" element={<SqlMissionPage />} />
+          <Route path="/sandbox" element={<PracticeSandboxPage />} />
+          <Route path="/sandbox/:tool" element={<PracticeSandboxPage />} />
+          <Route path="/sandbox/topic/:topicId" element={<PracticeSandboxPage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}

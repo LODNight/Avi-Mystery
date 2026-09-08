@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X, ArrowLeft, ArrowRight, Play } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X, ArrowLeft, ArrowRight, Play, Sparkles } from 'lucide-react';
 import { knowledgeService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
@@ -253,13 +253,22 @@ export function KnowledgeHubPage() {
         <div className="flex-1 overflow-y-auto">
           {activeTopic ? (
             <div className="max-w-4xl mx-auto p-6 md:p-8 pb-24">
-              <div className="mb-8">
-                <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground mb-4">
-                  <span className="capitalize">{activeTopic.tool}</span>
-                  <ChevronRight className="size-3.5" />
-                  <span className="capitalize">{activeTopic.category}</span>
+              <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground mb-4">
+                    <span className="capitalize">{activeTopic.tool}</span>
+                    <ChevronRight className="size-3.5" />
+                    <span className="capitalize">{activeTopic.category}</span>
+                  </div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{activeTopic.title}</h1>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{activeTopic.title}</h1>
+                <Link
+                  to={`/sandbox?tool=${activeTopic.tool}&topicId=${activeTopic.id}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+                >
+                  <Sparkles className="size-4" />
+                  <span>Thực hành Sandbox (Try it Yourself)</span>
+                </Link>
               </div>
 
               <KnowledgeViewer markdown={activeTopic.contentMarkdown} />
@@ -293,31 +302,44 @@ export function KnowledgeHubPage() {
                       </button>
                     </div>
 
-                    {/* Next Steps: Related Mission or Next Topic */}
+                    {/* Next Steps: Sandbox or Related Mission */}
                     <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-                      {activeTopic.relatedMissions?.length > 0 ? (
-                        <div className="flex-1 rounded-2xl bg-amber-500/10 border border-amber-500/20 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                      <div className="flex-1 flex flex-col sm:flex-row gap-3">
+                        <Link
+                          to={`/sandbox?tool=${activeTopic.tool}&topicId=${activeTopic.id}`}
+                          className="flex-1 rounded-2xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 p-3.5 flex items-center justify-between gap-3 transition-colors group"
+                        >
                           <div>
                             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                              Áp dụng kiến thức vào thực tế
+                              Mô hình W3Schools
                             </span>
-                            <p className="text-sm font-semibold text-foreground mt-0.5">
-                              Vụ án liên quan: {activeTopic.relatedMissions[0]}
+                            <p className="text-xs sm:text-sm font-bold text-foreground mt-0.5">
+                              Mở Sandbox thực hành ngay
                             </p>
                           </div>
-                          <Link
-                            to={`/missions/${activeTopic.relatedMissions[0]}/workspace`}
-                            className="inline-flex items-center gap-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 text-xs font-bold shadow-sm transition-colors shrink-0"
-                          >
-                            <Play className="size-3.5 fill-current" />
-                            <span>Vào giải Vụ án ngay</span>
-                          </Link>
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground flex-1">
-                          Bạn đã nắm vững phần lý thuyết này. Hãy tiếp tục với các bài học kế tiếp!
-                        </p>
-                      )}
+                          <Sparkles className="size-4 text-amber-500 shrink-0" />
+                        </Link>
+
+                        {activeTopic.relatedMissions?.length > 0 && (
+                          <div className="flex-1 rounded-2xl bg-muted/60 border border-border p-3.5 flex items-center justify-between gap-3">
+                            <div>
+                              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+                                Vụ án cốt truyện
+                              </span>
+                              <p className="text-xs sm:text-sm font-semibold text-foreground mt-0.5 truncate max-w-[150px]">
+                                {activeTopic.relatedMissions[0]}
+                              </p>
+                            </div>
+                            <Link
+                              to={`/missions/${activeTopic.relatedMissions[0]}/workspace`}
+                              className="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white px-3 py-1.5 text-xs font-bold shadow-xs transition-colors shrink-0"
+                            >
+                              <Play className="size-3 fill-current" />
+                              <span>Phá án</span>
+                            </Link>
+                          </div>
+                        )}
+                      </div>
 
                       {/* Previous / Next Lesson Navigation Buttons */}
                       <div className="flex items-center gap-2 shrink-0 self-end md:self-center">

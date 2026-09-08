@@ -13,13 +13,33 @@ let mockTopics = [
     status: 'published'
   },
   {
+    id: 'topic-005',
+    tool: 'excel',
+    category: 'basic',
+    title: 'Hàm AVERAGE & COUNT - Thống Kê Cơ Bản',
+    contentMarkdown: '## Hàm AVERAGE & COUNT trong Excel\n\n- **AVERAGE**: Tính giá trị trung bình cộng của các ô chứa số.\n- **COUNT**: Đếm số ô có chứa dữ liệu dạng số.\n\n### Cú pháp\n```excel\n=AVERAGE(range)\n=COUNT(range)\n```\n\n### Ví dụ thực tế\nTính đơn giá trung bình từ E2 đến E9:\n```excel\n=AVERAGE(E2:E9)\n```\n\nĐếm số lượng mặt hàng có số liệu số lượng:\n```excel\n=COUNT(D2:D9)\n```',
+    relatedMissions: ['mission-001'],
+    orderIndex: 2,
+    status: 'published'
+  },
+  {
+    id: 'topic-006',
+    tool: 'excel',
+    category: 'basic',
+    title: 'Hàm MIN & MAX - Tìm Cực Trị Dữ Liệu',
+    contentMarkdown: '## Hàm MIN và MAX\n\nHàm **MIN** và **MAX** giúp nhanh chóng phát hiện giá trị nhỏ nhất hoặc lớn nhất trong một tập hợp dữ liệu.\n\n### Cú pháp\n```excel\n=MAX(number1, [number2], ...)\n=MIN(number1, [number2], ...)\n```\n\n### Ví dụ thực tế\nTìm đơn hàng có thành tiền lớn nhất:\n```excel\n=MAX(F2:F9)\n```\n\nTìm giá trị đơn giá thấp nhất:\n```excel\n=MIN(E2:E9)\n```',
+    relatedMissions: ['mission-001'],
+    orderIndex: 3,
+    status: 'published'
+  },
+  {
     id: 'topic-002',
     tool: 'excel',
     category: 'intermediate',
     title: 'Hàm SUMIF - Tính Tổng Có Điều Kiện',
     contentMarkdown: '## Giới thiệu Hàm SUMIF\n\nHàm **SUMIF** dùng để tính tổng các giá trị thỏa mãn một tiêu chí nhất định.\n\n### Cú pháp\n```excel\n=SUMIF(range, criteria, [sum_range])\n```\n\n### Ví dụ thực tế\nTính tổng doanh thu của nhân viên có mã "NV01":\n```excel\n=SUMIF(A2:A20, "NV01", B2:B20)\n```\n\n- `range`: Vùng điều kiện cần kiểm tra.\n- `criteria`: Điều kiện (ví dụ: `">100"`, `"Hoàn thành"`).\n- `sum_range`: Vùng số liệu thực tế cần cộng tổng.',
     relatedMissions: ['mission-001'],
-    orderIndex: 2,
+    orderIndex: 4,
     status: 'published'
   },
   {
@@ -27,9 +47,9 @@ let mockTopics = [
     tool: 'sql',
     category: 'basic',
     title: 'Lệnh SELECT - Truy Vấn Cơ Bản',
-    contentMarkdown: '## Cú pháp SELECT cơ bản\n\nLệnh **SELECT** được dùng để trích xuất dữ liệu từ các bảng trong cơ sở dữ liệu.\n\n### Cú pháp\n```sql\nSELECT column1, column2 FROM table_name;\n```\n\n### Ví dụ thực tế\nLấy toàn bộ cột dữ liệu từ bảng giao dịch:\n```sql\nSELECT * FROM transactions;\n```\n\nChỉ lấy mã nhân viên và họ tên:\n```sql\nSELECT employee_id, full_name FROM employees;\n```',
+    contentMarkdown: '## Cú pháp SELECT cơ bản\n\nLệnh **SELECT** được dùng để trích xuất dữ liệu từ các bảng trong cơ sở dữ liệu.\n\n### Cú pháp\n```sql\nSELECT column1, column2 FROM table_name;\n```\n\n### Ví dụ thực tế\nLấy toàn bộ cột dữ liệu từ bảng giao dịch:\n```sql\nSELECT * FROM sales;\n```\n\nChỉ lấy mã giao dịch và số tiền:\n```sql\nSELECT transaction_id, amount FROM sales;\n```',
     relatedMissions: ['sql-case-001'],
-    orderIndex: 3,
+    orderIndex: 5,
     status: 'published'
   },
   {
@@ -37,9 +57,29 @@ let mockTopics = [
     tool: 'sql',
     category: 'intermediate',
     title: 'Mệnh Đề WHERE - Lọc Dữ Liệu SQL',
-    contentMarkdown: '## Mệnh đề WHERE trong SQL\n\nMệnh đề **WHERE** được dùng để lọc các dòng dữ liệu thoả mãn điều kiện đặt ra.\n\n### Cú pháp\n```sql\nSELECT * FROM table_name WHERE condition;\n```\n\n### Ví dụ thực tế\nTìm các giao dịch có số tiền lớn hơn 500.000đ:\n```sql\nSELECT * FROM transactions WHERE amount > 500000;\n```\n\nKết hợp nhiều điều kiện với `AND` / `OR`:\n```sql\nSELECT * FROM orders WHERE status = "completed" AND total >= 1000000;\n```',
+    contentMarkdown: '## Mệnh đề WHERE trong SQL\n\nMệnh đề **WHERE** được dùng để lọc các dòng dữ liệu thoả mãn điều kiện đặt ra.\n\n### Cú pháp\n```sql\nSELECT * FROM table_name WHERE condition;\n```\n\n### Ví dụ thực tế\nTìm các giao dịch có số tiền lớn hơn 500.000đ:\n```sql\nSELECT * FROM sales WHERE amount > 500000;\n```\n\nKết hợp nhiều điều kiện với `AND` / `OR`:\n```sql\nSELECT * FROM sales WHERE payment_method = "Credit Card" AND amount >= 1000000;\n```',
     relatedMissions: ['sql-case-001'],
-    orderIndex: 4,
+    orderIndex: 6,
+    status: 'published'
+  },
+  {
+    id: 'topic-007',
+    tool: 'sql',
+    category: 'basic',
+    title: 'Mệnh Đề ORDER BY & LIMIT - Sắp Xếp & Giới Hạn',
+    contentMarkdown: '## ORDER BY & LIMIT trong SQL\n\n- **ORDER BY**: Sắp xếp kết quả trả về theo thứ tự tăng dần (`ASC` - mặc định) hoặc giảm dần (`DESC`).\n- **LIMIT**: Giới hạn số lượng bản ghi hiển thị.\n\n### Cú pháp\n```sql\nSELECT * FROM table_name ORDER BY column_name DESC LIMIT n;\n```\n\n### Ví dụ thực tế\nXem top 5 đơn hàng có doanh số cao nhất:\n```sql\nSELECT transaction_id, product_name, amount FROM sales ORDER BY amount DESC LIMIT 5;\n```',
+    relatedMissions: ['sql-case-001'],
+    orderIndex: 7,
+    status: 'published'
+  },
+  {
+    id: 'topic-008',
+    tool: 'sql',
+    category: 'intermediate',
+    title: 'Mệnh Đề GROUP BY & Hàm Tổng Hợp',
+    contentMarkdown: '## Mệnh đề GROUP BY trong SQL\n\nMệnh đề **GROUP BY** gom các hàng có cùng giá trị thành các nhóm tóm tắt dữ liệu, thường dùng chung với các hàm tổng hợp như `COUNT()`, `SUM()`, `AVG()`, `MAX()`, `MIN()`.\n\n### Cú pháp\n```sql\nSELECT column_name, COUNT(*), SUM(amount) FROM table_name GROUP BY column_name;\n```\n\n### Ví dụ thực tế\nThống kê tổng doanh thu theo từng phương thức thanh toán:\n```sql\nSELECT payment_method, COUNT(*) AS total_orders, SUM(amount) AS total_revenue FROM sales GROUP BY payment_method;\n```',
+    relatedMissions: ['sql-case-001'],
+    orderIndex: 8,
     status: 'published'
   }
 ];

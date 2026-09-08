@@ -16,6 +16,7 @@ export function FormulaBar({
   onFillDown,
   canFillDown = false,
   onReset,
+  onCancel,
   onToggleHint,
   hintButtonRef,
   inputRef,
@@ -52,7 +53,16 @@ export function FormulaBar({
     if (e.key === 'Enter') {
       e.preventDefault();
       if (handleRunAction && !isEvaluating && !isSubmitting && !disabled) {
-        handleRunAction(formula);
+        handleRunAction(formula, 'enter');
+      }
+      return;
+    }
+
+    // 3. Phím Escape: Hủy chỉnh sửa và hoàn tác giá trị gốc
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (onCancel) {
+        onCancel();
       }
       return;
     }

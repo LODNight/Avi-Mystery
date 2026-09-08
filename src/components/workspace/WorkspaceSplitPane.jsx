@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Group, Panel, Separator } from 'react-resizable-panels';
-import { FileText, LayoutGrid } from 'lucide-react';
+import { FileText, LayoutGrid, ChevronLeft, ChevronRight } from 'lucide-react';
 
 /**
  * WorkspaceSplitPane Component (Sprint 9 / Split-Pane IDE Architecture)
@@ -28,6 +28,12 @@ export function WorkspaceSplitPane({
   });
 
   const [activeMobileTab, setActiveMobileTab] = useState('left'); // 'left' | 'right'
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => !prev);
+  };
 
   useEffect(() => {
     if (isFocusMode) {
@@ -114,37 +120,73 @@ export function WorkspaceSplitPane({
     );
   }
 
+  const leftDefaultNum = parseInt(defaultLeftSize, 10) || 38;
+  const leftMinNum = parseInt(minLeftSize, 10) || 25;
+  const leftMaxNum = parseInt(maxLeftSize, 10) || 48;
+
+  const leftDefault = `${leftDefaultNum}%`;
+  const leftMin = `${leftMinNum}%`;
+  const leftMax = `${leftMaxNum}%`;
+
+  const rightDefault = `${100 - leftDefaultNum}%`;
+  const rightMin = `${100 - leftMaxNum}%`;
+
   // ── Layout dành cho Desktop (>= 1024px): Split-Pane IDE với thanh kéo ──
   return (
     <div className={`h-full w-full overflow-hidden rounded-2xl border border-border bg-card shadow-sm ${className}`}>
-      <Group orientation="horizontal" className="h-full w-full">
-        {/* Left Pane (Đề bài, cốt truyện, mục tiêu, gợi ý) - 34% Desktop */}
-        <Panel
-          id="problem-pane"
-          defaultSize={defaultLeftSize}
-          minSize={minLeftSize}
-          maxSize={maxLeftSize}
-          className="h-full overflow-y-auto bg-muted/20 dark:bg-card/40 focus:outline-none scrollbar-thin"
-        >
-          <div className="p-3.5 lg:p-4 h-full">
-            {leftContent}
-          </div>
-        </Panel>
+      <Group orientation="horizontal" className="h-full w-full relative">
+        {/* Left Pane (Đề bài, cốt truyện, mục tiêu, gợi ý) */}
+        {!isCollapsed && (
+          <Panel
+            id="problem-pane"
+            defaultSize={leftDefault}
+            minSize={leftMin}
+            maxSize={leftMax}
+            className="h-full overflow-y-auto bg-muted/20 dark:bg-card/40 focus:outline-none scrollbar-thin"
+          >
+            <div className="p-3.5 lg:p-4 h-full">
+              {leftContent}
+            </div>
+          </Panel>
+        )}
 
         {/* Separator / Resize Divider Bar */}
-        <Separator
-          aria-label="Kéo để điều chỉnh kích thước hai khung làm việc"
-          className="relative flex w-2 items-center justify-center bg-border/60 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors cursor-col-resize group select-none focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-        >
-          <div className="h-8 w-1 rounded-full bg-border group-hover:bg-amber-500 transition-colors" />
-        </Separator>
+        {!isCollapsed && (
+          <Separator
+            aria-label="Kéo để điều chỉnh kích thước hai khung làm việc"
+            className="relative flex w-3 items-center justify-center bg-border/60 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors cursor-col-resize group select-none focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+          >
+            <div className="h-8 w-1 rounded-full bg-border group-hover:bg-amber-500 transition-colors" />
+            
+            {/* Collapse Toggle Button */}
+            <button
+               type="button"
+               onClick={toggleCollapse}
+               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center size-5 rounded-full border border-border bg-card shadow-md hover:bg-muted text-muted-foreground transition-all cursor-pointer z-10"
+               title="Thu gọn khung Đề bài"
+            >
+               <ChevronLeft className="size-3.5" />
+            </button>
+          </Separator>
+        )}
 
-        {/* Right Pane (Workspace, Editor, Spreadsheet/Results) - 66% Desktop */}
+        {/* Right Pane (Workspace, Editor, Spreadsheet/Results) */}
         <Panel
           id="workspace-pane"
-          minSize="50%"
-          className="h-full overflow-hidden flex flex-col bg-background dark:bg-workspace focus:outline-none"
+          defaultSize={rightDefault}
+          minSize={rightMin}
+          className="h-full overflow-hidden flex flex-col bg-background dark:bg-workspace focus:outline-none relative"
         >
+          {isCollapsed && (
+            <button
+               type="button"
+               onClick={toggleCollapse}
+               className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center justify-center size-6 rounded-r-full border border-border border-l-0 bg-card shadow-md hover:bg-muted text-muted-foreground transition-all cursor-pointer z-50"
+               title="Mở rộng khung Đề bài"
+            >
+               <ChevronRight className="size-3.5" />
+            </button>
+          )}
           {rightContent}
         </Panel>
       </Group>

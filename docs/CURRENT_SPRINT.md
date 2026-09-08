@@ -615,17 +615,27 @@
 
 ---
 
-## 🟡 Sprint 9.5 — Academy Mode & Interactive Sandbox *(PROPOSED - NEXT)*
+## 🟢 Sprint 9.5 — Academy Mode & Interactive Sandbox *(IN PROGRESS)*
 
 *Mục tiêu: Mở rộng định hướng sang mô hình W3Schools (Bên cạnh nhánh cốt truyện Game Mystery), cho phép học viên học lý thuyết kết hợp thực hành ngay lập tức (Try it Yourself).*
 
-### 🔹 Step 9.5.1: Interactive Data Sandbox (Try It Yourself)
-- [ ] Xây dựng màn hình `PracticeSandboxPage`: Trình soạn thảo chia đôi màn hình (Split-pane) với Lý thuyết bên trái và Editor/Terminal (SQL/Excel) bên phải.
-- [ ] Cho phép chạy thử (execute) code/công thức tự do hoặc theo kịch bản mini-task, trả về kết quả thời gian thực qua `excelChecker` / `sql-wasm`.
+### 🔹 Step 9.5.1: Interactive Data Sandbox (Try It Yourself) *(HOÀN THÀNH 100%)*
+- [x] Xây dựng màn hình `PracticeSandboxPage`: Trình soạn thảo chia đôi màn hình (Split-pane) với Lý thuyết bên trái và Editor/Terminal (SQL/Excel) bên phải.
+- [x] Cho phép chạy thử (execute) code/công thức tự do hoặc theo kịch bản mini-task, trả về kết quả thời gian thực qua `analyzeExcelFormula` và Web Worker SQLite WASM (`createSqlEngine`).
+- [x] Tích hợp liên thông 2 chiều: Thêm nút "Thực hành Sandbox (Try it Yourself)" trong `KnowledgeHubPage`, nút "Thử ngay" trên `SyntaxBlock`, và mục "Sandbox Thực hành" trên Sidebar `LearnerLayout`.
+- [x] Hoàn thiện bộ unit/component test `PracticeSandboxPage.test.jsx`, pass 70/70 test suites (543/543 tests), build production thành công 100%.
 
-### 🔹 Step 9.5.2: Academy Course Structure (W3Schools Style)
-- [ ] Xây dựng lại giao diện danh sách khóa học `/academy` với Sidebar Menu tổ chức theo dạng "Bài học tuần tự" thay vì "Vụ án trinh thám".
-- [ ] Liên kết thư viện kiến thức (`KnowledgeHub`) trực tiếp vào Sandbox, tạo vòng lặp học tập: Đọc lý thuyết ➡ Try it ➡ Giải bài tập củng cố.
+### 🔹 Step 9.5.2: Academy Course Structure (W3Schools Style) *(HOÀN THÀNH 100%)*
+- [x] Cấu trúc dữ liệu giáo trình `academySyllabus.js`: Cung cấp 2 khóa học chính thức **Excel Academy** và **SQL Academy**, tổ chức thành các chương mục (Chapters & Lessons) và câu đố checkpoint.
+- [x] Xây dựng giao diện `AcademyCoursePage.jsx` (`/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId`):
+  - Sidebar mục lục W3Schools Style: Bộ chuyển đổi khóa học tabs, thanh % tiến độ học tập, cây bài học accordion với tick xanh hoàn thành `CheckCircle2`.
+  - Vòng lặp học tập khép kín: Lý thuyết Markdown ➡ Thẻ Try it Yourself mở sang Sandbox ➡ Quick Checkpoint câu đố trắc nghiệm tương tác +20 XP ➡ Footer điều hướng tuần tự Bài trước / Bài tiếp theo.
+- [x] Cấu hình routes trong `src/app/router/index.jsx` và thêm mục `"Học viện Academy"` vào thanh điều hướng Sidebar (`LearnerLayout.jsx`).
+- [x] Test suite `AcademyCoursePage.test.jsx` đạt 6/6 tests PASS; toàn dự án đạt **71/71 test suites (549/549 tests PASS 100%)**, build production hoàn tất thành công.
+
+### 🔹 Step 9.5.3: Academy Certification & Mini-Exams *(NEXT)*
+- [ ] Xây dựng bài kiểm tra tổng hợp cuối khóa (Final Exam / Assessment) cho từng khóa học (Excel Academy & SQL Academy).
+- [ ] Cấp chứng chỉ điện tử (Digital Certificate / Badge) khi học viên hoàn thành khóa học và đạt điểm bài thi tốt nghiệp.
 
 ---
 
@@ -642,15 +652,16 @@
 # AVI-MYSTERY — CURRENT TASK
 
 ## Primary Module
-- **Module Name**: `Excel Mission Workspace UI/UX Refactor & Split-Pane Architecture`
-- **Primary Path**: `src/pages/learner/`, `src/components/excel/`, `src/components/workspace/`, `src/app/layouts/`
-- **Current Sprint**: **SPRINT 9.1 — Excel Mission Workspace UI/UX Refactor (COMPLETED)**
-- **Next Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox**
+- **Module Name**: `Academy Mode & Interactive Sandbox (W3Schools Style)`
+- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/mocks/data/academy/academySyllabus.js`
+- **Current Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox**
+- **Current Step**: **STEP 9.5.2: Academy Course Structure (W3Schools Style) — COMPLETED**
+- **Next Step**: **STEP 9.5.3: Academy Certification & Mini-Exams**
 
 ## Completed Sub-steps
-1. **Step 9.1.1: Design Tokens & Semantic Theming**: Cập nhật bảng màu đa tầng Dark mode (`#0F0F0F`, `#151515`, `#181818`, `#202020`, `#303030`) và Light mode (`#F5F6F8`, `#FFFFFF`, `#E5E7EB`).
-2. **Step 9.1.2: Kiến trúc 3 Lớp & Viewport 34:66**: Cấu trúc Top Bar $\to$ Split-Pane 34:66 $\to$ Bottom Action Bar, tối đa hóa chiều cao khả dụng cho bảng tính.
-3. **Step 9.1.3: ProblemPane 4-Tier Hierarchy**: Identity $\to$ Case File $\to$ Objective trọng tâm $\to$ Compact Progressive Hints.
-4. **Step 9.1.4: Authentic Spreadsheet Canvas**: Loại bỏ badge chữ che khuất ô, bổ sung Ghost rows lấp đầy khoảng trống, sticky headers và căn chỉnh số liệu chuẩn Excel.
-5. **Step 9.1.5: Interactive Focus Mode & Responsive**: Bật/tắt chế độ tập trung mở rộng 100% bảng tính, bảo vệ thanh công cụ trên mọi breakpoint, pass toàn bộ 537/537 tests (69 suites).
+1. **Step 9.5.2.1: Academy Syllabus Data**: Tạo `academySyllabus.js` với cây cấu trúc giáo trình cho Excel Academy và SQL Academy kèm câu hỏi checkpoint và presets sandbox.
+2. **Step 9.5.2.2: AcademyCoursePage UI**: Giao diện học viện chuẩn W3Schools với sidebar mục lục, thanh % tiến độ, nội dung bài học, thẻ Try it Yourself và câu đố Quick Checkpoint.
+3. **Step 9.5.2.3: Closed-Loop Progression**: Tích hợp trả lời câu hỏi trắc nghiệm, phản hồi Đúng/Sai, thưởng +20 XP và tự động đánh dấu hoàn thành qua `knowledgeService`.
+4. **Step 9.5.2.4: Routing & Navigation**: Đăng ký `/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId` và mục menu `Học viện Academy` trên Sidebar.
+5. **Step 9.5.2.5: Full Regression Testing & Build**: Bổ sung `AcademyCoursePage.test.jsx`, pass 549/549 tests (71 suites), Vite build production hoàn tất 100%.
 

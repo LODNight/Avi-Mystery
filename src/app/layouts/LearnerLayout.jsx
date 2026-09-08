@@ -51,8 +51,10 @@ export const learnerNavItems = [
     icon: GraduationCap,
     children: [
       { label: 'Bản đồ học', to: '/map', icon: Map },
+      { label: 'Học viện Academy', to: '/academy', icon: GraduationCap },
       { label: 'Khóa học', to: '/courses', icon: BookOpen },
       { label: 'Thư viện kiến thức', to: '/knowledge', icon: Library },
+      { label: 'Sandbox Thực hành', to: '/sandbox', icon: Sparkles },
       { label: 'Phòng luyện tập', to: '/practice', icon: Dumbbell },
     ],
   },
@@ -73,6 +75,7 @@ export function isLearnerNavPathActive(pathname, navPath) {
   if (pathname === navPath) return true;
   if (navPath === '/map' && /^\/missions(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/knowledge' && /^\/knowledge(?:\/|$)/.test(pathname)) return true;
+  if (navPath === '/sandbox' && /^\/sandbox(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/dashboard') return false;
   return pathname.startsWith(`${navPath}/`);
 }
@@ -94,6 +97,7 @@ export function LearnerLayout({ children }) {
     '/map',
     '/courses',
     '/knowledge',
+    '/sandbox',
     '/practice',
     '/missions',
   ].some((path) => location.pathname.startsWith(path));

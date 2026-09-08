@@ -21,7 +21,8 @@ export const firebaseKnowledgeService = {
       const snapshot = await getDocs(q);
       
       if (snapshot.empty) {
-        return { data: [], error: null };
+        // Fallback sang mock topics khi Firestore chưa được seed dữ liệu
+        return mockKnowledgeService.getPublishedTopics(filter);
       }
 
       let topics = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -29,8 +30,8 @@ export const firebaseKnowledgeService = {
       
       return { data: topics, error: null };
     } catch (error) {
-      console.error('Error fetching published topics from Firestore:', error);
-      return { data: [], error: { code: KNOWLEDGE_ERROR_CODES.UNKNOWN_ERROR, message: error.message } };
+      console.warn('Firestore getPublishedTopics error, fallback to mock:', error.message);
+      return mockKnowledgeService.getPublishedTopics(filter);
     }
   },
 
@@ -62,10 +63,10 @@ export const firebaseKnowledgeService = {
       if (docSnap.exists()) {
         return { data: { id: docSnap.id, ...docSnap.data() }, error: null };
       }
-      return { data: null, error: { code: KNOWLEDGE_ERROR_CODES.NOT_FOUND } };
+      return mockKnowledgeService.getTopicById(topicId);
     } catch (error) {
-      console.error('Error fetching topic by id:', error);
-      return { data: null, error: { code: KNOWLEDGE_ERROR_CODES.UNKNOWN_ERROR, message: error.message } };
+      console.warn('Firestore getTopicById error, fallback to mock:', error.message);
+      return mockKnowledgeService.getTopicById(topicId);
     }
   },
 
@@ -104,14 +105,14 @@ export const firebaseKnowledgeService = {
     try {
       const snapshot = await getDocs(collection(db, 'knowledge_topics'));
       if (snapshot.empty) {
-        return { data: [], error: null };
+        return mockKnowledgeService.getAllTopics();
       }
       let topics = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       topics.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
       return { data: topics, error: null };
     } catch (error) {
-      console.error('Error fetching all topics:', error);
-      return { data: [], error: { code: KNOWLEDGE_ERROR_CODES.UNKNOWN_ERROR, message: error.message } };
+      console.warn('Error fetching all topics, fallback to mock:', error.message);
+      return mockKnowledgeService.getAllTopics();
     }
   },
 

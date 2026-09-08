@@ -20,10 +20,11 @@ import { apiAuthService, apiCourseService, apiMissionService, apiSqlMissionServi
 import { apiLearningMapService } from './api/apiLearningMapService.js';
 import { SUBMISSION_ERROR_CODES } from './contracts/submissionService.js';
 import { firebaseAuthService } from './api/firebaseAuthService.js';
+import { isFirebaseConfigured } from '../lib/firebase.js';
 
 // Environment switch
 const IS_TEST = import.meta.env.MODE === 'test';
-const USE_FIREBASE = !IS_TEST && import.meta.env.VITE_USE_FIREBASE === 'true';
+const USE_FIREBASE = !IS_TEST && isFirebaseConfigured && import.meta.env.VITE_USE_FIREBASE === 'true';
 
 // Temporary mock toggle for static services
 const USE_MOCK = true;

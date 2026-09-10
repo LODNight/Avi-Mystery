@@ -22,7 +22,10 @@
   5. **Learner Onboarding & First-Run Experience**: Welcome Gate, Tutorial Case 0 với Guided Spotlight 4 bước, Dashboard Tour 5 bước chuyên sâu (**Sprint 6.5 — HOÀN THÀNH 100%**).
   6. **Learner Engagement & Firebase Firestore Migration**: Modal mừng thăng cấp, chuỗi Streak ngọn lửa, Practice Workspace tự do, Profile, Huy hiệu thành tích, Lịch sử hoạt động và di chuyển lưu trữ sang Firebase Firestore Production (**Sprint 7 — HOÀN THÀNH 100%**).
   7. **Admin Content Studio & Materialized Read Model**: Giao diện trực quan cho Admin tạo/sửa Khóa học, Chương học, Vụ án, Bộ dữ liệu CSV, Sandbox Runner kiểm thử độc lập và Materialized Read Model `learning_map_views` tối ưu hóa triệt để Firestore (**Sprint 8 — HOÀN THÀNH 100%**).
-  8. **Backend API & PostgreSQL Core**: Triển khai FastAPI và PostgreSQL thay thế Mock Adapters (**Sprint 9 — PROPOSED**).
+  8. **Education Hub & UX/UI Focus Mode**: Nâng cấp trình đọc bài học Markdown, cache offline IndexedDB, Focus Mode không xao nhãng và Action Toolbar hợp nhất (**Sprint 8.5 & 8.6 — HOÀN THÀNH 100%**).
+  9. **Split-Pane Architecture & Authentic Spreadsheet**: Bố cục chia khung chuẩn LeetCode tỷ lệ 34:66, Ghost Rows liên tục, Name Box, gỡ bỏ badge trong ô tính và Interactive Focus Mode (**Sprint 9 & 9.1 — HOÀN THÀNH 100%**).
+  10. **Academy Mode & Interactive Sandbox (W3Schools Style)**: Practice Sandbox chia đôi màn hình, In-cell overlay editing, cây giáo trình tuần tự W3Schools, vòng lặp Quick Checkpoint +20 XP, bộ đề thi tốt nghiệp 10 câu và cấp chứng chỉ điện tử Detective Amber (**Sprint 9.5 — HOÀN THÀNH 100%**).
+  11. **Backend API & PostgreSQL Core**: Triển khai FastAPI và PostgreSQL thay thế Mock Adapters (**Sprint 10 — PROPOSED**).
 
 ### 1.2. Môi Trường Triển Khai & Demo
 * **Trang Web Chính (Production/Staging)**: [https://avi-mystery.vercel.app/dashboard](https://avi-mystery.vercel.app/dashboard)

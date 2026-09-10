@@ -58,3 +58,7 @@
    - *Vấn đề:* Khởi tạo `getAuth(app)` top-level trong `firebase.js` khi thiếu biến môi trường Firebase khiến Firebase SDK v10+ ném ngoại lệ `auth/invalid-api-key`, gây màn hình trắng (white screen) khi deploy lên Vercel.
    - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Bổ sung flag `isFirebaseConfigured` và cấu hình fallback an toàn. Tự động chuyển hướng sang Mock Services nội bộ nếu môi trường không có Firebase API key, giúp ứng dụng luôn chạy mượt mà 100%.
 
+4. **Kỳ Thi Tốt Nghiệp & Cấp Chứng Chỉ Điện Tử (Academy Certification & Mini-Exams — Step 9.5.3):**
+   - *Vấn đề:* Sau khi hoàn thành các bài học W3Schools Style, học viên thiếu bài đánh giá tổng hợp để kiểm chứng năng lực và nhận chứng chỉ ghi nhận thành quả.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Xây dựng bộ đề 10 câu hỏi sát hạch trắc nghiệm chuyên sâu cho Excel & SQL Academy kèm giải thích, đồng hồ đếm ngược 15 phút, điều kiện đỗ $\ge 80\%$, và hệ thống cấp Chứng chỉ số Detective Amber Gold (`AcademyCertificateModal.jsx`) hỗ trợ In/Tải PDF, sao chép mã xác thực, lưu trữ trên Profile.
+

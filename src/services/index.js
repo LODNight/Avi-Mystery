@@ -34,6 +34,7 @@ import { firebaseKnowledgeService } from './api/firebaseKnowledgeService.js';
 
 import { mockAdminContentService } from './mock/mockAdminContentService.js';
 import { mockKnowledgeService } from './mock/mockKnowledgeService.js';
+import { academyExamService } from './academyExamService.js';
 
 export const authService    = USE_FIREBASE ? firebaseAuthService : (USE_MOCK ? mockAuthService : apiAuthService);
 export const courseService  = USE_MOCK ? mockCourseService  : apiCourseService;
@@ -47,6 +48,7 @@ export const progressService = USE_FIREBASE ? firebaseProgressService : (USE_MOC
 export const learningMapService = USE_MOCK ? mockLearningMapService : apiLearningMapService;
 export const adminContentService = USE_MOCK ? mockAdminContentService : mockAdminContentService;
 export const knowledgeService = USE_FIREBASE ? firebaseKnowledgeService : (USE_MOCK ? mockKnowledgeService : mockKnowledgeService);
+export { academyExamService };
 
 // API submission adapter is intentionally deferred to Sprint 7. This stub keeps
 // the public interface stable without silently falling back to mock data.

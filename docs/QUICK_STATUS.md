@@ -44,17 +44,27 @@
     - Toàn bộ test suite dự án: **71/71 test suites, 562/562 tests PASS 100%**.
     - Build production `npm run build`: Thành công 100% (0 errors).
 
+* **Hoàn thành Sprint 9.5 — Step 9.5.3: Hệ Thống Bài Thi Tốt Nghiệp & Cấp Chứng Chỉ Academy (Academy Certification & Mini-Exams) — [HOÀN THÀNH 100%]:**
+  - **Dữ liệu ngân hàng câu hỏi (`academyExams.js`):** 10 câu hỏi sát hạch chuyên sâu cho Excel Academy & SQL Academy, giải thích chi tiết, 15 phút đếm ngược, ngưỡng đạt ≥ 80% (+100 XP).
+  - **Service chấm điểm & chứng chỉ số (`academyExamService.js`):** Chấm điểm tự động, xếp loại (Xuất sắc / Giỏi / Đạt chuẩn), cấp mã Certificate ID duy nhất (`AVI-EXCEL-CERT-XXXXX` / `AVI-SQL-CERT-XXXXX`), lưu trữ qua `storage.js` và trao thưởng XP an toàn qua `progressService.awardXp`.
+  - **Giao diện làm bài thi (`AcademyExamPage` tại `/academy/:courseSlug/exam`):** Màn hình Briefing thể lệ $\to$ Trình thi trắc nghiệm (Timer đếm ngược, Jumper 1-10, thẻ trắc nghiệm, modal xác nhận nộp bài) $\to$ Màn hình Kết quả vinh danh và phân tích đáp án chi tiết.
+  - **Chứng chỉ điện tử Detective Amber (`AcademyCertificateModal.jsx`):** Khung viền vàng kim loại sang trọng, con dấu học viện, tên học viên, ngày cấp, xếp loại, hỗ trợ In/Lưu PDF (`window.print()`) và sao chép mã xác thực.
+  - **Liên thông hệ thống:** Nút thi tốt nghiệp ở cuối bài học & sidebar `AcademyCoursePage`, khu vực "Chứng Chỉ Học Viện" trên `ProfilePage` và đăng ký route trong `router/index.jsx`.
+  - **Kiểm thử & Biên dịch:** `AcademyExamPage.test.jsx` (5/5 tests PASS); toàn dự án đạt **72/72 test suites (567/567 tests PASS 100%)**, build production Vite hoàn tất trơn tru.
+
 ---
 
 ### 2. Tiếp theo cần làm gì?
-* **Triển khai Sprint 9.5 — Step 9.5.3: Hệ Thống Bài Thi Tốt Nghiệp & Cấp Chứng Chỉ Academy (Academy Certification & Mini-Exams):**
-  - Xây dựng bài kiểm tra tổng hợp cuối khóa (Final Quiz / Assessment) cho từng khóa học (Excel Academy & SQL Academy).
-  - Cấp chứng chỉ điện tử (Digital Certificate / Badge) khi học viên đạt từ 80% điểm bài thi tốt nghiệp, lưu vào hồ sơ thám tử (`/profile` & `/achievements`).
-  - Hoàn thiện luồng liên kết mượt mà giữa Academy Mode (Học viện lý thuyết + thực hành) và Game Vụ án (Vận dụng phá án trinh thám).
+* **Khởi động Sprint 10: Backend API & Data Persistence (FastAPI & PostgreSQL):**
+  - Xây dựng RESTful API server sử dụng Python FastAPI và PostgreSQL database.
+  - Tạo database migrations, thiết lập schema tables cho Users, Courses, Chapters, Investigations, Questions, Submissions, Progress, Exams, Certificates.
+  - Thay thế các Frontend Mock Adapters bằng API Client thực tế giữ nguyên Frontend contracts (`src/services/contracts/`).
+  - Duy trì chế độ Dual-Mode (Mock toggle hoặc Firebase fallback) để luôn đảm bảo chạy độc lập client-side khi cần.
 
 ---
 
 ### 3. Bước đầu tiên cần làm trong bước tiếp theo là gì?
-* **Bước 9.5.3.1: Thiết kế cấu trúc đề thi tốt nghiệp & cấp chứng chỉ (`academyExamService.js`):**
-  - Xây dựng ngân hàng câu hỏi tổng hợp cuối khóa cho `excel-academy` và `sql-academy`.
-  - Thiết kế modal / trang thi trắc nghiệm tính giờ và cấp chứng nhận Certificate hoàn thành khóa học.
+* **Bước 10.1: Khởi tạo kiến trúc FastAPI Server & Docker Compose Database:**
+  - Thiết lập thư mục `backend/` với `pyproject.toml` hoặc `requirements.txt` (FastAPI, SQLAlchemy, Pydantic v2, Alembic, asyncpg).
+  - Thiết lập cấu hình kết nối database PostgreSQL và biến môi trường `.env`.
+

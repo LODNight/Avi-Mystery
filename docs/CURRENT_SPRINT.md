@@ -642,9 +642,19 @@
 - [x] Cấu hình routes trong `src/app/router/index.jsx` và thêm mục `"Học viện Academy"` vào thanh điều hướng Sidebar (`LearnerLayout.jsx`).
 - [x] Test suite `AcademyCoursePage.test.jsx` đạt 6/6 tests PASS; toàn dự án đạt **71/71 test suites (562/562 tests PASS 100%)**, build production hoàn tất thành công.
 
-### 🔹 Step 9.5.3: Academy Certification & Mini-Exams *(NEXT)*
-- [ ] Xây dựng bài kiểm tra tổng hợp cuối khóa (Final Exam / Assessment) cho từng khóa học (Excel Academy & SQL Academy).
-- [ ] Cấp chứng chỉ điện tử (Digital Certificate / Badge) khi học viên hoàn thành khóa học và đạt điểm bài thi tốt nghiệp.
+### 🔹 Step 9.5.3: Academy Certification & Mini-Exams *(HOÀN THÀNH 100%)*
+- [x] **Dữ liệu bộ đề thi tốt nghiệp (`academyExams.js`)**: 10 câu hỏi chuẩn hóa toàn diện cho cả Excel Academy và SQL Academy kèm giải thích chi tiết, danh mục kỹ năng, thời gian 15 phút, điểm đạt ≥ 80% và thưởng +100 XP.
+- [x] **Service quản lý kỳ thi & chứng chỉ (`academyExamService.js`)**: Chấm điểm tự động, phân loại kết quả (Xuất sắc / Giỏi / Đạt chuẩn), sinh mã chứng chỉ số duy nhất (`AVI-EXCEL-CERT-XXXXX` / `AVI-SQL-CERT-XXXXX`), lưu trữ lịch sử qua `storage.js` và tích hợp trao thưởng XP an toàn (idempotent qua `progressService.awardXp`).
+- [x] **Giao diện bài thi tốt nghiệp (`AcademyExamPage.jsx` - `/academy/:courseSlug/exam`)**:
+  - Màn hình Giới thiệu & Quy chế thi chuẩn hóa.
+  - Trình làm bài thi: Đồng hồ đếm ngược 15 phút, thanh điều hướng chuyển câu nhanh (jumper), thẻ câu hỏi trắc nghiệm A/B/C/D trực quan, hộp thoại xác nhận nộp bài chống sót câu.
+  - Màn hình Tổng kết & Phân tích đáp án: Vinh danh điểm số, danh sách 10 câu hỏi chi tiết kèm câu trả lời của học viên, đáp án đúng và lời giải thích.
+- [x] **Chứng chỉ điện tử Detective Amber (`AcademyCertificateModal.jsx`)**: Khung viền vàng kim loại phong cách Thám tử Hổ phách, huy hiệu chứng thực, con dấu học viện, chữ ký ban giám định, tính năng In / Tải PDF (`window.print()`) và sao chép mã xác thực.
+- [x] **Tích hợp liên thông hệ thống**:
+  - `AcademyCoursePage.jsx`: Thêm mục "Kỳ Thi Tốt Nghiệp" ở chân sidebar giáo trình và nút chuyển thẳng sang bài thi ở cuối bài học cuối cùng.
+  - `ProfilePage.jsx`: Bổ sung khu vực "Chứng Chỉ Học Viện (Academy Certificates)" hiển thị danh sách bằng khen đã đạt được với nút Xem & In chứng chỉ bất kỳ lúc nào.
+  - Đăng ký tuyến đường `/academy/:courseSlug/exam` trong `router/index.jsx`.
+- [x] **Kiểm thử hồi quy 100%**: Tạo bộ test `AcademyExamPage.test.jsx` (5/5 tests PASS); toàn bộ dự án đạt **72/72 test suites (567/567 tests PASS 100%)**, build production Vite thành công trong ~19s.
 
 ---
 
@@ -662,10 +672,10 @@
 
 ## Primary Module
 - **Module Name**: `Academy Mode & Interactive Sandbox (W3Schools Style)`
-- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/PracticeSandboxPage.jsx`, `src/mocks/data/academy/academySyllabus.js`
-- **Current Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox**
-- **Current Step**: **STEP 9.5.2: Academy Course Structure (W3Schools Style) — COMPLETED**
-- **Next Step**: **STEP 9.5.3: Academy Certification & Mini-Exams**
+- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/AcademyExamPage.jsx`, `src/components/academy/AcademyCertificateModal.jsx`, `src/mocks/data/academy/academyExams.js`
+- **Current Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox — COMPLETED (100%)**
+- **Current Step**: **STEP 9.5.3: Academy Certification & Mini-Exams — COMPLETED**
+- **Next Sprint**: **SPRINT 10: Backend API & Persistence**
 
 ## Completed Sub-steps
 1. **Step 9.5.1.1: Sandbox Split-Pane & Engine**: Xây dựng `PracticeSandboxPage`, tích hợp tính toán Excel Formula & SQLite WASM.
@@ -675,6 +685,11 @@
 5. **Step 9.5.2.2: AcademyCoursePage UI**: Giao diện học viện chuẩn W3Schools với sidebar mục lục, thanh % tiến độ, nội dung bài học, thẻ Try it Yourself và câu đố Quick Checkpoint.
 6. **Step 9.5.2.3: Closed-Loop Progression**: Tích hợp trả lời câu hỏi trắc nghiệm, phản hồi Đúng/Sai, thưởng +20 XP và tự động đánh dấu hoàn thành qua `knowledgeService`.
 7. **Step 9.5.2.4: Routing & Navigation**: Đăng ký `/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId` và mục menu `Học viện Academy` trên Sidebar.
-8. **Step 9.5.2.5: Full Regression Testing & Build**: Bổ sung test suites, pass 562/562 tests (71 suites), Vite build production hoàn tất 100%.
+8. **Step 9.5.3.1: Academy Exam Data**: Tạo `academyExams.js` với bộ đề 10 câu hỏi chuẩn hóa cho Excel & SQL Academy.
+9. **Step 9.5.3.2: Exam Service & Certificate Engine**: `academyExamService.js` chấm điểm tự động, phân loại kết quả, cấp mã chứng chỉ số duy nhất và trao thưởng +100 XP idempotent.
+10. **Step 9.5.3.3: Exam Page UI & Flow**: `AcademyExamPage.jsx` với bộ đếm giờ 15 phút, thanh chuyển câu hỏi nhanh, thẻ trắc nghiệm và màn hình kết quả kèm lời giải chi tiết.
+11. **Step 9.5.3.4: Certificate Modal UI**: `AcademyCertificateModal.jsx` thiết kế chuẩn mực Detective Amber, hỗ trợ In/Lưu PDF và sao chép mã xác thực.
+12. **Step 9.5.3.5: System Integration**: Liên thông từ `AcademyCoursePage`, lưu và hiển thị chứng chỉ trong `ProfilePage`, đăng ký route `/academy/:courseSlug/exam`.
+13. **Step 9.5.3.6: Full Regression Testing & Build**: Bổ sung `AcademyExamPage.test.jsx`, pass **567/567 tests (72 test suites 100% PASS)**, Vite build production hoàn tất thành công.
 
 

@@ -331,6 +331,29 @@ export function AcademyCoursePage() {
               </div>
             );
           })}
+
+          {/* ── EXAM & CERTIFICATION LINK ── */}
+          <div className="pt-2 border-t border-border mt-3">
+            <Link
+              to={`/academy/${currentCourse.slug}/exam`}
+              className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 hover:border-amber-500/60 text-foreground transition-all group"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="size-7 rounded-lg bg-amber-500/20 text-amber-500 flex items-center justify-center shrink-0">
+                  <Award className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-amber-600 dark:text-amber-400 truncate">
+                    Kỳ Thi Tốt Nghiệp
+                  </div>
+                  <div className="text-[10px] text-muted-foreground truncate">
+                    10 câu • Cấp Chứng Chỉ
+                  </div>
+                </div>
+              </div>
+              <ChevronRight className="size-4 text-amber-500 group-hover:translate-x-0.5 transition-transform shrink-0" />
+            </Link>
+          </div>
         </div>
       </aside>
 
@@ -645,10 +668,11 @@ export function AcademyCoursePage() {
               </Link>
             ) : (
               <Link
-                to="/map"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-colors shadow-xs"
+                to={`/academy/${currentCourse.slug}/exam`}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-amber-950 font-bold text-xs transition-all shadow-md group"
               >
-                <span>Chúc mừng hoàn thành! Về bản đồ ❯</span>
+                <Award className="size-4" />
+                <span>Hoàn thành giáo trình! Làm bài thi tốt nghiệp ❯</span>
               </Link>
             )}
           </div>

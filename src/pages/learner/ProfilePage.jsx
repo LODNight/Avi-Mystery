@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth.js';
-import { progressService } from '../../services/index.js';
+import { progressService, academyExamService } from '../../services/index.js';
 import { formatXP } from '../../utils/format.js';
 import { 
   User, Award, Flame, Target, BookOpen, Clock, 
-  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown
+  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown, GraduationCap
 } from 'lucide-react';
 import { Skeleton, ProfileSkeleton } from '../../components/ui/Skeleton.jsx';
+import { AcademyCertificateModal } from '../../components/academy/AcademyCertificateModal.jsx';
 
 export function ProfilePage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [heatmapFilter, setHeatmapFilter] = useState('6months');
+  const [certificates, setCertificates] = useState([]);
+  const [selectedCert, setSelectedCert] = useState(null);
   const [stats, setStats] = useState({
     xp: 0,
     streak: user?.streak || 0,
@@ -194,6 +197,11 @@ export function ProfilePage() {
           practiceCount,
           achievementsCount
         });
+
+        const certsRes = academyExamService.getLearnerCertificates(user.id);
+        if (certsRes?.data) {
+          setCertificates(certsRes.data);
+        }
       } catch (error) {
         console.error('Failed to load profile data', error);
       } finally {
@@ -287,6 +295,75 @@ export function ProfilePage() {
               <span className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400 font-mono">Top 5%</span>
               <span className="text-xs text-muted-foreground font-medium">Thứ hạng tuần</span>
             </div>
+          </div>
+
+          {/* ── ACADEMY CERTIFICATES SECTION ── */}
+          <div className="relative rounded-3xl border border-border bg-card p-6 shadow-2xs overflow-hidden">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="grid size-8 place-items-center rounded-xl bg-amber-500/10 text-amber-500">
+                  <GraduationCap className="size-4" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-foreground">Chứng Chỉ Học Viện (Academy Certificates)</h2>
+                  <p className="text-xs text-muted-foreground">Chứng nhận tốt nghiệp chính thức sau khi vượt qua kỳ thi sát hạch</p>
+                </div>
+              </div>
+              <span className="text-xs font-mono font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
+                {certificates.length} Chứng chỉ
+              </span>
+            </div>
+
+            {certificates.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {certificates.map((cert) => (
+                  <div
+                    key={cert.id || cert.certificateId}
+                    className="p-4 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-card to-card hover:border-amber-500/60 transition-all flex flex-col justify-between gap-3 shadow-xs"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                          <Award className="size-3" /> {cert.grade || 'Đạt Chuẩn'}
+                        </span>
+                        <span className="text-[10px] font-mono text-muted-foreground">
+                          {cert.issuedAt ? new Date(cert.issuedAt).toLocaleDateString('vi-VN') : ''}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-bold text-foreground leading-snug mb-1">
+                        {cert.courseTitle}
+                      </h3>
+                      <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                        Điểm: {cert.scorePercent}% • {cert.certificateId}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedCert(cert)}
+                      className="w-full py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
+                    >
+                      <Award className="size-3.5" />
+                      <span>Xem & In Chứng Chỉ</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 rounded-2xl border border-dashed border-border text-center bg-muted/20">
+                <GraduationCap className="size-10 text-muted-foreground/40 mx-auto mb-2" />
+                <p className="text-xs text-muted-foreground max-w-md mx-auto mb-3">
+                  Bạn chưa có chứng chỉ nào. Hãy hoàn thành khóa học Excel hoặc SQL Academy và vượt qua bài thi tốt nghiệp để nhận chứng chỉ chính thức!
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate('/academy')}
+                  className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-xs hover:opacity-90 transition-opacity"
+                >
+                  Khám phá Học viện Academy
+                </button>
+              </div>
+            )}
           </div>
           
           {/* Skill Mastery Section */}
@@ -519,6 +596,13 @@ export function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* ── CERTIFICATE MODAL ── */}
+      <AcademyCertificateModal
+        isOpen={Boolean(selectedCert)}
+        onClose={() => setSelectedCert(null)}
+        certificate={selectedCert}
+      />
     </div>
   );
 }

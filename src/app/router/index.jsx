@@ -28,6 +28,7 @@ import { ActivityHistoryPage } from '../../pages/learner/ActivityHistoryPage.jsx
 import { AchievementsPage } from '../../pages/learner/AchievementsPage.jsx';
 import { KnowledgeHubPage } from '../../pages/learner/KnowledgeHubPage.jsx';
 import { AcademyCoursePage } from '../../pages/learner/AcademyCoursePage.jsx';
+import { AcademyExamPage } from '../../pages/learner/AcademyExamPage.jsx';
 import { PracticeSandboxPage } from '../../pages/learner/PracticeSandboxPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
@@ -137,6 +138,7 @@ export function AppRouter() {
           <Route path="/knowledge/:topicId" element={<KnowledgeHubPage />} />
           <Route path="/academy" element={<AcademyCoursePage />} />
           <Route path="/academy/:courseSlug" element={<AcademyCoursePage />} />
+          <Route path="/academy/:courseSlug/exam" element={<AcademyExamPage />} />
           <Route path="/academy/:courseSlug/:topicId" element={<AcademyCoursePage />} />
         </Route>
 

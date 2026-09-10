@@ -21,8 +21,9 @@
 | `DATA` | Dataset Domain | `CURRENT` | `src/services/contracts/datasetService.js`, `src/services/mock/mockDatasetService.js`, `src/utils/sql/sqlDataset.js` | `SHR` | Sprint 5 |
 | `GAME` | Game Progress Domain | `CURRENT` | `src/utils/game/levelingEngine.js`, `src/services/contracts/progressService.js`, `src/services/api/firebaseProgressService.js` | `LRN-SUB`, `SHR` | Sprint 6–7 |
 | `ADM` | Admin Content Studio | `CURRENT` | `src/pages/admin/`, `src/services/contracts/adminContentService.js`, `src/domain/learningMap/learningMapProjector.js` | `SHR`, `CNT` | Sprint 8 |
-| `BE` | Backend API (FastAPI) | `PROPOSED` | `src/services/api/` [STUB] | Service Contracts | Sprint 9 |
-| `ANL` | Analytics & Insights | `PROPOSED` | `/admin/analytics` [PLACEHOLDER] | `GAME`, `BE` | Sprint 10 |
+| `LRN-ACADEMY` | Academy & Practice Sandbox | `CURRENT` | `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/AcademyExamPage.jsx`, `src/pages/learner/PracticeSandboxPage.jsx`, `src/services/academyExamService.js` | `SHR`, `GAME` | Sprint 9.5 |
+| `BE` | Backend API (FastAPI) | `PROPOSED` | `src/services/api/` [STUB] | Service Contracts | Sprint 10 |
+| `ANL` | Analytics & Insights | `PROPOSED` | `/admin/analytics` [PLACEHOLDER] | `GAME`, `BE` | Sprint 11 |
 
 ---
 

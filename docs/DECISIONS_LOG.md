@@ -272,9 +272,11 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-016` | High-contrast Skill Mastery Badges & Level Indicators in Dark/Light Mode | `LearningMapPage` | `GAME` | `CURRENT` | Tested | `src/pages/learner/LearningMapPage.jsx` |
 | `UI-017` | In-cell Editor Overlay (`CellEditorOverlay`) with portal & auto-expanding width | Excel Sandbox Workspace | `LRN-SANDBOX` | `CURRENT` | Tested | `src/components/excel/CellEditorOverlay.jsx` |
 | `UI-018` | Academy Course Page with W3Schools syllabus tree & checkpoint quiz | Academy Course Page | `LRN-ACADEMY` | `CURRENT` | Tested | `src/pages/learner/AcademyCoursePage.jsx` |
-| `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
-| `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `PLANNED` | Planned | `Sprint 7` |
-| `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `PROPOSED` | Proposed | `Sprint 8` |
+| `UI-019` | Academy Exam Page with countdown timer & comprehensive review | Academy Exam Runner | `LRN-ACADEMY` | `CURRENT` | Tested | `src/pages/learner/AcademyExamPage.jsx` |
+| `UI-020` | Digital Certificate Modal with Detective Amber Gold theme & print PDF | Academy Certificate Modal | `LRN-ACADEMY` | `CURRENT` | Tested | `src/components/academy/AcademyCertificateModal.jsx` |
+| `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/features/gamification/LevelUpModal.jsx` |
+| `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/pages/learner/ProfilePage.jsx` |
+| `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `CURRENT` | Tested | `src/pages/admin/AdminMissionsPage.jsx` |
 
 ---
 

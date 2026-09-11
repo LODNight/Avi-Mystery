@@ -3,25 +3,23 @@ import { Link, Navigate } from 'react-router-dom';
 import {
   Flame,
   Target,
-  TrendingUp,
   Clock3,
   Play,
-  Plus,
   ArrowUpRight,
   ChevronRight,
-  Zap,
   Award,
-  MoreHorizontal,
-  BookOpen,
   CheckCircle2,
-  LockKeyhole,
   HelpCircle,
+  FolderOpen,
+  FileSpreadsheet,
+  Database,
+  Briefcase,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useAsync } from '../../hooks/useAsync.js';
 import { missionService, courseService, onboardingService, ONBOARDING_STATUS, progressService } from '../../services/index.js';
-import { formatXP, formatDuration, difficultyLabel, toolLabel } from '../../utils/format.js';
-import { SkeletonCard, MissionCardSkeleton, Skeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
+import { formatXP, formatDuration } from '../../utils/format.js';
+import { SkeletonCard, MissionCardSkeleton, DashboardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { OnboardingSpotlight } from '../../features/onboarding/OnboardingSpotlight.jsx';
 import { DASHBOARD_TOUR_STEPS } from '../../features/onboarding/dashboardTourContent.js';
@@ -38,7 +36,7 @@ export function DashboardPage() {
     weeklyXp: 0,
     weeklyMissions: 0,
     timeSpent: '0h 0m',
-    lastMission: null
+    lastMission: null,
   });
 
   useEffect(() => {
@@ -52,7 +50,7 @@ export function DashboardPage() {
       try {
         const [xpRes, historyRes] = await Promise.all([
           progressService.getLearnerXp(user.id),
-          progressService.getFullHistory(user.id)
+          progressService.getFullHistory(user.id),
         ]);
 
         const history = historyRes.data || [];
@@ -61,25 +59,25 @@ export function DashboardPage() {
         const today = new Date();
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - today.getDay());
-        startOfWeek.setHours(0,0,0,0);
-        
+        startOfWeek.setHours(0, 0, 0, 0);
+
         let weeklyXp = 0;
         let weeklyMissions = 0;
         let activeStreak = 0;
-        
-        const lastMission = history.find(h => h.type === 'mission');
+
+        const lastMission = history.find((h) => h.type === 'mission');
 
         const formatDateKey = (dateObj) => {
           return `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
         };
 
         const dateMap = {};
-        history.forEach(h => {
+        history.forEach((h) => {
           if (h.timestamp) {
             const d = new Date(h.timestamp);
             if (!isNaN(d.getTime())) {
               if (d >= startOfWeek) {
-                weeklyXp += (h.xp || 0);
+                weeklyXp += h.xp || 0;
                 if (h.type === 'mission') weeklyMissions++;
               }
               dateMap[formatDateKey(d)] = true;
@@ -88,15 +86,15 @@ export function DashboardPage() {
         });
 
         for (let i = 0; i < 365; i++) {
-           const d = new Date(today);
-           d.setDate(today.getDate() - i);
-           if (dateMap[formatDateKey(d)]) {
-             activeStreak++;
-           } else if (i > 0) {
-             break;
-           }
+          const d = new Date(today);
+          d.setDate(today.getDate() - i);
+          if (dateMap[formatDateKey(d)]) {
+            activeStreak++;
+          } else if (i > 0) {
+            break;
+          }
         }
-        
+
         const weeklyMinutes = weeklyXp > 0 ? Math.floor(weeklyXp / 10) : 0;
         const timeSpent = `${Math.floor(weeklyMinutes / 60)}h ${weeklyMinutes % 60}m`;
 
@@ -108,7 +106,7 @@ export function DashboardPage() {
           weeklyXp,
           weeklyMissions,
           timeSpent,
-          lastMission
+          lastMission,
         });
       } catch (err) {
         console.error('Failed to load dashboard stats', err);
@@ -147,7 +145,6 @@ export function DashboardPage() {
   });
 
   const xpPercent = Math.min(100, Math.round((dashboardStats.totalXp / (user?.xpToNextLevel || 1000)) * 100));
-
   const onboardingStatus = user?.id ? onboardingService.getStatus(user.id) : null;
 
   if (courses.loading && recommended.loading) {
@@ -155,77 +152,74 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
-      {/* ── Section 1: Learning Pulse Header ── */}
-      <section id="dashboard-welcome-header" className="flex flex-col justify-between gap-5 md:flex-row md:items-end">
+    <div className="mx-auto flex max-w-7xl flex-col gap-6 animate-fade-in pb-12">
+      {/* ── ZONE 0: Headquarters Header ── */}
+      <section id="dashboard-welcome-header" className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <p className="flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 capitalize">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            {formattedDate}
-          </p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl text-foreground">
+          <div className="flex items-center gap-2">
+            <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="font-mono text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Bản tin Tổng hành dinh · {formattedDate}
+            </span>
+          </div>
+          <h2 className="mt-1.5 text-2xl font-black tracking-tight sm:text-3xl text-foreground">
             Chào mừng nhà điều tra, {user?.name?.split(' ').pop() || 'bạn'} 👋
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-slate-600 dark:text-slate-400 font-normal">
-            Tiến độ nhỏ mỗi ngày tạo nên đột phá lớn. Bạn đang tích lũy kỹ năng phân tích dữ liệu qua từng vụ án.
+          <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
+            Bàn làm việc điều tra dữ liệu. Mỗi truy vấn và bảng tính là một manh mối đưa bạn tới sự thật vụ án.
           </p>
           {onboardingStatus === ONBOARDING_STATUS.COMPLETED && (
-            <div className="mt-3 inline-flex items-center gap-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-300">
-              <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-              <span>Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP khởi đầu</span>
-              <Link to="/onboarding/case-0" className="ml-2 text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
+            <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+              <CheckCircle2 className="size-4 text-amber-500 shrink-0" />
+              <span>Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP</span>
+              <Link to="/onboarding/case-0" className="ml-1 text-amber-600 dark:text-amber-400 font-semibold hover:underline">
                 Xem lại
               </Link>
             </div>
           )}
         </div>
+
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleStartTour}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-3 text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted hover:border-amber-500/40 transition-colors"
             title="Xem hướng dẫn giao diện Dashboard"
           >
             <HelpCircle className="size-4 text-primary" />
-            <span className="hidden sm:inline">Hướng dẫn Dashboard</span>
+            <span>Hướng dẫn Dashboard</span>
           </button>
-          <Link
-            to="/courses"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
-          >
-            <Plus className="size-4" /> Khám phá khóa học
-          </Link>
         </div>
       </section>
 
-      {/* ── Section 2: Hero Primary Action (Clear "Bây giờ tui cần làm gì?") ── */}
+      {/* ── ZONE 1: Open Case File (P0: What am I doing right now?) ── */}
       <section
         id="dashboard-continue-investigation"
-        className="relative overflow-hidden rounded-3xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-card to-card p-6 sm:p-8 shadow-md"
+        className="relative overflow-hidden rounded-2xl border-2 border-primary/40 bg-card p-6 sm:p-7 shadow-sm transition-all hover:border-primary/60"
       >
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-start gap-4 sm:gap-5 min-w-0">
-            <div className="grid size-16 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground font-mono text-3xl shadow-lg shadow-primary/25">
-              📊
+            <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-primary/15 border border-primary/25 text-primary text-2xl font-mono shadow-sm">
+              <FileSpreadsheet className="size-7 text-primary" />
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-primary/20 border border-primary/30 px-3 py-0.5 font-mono text-[11px] font-extrabold uppercase tracking-wider text-primary">
-                  Nhiệm vụ ưu tiên hiện tại
+                <span className="rounded-md bg-primary/15 border border-primary/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-primary">
+                  HỒ SƠ ĐANG THỤ LÝ · CASE #{dashboardStats.lastMission ? '01' : '01'}
                 </span>
                 <span className="text-xs text-muted-foreground font-medium">
-                  Chương 1 · Dựa theo lịch sử gần nhất
+                  Chương 1 · Manh mối ưu tiên
                 </span>
               </div>
-              <h3 className="mt-2 text-2xl sm:text-3xl font-black tracking-tight text-foreground truncate">
+              <h3 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-foreground truncate">
                 {dashboardStats.lastMission ? dashboardStats.lastMission.title.replace('Vụ án: ', '') : 'Vì sao doanh thu tháng 3 giảm?'}
               </h3>
               <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                Nhiệm vụ tiếp theo: <strong className="text-foreground">Truy vấn và xử lý số liệu bảng tính</strong> để phân tích nguyên nhân tụt giảm doanh số.
+                Mục tiêu điều tra: <strong className="text-foreground">Truy vấn và xử lý số liệu bảng tính</strong> để phân tích nguyên nhân tụt giảm doanh số chi nhánh.
               </p>
 
-              {/* Mini progress */}
-              <div className="mt-4 flex items-center gap-3 max-w-md">
-                <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-muted">
+              {/* Progress track */}
+              <div className="mt-3.5 flex items-center gap-3 max-w-sm">
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                   <div className="h-full w-[72%] rounded-full bg-primary" />
                 </div>
                 <span className="font-mono text-xs font-bold text-primary shrink-0">72% hoàn thành</span>
@@ -233,191 +227,169 @@ export function DashboardPage() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          {/* SINGLE DOMINANT CTA */}
+          <div className="flex items-center shrink-0">
             <Link
-              to={dashboardStats.lastMission?.link || "/missions/mission-001"}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-card px-4 py-3.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors text-center"
-            >
-              Xem hồ sơ vụ án
-            </Link>
-            <Link
-              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : "/missions/mission-001/workspace"}
-              className="inline-flex items-center justify-center gap-2.5 rounded-2xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-95 hover:scale-[1.02] transition-all text-center"
-              title="Mở ngay bàn làm việc toàn màn hình (Focus Mode)"
+              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : '/missions/mission-001/workspace'}
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98] transition-all"
+              title="Mở ngay bàn làm việc toàn màn hình để phá án"
             >
               <Play className="size-4 fill-current" />
-              <span>Tiến vào Bàn làm việc (Focus Mode)</span>
+              <span>Tiếp tục điều tra vụ án</span>
               <ArrowUpRight className="size-4" />
             </Link>
           </div>
         </div>
 
-        {/* Subtle decorative glow */}
-        <div className="absolute right-0 top-0 -mt-12 -mr-12 size-56 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
+        {/* Subtle ambient light */}
+        <div className="absolute right-0 top-0 -mt-10 -mr-10 size-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
       </section>
 
-      {/* ── Section 3: 4 Key Stat Cards & Investigator Quest Progress ── */}
-      <section className="grid gap-6 xl:grid-cols-[2fr_1fr]">
-        <div id="dashboard-stat-cards" className="grid gap-4 sm:grid-cols-2">
-          <StatCard
-            icon={Flame}
-            label="Chuỗi Streak"
-            value={`${dashboardStats.streak} ngày`}
-            detail="Học liên tiếp hôm nay"
-            accent="text-amber-500"
-          />
-          <StatCard
-            icon={Target}
-            label="Mục tiêu tuần"
-            value={`${dashboardStats.weeklyMissions} / 5`}
-            detail="nhiệm vụ hoàn thành"
-            accent="text-violet-500"
-          />
-          <StatCard
-            icon={TrendingUp}
-            label="Tổng điểm XP"
-            value={formatXP(dashboardStats.totalXp)}
-            detail={`+${dashboardStats.weeklyXp} XP tuần này`}
-            accent="text-emerald-500"
-          />
-          <StatCard
-            icon={Clock3}
-            label="Thời gian học"
-            value={dashboardStats.timeSpent}
-            detail="tuần này"
-            accent="text-cyan-500"
-          />
-        </div>
-
-        {/* Quest Progress Level Card */}
-        <div
-          id="dashboard-investigator-level"
-          className="rounded-3xl border-2 border-amber-500/30 bg-card p-6 text-card-foreground shadow-sm flex flex-col justify-between hover:border-amber-500/40 transition-colors"
-        >
-          <div>
-            <div className="flex items-start justify-between">
-              <div className="grid size-11 place-items-center rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                <Award className="size-6 text-amber-500" />
-              </div>
-              <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
-                Cấp {user?.level || 1}
-              </span>
+      {/* ── ZONE 2: Detective Docket Ribbon (Replaces 4-Card SaaS Wall) ── */}
+      <section
+        id="dashboard-investigator-docket"
+        aria-label="Thông số hồ sơ điều tra viên"
+        className="rounded-2xl border border-border bg-card p-4 sm:p-5 shadow-sm"
+      >
+        <div className="grid gap-4 md:grid-cols-3 md:divide-x md:divide-border items-center">
+          {/* Rank & Title with inline XP progress */}
+          <div className="flex items-center gap-3.5 pr-2">
+            <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 border border-primary/25 text-primary">
+              <Award className="size-6 text-primary" />
             </div>
-            <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600 dark:text-slate-400">
-              Tiến trình danh hiệu
-            </p>
-            <h3 className="mt-1 text-xl font-bold text-foreground">Data Investigator</h3>
-            <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-slate-600 dark:text-slate-400 font-normal">
-              Còn <span className="font-semibold text-foreground">{formatXP(Math.max(0, (user?.xpToNextLevel || 1000) - dashboardStats.totalXp))}</span> để mở khóa danh hiệu kế tiếp.
-            </p>
-          </div>
-
-          <div className="mt-5">
-            <div className="h-2.5 overflow-hidden rounded-full bg-amber-500/15">
-              <div
-                className="h-full rounded-full bg-amber-500 transition-all duration-300"
-                style={{ width: `${xpPercent}%` }}
-              />
-            </div>
-            <div className="mt-2 flex justify-between font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-400">
-              <span>{formatXP(dashboardStats.totalXp)}</span>
-              <span>{formatXP(user?.xpToNextLevel || 1000)}</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Section 3.5: Knowledge Hub Banner ── */}
-      <section>
-        <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-background to-background p-6 sm:p-8">
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <BookOpen className="size-5 text-amber-500" />
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
-                  Thư Viện Kiến Thức
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Danh hiệu thám tử
+                </span>
+                <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary">
+                  Cấp {user?.level || 1}
                 </span>
               </div>
-              <h3 className="text-2xl font-bold text-foreground">Học lý thuyết trước khi thực hành</h3>
-              <p className="mt-2 text-sm text-muted-foreground max-w-xl">
-                Củng cố kiến thức về các hàm Excel, cú pháp SQL và các khái niệm phân tích dữ liệu cơ bản. 
-                Hoàn thành bài học để mở khóa huy hiệu và hỗ trợ giải quyết vụ án nhanh hơn.
+              <p className="text-sm font-bold text-foreground truncate">Data Investigator</p>
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${xpPercent}%` }} />
+                </div>
+                <span className="font-mono text-[10px] font-semibold text-muted-foreground shrink-0">
+                  {formatXP(dashboardStats.totalXp)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Investigation Streak */}
+          <div className="flex items-center gap-3.5 px-0 md:px-5">
+            <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 border border-primary/25 text-primary">
+              <Flame className="size-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Chuỗi phá án
+              </p>
+              <p className="text-base font-bold text-foreground">
+                {dashboardStats.streak} ngày liên tiếp
+              </p>
+              <p className="text-xs text-muted-foreground">Giữ nhịp phân tích mỗi ngày</p>
+            </div>
+          </div>
+
+          {/* Weekly Quota & Active Time */}
+          <div className="flex items-center gap-3.5 px-0 md:px-5">
+            <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-primary/10 border border-primary/25 text-primary">
+              <Target className="size-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Chỉ tiêu điều tra tuần
+              </p>
+              <p className="text-base font-bold text-foreground">
+                {dashboardStats.weeklyMissions} / 5 vụ án
+              </p>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Clock3 className="size-3 inline text-muted-foreground" />
+                Đã xử lý {dashboardStats.timeSpent}
               </p>
             </div>
-            <Link
-              to="/knowledge"
-              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-amber-500/20 hover:bg-amber-700 transition-colors"
-            >
-              Vào Thư Viện
-              <ArrowUpRight className="size-4" />
+          </div>
+        </div>
+      </section>
+
+      {/* ── ZONE 3: Active Case Files & Inquiries ── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Section 3A: Long-term Specialized Cases (formerly Active Courses) */}
+        <section
+          id="dashboard-active-courses"
+          aria-busy={courses.loading ? 'true' : undefined}
+          className="flex flex-col"
+        >
+          <div className="flex items-center justify-between pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <FolderOpen className="size-4 text-primary" />
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Hồ sơ chuyên án
+                </span>
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Chuyên án điều tra dữ liệu</h3>
+            </div>
+            <Link to="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
+              Xem tất cả <ArrowUpRight className="size-3.5" />
             </Link>
           </div>
-          
-          <div className="absolute right-0 top-0 -mt-16 -mr-16 size-64 rounded-full bg-amber-500/5 blur-3xl" />
-          <div className="absolute right-32 bottom-0 -mb-16 size-48 rounded-full bg-amber-500/5 blur-2xl" />
-        </div>
-      </section>
 
-      {/* ── Section 4: Active Courses ── */}
-      <section id="dashboard-active-courses" aria-busy={courses.loading ? "true" : undefined}>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              Hành trình học tập
-            </p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Khóa học đang diễn ra</h3>
-          </div>
-          <Link to="/courses" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-            Xem tất cả <ArrowUpRight className="size-4" />
-          </Link>
-        </div>
-
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {courses.loading ? (
-            <>
-              <SkeletonCard />
-              <SkeletonCard />
-            </>
-          ) : courses.error ? (
-            <div className="col-span-2">
+          <div className="flex flex-col gap-3 flex-1">
+            {courses.loading ? (
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            ) : courses.error ? (
               <ErrorState message={courses.error} />
+            ) : (
+              (courses.data || []).slice(0, 2).map((course) => (
+                <CaseDossierCard key={course.id} course={course} />
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Section 3B: Incident Missions (Recommended Next Missions) */}
+        <section
+          id="dashboard-recommended-missions"
+          aria-busy={recommended.loading ? 'true' : undefined}
+          className="flex flex-col"
+        >
+          <div className="flex items-center justify-between pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Briefcase className="size-4 text-primary" />
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Nhiệm vụ hiện trường
+                </span>
+              </div>
+              <h3 className="text-lg font-bold text-foreground">Vụ án cần phối hợp xử lý</h3>
             </div>
-          ) : (
-            (courses.data || []).map((course) => (
-              <CourseCard key={course.id} course={course} />
-            ))
-          )}
-        </div>
-      </section>
-
-      {/* ── Section 5: Recommended Missions ── */}
-      <section id="dashboard-recommended-missions" aria-busy={recommended.loading ? "true" : undefined}>
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              Bảng hồ sơ vụ án
-            </p>
-            <h3 className="mt-2 text-xl font-bold text-foreground">Nhiệm vụ điều tra đề xuất</h3>
           </div>
-        </div>
 
-        {recommended.loading ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <MissionCardSkeleton />
-            <MissionCardSkeleton />
+          <div className="flex flex-col gap-3 flex-1">
+            {recommended.loading ? (
+              <>
+                <MissionCardSkeleton />
+                <MissionCardSkeleton />
+              </>
+            ) : recommended.error ? (
+              <ErrorState message={recommended.error} />
+            ) : (
+              (recommended.data || []).slice(0, 3).map((mission) => (
+                <IncidentReportCard key={mission.id} mission={mission} />
+              ))
+            )}
           </div>
-        ) : recommended.error ? (
-          <ErrorState message={recommended.error} />
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {(recommended.data || []).map((mission) => (
-              <MissionCard key={mission.id} mission={mission} />
-            ))}
-          </div>
-        )}
-      </section>
+        </section>
+      </div>
 
-      {/* ── Dashboard Spotlight Guided Tour (Step 6.6) ── */}
+      {/* ── Dashboard Spotlight Guided Tour ── */}
       <OnboardingSpotlight
         isOpen={isTourOpen}
         steps={DASHBOARD_TOUR_STEPS}
@@ -429,79 +401,76 @@ export function DashboardPage() {
   );
 }
 
-/* ── Sub-components ── */
+/* ── Detective Dossier & Incident Card Sub-components ── */
 
-function StatCard({ icon: Icon, label, value, detail, accent }) {
-  return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/40">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground font-medium">{label}</p>
-        <Icon className={`size-4 ${accent}`} />
-      </div>
-      <p className="mt-4 text-2xl font-bold tracking-tight text-foreground">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
-    </div>
-  );
-}
-
-function CourseCard({ course }) {
-  const icon = course.tool === 'excel' ? '📊' : '🔍';
+function CaseDossierCard({ course }) {
+  const isExcel = course.tool === 'excel';
   const progress = course.id === 'course-001' ? 72 : 38;
 
   return (
     <Link
       to={`/courses/${course.slug || course.id}`}
-      className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+      className="group rounded-xl border border-border bg-card p-4 transition-all hover:border-primary/50 hover:shadow-sm flex flex-col justify-between"
     >
-      <div className="flex items-start justify-between">
-        <div className="grid size-11 place-items-center rounded-2xl bg-amber-500/15 font-mono text-xl text-amber-600 dark:text-amber-400">
-          {icon}
+      <div>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="grid size-7 place-items-center rounded-lg bg-primary/10 text-primary">
+              {isExcel ? <FileSpreadsheet className="size-4" /> : <Database className="size-4" />}
+            </span>
+            <span className="font-mono text-[10px] font-bold tracking-wider uppercase text-muted-foreground">
+              {course.tool?.toUpperCase()} DOSSIER
+            </span>
+          </div>
+          <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
+            {course.totalMissions || 12} giai đoạn
+          </span>
         </div>
-        <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-[10px] font-bold text-muted-foreground uppercase">
-          {course.tool}
-        </span>
+
+        <h4 className="mt-2.5 font-bold text-sm text-foreground group-hover:text-primary transition-colors">
+          {course.title}
+        </h4>
+        <p className="mt-1 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+          {course.description}
+        </p>
       </div>
-      <h4 className="mt-5 font-semibold text-foreground group-hover:text-primary transition-colors">
-        {course.title}
-      </h4>
-      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{course.description}</p>
-      <div className="mt-4 flex items-center justify-between text-xs text-muted-foreground">
-        <span>{course.totalMissions || 12} bài học</span>
-        <span className="font-mono font-bold text-foreground">{progress}%</span>
-      </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted">
-        <div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
+
+      <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between text-xs">
+        <span className="text-muted-foreground">Tiến độ điều tra</span>
+        <span className="font-mono font-bold text-primary">{progress}%</span>
       </div>
     </Link>
   );
 }
 
-function MissionCard({ mission }) {
+function IncidentReportCard({ mission }) {
+  const isExcel = mission.tool === 'excel';
+
   return (
     <Link
       to={`/missions/${mission.id}`}
-      className="group flex items-center justify-between rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+      className="group flex items-center justify-between rounded-xl border border-border bg-card p-3.5 transition-all hover:border-primary/50 hover:shadow-sm"
     >
-      <div className="flex items-center gap-3.5 min-w-0">
-        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/10 font-mono text-lg text-primary">
-          {mission.tool === 'excel' ? '📊' : '🔍'}
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+          {isExcel ? <FileSpreadsheet className="size-4 text-primary" /> : <Database className="size-4 text-primary" />}
         </div>
         <div className="min-w-0">
-          <p className="truncate font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+          <p className="truncate font-bold text-sm text-foreground group-hover:text-primary transition-colors">
             {mission.title}
           </p>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground uppercase">
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="font-mono text-[10px] uppercase font-bold text-muted-foreground">
               {mission.tool}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {formatDuration(mission.estimatedDuration)}
+            <span className="text-[11px] text-muted-foreground">
+              · {formatDuration(mission.estimatedDuration)}
             </span>
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-3 shrink-0">
-        <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+      <div className="flex items-center gap-2.5 shrink-0">
+        <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-xs font-bold text-primary">
           +{mission.rewardXp} XP
         </span>
         <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform" />

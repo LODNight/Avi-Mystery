@@ -6,20 +6,18 @@ import {
   Target,
   FileSpreadsheet,
   Database,
-  Zap,
   Clock,
-  HelpCircle,
   Play,
-  ShieldCheck,
   Award,
-  Sparkles,
   ArrowUpRight,
+  FileText,
+  HelpCircle,
 } from 'lucide-react';
 import { missionService, courseService, knowledgeService } from '../../services/index.js';
 import { AuthContext } from '../../hooks/useAuth.js';
 import { PrerequisiteAlert } from '../../components/knowledge/PrerequisiteAlert.jsx';
 import { formatDuration, difficultyLabel, toolLabel, formatXP } from '../../utils/format.js';
-import { Skeleton, MissionIntroSkeleton } from '../../components/ui/Skeleton.jsx';
+import { MissionIntroSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 
@@ -33,7 +31,7 @@ export function MissionIntroPage() {
   const [readTopics, setReadTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const authCtx = useContext(AuthContext);
   const user = authCtx?.user || null;
 
@@ -64,7 +62,7 @@ export function MissionIntroPage() {
           try {
             const [topicsRes, readRes] = await Promise.all([
               knowledgeService.getTopicsByMission(idToFetch),
-              knowledgeService.getReadTopics(user.uid || user.id || '')
+              knowledgeService.getReadTopics(user.uid || user.id || ''),
             ]);
             if (topicsRes?.data) setTopics(topicsRes.data);
             if (readRes?.data) setReadTopics(readRes.data);
@@ -73,14 +71,14 @@ export function MissionIntroPage() {
           }
         }
 
-        // Optional: fetch associated course info
+        // Fetch associated course info
         if (missionData.courseId) {
           const courseRes = await courseService.getCourse(missionData.courseId);
           if (courseRes.data && isMounted) {
             setCourse(courseRes.data);
           }
         }
-      } catch (err) {
+      } catch {
         if (isMounted) setError('Không thể tải thông tin giới thiệu vụ án.');
       } finally {
         if (isMounted) setLoading(false);
@@ -94,7 +92,7 @@ export function MissionIntroPage() {
     };
   }, [missionId]);
 
-  // Phím tắt Enter để tiến thẳng vào bàn làm việc (Affordance & Speed)
+  // Phím tắt Enter để tiến thẳng vào bàn làm việc (Speed & Affordance)
   useEffect(() => {
     if (!mission) return;
     const handleKeyDown = (e) => {
@@ -128,7 +126,9 @@ export function MissionIntroPage() {
     );
   }
 
-  const toolIcon = mission.tool === 'excel' ? <FileSpreadsheet className="size-5 text-emerald-500" /> : <Database className="size-5 text-cyan-500" />;
+  const isExcel = mission.tool === 'excel';
+  const targetPath = isExcel ? `/missions/${mission.id}/workspace` : `/missions/${mission.id}/sql`;
+
   const badgeVariant =
     mission.difficulty === 'beginner' || mission.difficulty === 'easy'
       ? 'success'
@@ -137,190 +137,180 @@ export function MissionIntroPage() {
       : 'danger';
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-8 animate-fade-in">
-      {/* ── Top Back Navigation Bar ── */}
-      <div className="flex items-center justify-between">
+    <div className="mx-auto flex max-w-4xl flex-col gap-6 animate-fade-in pb-12">
+      {/* ── Top Navigation & Case Context ── */}
+      <div className="flex items-center justify-between text-xs">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 font-semibold text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="size-4" /> Bản đồ nhiệm vụ
+          <ArrowLeft className="size-3.5" /> Quay lại danh sách vụ án
         </button>
 
         {course && (
-          <span className="text-xs font-medium text-muted-foreground">
-            Khóa học: <strong className="text-foreground">{course.title}</strong>
+          <span className="font-medium text-muted-foreground">
+            Chuyên án: <strong className="text-foreground">{course.title}</strong>
           </span>
         )}
       </div>
 
-      {/* ── Section 1: Hero Detective Briefing Header ── */}
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <div className="absolute -right-12 -top-12 size-60 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col gap-5">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3.5 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400">
+      {/* ── SECTION 1: Case Dossier Briefing (P0 & P1: Why it matters) ── */}
+      <section className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-card p-6 sm:p-7 shadow-sm">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 border border-primary/25 px-2.5 py-0.5 font-mono text-[11px] font-bold text-primary uppercase">
               <Briefcase className="size-3.5" /> Hồ sơ vụ án #{mission.id}
-            </div>
-            <Badge variant={badgeVariant} size="md">
-              {difficultyLabel(mission.difficulty)}
-            </Badge>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 font-mono text-xs font-bold text-muted-foreground uppercase">
-              {toolIcon} {toolLabel(mission.tool)}
+            </span>
+            <span className="font-mono text-[11px] text-muted-foreground font-semibold">
+              · {isExcel ? 'Bảng tính Excel' : 'Truy vấn SQL'}
             </span>
           </div>
 
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
             {mission.title}
           </h1>
 
-          {/* Quick Info Badges */}
-          <div className="flex items-center gap-6 flex-wrap pt-2 text-xs font-medium text-muted-foreground border-t border-border/60">
-            <span className="flex items-center gap-1.5 font-bold text-amber-600 dark:text-amber-400">
-              <Zap className="size-4" /> +{formatXP(mission.rewardXp)} Thưởng
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4 text-cyan-500" /> Thời gian ước tính: {formatDuration(mission.estimatedDuration)}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <ShieldCheck className="size-4 text-emerald-500" /> Trạng thái: Sẵn sàng nhận vụ án
-            </span>
+          {/* Incident Call / Narrative Context */}
+          <div className="rounded-xl border-l-4 border-primary bg-muted/30 p-4 text-sm leading-relaxed text-foreground">
+            <p className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
+              Bối cảnh vụ án
+            </p>
+            <p className="italic">
+              "{mission.story}"
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ── Section 2: Case Story & Context (Detective Briefing) ── */}
-      <section className="rounded-3xl border border-amber-500/30 bg-card p-6 shadow-sm sm:p-8 relative">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="grid size-10 place-items-center rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-            <Sparkles className="size-5" />
-          </div>
-          <div>
-            <h2 className="text-lg font-bold text-foreground">Bối Cảnh Vụ Án (Detective Briefing)</h2>
-            <p className="text-xs text-muted-foreground">Thông tin hiện trường & cuộc gọi từ khách hàng</p>
-          </div>
-        </div>
-
-        <blockquote className="rounded-2xl border-l-4 border-amber-500 bg-muted/40 p-4 italic text-sm leading-relaxed text-foreground">
-          "{mission.story}"
-        </blockquote>
-      </section>
-
-      {/* ── Knowledge Alert ── */}
+      {/* ── Prerequisite Knowledge Check (Contextual, non-blocking) ── */}
       {topics.length > 0 && (
         <PrerequisiteAlert topics={topics} readTopics={readTopics} />
       )}
 
-      {/* ── Section 3: Objectives & Technical Details Grid ── */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Objective Box */}
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
+      {/* ── SECTION 2: Investigation Objective & Evidence Artifact ── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Investigation Objective (What to solve) */}
+        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="grid size-10 place-items-center rounded-2xl bg-emerald-500/15 text-emerald-500">
-                <Target className="size-5" />
-              </div>
+            <div className="flex items-center gap-2.5 mb-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+                <Target className="size-4" />
+              </span>
               <div>
-                <h3 className="text-base font-bold text-foreground">Nhiệm Vụ Cần Giải Quyết</h3>
-                <p className="text-xs text-muted-foreground">Mục tiêu kiểm tra chính</p>
+                <h2 className="text-sm font-bold text-foreground">Mục tiêu điều tra</h2>
+                <p className="text-[11px] text-muted-foreground">Kết quả cần chứng minh bằng số liệu</p>
               </div>
             </div>
-            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/10 dark:bg-emerald-500/15 p-4 sm:p-5 flex items-start gap-3 shadow-sm">
-              <div className="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-emerald-500 text-white font-bold text-xs">
-                ✓
-              </div>
-              <p className="text-sm font-semibold leading-relaxed text-foreground">
-                {mission.objective}
-              </p>
+
+            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm font-semibold leading-relaxed text-foreground">
+              {mission.objective}
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-border/60 flex items-center gap-2 text-xs text-muted-foreground">
-            <Award className="size-4 text-amber-500" /> Hoàn thành mục tiêu để nhận ngay +{mission.rewardXp} XP
+          <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground font-mono">
+            <span>Phần thưởng hoàn thành:</span>
+            <span className="font-bold text-primary">+{formatXP(mission.rewardXp)}</span>
           </div>
         </section>
 
-        {/* Dataset & Target Details Box */}
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
+        {/* Evidence Artifact (Data to examine) */}
+        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="grid size-10 place-items-center rounded-2xl bg-cyan-500/15 text-cyan-500">
-                <Database className="size-5" />
-              </div>
+            <div className="flex items-center gap-2.5 mb-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+                {isExcel ? <FileSpreadsheet className="size-4" /> : <Database className="size-4" />}
+              </span>
               <div>
-                <h3 className="text-base font-bold text-foreground">Thông Tin Dataset</h3>
-                <p className="text-xs text-muted-foreground">Dữ liệu & vị trí làm bài</p>
+                <h2 className="text-sm font-bold text-foreground">Bằng chứng & Hồ sơ dữ liệu</h2>
+                <p className="text-[11px] text-muted-foreground">Hiện trường số liệu được bàn giao</p>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2.5 text-xs">
-              <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
-                <span className="text-muted-foreground">Mã Dataset:</span>
+            <div className="flex flex-col gap-2 text-xs">
+              <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                <span className="text-muted-foreground">Tập dữ liệu bàn giao:</span>
                 <span className="font-mono font-bold text-foreground">{mission.datasetId || 'ds-001'}</span>
               </div>
 
               {mission.starterContent?.targetSheet && (
-                <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
-                  <span className="text-muted-foreground">Sheet mục tiêu:</span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                  <span className="text-muted-foreground">Bảng tính cần giám định:</span>
+                  <span className="font-mono font-bold text-primary">
                     {mission.starterContent.targetSheet}
                   </span>
                 </div>
               )}
 
               {mission.starterContent?.targetCell && (
-                <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
-                  <span className="text-muted-foreground">Ô nhập công thức:</span>
-                  <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
+                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                  <span className="text-muted-foreground">Vị trí tính toán (Ô đích):</span>
+                  <span className="font-mono font-bold text-primary">
                     {mission.starterContent.targetCell}
                   </span>
                 </div>
               )}
 
               {mission.starterContent?.starterSql && (
-                <div className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
-                  <span className="text-muted-foreground">Mẫu truy vấn SQL:</span>
-                  <span className="font-mono font-bold text-cyan-600 dark:text-cyan-400">Có sẵn starter code</span>
+                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                  <span className="text-muted-foreground">Mẫu câu truy vấn:</span>
+                  <span className="font-mono font-bold text-primary">Có sẵn mã khởi động</span>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-border/60 flex items-center gap-2 text-xs text-muted-foreground">
-            <HelpCircle className="size-4 text-cyan-500" /> Hệ thống gợi ý luôn có sẵn nếu bạn gặp khó khăn
+          <div className="mt-4 pt-3 border-t border-border flex items-center gap-1.5 text-[11px] text-muted-foreground">
+            <HelpCircle className="size-3.5 text-primary shrink-0" />
+            <span>Gợi ý điều tra từng bước luôn có sẵn trong bàn làm việc</span>
           </div>
         </section>
       </div>
 
-      {/* ── Section 4: Action Launch Bar (Action-oriented Microcopy & Affordance) ── */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-5 rounded-3xl border border-emerald-500/25 bg-emerald-500/5 dark:bg-emerald-500/10 p-6 sm:p-7 shadow-xs">
+      {/* ── SECTION 3: Action Launch Bar (Clarity > Role-play, Single Primary CTA) ── */}
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border-2 border-primary/40 bg-card p-5 sm:p-6 shadow-sm">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
-              Focus Mode
-            </span>
-            <h3 className="font-bold text-base text-foreground">Bạn đã sẵn sàng bước vào giải vụ án?</h3>
-          </div>
-          <p className="text-xs text-muted-foreground mt-1.5">
-            Hệ thống sẽ mở bàn làm việc không gian rộng (ẩn menu sidebar) giúp bạn tập trung cao độ để truy vấn và lập công thức.
+          <h3 className="font-bold text-base text-foreground">
+            Bắt đầu phân tích số liệu
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Bàn làm việc sẽ mở toàn màn hình để bạn trực tiếp nhập công thức và kiểm chứng dữ liệu.
           </p>
         </div>
 
         <Link
-          to={mission.tool === 'sql' ? `/missions/${mission.id}/sql` : `/missions/${mission.id}/workspace`}
-          aria-label="Bắt đầu điều tra ngay - Tiến vào Bàn làm việc"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white px-7 py-3.5 text-sm font-bold shadow-lg shadow-emerald-600/25 hover:shadow-emerald-500/35 transition-all transform hover:-translate-y-0.5 shrink-0 active:translate-y-0"
+          to={targetPath}
+          aria-label="Tiến vào Bàn làm việc"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98] transition-all shrink-0"
           title="Tiến vào bàn làm việc (Phím tắt: Enter)"
         >
           <Play className="size-4 fill-current" />
           <span>Tiến vào Bàn làm việc</span>
-          <span className="hidden md:inline-flex rounded-md bg-white/20 px-1.5 py-0.5 text-[10px] font-mono font-bold uppercase tracking-wider">
+          <span className="hidden md:inline-flex rounded-md bg-black/15 dark:bg-white/20 px-1.5 py-0.2 font-mono text-[10px] font-bold uppercase">
             Enter ↵
           </span>
           <ArrowUpRight className="size-4" />
         </Link>
       </section>
+
+      {/* ── SECTION 4: Demoted Supporting Metadata Strip (P4: Retained, not deleted) ── */}
+      <div className="flex items-center justify-between flex-wrap gap-3 pt-2 text-xs text-muted-foreground border-t border-border">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-3.5 text-muted-foreground" />
+            Thời gian ước tính: <strong className="text-foreground">{formatDuration(mission.estimatedDuration)}</strong>
+          </span>
+          <span className="flex items-center gap-1.5">
+            Độ khó: <Badge variant={badgeVariant} size="sm">{difficultyLabel(mission.difficulty)}</Badge>
+          </span>
+          <span className="flex items-center gap-1.5">
+            Công cụ: <strong className="text-foreground">{toolLabel(mission.tool)}</strong>
+          </span>
+        </div>
+
+        <div className="flex items-center gap-1.5 font-mono text-primary font-bold">
+          <Award className="size-3.5" /> Thưởng: +{formatXP(mission.rewardXp)}
+        </div>
+      </div>
     </div>
   );
 }

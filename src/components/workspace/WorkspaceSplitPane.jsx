@@ -154,19 +154,10 @@ export function WorkspaceSplitPane({
         {!isCollapsed && (
           <Separator
             aria-label="Kéo để điều chỉnh kích thước hai khung làm việc"
-            className="relative flex w-3 items-center justify-center bg-border/60 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors cursor-col-resize group select-none focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+            className="relative flex w-2.5 items-center justify-center bg-border/60 hover:bg-amber-500/20 active:bg-amber-500/30 transition-colors cursor-col-resize group select-none focus:outline-none focus:ring-2 focus:ring-amber-500/50"
           >
+            {/* Thanh Kéo để điều chỉnh kích thước ở giữa */}
             <div className="h-8 w-1 rounded-full bg-border group-hover:bg-amber-500 transition-colors" />
-            
-            {/* Collapse Toggle Button */}
-            <button
-               type="button"
-               onClick={toggleCollapse}
-               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center size-5 rounded-full border border-border bg-card shadow-md hover:bg-muted text-muted-foreground transition-all cursor-pointer z-10"
-               title="Thu gọn khung Đề bài"
-            >
-               <ChevronLeft className="size-3.5" />
-            </button>
           </Separator>
         )}
 
@@ -181,8 +172,9 @@ export function WorkspaceSplitPane({
             <button
                type="button"
                onClick={toggleCollapse}
-               className="absolute top-1/2 left-0 -translate-y-1/2 flex items-center justify-center size-6 rounded-r-full border border-border border-l-0 bg-card shadow-md hover:bg-muted text-muted-foreground transition-all cursor-pointer z-50"
+               className="absolute top-3 left-0 flex items-center justify-center size-6 rounded-r-full border border-border border-l-0 bg-card shadow-md hover:bg-muted text-muted-foreground transition-all cursor-pointer z-50"
                title="Mở rộng khung Đề bài"
+               aria-label="Mở rộng khung Đề bài"
             >
                <ChevronRight className="size-3.5" />
             </button>

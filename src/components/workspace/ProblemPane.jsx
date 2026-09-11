@@ -79,14 +79,6 @@ export function ProblemPane({
       <div className="space-y-2 border-b border-border pb-3.5">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Link
-              to={defaultBack}
-              className="grid size-7 place-items-center rounded-lg border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground transition-all shadow-2xs"
-              title={isPractice ? 'Về khu luyện tập' : 'Quay lại Bản đồ học tập'}
-            >
-              <ArrowLeft className="size-3.5" />
-            </Link>
-
             <span className="font-mono text-[11px] font-bold tracking-wider uppercase text-amber-600 dark:text-amber-400">
               {isPractice ? 'PRACTICE MODE' : tool === 'sql' ? 'SQL INVESTIGATION' : 'EXCEL MISSION'}
             </span>

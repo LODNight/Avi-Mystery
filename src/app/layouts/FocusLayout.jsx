@@ -27,12 +27,7 @@ export function FocusLayout({ children }) {
   const toggleFocusMode = () => setIsFocusMode((prev) => !prev);
 
   const handleExit = () => {
-    // If state has a back path or history, go back; otherwise go to map or dashboard
-    if (window.history.length > 2) {
-      navigate(-1);
-    } else {
-      navigate('/map');
-    }
+    navigate('/map');
   };
 
   const initials = user?.name
@@ -48,11 +43,11 @@ export function FocusLayout({ children }) {
             <button
               onClick={handleExit}
               className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-border bg-background px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all shadow-xs cursor-pointer"
-              title="Rời khỏi không gian làm việc (Quay lại)"
-              aria-label="Rời khỏi bàn làm việc"
+              title="Rời bàn làm việc (Quay lại)"
+              aria-label="Rời bàn làm việc"
             >
-              <X className="size-4" />
-              <span className="hidden sm:inline">Rời bàn làm việc</span>
+              <ArrowLeft className="size-4" />
+              <span>Rời bàn làm việc</span>
             </button>
 
             <div className="h-4 w-px bg-border hidden sm:block" />

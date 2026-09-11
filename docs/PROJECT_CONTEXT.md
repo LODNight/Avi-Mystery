@@ -1,622 +1,447 @@
+# 📓 Avi-Mystery — Báo Cáo Tổng Hợp Chi Tiết Toàn Diện Dự Án (Project Master Summary)
 
-
---- Content of docs/PROJECT_MASTER_SUMMARY.md ---
-
-# 📓 Avi-Mystery — Báo Cáo Tổng Hợp Chi Tiết Toàn Bộ Dự Án (Project Master Summary)
-
-> **Tài liệu tổng hợp toàn diện nhất về sản phẩm Avi-Mystery**: Kiến trúc hệ thống, cấu trúc file, công dụng từng file, hợp đồng dữ liệu (contracts), danh sách tính năng hoàn thiện / chưa hoàn thiện, lộ trình Sprints mới, và hướng dẫn vận hành.
-> **Cập nhật lần cuối:** 07/09/2026 sau khi hoàn tất Sprint 8 (Admin Content Studio & Materialized Read Model).
+> **Tài liệu tổng hợp duy nhất & toàn diện nhất về sản phẩm Avi-Mystery:**
+> - Toàn bộ tính năng đã hoàn thành (Sprint 1 đến Sprint 9.5).
+> - Toàn bộ các hạng mục chưa làm và lộ trình tương lai (Sprint 10+).
+> - Báo cáo phân tích rủi ro hệ thống tiềm ẩn (System & Product Risks).
+> - Dự đoán và đặc tả chi tiết các trường dữ liệu (Database Schemas & Fields) cần bổ sung.
+> 
+> **Cập nhật lần cuối:** 10/09/2026 sau khi hoàn tất Sprint 9.5 (Academy Certification & Mini-Exams).
 
 ---
 
-## 1. 📌 Tổng Quan Dự Án & Định Hướng Sản Phẩm (Product Overview)
+## 1. 📌 TỔNG QUAN DỰ ÁN & BẢN CHẤT SẢN PHẨM (PRODUCT IDENTITY)
 
 ### 1.1. Giới thiệu Sản phẩm
 * **Tên dự án**: **Avi-Mystery**
-* **Bản chất sản phẩm**: Nền tảng học tập phân tích dữ liệu theo hướng **Game hóa (Gamification)** kết hợp cốt truyện **Trinh thám (Detective Theme)**. Người học nhập vai thám tử giải quyết các vụ án dữ liệu thực tế.
-* **Định hướng chiến lược (Scope Rules)**:
-  1. **Excel First**: Ưu tiên xây dựng và ổn định công cụ thực hành Excel trước (**Sprint 3 — HOÀN THÀNH**).
-  2. **SQL Second**: Tích hợp công cụ thực hành SQL trực tiếp trên trình duyệt bằng SQLite WASM In-Memory (**Sprint 4 — HOÀN THÀNH**).
-  3. **Content & Dataset Decoupling**: Tái cấu trúc mô hình nội dung, bóc tách cấu hình chấm điểm khỏi submission service và độc lập hóa dataset (**Sprint 5 — HOÀN THÀNH**).
-  4. **Game Progress System & Domain Adapter**: Tích hợp Progress Service, Leveling Engine, Idempotent XP Ledger và mở khóa Bản đồ Học tập lộ trình đa Giai đoạn Phase Navigation Tabs kết hợp Thẻ Độ thành thạo Kỹ năng Skill Mastery (**Sprint 6 — HOÀN THÀNH 100%**).
-  5. **Learner Onboarding & First-Run Experience**: Welcome Gate, Tutorial Case 0 với Guided Spotlight 4 bước, Dashboard Tour 5 bước chuyên sâu (**Sprint 6.5 — HOÀN THÀNH 100%**).
-  6. **Learner Engagement & Firebase Firestore Migration**: Modal mừng thăng cấp, chuỗi Streak ngọn lửa, Practice Workspace tự do, Profile, Huy hiệu thành tích, Lịch sử hoạt động và di chuyển lưu trữ sang Firebase Firestore Production (**Sprint 7 — HOÀN THÀNH 100%**).
-  7. **Admin Content Studio & Materialized Read Model**: Giao diện trực quan cho Admin tạo/sửa Khóa học, Chương học, Vụ án, Bộ dữ liệu CSV, Sandbox Runner kiểm thử độc lập và Materialized Read Model `learning_map_views` tối ưu hóa triệt để Firestore (**Sprint 8 — HOÀN THÀNH 100%**).
-  8. **Education Hub & UX/UI Focus Mode**: Nâng cấp trình đọc bài học Markdown, cache offline IndexedDB, Focus Mode không xao nhãng và Action Toolbar hợp nhất (**Sprint 8.5 & 8.6 — HOÀN THÀNH 100%**).
-  9. **Split-Pane Architecture & Authentic Spreadsheet**: Bố cục chia khung chuẩn LeetCode tỷ lệ 34:66, Ghost Rows liên tục, Name Box, gỡ bỏ badge trong ô tính và Interactive Focus Mode (**Sprint 9 & 9.1 — HOÀN THÀNH 100%**).
-  10. **Academy Mode & Interactive Sandbox (W3Schools Style)**: Practice Sandbox chia đôi màn hình, In-cell overlay editing, cây giáo trình tuần tự W3Schools, vòng lặp Quick Checkpoint +20 XP, bộ đề thi tốt nghiệp 10 câu và cấp chứng chỉ điện tử Detective Amber (**Sprint 9.5 — HOÀN THÀNH 100%**).
-  11. **Backend API & PostgreSQL Core**: Triển khai FastAPI và PostgreSQL thay thế Mock Adapters (**Sprint 10 — PROPOSED**).
+* **Bản chất sản phẩm**: Nền tảng EdTech học tập kỹ năng phân tích dữ liệu thực chiến (Excel & SQL) kết hợp **2 nhánh sản phẩm tương hỗ độc đáo**:
+  1. **Nhánh Game Trinh Thám Phá Án (Mystery Storyline & Gamification)**: Người học nhập vai thám tử dữ liệu, tiếp nhận hồ sơ vụ án thực tế (gian lận thương mại điện tử, trộm cắp kho vận, thao túng báo cáo tài chính), sử dụng Excel/SQL để tìm ra chứng cứ và phá án.
+  2. **Nhánh Học Viện Dữ Liệu Tự Do (Academy Mode - W3Schools Style)**: Cung cấp giáo trình lý thuyết chuẩn hóa, môi trường thực hành tự do không áp lực (**Interactive Data Sandbox - "Try It Yourself"**), câu hỏi củng cố nhanh (**Quick Checkpoints**) và kỳ thi tốt nghiệp cấp **Chứng chỉ điện tử chính thức (Digital Certificate)**.
+* **Môi trường triển khai Production/Demo**: [https://avi-mystery.vercel.app/dashboard](https://avi-mystery.vercel.app/dashboard)
+* **Quản lý phiên bản Git**: Nhánh `dev` (phát triển & tích hợp CI/CD) và nhánh `main` (bản phát hành người dùng cuối).
 
-### 1.2. Môi Trường Triển Khai & Demo
-* **Trang Web Chính (Production/Staging)**: [https://avi-mystery.vercel.app/dashboard](https://avi-mystery.vercel.app/dashboard)
-* **Nhánh Git Chiến Lược**:
-  - `dev`: Phục vụ phát triển tính năng mới, tích hợp liên tục (CI/CD Staging).
-  - `main`: Phục vụ phát hành chính thức người dùng cuối (Production Release).
+### 1.2. Tech Stack Hiện Tại
+| Thành phần | Công nghệ sử dụng | Vai trò & Mục đích |
+|---|---|---|
+| **Core Framework** | React 18, Vite 5 | SPA render nhanh, Hot Module Replacement (HMR) < 50ms |
+| **Routing** | React Router v6 | Điều hướng trang, phân quyền Role Guards, Focus Mode |
+| **Styling & Theme** | Tailwind CSS 3, Vanilla CSS Variables | Design System **Detective Amber**, Light Mode & Dark Mode đa tầng |
+| **Layout & Split-Pane** | `react-resizable-panels` | Chia khung IDE tỷ lệ 34:66 chuẩn LeetCode / VS Code Web |
+| **SQL In-Browser Engine** | `sql.js@1.14.2` (SQLite WASM) + Web Worker | Thực thi truy vấn SQL trực tiếp trên trình duyệt, không cần backend |
+| **Excel In-Browser Engine** | Custom Pure JS Evaluation Engine (`excelChecker.js`) | Chuẩn hóa cú pháp, tính toán hàm SUM, AVERAGE, COUNTIF, SUMIF, IF, VLOOKUP... |
+| **Editor Trực Quan** | `CellEditorOverlay` (`createPortal`) | In-cell formula editor nổi, điều hướng Enter/Tab/Esc, zero re-render |
+| **Markdown Renderer** | `react-markdown`, `remark-gfm` | Hiển thị bài giảng, bảng dữ liệu, khối code có nút copy |
+| **Hạ tầng Dữ liệu** | Firebase Firestore + Client Storage (`storage.js`) | Lưu trữ tiến trình học tập, XP Ledger, Chứng chỉ, cache offline IndexedDB |
+| **Testing Framework** | Vitest, React Testing Library, `@testing-library/jest-dom` | **72 test suites, 567 tests PASS 100%** |
 
 ---
 
-## 2. 🏛 Phân Tầng Kiến Trúc & Các Khái Niệm Domain Lõi (Architecture & Domain Hierarchy)
+## 2. ✅ TOÀN BỘ MỌI THỨ ĐÃ HOÀN THÀNH (SPRINT 1 ĐẾN SPRINT 9.5)
 
-### 2.1. Nhãn Phân Loại Trạng Thái Kiến Trúc
-- `CURRENT`: Đã triển khai và verified hoàn tất trong mã nguồn thực tế (Sprint 1–8).
-- `PLANNED`: Kế hoạch kiến trúc đã được chốt và chia nhỏ thành từng Step cụ thể.
-- `PROPOSED`: Định hướng phát triển tương lai đang chờ phê duyệt (Sprint 9–10).
-- `DEPRECATED`: Cấu trúc cũ trong lộ trình bóc tách.
-- `LEGACY`: Phục vụ tương thích ngược cho phiên bản ban đầu.
+Dự án đã trải qua 14 giai đoạn phát triển liên tục, đạt trạng thái hoàn thiện 100% trên toàn bộ Frontend:
 
-### 2.2. Chuỗi Phân Cấp Nội Dung & Tiến Độ Học Tập
-```text
-Learning Journey (Hành trình học tập)
-  └── Phase (Giai đoạn)
-       └── Chapter (Chương)
-            └── Investigation (Bối cảnh truyện Vụ án)
-                 └── Question (Nhiệm vụ kỹ thuật Excel/SQL)
-                      ├── Question Variant (Biến thể bài tập)
-                      └── Submission (Bài làm của người học)
-                           └── Result (Kết quả chấm điểm & potentialXp)
-                                └── Progress (Trao thưởng XP & Level - Progress Domain)
+### 🔹 Sprint 1 — Frontend Foundation & RBAC System (100%)
+- Hệ thống điều hướng React Router v6 với phân quyền 3 roles: `unauthenticated`, `learner`, `admin`.
+- Bộ giao diện Learner Layout (Sidebar co giãn, Topbar) và Admin Layout độc lập.
+- Design System **Detective Amber** với tone màu Hổ phách, CSS Variables đồng bộ Light/Dark mode.
+- Bộ UI Kit cơ bản: `Button`, `Card`, `Input`, `Badge`, `Skeleton` (`aria-busy="true"`), `EmptyState`, `ErrorState`.
+- Cấu trúc Service Contracts và Mock Adapters ban đầu (`authService`, `courseService`, `missionService`).
+
+### 🔹 Sprint 2 — Course, Learning Map & Maintenance Mode (100%)
+- Trang Danh sách Khóa học (`/courses`) với bộ lọc Từ khóa, Công cụ (Excel/SQL) và Độ khó.
+- Trang Chi tiết Khóa học (`/courses/:slug`) với Accordion chương học và danh sách bài học.
+- Trang Bản đồ Học tập sơ khai (`/map`) hiển thị các node vụ án kết nối trực quan.
+- Trang Giới thiệu Vụ án (`/missions/:missionId`) tóm tắt bối cảnh và phần thưởng dự kiến.
+- Hệ thống Bảo trì Trang (`UnderMaintenancePage`) kiểm soát bởi Admin Settings (`usePageStatus`).
+
+### 🔹 Sprint 3 — Excel Vertical Slice (100%)
+- Bộ chấm công thức `excelChecker.js` thuần túy: phân tích dải ô, chuẩn hóa dấu cách/hoa thường, kiểm tra kết quả tính toán.
+- Không gian giải đố Excel (`ExcelMissionPage.jsx` tại `/missions/:missionId/workspace`).
+- Lưới bảng tính `SpreadsheetGrid.jsx` (hỗ trợ ô A1-Z100, chọn ô active/highlight, nhập dữ liệu).
+- Thanh công thức `FormulaBar.jsx`, thanh công cụ Chạy thử (Run), Nộp bài (Submit), Gợi ý (Hints) và Đặt lại (Reset).
+- Cổng Submission Gateway (`submissionService`) hỗ trợ chống nộp đúp (`clientAttemptId`), retry khi lỗi mạng.
+- Hoàn thiện UI Stabilization và tinh chỉnh độ tương phản Light Mode.
+
+### 🔹 Sprint 4 — SQL Vertical Slice (100%)
+- Tích hợp Web Worker đóng gói SQLite WASM (`sql.js`), xử lý request-response bất đồng bộ qua `requestId`.
+- Bộ lọc bảo mật `sqlQueryPolicy.js`: Chặn 100% lệnh ghi/xóa/phá hoại DDL/DML, timeout 3s và giới hạn tối đa 500 dòng.
+- `SchemaBrowser.jsx`: Xem cấu trúc bảng, kiểu dữ liệu cột, khóa chính và 3 dòng dữ liệu mẫu.
+- `SqlEditor.jsx`: Trình soạn thảo SQL hỗ trợ Tab 2-space, phím tắt `Ctrl + Enter` (hoặc `Cmd + Enter`).
+- `ResultViewer.jsx`: Bảng xem kết quả truy vấn, phân trang client-side 50 dòng/trang, định dạng NULL và căn phải số.
+- Bộ chấm kết quả `sqlChecker.js` kiểm tra độ khớp cột, thứ tự dòng, dung sai số học (numeric tolerance).
+
+### 🔹 Sprint 5 — Content Domain & Dataset Decoupling (100%)
+- Tách biệt tuyệt đối giữa Bối cảnh vụ án (`Investigation`) và Nhiệm vụ kỹ thuật (`Question`).
+- Tách biệt Bộ dữ liệu (`Dataset`) thành thực thể độc lập có thể tái sử dụng cho nhiều câu hỏi.
+- Bóc tách cấu hình kiểm thử (`checkerConfig`) khỏi mã nguồn Mock Submission.
+- Khởi tạo Domain `LearnerProgress` và sổ cái điểm thưởng XP bất biến (`rewardEvaluator.js`).
+
+### 🔹 Sprint 6 — Game Progress & Progression Architecture (100%)
+- Động cơ cấp độ thuần túy `levelingEngine.js` (Level 1 đến Level 50) với công thức lũy tiến đường cong kinh nghiệm.
+- Tách biệt rõ ràng tiến độ cốt truyện (`main_quest`) và rèn luyện kỹ năng tự do (`practice`).
+- Đánh giá độ thành thạo kỹ năng (`masteryEvaluator.js`).
+- Bản đồ Học tập Dynamic Learning Map (`learningMapAdapter.js`) với Phase Navigation Tabs trực quan và thẻ tổng quan kỹ năng (Skill Mastery Card).
+
+### 🔹 Sprint 6.5 — Learner Onboarding & First-Run Experience (100%)
+- Trạng thái Onboarding per-user (`NOT_STARTED`, `IN_PROGRESS`, `COMPLETED`, `SKIPPED`).
+- Màn hình Welcome Gate toàn màn hình (`WelcomeGatePage.jsx`), tự động chuyển hướng người dùng mới.
+- Vụ án huấn luyện tân thủ Tutorial Case 0 (`tutorialCase0Content.js`, `TutorialCase0Page.jsx`) với Guided Spotlight 4 bước.
+- Dashboard Deep Tour 6 bước dẫn dắt học viên làm quen toàn bộ tính năng thám tử dữ liệu.
+- Bộ công cụ Dev Testing Tools trong Admin cho phép 1-click reset trạng thái Onboarding để kiểm thử.
+
+### 🔹 Sprint 7 — Learner Engagement & Firebase Firestore Migration (100%)
+- Modal chúc mừng thăng cấp (`LevelUpModal.jsx`) với hiệu ứng pháo hoa, danh hiệu mới và tổng XP.
+- Popup chuỗi ngày học tập (`StreakDetailModal.jsx`) hiển thị biểu đồ ngọn lửa 7 ngày trong tuần.
+- Không gian Luyện tập tự do (`/practice`) tách biệt khỏi cốt truyện vụ án.
+- Trang Hồ sơ cá nhân (`/profile`) và Bảng thành tựu danh hiệu (`/achievements`).
+- Trang Lịch sử hoạt động (`/profile/history`) với Timeline đa chiều.
+- Di chuyển toàn bộ lưu trữ XP, Progress, Achievements, Activity History sang **Firebase Firestore Production** với transaction bảo toàn dữ liệu.
+
+### 🔹 Sprint 8 — Admin Content Studio (100%)
+- Trình quản lý Vụ án trực quan (`/admin/missions`), Trình tạo & sửa Vụ án (`/admin/missions/:id/edit`) với 4 tabs chuyên sâu.
+- Quản lý Khóa học (`/admin/courses`) và Chương học (`/admin/chapters`).
+- Trình nhập CSV thông minh (`/admin/datasets`): tự động đoán kiểu dữ liệu (`INTEGER`, `REAL`, `DATE`, `TEXT`) và sinh mã SQLite DDL.
+- Sandbox Runner kiểm thử độc lập (`AdminTestRunnerModal.jsx`) cho phép Admin test công thức Excel và query SQL an toàn.
+- Bảng đọc tối ưu hóa Materialized Read Model (`learning_map_views`) xóa bỏ hoàn toàn hiện tượng N+1 queries trên Firestore.
+
+### 🔹 Sprint 8.5 & 8.6 — Education Hub & Focus Mode UX (100%)
+- Tích hợp `react-markdown` và `remark-gfm` cho trang bài giảng (`KnowledgeHubPage.jsx`).
+- Bật bộ nhớ đệm ngoại tuyến `persistentLocalCache` IndexedDB đa tab cho Firebase Firestore.
+- Bố cục chế độ tập trung Focus Mode (`FocusLayout.jsx`) loại bỏ toàn bộ sidebar khi làm bài.
+- Thanh Action & Formula Bar hợp nhất, căn lề và tối ưu chiều dọc không phải cuộn chuột trên màn hình $\ge 1366 \times 768$.
+
+### 🔹 Sprint 9 & 9.1 — Split-Pane IDE & Authentic Spreadsheet (100%)
+- Bố cục chia khung Split-Pane chuẩn LeetCode (`WorkspaceSplitPane.jsx`) với tỷ lệ vàng Desktop 34% (Context) : 66% (Spreadsheet/Editor).
+- Xóa bỏ hoàn toàn badge chữ "Mục tiêu" bên trong ô tính, thay bằng viền sáng Hổ phách sắc nét không che số liệu.
+- Cơ chế Ghost Rows tự động render bù tối thiểu 16 hàng chuẩn bảng tính Excel thực thụ.
+- Nâng cấp thanh công cụ: Name Box `[ E2 ]` $\to$ `fx` $\to$ Input $\to$ Reset $\to$ Fill Down $\to$ Run.
+- Interactive Focus Mode: Nút toggle thu gọn hoàn toàn cột trái, mở rộng bảng tính 100% kèm nút nổi "Xem đề bài".
+
+### 🔹 Sprint 9.5 — Academy Mode & Interactive Sandbox (100%)
+1. **Interactive Data Sandbox (`/sandbox`)**:
+   - Trình thực hành tự do chia đôi màn hình theo triết lý W3Schools "Try it Yourself".
+   - **In-cell Editor Overlay (`CellEditorOverlay.jsx`)**: Nhấp đúp mở editor nổi dùng `createPortal`, state machine độc lập (`originalValue`/`draftValue`/`committedValue`), hỗ trợ Enter/Tab/Escape, zero re-renders trên bảng tính.
+   - Hotfix Firebase: Cấu hình graceful fallback chống lỗi vỡ app `auth/invalid-api-key` trên Vercel.
+2. **Cấu trúc Khóa học Học viện (`/academy`)**:
+   - Dữ liệu giáo trình phân cấp chuẩn hóa `academySyllabus.js` (Excel Academy & SQL Academy).
+   - Sidebar mục lục W3Schools, thanh % tiến độ học tập, cây bài học accordion với tick xanh hoàn thành.
+   - Vòng lặp học tập: Lý thuyết Markdown $\to$ Thẻ Try it Yourself $\to$ Quick Checkpoint trắc nghiệm +20 XP $\to$ Footer điều hướng tuần tự.
+3. **Kỳ thi Tốt nghiệp & Cấp Chứng chỉ Điện tử (`/academy/:courseSlug/exam`)**:
+   - Ngân hàng câu hỏi `academyExams.js` (10 câu trắc nghiệm chuyên sâu cho từng khóa, giới hạn 15 phút, điểm đạt $\ge 80\%$, thưởng +100 XP).
+   - Service `academyExamService.js` tự động chấm điểm, phân loại kết quả và cấp mã Certificate ID duy nhất (`AVI-EXCEL-CERT-XXXXX` / `AVI-SQL-CERT-XXXXX`).
+   - Màn hình thi `AcademyExamPage.jsx` với bộ đếm ngược, thanh jumper câu hỏi và bảng xem lại đáp án chi tiết.
+   - Modal Chứng chỉ số Detective Amber Gold (`AcademyCertificateModal.jsx`) hỗ trợ In/Tải PDF (`window.print()`) và sao chép mã xác thực.
+   - Đồng bộ hiển thị danh sách chứng chỉ đã đạt được vào Hồ sơ cá nhân (`/profile`).
+
+---
+
+## 3. ⏳ TOÀN BỘ NHỮNG GÌ CHƯA LÀM (FUTURE ROADMAP & UNFINISHED WORK)
+
+Dưới đây là các tính năng và module chưa được triển khai, được sắp xếp theo mức độ ưu tiên từ gần đến xa:
+
+```
+[Hiện tại: Sprint 9.5 Hoàn tất] 
+       ↓
+[Sprint 10: Backend API & PostgreSQL] 
+       ↓
+[Sprint 11: Competitive Seasons & Agencies] 
+       ↓
+[Sprint 12: Detective Audio & Immersion]
 ```
 
-### 2.3. Phân Định Khái Niệm Quan Trọng
-1. **Investigation vs Question**: `Investigation` sở hữu cốt truyện trinh thám và bối cảnh vụ án; `Question` sở hữu nhiệm vụ thao tác kỹ thuật (viết công thức Excel hay câu lệnh SQL).
-2. **Question vs Question Variant**: `Question` định nghĩa đề bài chuẩn; `Question Variant` định nghĩa các bộ tham số khác nhau cho rèn luyện.
-3. **Dataset (Bộ dữ liệu độc lập)**: Tồn tại độc lập với `datasetId` riêng, được tái sử dụng cho nhiều Question mà không nhân bản dữ liệu.
-4. **Course vs Learning Map**: `Course` trả lời câu hỏi "Có những lộ trình/khóa học nào?"; `Learning Map` trả lời câu hỏi "Tôi đang ở đâu trên hành trình học tập?".
-5. **Main Quest vs Practice**: `Main Quest` di chuyển tuyến tính theo cốt truyện; `Practice` làm bài tự do rèn luyện kỹ năng.
-6. **Completion vs Mastery**: `Completion` là cờ Boolean (Đạt/Chưa đạt); `Mastery` là chỉ số đánh giá độ sâu (Chính xác, gợi ý, thời gian, tối ưu SQL).
+### 🔹 Sprint 10 — Backend API & Data Persistence *(Ưu tiên P0 - Kế hoạch tiếp theo)*
+*Hiện tại Frontend vẫn dùng song song Firebase Firestore và Mock Adapters/LocalStorage. Sprint 10 sẽ chuyển đổi sang Backend Server độc lập:*
+- [ ] **Khởi tạo FastAPI Server (`backend/`)**: Xây dựng kiến trúc thư mục chuẩn (Routers, Controllers, Services, Repositories, Schemas, Core Config).
+- [ ] **Docker Compose Hạ tầng**: Cấu hình container chạy PostgreSQL 16 và pgAdmin.
+- [ ] **Alembic Database Migrations**: Khởi tạo cấu trúc bảng CSDL quan hệ chuẩn hóa.
+- [ ] **Hệ thống Xác thực JWT**: Endpoint `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, `/api/auth/refresh` bằng JWT Token có gắn Role-Based Access Control (RBAC).
+- [ ] **RESTful API Endpoints**:
+  - Courses & Chapters CRUD API.
+  - Investigations & Questions API (bao gồm nạp dataset).
+  - Submission & Evaluation API (chấm điểm tập trung phía server chống can thiệp client).
+  - Progress, XP Ledger & Leveling API với Database Transactions chống race condition.
+  - Exams & Certificates Verification API.
+- [ ] **Dual-Mode Adapter trên Frontend**: Kết nối API client vào `src/services/contracts/` mà không làm thay đổi bất kỳ component UI nào, tự động fallback về Mock/Firebase khi mất kết nối mạng.
+
+### 🔹 Sprint 11 — Leaderboard, Competitive Seasons & Detective Agencies *(Ưu tiên P1)*
+- [ ] **Bảng Xếp Hạng Thám Tử Toàn Hệ Thống (`/leaderboard`)**: Xếp hạng theo Tuần, Tháng và Toàn thời gian dựa trên XP và độ chính xác phá án (Mastery).
+- [ ] **Mùa Giải Phá Án (Seasons)**: Cơ chế reset bảng xếp hạng theo mùa (Season 1: Gian Lận Thương Mại, Season 2: Thao Túng Sổ Sách Tài Chính) kèm danh hiệu giới hạn.
+- [ ] **Tổ Đội Thám Tử (Detective Agencies / Guilds)**: Cho phép người học lập nhóm từ 3–5 thành viên, cộng dồn điểm XP phá án tổ đội và giải các đại án nhiều giai đoạn.
+
+### 🔹 Sprint 12 — Detective Atmosphere, Audio & Voice Guidance *(Ưu tiên P2)*
+- [ ] **Âm thanh Tương tác (Interactive SFX)**: Tiếng lật hồ sơ án, tiếng gõ phím máy chữ retro, âm báo nộp bài thành công (Success Chime), âm báo thăng cấp hoành tráng.
+- [ ] **Nhạc nền Bối cảnh (Detective Ambient Background)**: Nhạc Jazz đêm mưa nhẹ nhàng đặc trưng của văn phòng thám tử tư (tùy chọn bật/tắt trên thanh Topbar).
+- [ ] **Giọng nói Cảnh báo / Hướng dẫn (AI Voice / Audio Briefing)**: Audio trần thuật bối cảnh vụ án khi mở đầu màn chơi giúp tăng chiều sâu nhập vai.
+
+### 🔹 Technical Debts & Các Tinh Chỉnh Cần Làm Sớm *(Ưu tiên P1/P2)*
+- [ ] **`SHR-DEBT-001` (Toast Notification System)**: Thay thế hoàn toàn các lệnh `alert()` native trong codebase bằng component Toast Detective Amber tự động ẩn sau 3 giây.
+- [ ] **Xuất Chứng chỉ dạng Ảnh PNG (`html2canvas`)**: Cho phép tải chứng chỉ trực tiếp dưới dạng ảnh chất lượng cao để chia sẻ lên Facebook/LinkedIn mà không phụ thuộc lệnh in của trình duyệt.
+- [ ] **Chia Sẻ Chứng Chỉ Công Khai (`/verify/:certificateId`)**: Tuyến đường công khai cho phép nhà tuyển dụng hoặc người ngoài quét QR để xác minh tính xác thực của chứng chỉ.
+- [ ] **Phân trang & Đánh Index Firestore (`BE-DEBT-004`)**: Thêm composite indexes và cursor-based pagination cho `knowledgeService` và `activityHistory` khi lượng dữ liệu lớn.
+- [ ] **Đa ngôn ngữ (i18n)**: Mở rộng hỗ trợ song ngữ Tiếng Việt và Tiếng Anh (`vi`/`en`) cho toàn bộ giao diện học tập.
 
 ---
 
-## 3. 📁 Cấu Trúc File & Công Dụng Chi Tiết Toàn Bộ Dự Án (File Inventory)
+## 4. ⚠️ PHÂN TÍCH RỦI RO TIỀM ẨN CỦA HỆ THỐNG (SYSTEM & PRODUCT RISKS)
+
+Qua rà soát kiến trúc hiện tại, có **6 rủi ro cốt lõi** cần đặc biệt lưu ý và chuẩn bị phương án dự phòng:
+
+### ⚠️ Rủi ro 1: Xung đột Trạng thái Khi Chuyển Dịch từ Mock/LocalStorage sang Backend Server
+- **Bản chất**: Hiện tại các tính năng mới (Exam Results, Certificates, Onboarding state) đang lưu trên trình duyệt qua `storage.js` (`avimystery:...`). Khi người dùng đăng nhập trên thiết bị khác hoặc khi triển khai FastAPI Backend, dữ liệu cục bộ này sẽ bị phân mảnh hoặc mất đồng bộ.
+- **Mức độ nghiêm trọng**: `CAO (P0)`.
+- **Giải pháp phòng ngừa**: Xây dựng cơ chế **Data Migration on First Login**: Khi user đăng nhập lần đầu vào backend mới, client sẽ tự động gửi gói backup LocalStorage lên server để lưu vĩnh viễn vào PostgreSQL, sau đó dọn dẹp storage cục bộ.
+
+### ⚠️ Rủi ro 2: Giới hạn Bộ nhớ Client-side WASM & Rò rỉ Web Worker (Memory Leak)
+- **Bản chất**: `sql.js` nạp toàn bộ CSDL SQLite vào RAM trình duyệt (~20–50MB). Nếu học viên chuyển đổi qua lại giữa hàng chục vụ án hoặc bài học Sandbox liên tục mà Web Worker không được `terminate()` và giải phóng bộ nhớ đúng cách, tab trình duyệt có thể bị treo hoặc crash Out-Of-Memory trên thiết bị di động/máy yếu.
+- **Mức độ nghiêm trọng**: `TRUNG BÌNH (P1)`.
+- **Giải pháp phòng ngừa**: Duy trì cơ chế Singleton Worker Pool hoặc gọi lệnh `dispose()` bắt buộc trong `useEffect` cleanup hook khi unmount component (đã áp dụng trong Sprint 4 và cần duy trì kiểm tra định kỳ).
+
+### ⚠️ Rủi ro 3: Bùng Nổ Chi Phí Đọc Ghi Firebase Firestore (Cost & Quota Explosion)
+- **Bản chất**: Firestore tính phí dựa trên số lượt Document Reads. Nếu các màn hình như Dashboard, Learning Map, Profile gọi `getDocs()` liên tục mà không có read model hoặc cache, chi phí sẽ tăng đột biến theo cấp số nhân khi số lượng user tăng.
+- **Mức độ nghiêm trọng**: `CAO (P1)`.
+- **Giải pháp phòng ngừa**: Duy trì kiến trúc **Materialized Read Model** (`learning_map_views`) đã xây dựng ở Sprint 8, kích hoạt `persistentLocalCache` của Firestore SDK v10+, và chuyển đổi các nghiệp vụ đọc dữ liệu tĩnh sang FastAPI Cache (Redis/In-memory) trong Sprint 10.
+
+### ⚠️ Rủi ro 4: Gian Lận Điểm XP & Can Thiệp Chấm Điểm Phía Client (Client-side Cheating)
+- **Bản chất**: Hiện tại bộ chấm công thức Excel (`excelChecker.js`) và câu hỏi bài thi (`academyExamService.js`) đang chạy hoàn toàn ở phía client (JavaScript trên trình duyệt). Người học am hiểu kỹ thuật có thể mở DevTools Console để xem đáp án `correctIndex` hoặc can thiệp gọi hàm `progressService.awardXp`.
+- **Mức độ nghiêm trọng**: `TRUNG BÌNH (P2 - Chấp nhận được ở giai đoạn MVP/Demo, nhưng BẮT BUỘC KHẮC PHỤC ở Production)`.
+- **Giải pháp phòng ngừa**: Chuyển toàn bộ logic so sánh đáp án và cộng điểm XP về phía **FastAPI Backend Server** trong Sprint 10; client chỉ gửi bài làm và nhận kết quả mã hóa từ server.
+
+### ⚠️ Rủi ro 5: Xung Đột Cú Pháp SQL giữa SQLite (Client) và PostgreSQL (Server)
+- **Bản chất**: Động cơ Sandbox và bài tập SQL hiện tại sử dụng SQLite (dialect chuẩn của `sql.js`). Tuy nhiên backend tương lai sẽ dùng PostgreSQL. Một số hàm ngày tháng (`strftime` vs `TO_CHAR`), hàm chuỗi, hoặc kiểu dữ liệu JSON có sự khác biệt về cú pháp.
+- **Mức độ nghiêm trọng**: `TRUNG BÌNH (P1)`.
+- **Giải pháp phòng ngừa**: Quy định rõ tiêu chuẩn bài tập: Các bài tập cơ bản/trung cấp tập trung vào chuẩn **ANSI SQL** (tương thích 100% giữa SQLite và Postgres); các bài nâng cao phải gắn cờ `dialect: 'sqlite'` hoặc `dialect: 'postgres'` và hiển thị chú thích rõ ràng cho học viên.
+
+### ⚠️ Rủi ro 6: Giới hạn Hạn Ngạch Lưu Trữ LocalStorage (5MB Quota)
+- **Bản chất**: Trình duyệt giới hạn LocalStorage tối đa 5MB cho mỗi domain. Nếu người học hoàn thành hàng trăm vụ án, lưu nhiều lịch sử activity log hoặc bộ nhớ tạm CSV, lệnh `storage.set` sẽ ném lỗi `QuotaExceededError`.
+- **Mức độ nghiêm trọng**: `THẤP (P2)`.
+- **Giải pháp phòng ngừa**: Đã bọc `try-catch` an toàn trong `src/utils/storage.js`. Đối với các dữ liệu lớn (CSV, SQLite binaries), bắt buộc dùng IndexedDB thay vì LocalStorage.
+
+---
+
+## 5. 🔮 DỰ ĐOÁN & THIẾT KẾ CÁC TRƯỜNG DỮ LIỆU CẦN BỔ SUNG (PREDICTED DATABASE SCHEMAS & FIELDS)
+
+Để chuẩn bị sẵn sàng cho **Sprint 10 (Backend API & PostgreSQL)** và mở rộng tính năng về sau, dưới đây là đặc tả chi tiết các bảng CSDL và các trường dữ liệu cần thiết:
+
+### 🗄️ Bảng 1: `users` (Thông tin tài khoản & Xác thực)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `UUID` / `VARCHAR(64)` | `PRIMARY KEY` | Mã định danh duy nhất của người dùng |
+| `email` | `VARCHAR(255)` | `UNIQUE, NOT NULL` | Email đăng nhập |
+| `hashed_password` | `VARCHAR(255)` | `NOT NULL` | Mật khẩu băm (bcrypt / argon2) |
+| `display_name` | `VARCHAR(100)` | `NOT NULL` | Tên hiển thị của thám tử |
+| `avatar_url` | `VARCHAR(500)` | `NULLABLE` | Đường dẫn ảnh đại diện thám tử |
+| `role` | `VARCHAR(20)` | `DEFAULT 'learner'` | Phân quyền: `super_admin`, `content_admin`, `learner` |
+| `status` | `VARCHAR(20)` | `DEFAULT 'active'` | Trạng thái: `active`, `suspended`, `banned` |
+| `total_xp` | `INTEGER` | `DEFAULT 0` | Tổng điểm kinh nghiệm tích lũy |
+| `current_level` | `INTEGER` | `DEFAULT 1` | Cấp bậc thám tử hiện tại (Level 1–50) |
+| `rank_title` | `VARCHAR(50)` | `DEFAULT 'Thám tử Tập sự'` | Danh xưng thám tử |
+| `current_streak` | `INTEGER` | `DEFAULT 0` | Số ngày duy trì chuỗi học tập liên tục |
+| `max_streak` | `INTEGER` | `DEFAULT 0` | Kỷ lục chuỗi ngày học cao nhất |
+| `last_active_at` | `TIMESTAMP WITH TIME ZONE`| `NULLABLE` | Thời điểm hoạt động gần nhất (tính streak) |
+| `streak_freeze_count`| `INTEGER` | `DEFAULT 1` | **[Mới dự đoán]** Số bùa hộ mệnh đóng băng streak khi quên học |
+| `theme_preference`| `VARCHAR(10)` | `DEFAULT 'dark'` | Tùy chọn giao diện: `dark` hoặc `light` |
+| `created_at` | `TIMESTAMP WITH TIME ZONE`| `DEFAULT NOW()` | Thời điểm đăng ký tài khoản |
+| `updated_at` | `TIMESTAMP WITH TIME ZONE`| `DEFAULT NOW()` | Thời điểm cập nhật hồ sơ |
+
+---
+
+### 🗄️ Bảng 2: `investigations` (Hồ sơ Vụ án Trinh thám)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã vụ án (ví dụ `mission-001`, `inv-fraud-01`) |
+| `chapter_id` | `VARCHAR(64)` | `FOREIGN KEY` | Thuộc chương học nào |
+| `title` | `VARCHAR(255)` | `NOT NULL` | Tiêu đề vụ án |
+| `slug` | `VARCHAR(255)` | `UNIQUE, NOT NULL` | Đường dẫn URL thân thiện |
+| `case_brief` | `TEXT` | `NOT NULL` | Tóm tắt hồ sơ bối cảnh trinh thám |
+| `storyline` | `TEXT` | `NULLABLE` | Cốt truyện chi tiết dẫn dắt vào vụ án |
+| `difficulty` | `VARCHAR(20)` | `NOT NULL` | Độ khó: `beginner`, `intermediate`, `advanced` |
+| `tool` | `VARCHAR(20)` | `NOT NULL` | Công cụ áp dụng: `excel` hoặc `sql` |
+| `order_index` | `INTEGER` | `DEFAULT 0` | Thứ tự xuất hiện trong chương học |
+| `status` | `VARCHAR(20)` | `DEFAULT 'draft'` | Trạng thái: `published`, `draft`, `archived` |
+| `estimated_time`| `VARCHAR(50)` | `DEFAULT '15 phút'`| Thời gian dự kiến hoàn thành |
+| `badge_reward` | `VARCHAR(64)` | `NULLABLE` | Huy hiệu thưởng khi phá giải vụ án (nếu có) |
+| `is_free` | `BOOLEAN` | `DEFAULT TRUE` | **[Mới dự đoán]** Miễn phí hay yêu cầu tài khoản Pro |
+| `prerequisite_id`| `VARCHAR(64)` | `NULLABLE` | **[Mới dự đoán]** Mã vụ án bắt buộc phải xong trước khi mở khóa |
+
+---
+
+### 🗄️ Bảng 3: `questions` (Nhiệm vụ Thao tác Kỹ thuật)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã câu hỏi (ví dụ `q-excel-001`) |
+| `investigation_id`| `VARCHAR(64)` | `FOREIGN KEY` | Gắn với vụ án nào |
+| `dataset_id` | `VARCHAR(64)` | `FOREIGN KEY` | Gắn với bộ dữ liệu nào |
+| `objective` | `TEXT` | `NOT NULL` | Mục tiêu kỹ thuật cụ thể cần đạt được |
+| `target_cell` | `VARCHAR(10)` | `NULLABLE` | Tọa độ ô mục tiêu (đối với Excel, ví dụ `E2`) |
+| `formula_placeholder`| `VARCHAR(100)`| `NULLABLE` | Gợi ý mờ trong thanh `fx` (ví dụ `=SUM(...)`) |
+| `starter_query` | `TEXT` | `NULLABLE` | Câu lệnh mồi có sẵn (đối với SQL) |
+| `base_xp` | `INTEGER` | `DEFAULT 50` | Điểm XP cơ bản khi hoàn thành lần đầu |
+| `skill_id` | `VARCHAR(50)` | `NOT NULL` | Kỹ năng liên quan (`excel_formula`, `sql_query`...) |
+| `checker_config` | `JSONB` | `NOT NULL` | Cấu hình bộ chấm điểm (expectedValue, tolerances, regex) |
+| `hints` | `JSONB` | `DEFAULT '[]'` | Danh sách mảng các gợi ý kèm chi phí trừ XP |
+| `max_attempts` | `INTEGER` | `NULLABLE` | **[Mới dự đoán]** Giới hạn số lần nộp bài tối đa (nếu là bài thi) |
+
+---
+
+### 🗄️ Bảng 4: `datasets` (Bộ Dữ Liệu Nguồn Độc Lập)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã bộ dữ liệu (ví dụ `ds-ecommerce-orders`) |
+| `name` | `VARCHAR(255)` | `NOT NULL` | Tên bộ dữ liệu |
+| `description` | `TEXT` | `NULLABLE` | Mô tả nguồn gốc và ý nghĩa các cột |
+| `tool` | `VARCHAR(20)` | `NOT NULL` | Phù hợp cho công cụ nào: `excel`, `sql`, `both` |
+| `table_name` | `VARCHAR(64)` | `NULLABLE` | Tên bảng SQLite (đối với SQL, ví dụ `orders`) |
+| `sqlite_ddl` | `TEXT` | `NULLABLE` | Lệnh DDL SQLite khởi tạo bảng và seed dữ liệu mẫu |
+| `excel_grid_data`| `JSONB` | `NULLABLE` | Dữ liệu ma trận lưới ô tính ban đầu (đối với Excel) |
+| `schema_metadata`| `JSONB` | `NOT NULL` | Thông tin cột: tên cột, kiểu dữ liệu, khóa chính |
+| `row_count` | `INTEGER` | `DEFAULT 0` | Tổng số hàng dữ liệu trong dataset |
+| `is_readonly` | `BOOLEAN` | `DEFAULT TRUE` | Đảm bảo an toàn không bị sửa đổi bảng gốc |
+
+---
+
+### 🗄️ Bảng 5: `submissions` (Lịch Sử Bài Làm & Chấm Điểm)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã lần nộp bài (`attemptId`) |
+| `user_id` | `VARCHAR(64)` | `FOREIGN KEY` | Học viên thực hiện |
+| `question_id` | `VARCHAR(64)` | `FOREIGN KEY` | Câu hỏi được nộp |
+| `mode` | `VARCHAR(20)` | `DEFAULT 'main_quest'`| Chế độ làm bài: `main_quest` hoặc `practice` |
+| `submitted_answer`| `TEXT` | `NOT NULL` | Công thức Excel hoặc câu lệnh SQL học viên đã nhập |
+| `is_correct` | `BOOLEAN` | `NOT NULL` | Đạt yêu cầu hay không |
+| `score` | `INTEGER` | `DEFAULT 0` | Điểm số đạt được (0–100) |
+| `hints_used` | `INTEGER` | `DEFAULT 0` | Số lượng gợi ý học viên đã mở |
+| `execution_time_ms`| `INTEGER` | `NULLABLE` | Thời gian thực thi truy vấn / tính toán (mili-giây) |
+| `error_message` | `TEXT` | `NULLABLE` | Thông báo lỗi chi tiết nếu bài làm sai |
+| `created_at` | `TIMESTAMP WITH TIME ZONE`| `DEFAULT NOW()` | Thời điểm nộp bài |
+
+---
+
+### 🗄️ Bảng 6: `xp_ledger` (Sổ Cái Điểm Thưởng Bất Biến - Idempotent Ledger)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã giao dịch XP (`transactionId`) |
+| `user_id` | `VARCHAR(64)` | `FOREIGN KEY` | Thám tử nhận thưởng |
+| `content_id` | `VARCHAR(64)` | `NOT NULL` | Mã câu hỏi hoặc kỳ thi nhận điểm |
+| `attempt_id` | `VARCHAR(64)` | `UNIQUE, NOT NULL` | **Idempotency Key chống nhận thưởng lặp lại** |
+| `xp_amount` | `INTEGER` | `NOT NULL` | Số điểm XP được cộng (hoặc trừ nếu phạt) |
+| `reason` | `VARCHAR(255)` | `NOT NULL` | Lý do cộng thưởng (First Blood, Level Up, Quiz, Exam) |
+| `created_at` | `TIMESTAMP WITH TIME ZONE`| `DEFAULT NOW()` | Thời điểm ghi nhận giao dịch |
+
+---
+
+### 🗄️ Bảng 7: `academy_exams` & `exam_submissions` (Kỳ Thi & Kết Quả Sát Hạch)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `id` | `VARCHAR(64)` | `PRIMARY KEY` | Mã kết quả thi |
+| `user_id` | `VARCHAR(64)` | `FOREIGN KEY` | Thí sinh dự thi |
+| `course_slug` | `VARCHAR(64)` | `NOT NULL` | Khóa học dự thi (`excel-academy` / `sql-academy`) |
+| `score_percent` | `INTEGER` | `NOT NULL` | Điểm số đạt được (0–100%) |
+| `total_correct` | `INTEGER` | `NOT NULL` | Số câu trả lời đúng |
+| `total_questions`| `INTEGER` | `NOT NULL` | Tổng số câu hỏi trong đề thi (10 câu) |
+| `is_passed` | `BOOLEAN` | `NOT NULL` | Đạt chuẩn tốt nghiệp hay chưa (≥ 80%) |
+| `grade` | `VARCHAR(50)` | `NOT NULL` | Xếp loại: Xuất Sắc, Giỏi, Đạt Chuẩn, Chưa Đạt |
+| `time_spent_seconds`| `INTEGER` | `NOT NULL` | Thời gian làm bài thực tế (giây) |
+| `answers_payload`| `JSONB` | `NOT NULL` | Chi tiết lựa chọn của học viên cho từng câu hỏi |
+| `certificate_id`| `VARCHAR(64)` | `NULLABLE` | Mã chứng chỉ được cấp (nếu đỗ) |
+| `completed_at` | `TIMESTAMP WITH TIME ZONE`| `DEFAULT NOW()` | Thời điểm nộp bài thi |
+
+---
+
+### 🗄️ Bảng 8: `certificates` (Chứng Chỉ Tốt Nghiệp Điện Tử Đã Cấp)
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mục đích & Ý nghĩa |
+|---|---|---|---|
+| `certificate_id`| `VARCHAR(64)` | `PRIMARY KEY` | Mã chứng chỉ duy nhất (`AVI-EXCEL-CERT-XXXXX`) |
+| `user_id` | `VARCHAR(64)` | `FOREIGN KEY` | Học viên sở hữu chứng chỉ |
+| `learner_name` | `VARCHAR(100)` | `NOT NULL` | Họ tên in trên chứng chỉ tại thời điểm cấp |
+| `course_slug` | `VARCHAR(64)` | `NOT NULL` | Khóa học tốt nghiệp |
+| `course_title` | `VARCHAR(255)` | `NOT NULL` | Tiêu đề đầy đủ của khóa học |
+| `score_percent` | `INTEGER` | `NOT NULL` | Điểm thi tốt nghiệp |
+| `grade` | `VARCHAR(50)` | `NOT NULL` | Xếp loại tốt nghiệp |
+| `issued_at` | `TIMESTAMP WITH TIME ZONE`| `NOT NULL` | Ngày giờ cấp chứng chỉ chính thức |
+| `verification_code`| `VARCHAR(64)`| `UNIQUE, NOT NULL` | Mã bảo mật xác thực chứng chỉ |
+| `is_revoked` | `BOOLEAN` | `DEFAULT FALSE` | **[Mới dự đoán]** Trạng thái thu hồi (nếu phát hiện gian lận) |
+| `public_url` | `VARCHAR(500)` | `NULLABLE` | **[Mới dự đoán]** Đường dẫn xác thực công khai cho nhà tuyển dụng |
+| `download_count`| `INTEGER` | `DEFAULT 0` | **[Mới dự đoán]** Số lượt tải về / in ấn chứng chỉ |
+
+---
+
+## 6. 📁 CẤU TRÚC FILE TOÀN DIỆN HIỆN TẠI CỦA DỰ ÁN
 
 ```
 Avi-Mystery/
-├── AGENTS.md                          # Quy tắc làm việc & phạm vi hoạt động của Agent AI
-├── README.md                          # Tài liệu hướng dẫn vận hành nhanh trang web cho người đọc
-├── index.html                         # Điểm vào HTML chính của ứng dụng Vite
-├── package.json                       # Khai báo dependencies, scripts và cấu hình dự án
-├── vite.config.js                     # Cấu hình đóng gói Vite (hỗ trợ Web Worker & WASM)
-├── vitest.config.js                   # Cấu hình môi trường chạy kiểm thử Vitest (jsdom, setupFiles)
-├── tailwind.config.js                 # Cấu hình Design System, bảng màu Detective Amber & Light/Dark mode
-├── postcss.config.js                  # Cấu hình xử lý CSS Tailwind
-├── vercel.json                        # Cấu hình điều hướng Single Page Application trên Vercel
-├── docs/                              # Hệ thống hồ sơ tài liệu quản lý dự án
-│   ├── PROJECT_MASTER_SUMMARY.md      # [File Hiện Tại] File tổng hợp toàn bộ thông tin dự án
-│   ├── CHECKLIST.md                   # Danh sách kiểm tra chi tiết các Step theo từng Sprint
-│   ├── ROADMAP.md                     # Lộ trình tổng thể dự án theo cấu trúc Sprints bóc tách
-│   ├── PROJECT_STATUS.md              # Báo cáo trạng thái hiện tại & công việc đang thực hiện
-│   ├── BACKLOG.md                     # Bảng quản lý nhiệm vụ (Backlog & Task IDs)
-│   ├── DECISIONS.md                   # Nhật ký các quyết định kiến trúc quan trọng (ADR)
-│   ├── TEST_REPORT.md                 # Báo cáo kết quả kiểm thử tự động
-│   └── agent/                         # Tài liệu chuẩn dành riêng cho AI Agent
-│       ├── CONTRACTS.md               # Quy định các Service Contract & Domain Taxonomy
-│       ├── LEARNING_MAP_CONTRACT.md   # Hợp đồng cây domain & adapter của Bản đồ Học tập
-│       ├── CURRENT_TASK.md            # Thông tin nhiệm vụ đang thực thi ở lượt làm việc
-│       ├── TEST_STRATEGY.md           # Chiến lược và quy chuẩn kiểm thử tự động
-│       ├── MODULE_MAP.md              # Bảng phân vùng trách nhiệm và sơ đồ phụ thuộc Module
-│       ├── UI_CHANGE_INVENTORY.md     # Nhật ký thay đổi giao diện người dùng
-│       └── README.md                  # Hướng dẫn dành cho AI Agent trước khi sửa code
-└── src/                               # Toàn bộ mã nguồn Frontend ứng dụng
-    ├── app/                           # Lớp ứng dụng lõi (Routing, Layouts, Providers)
-    │   ├── router/
-    │   │   └── index.jsx              # Định tuyến toàn ứng dụng (React Router v6)
-    │   ├── layouts/
-    │   │   ├── LearnerLayout.jsx      # Khung giao diện Học viên (Sidebar co giãn, Topbar, Theme Toggle)
-    │   │   ├── LearnerLayout.test.jsx # Test case kiểm tra khung giao diện Học viên
-    │   │   └── AdminLayout.jsx        # Khung giao diện Quản trị viên (Admin Layout)
-    │   └── providers/
-    │       ├── AuthProvider.jsx       # Provider quản lý trạng thái Đăng nhập & Quyền hạn
-    │       ├── BrandProvider.jsx      # Provider quản lý thông tin thương hiệu & Logo
-    │       ├── BrandProvider.test.jsx # Test case cho BrandProvider
-    │       ├── ThemeProvider.jsx      # Provider quản lý giao diện Sáng/Tối (Light/Dark Mode)
-    │       └── PageStatusProvider.jsx # Provider kiểm soát trạng thái bảo trì trang (Maintenance state)
-    ├── components/                    # Thư viện UI Components tái sử dụng
-    │   ├── excel/                     # Các component cho công cụ thực hành Excel
-    │   │   ├── SpreadsheetGrid.jsx    # Bảng tính Excel hỗ trợ ô dữ liệu, công thức, chọn vùng
-    │   │   ├── SpreadsheetGrid.test.js# Test cases cho Bảng tính Excel
-    │   │   ├── FormulaBar.jsx         # Thanh nhập công thức Excel tích hợp Pin-to-fx Hint
-    │   │   ├── FormulaBar.test.jsx    # Test cases cho Thanh công thức Excel
-    │   │   ├── HintPanel.jsx          # Ngăn kéo gợi ý (Hint Drawer) không block màn hình
-    │   │   ├── HintPanel.test.jsx     # Test cases cho Ngăn kéo gợi ý
-    │   │   ├── ActionToolbar.jsx      # Thanh công cụ chạy thử & nộp bài vụ án Excel
-    │   │   ├── ActionToolbar.test.jsx # Test cases cho Thanh công cụ Excel
-    │   │   ├── MissionResultModal.jsx # Cửa sổ chúc mừng phá án thành công (Victory Modal)
-    │   │   └── MissionResultModal.test.jsx # Test cases cho Result Modal
-    │   ├── sql/                       # Các component cho công cụ thực hành SQL
-    │   │   ├── SchemaBrowser.jsx      # Trình duyệt sơ đồ CSDL (Tìm kiếm, xem cột, xem mẫu 3 hàng)
-    │   │   ├── SchemaBrowser.test.jsx # Test cases cho Schema Browser
-    │   │   ├── SqlEditor.jsx          # Khung soạn thảo câu lệnh SQL (Phím tắt Ctrl+Enter, Tab 2-space)
-    │   │   ├── SqlEditor.test.jsx     # Test cases cho SQL Code Editor
-    │   │   ├── ResultViewer.jsx       # Bảng hiển thị kết quả truy vấn SQL (Phân trang, format NULL/số)
-    │   │   └── ResultViewer.test.jsx  # Test cases cho Result Viewer
-    │   ├── admin/                     # Các component cho Admin Content Studio
-    │   │   └── AdminTestRunnerModal.jsx # Sandbox test runner cho phép chạy thử Excel/SQL độc lập
-    │   └── ui/                        # Bộ UI primitive components (Design System)
-    │       ├── Button.jsx             # Nút bấm chuẩn với biến thể primary/secondary/ghost/danger
-    │       ├── Input.jsx              # Khung nhập liệu chuẩn
-    │       ├── Card.jsx               # Thẻ bao bọc nội dung
-    │       ├── Badge.jsx              # Nhãn trạng thái & điểm XP
-    │       ├── EmptyState.jsx         # Giao diện khi không có dữ liệu hoặc gặp lỗi
-    │       ├── EmptyState.test.jsx    # Test cases cho EmptyState
-    │       ├── Skeleton.jsx           # Khung xương tải trang (Skeleton loading pattern)
-    │       └── Skeleton.test.jsx      # Test cases cho Skeleton Loading
-    ├── features/                      # Phân tầng tính năng nghiệp vụ mở rộng
-    │   ├── onboarding/                # Tính năng dẫn dắt học viên mới (First-Run UX)
-    │   │   ├── WelcomeGatePage.jsx    # Màn hình chào đón toàn cảnh
-    │   │   ├── TutorialCase0Page.jsx  # Workspace thực hành bài mẫu Case 0
-    │   │   ├── OnboardingSpotlight.jsx# Engine chiếu đèn spotlight các vùng tương tác
-    │   │   ├── tutorialCase0Content.js# Nội dung bài tập mẫu Case 0
-    │   │   └── dashboardTourContent.js# Nội dung tour 5 bước trên Dashboard
-    │   └── gamification/              # Tính năng game hóa & tương tác
-    │       ├── LevelUpModal.jsx       # Popup chúc mừng thăng cấp
-    │       └── StreakDetailModal.jsx  # Popup xem chuỗi ngày học 7 ngày
-    ├── domain/                        # Lớp quản lý Domain Logic & Entities
-    │   ├── content/                   # Entity & Contracts cho Content Domain
-    │   │   ├── contentIdentity.js     # Identity resolver cho Course/Phase/Chapter/Investigation/Question
-    │   │   └── questionDomain.js      # Configuration & schema cho Question
-    │   ├── learningMap/               # Adapter chuyển đổi dữ liệu cho Bản đồ Học tập
-    │   │   ├── learningMapAdapter.js  # Adapter xây dựng cây lộ trình đa Phase & tính toán trạng thái
-    │   │   ├── learningMapAdapter.test.js # Unit tests cho adapter Bản đồ Học tập
-    │   │   ├── learningMapProjector.js# Projection builder xuất bản Materialized Read Model
-    │   │   └── learningMapProjector.test.js # Unit tests cho projector
-    │   ├── progress/                  # Tiến độ học tập & Idempotent XP Ledger
-    │   │   └── learnerProgress.js     # Progress state & records
-    │   ├── reward/                    # Đánh giá phần thưởng XP
-    │   │   └── rewardEvaluator.js     # Thưởng XP độc lập & Idempotent
-    │   └── mastery/                   # Đánh giá mức độ thành thạo
-    │       ├── masteryEvaluator.js    # Completion vs Skill Mastery evaluation
-    │       └── masteryEvaluator.test.js # Unit tests cho bộ tính toán Mastery
-    ├── hooks/                         # React Custom Hooks
-    │   ├── useProgress.js             # Hook thời gian thực quản lý Progress, XP & Skill Mastery State
-    │   └── useProgress.test.jsx       # Unit test suite cho useProgress hook
-    ├── pages/                         # Các trang giao diện chính
-    │   ├── learner/                   # Phân vùng trang dành cho Học viên
-    │   │   ├── DashboardPage.jsx      # Trang Tổng quan Học viên (Thống kê tiến độ, Vụ án đang làm)
-    │   │   ├── CoursesPage.jsx        # Danh sách Khóa học (Excel, SQL, Data Analysis)
-    │   │   ├── CoursesPage.test.jsx   # Test cases cho trang Khóa học
-    │   │   ├── CourseDetailPage.jsx   # Trang Chi tiết Khóa học & Cây bài học
-    │   │   ├── CourseDetailPage.test.jsx # Test cases cho Chi tiết Khóa học
-    │   │   ├── LearningMapPage.jsx    # Bản đồ Học tập lộ trình đa Giai đoạn & Skill Mastery Summary Card
-    │   │   ├── LearningMapPage.test.jsx # Test cases cho Bản đồ Học tập
-    │   │   ├── MissionIntroPage.jsx   # Trang Giới thiệu Vụ án & Bối cảnh cốt truyện
-    │   │   ├── MissionIntroPage.test.jsx # Test cases cho Giới thiệu Vụ án
-    │   │   ├── ExcelMissionPage.jsx   # Trang Thực hành Vụ án Excel
-    │   │   ├── ExcelMissionPage.test.jsx # Test cases cho Trang Thực hành Excel
-    │   │   ├── SqlMissionPage.jsx     # Trang Thực hành Vụ án SQL
-    │   │   ├── SqlMissionPage.test.jsx # Test cases cho Trang Thực hành SQL
-    │   │   ├── PracticePage.jsx       # Trang Ngân hàng luyện tập kỹ năng tự do
-    │   │   ├── ProfilePage.jsx        # Trang Hồ sơ cá nhân người học
-    │   │   ├── AchievementsPage.jsx   # Trang Danh hiệu & Huân chương thám tử
-    │   │   ├── ActivityHistoryPage.jsx# Trang Lịch sử hoạt động học tập
-    │   │   └── UnderMaintenancePage.jsx # Trang Thông báo Tính năng đang Bảo trì/Phát triển
-    │   ├── admin/                     # Phân vùng trang dành cho Quản trị viên
-    │   │   ├── OverviewPage.jsx       # Trang Tổng quan Admin
-    │   │   ├── AdminGuidePage.jsx     # Trang Cẩm nang hướng dẫn luồng Admin
-    │   │   ├── PageStatusPage.jsx     # Trang Quản lý Bật/Tắt Trạng thái các Page
-    │   │   ├── AdminCoursesPage.jsx   # Quản lý Khóa học & Đồng bộ Read Model
-    │   │   ├── AdminChaptersPage.jsx  # Quản lý Chương học
-    │   │   ├── AdminMissionsPage.jsx  # Quản lý Danh sách Vụ án & Trạng thái xuất bản
-    │   │   ├── AdminMissionEditorPage.jsx # Trình soạn thảo Vụ án 4 tabs trực quan
-    │   │   ├── AdminDatasetsPage.jsx  # Quản lý Dataset & Bộ nhập CSV tự động sinh DDL
-    │   │   └── SettingsPage.jsx       # Trang Cấu hình Hệ thống Admin
-    │   └── NotFoundPage.jsx           # Trang Lỗi 404 Đường dẫn không tồn tại
-    ├── services/                      # Lớp Dịch vụ & Hợp đồng Kết nối (Services & Gateway)
-    │   ├── index.js                   # Service Gateway duy nhất xuất các ServiceInstance & Adapters
-    │   ├── pageStatusService.js       # Dịch vụ kiểm tra trạng thái bảo trì trang
-    │   ├── onboardingService.js       # Dịch vụ điều phối trạng thái Onboarding học viên
-    │   ├── contracts/                 # Định nghĩa các Hợp đồng Dữ liệu (Interfaces/Contracts)
-    │   │   ├── authService.js         # Contract Xác thực Đăng nhập
-    │   │   ├── courseService.js       # Contract Khóa học & Chương học
-    │   │   ├── missionService.js      # Contract Vụ án & Bài học Excel
-    │   │   ├── sqlMissionService.js   # Contract Vụ án SQL & Bộ dữ liệu SQL
-    │   │   ├── submissionService.js   # Contract Nộp bài & Đánh giá Kết quả (Excel/SQL)
-    │   │   ├── contentService.js      # Contract Nạp cấu hình nội dung & evaluator config
-    │   │   ├── datasetService.js      # Contract Quản lý bộ dữ liệu độc lập
-    │   │   ├── investigationService.js# Contract Quản lý entity Investigation
-    │   │   ├── questionService.js     # Contract Quản lý entity Question
-    │   │   ├── progressService.js     # Contract Lưu trữ tiến độ, mode-aware attempts & Skill Mastery
-    │   │   └── adminContentService.js # Contract Quản trị nội dung Admin Content Studio
-    │   ├── api/                       # Triển khai Production Adapters
-    │   │   ├── firebase.js            # Khởi tạo Firebase SDK & Firestore instance
-    │   │   └── firebaseProgressService.js # Persistence tiến độ, XP, danh hiệu thời gian thực trên Firestore
-    │   └── mock/                      # Triển khai Mock Service chạy trên Frontend
-    │       ├── mockAuthService.js     # Mock Đăng nhập & Phân quyền
-    │       ├── mockCourseService.js   # Mock Dữ liệu Khóa học
-    │       ├── mockMissionService.js  # Mock Dữ liệu Vụ án Excel
-    │       ├── mockSqlMissionService.js # Mock Dữ liệu Vụ án SQL
-    │       ├── mockSubmissionService.js # Gateway đánh giá bài làm Excel/SQL & trả kết quả
-    │       ├── mockDatasetService.js  # Mock Bộ dữ liệu độc lập
-    │       ├── mockProgressService.js # Mock Lưu trữ tiến độ người học & Skill Mastery records
-    │       ├── mockContentService.js  # Mock Nội dung phân cấp Course -> Phase -> Chapter
-    │       └── mockAdminContentService.js # Mock Quản trị nội dung cho Admin Content Studio
-    ├── utils/                         # Công cụ Tính toán & Xử lý Logic Thuần túy (Pure Functions)
-    │   ├── format.js                  # Hàm format định dạng Số, Tiền tệ, Ngày tháng, Thời lượng, XP
-    │   ├── storage.js                 # Hàm tương tác LocalStorage an toàn
-    │   ├── excelChecker.js            # Bộ đánh giá bài làm Excel thuần túy (Value & Formula checker)
-    │   ├── excelChecker.test.js       # Unit tests cho Bộ đánh giá Excel
-    │   ├── game/                      # Công cụ logic Game & Leveling
-    │   │   ├── levelingEngine.js      # Pure formula tính Level (1-50) & XP
-    │   │   └── levelingEngine.test.js # Unit tests cho Leveling Engine
-    │   └── sql/                       # Động cơ & Bộ công cụ xử lý SQL
-    │       ├── index.js               # Export Factory khởi tạo SQL Engine
-    │       ├── sqlEngineAdapter.js    # Adapter giao tiếp giữa Main Thread và Web Worker
-    │       ├── sqlQueryPolicy.js      # Bộ kiểm soát An toàn SQL (Read-only, Multi-statement guard)
-    │       ├── sqlChecker.js          # Bộ đánh giá kết quả truy vấn SQL (Order/NULL/Tolerance)
-    │       ├── sqlDataset.js          # Công cụ tải & chuẩn hóa Dữ liệu mẫu SQLite
-    │       └── sqlErrors.js           # Định nghĩa Mã lỗi SQL chuẩn & Thông điệp tiếng Việt
-    ├── workers/                       # Luồng chạy ngầm cách ly (Web Workers)
-    │   └── sql/
-    │       └── sqlEngine.worker.js    # Web Worker thực thi SQLite WASM in-memory
-    └── mocks/                         # Dữ liệu Mẫu (Mock Data JSON)
-        └── data/
-            ├── users.json             # Danh sách Người dùng mẫu (Learner, Admin)
-            ├── courses.json           # Danh sách Khóa học mẫu
-            ├── chapters.json          # Danh sách Chương học mẫu
-            ├── investigations.json    # Danh sách Bối cảnh Vụ án trinh thám
-            ├── questions.json         # Danh sách Nhiệm vụ kỹ thuật & Variants
-            ├── datasets.json          # Danh sách Bộ dữ liệu Excel/SQL
-            ├── hints.json             # Danh sách Gợi ý có phí XP
-            └── sql/                   # Dữ liệu khởi tạo SQL (.json schema & rows)
-                ├── sql-sales-v1.json  # Dataset Bán hàng vụ án SQL 01
-                ├── sql-commerce-v1.json# Dataset Thương mại điện tử vụ án SQL 02
-                └── aviation-spike.json# Dataset Hàng không spike
+├── docs/                                  # Hệ thống tài liệu dự án
+│   ├── PROJECT_CONTEXT.md                 # [File này] Báo cáo tổng hợp toàn diện nhất
+│   ├── CURRENT_SPRINT.md                  # Theo dõi tiến độ Sprint & Checklist chi tiết
+│   ├── QUICK_STATUS.md                    # Tóm tắt nhanh việc đã xong & việc tiếp theo
+│   ├── BACKLOG.md                         # Bảng phân loại nhiệm vụ & nợ kỹ thuật
+│   ├── ARCHITECTURE.md                    # Module map & sơ đồ phụ thuộc kiến trúc
+│   └── DECISIONS_LOG.md                   # Nhật ký quyết định kiến trúc (ADR) & UI changes
+│
+├── src/                                   # Mã nguồn Frontend ứng dụng
+│   ├── app/
+│   │   ├── layouts/                       # Khung giao diện (LearnerLayout, FocusLayout, AdminLayout)
+│   │   ├── providers/                     # Providers (Auth, Brand, Theme, PageStatus)
+│   │   └── router/index.jsx               # Tuyến đường ứng dụng (React Router v6)
+│   │
+│   ├── components/                        # UI Components dùng chung
+│   │   ├── academy/                       # Component học viện (AcademyCertificateModal.jsx)
+│   │   ├── excel/                         # Bảng tính Excel (SpreadsheetGrid, FormulaBar, CellEditorOverlay)
+│   │   ├── sql/                           # Trình chạy SQL (SqlEditor, SchemaBrowser, ResultViewer)
+│   │   ├── workspace/                     # Split-Pane IDE (WorkspaceSplitPane, ProblemPane, WorkspaceFooter)
+│   │   ├── knowledge/                     # Markdown render bài học (KnowledgeViewer, SyntaxBlock)
+│   │   └── ui/                            # Primitives UI (Button, Card, Input, Modal, Badge, Skeleton)
+│   │
+│   ├── domain/                            # Logic nghiệp vụ thuần túy (Pure Domain Engines)
+│   │   ├── content/                       # Investigation & Question contracts
+│   │   ├── game/                          # levelingEngine (Level 1–50 curve)
+│   │   ├── mastery/                       # masteryEvaluator (Đánh giá kỹ năng chuyên sâu)
+│   │   ├── reward/                        # rewardEvaluator (Idempotent XP transaction)
+│   │   └── progress/                      # learnerProgress (Trạng thái hoàn thành bài học)
+│   │
+│   ├── pages/                             # Màn hình chức năng
+│   │   ├── learner/                       # Giao diện học viên
+│   │   │   ├── DashboardPage.jsx          # Bàn làm việc thám tử & nhiệm vụ ưu tiên
+│   │   │   ├── LearningMapPage.jsx        # Bản đồ học tập đa Phase
+│   │   │   ├── ExcelMissionPage.jsx       # Bàn làm việc phá án Excel
+│   │   │   ├── SqlMissionPage.jsx         # Bàn làm việc phá án SQL
+│   │   │   ├── PracticePage.jsx           # Rèn luyện kỹ năng tự do
+│   │   │   ├── PracticeSandboxPage.jsx    # Sandbox W3Schools "Try It Yourself"
+│   │   │   ├── AcademyCoursePage.jsx      # Giáo trình học viện W3Schools
+│   │   │   ├── AcademyExamPage.jsx        # Thi tốt nghiệp cấp chứng chỉ
+│   │   │   ├── ProfilePage.jsx            # Hồ sơ cá nhân & Chứng chỉ đã đạt
+│   │   │   ├── AchievementsPage.jsx       # Bảng huy hiệu thành tích
+│   │   │   └── KnowledgeHubPage.jsx       # Thư viện kiến thức & bài giảng Markdown
+│   │   └── admin/                         # Giao diện Quản trị viên
+│   │       ├── OverviewPage.jsx           # Thống kê tổng quan hệ thống
+│   │       ├── AdminMissionsPage.jsx      # Quản lý danh sách vụ án
+│   │       ├── AdminMissionEditorPage.jsx # Trình tạo & sửa vụ án trực quan
+│   │       ├── AdminCoursesPage.jsx       # Quản lý khóa học
+│   │       ├── AdminChaptersPage.jsx      # Quản lý chương học
+│   │       ├── AdminDatasetsPage.jsx      # Quản lý & nhập CSV dataset
+│   │       └── AdminKnowledgePage.jsx     # Quản lý bài học lý thuyết
+│   │
+│   ├── services/                          # Tầng kết nối dịch vụ (Service Gateway)
+│   │   ├── index.js                       # Environment switch tập trung (Mock / Firebase / API)
+│   │   ├── academyExamService.js          # Service chấm điểm thi & cấp chứng chỉ
+│   │   ├── contracts/                     # Hợp đồng giao tiếp (Interface specifications)
+│   │   ├── mock/                          # Mock Adapters nội bộ
+│   │   └── api/                           # Firebase Production & Real API Adapters
+│   │
+│   ├── utils/                             # Tiện ích bổ trợ
+│   │   ├── excelChecker.js                # Động cơ chấm điểm công thức Excel
+│   │   ├── sqlChecker.js                  # Động cơ so sánh kết quả truy vấn SQL
+│   │   ├── storage.js                     # LocalStorage wrapper an toàn
+│   │   └── sql/                           # Worker transport, policy & SQLite loader
+│   │
+│   └── workers/sql/sqlEngine.worker.js    # Web Worker SQLite WASM cách ly
+│
+├── dist/                                  # Bản build production đóng gói sẵn sàng deploy
+└── package.json                           # Dependencies & NPM Scripts
 ```
 
 ---
 
-## 4. 📊 Danh Sách Tính Năng: Đã Hoàn Thành vs Chưa Hoàn Thành
+## 7. 🎯 KẾT LUẬN & ĐỀ XUẤT HÀNH ĐỘNG TIẾP THEO
 
-### 4.1. 🟢 Các Tính Năng Đã Hoàn Thành (Sprint 1 đến Sprint 6.3 — CURRENT)
-
-| STT | Phân Vùng | Tính Năng | Mô Tả Chi Tiết | Trạng Thái |
-|---|---|---|---|---|
-| 1 | **Shared** | Auth & Demo Login | Đăng nhập demo nhanh cho Học viên / Admin, quản lý token & phiên làm việc trong `AuthProvider` | **CURRENT** |
-| 2 | **Shared** | Design System & Theme | Detective Amber Design System, hỗ trợ Light Mode / Dark Mode toàn diện, Collapsible Sidebar | **CURRENT** |
-| 3 | **Shared** | Maintenance Mode | Cho phép Admin bật/tắt bảo trì theo từng trang (`PageStatusProvider`, `UnderMaintenancePage`) | **CURRENT** |
-| 4 | **Learner** | Dashboard & Courses | Trang Tổng quan học viên, Danh sách Khóa học Excel/SQL, Trang Chi tiết Khóa học | **CURRENT** |
-| 5 | **Learner** | Learning Map Domain Tree | Bản đồ học tập chuyển đổi domain (`Journey -> Phase -> Chapter -> Investigation`), hỗ trợ Phase tabs | **CURRENT** |
-| 6 | **Learner** | Mission Briefing | Trang Giới thiệu Vụ án (`MissionIntroPage`) hiển thị bối cảnh cốt truyện & mục tiêu | **CURRENT** |
-| 7 | **Excel** | Spreadsheet Grid | Bảng tính Excel hiển thị ô dữ liệu, công thức, định dạng số, chọn vùng cell | **CURRENT** |
-| 8 | **Excel** | Formula Bar & Hint Drawer | Thanh nhập công thức Excel tích hợp tính năng ghim gợi ý (Pin-to-fx), Ngăn kéo gợi ý không che màn hình | **CURRENT** |
-| 9 | **Excel** | Excel Evaluator | Bộ kiểm tra công thức Excel thuần túy (`excelChecker.js`), kiểm tra chính xác giá trị và công thức | **CURRENT** |
-| 10 | **SQL** | In-Browser SQLite Engine | Động cơ SQLite WASM thực thi truy vấn in-memory thông qua Web Worker | **CURRENT** |
-| 11 | **SQL** | Schema Browser | Trình duyệt CSDL: Tìm kiếm bảng/cột, nhãn PK/NOT NULL, xem nhanh 3 dòng mẫu, sao chép tên | **CURRENT** |
-| 12 | **SQL** | SQL Code Editor | Khung soạn thảo SQL: Phím tắt `Ctrl + Enter`, lề `Tab 2-space`, font 14px | **CURRENT** |
-| 13 | **SQL** | Query Result Viewer | Bảng hiển thị kết quả: Phân trang 50 dòng/trang, định dạng `NULL`/BOOLEAN/Số phân cách nghìn | **CURRENT** |
-| 14 | **SQL** | Security Guard & Timeout | Bộ lọc Read-only chặn 12 từ khóa cấm, chặn multi-statement, ngắt timeout 3s, cắt dòng > 500 rows | **CURRENT** |
-| 15 | **SQL** | Worker Memory Cleanup | Tự động dọn dẹp Web Worker khi unmount trang hoặc đổi bộ dữ liệu vụ án | **CURRENT** |
-| 16 | **SQL** | SQL Result Evaluator | Bộ đánh giá kết quả SQL (`sqlChecker.js`) thông minh: Xử lý thứ tự dòng, NULL, trùng lặp, sai số thập phân | **CURRENT** |
-| 17 | **Submission** | Submission Gateway & Modal | Tích hợp luồng nộp bài Excel & SQL, mở Modal chúc mừng khi làm đúng, hiển thị lỗi inline khi làm sai | **CURRENT** |
-| 18 | **Content** | Domain Decoupling | Phân tách `Dataset`, `Content`, `Investigation`, `Question`, `Progress`, `Reward` & `Mastery` | **CURRENT** |
-| 19 | **Progress** | Single Source of Truth Hook | Dynamic `useProgress` React hook quản lý tập trung Progress state, XP Ledger & Skill Mastery | **CURRENT** |
-| 20 | **Mastery** | Skill Mastery Summary UI | Thẻ tổng quan trình độ thám tử kỹ năng (Novice -> Master Detective) hiển thị trên `LearningMapPage` | **CURRENT** |
-| 21 | **Onboarding** | Welcome Gate & Case 0 | Luồng chào đón người học mới (`WelcomeGatePage`), bài học mẫu Case 0 (`TutorialCase0Page`) và Guided Spotlight | **CURRENT** |
-| 22 | **Onboarding** | Dashboard Deep Guided Tour | Tour 5 bước hướng dẫn trực quan giới thiệu các khu vực trên trang Tổng quan học viên | **CURRENT** |
-| 23 | **Gamification** | Level Up Modal & Streak | Modal chúc mừng thăng cấp có hiệu ứng confetti và popup xem chuỗi ngày học 7 ngày (`StreakDetailModal`) | **CURRENT** |
-| 24 | **Learner** | Standalone Practice Bank | Ngân hàng bài tập rèn luyện tự do (`/practice`) tách biệt khỏi tiến trình cốt truyện chính | **CURRENT** |
-| 25 | **Learner** | Profile & Achievements | Trang hồ sơ thám tử cá nhân (`/profile`) và bảng danh hiệu huân chương (`/achievements`) | **CURRENT** |
-| 26 | **Learner** | Activity History Timeline | Dải timeline lịch sử hoạt động học tập (`/profile/history`) với bộ lọc đa chiều thời gian thực | **CURRENT** |
-| 27 | **Firebase** | Production Firestore State | Di chuyển lưu trữ XP Ledger, Tiến độ bài học, Danh hiệu và Lịch sử sang Firebase Firestore thời gian thực | **CURRENT** |
-| 28 | **Admin** | Admin Content Studio | Trình quản lý danh sách và soạn thảo Vụ án trực quan (`/admin/missions`, `/admin/missions/:id/edit`), Khóa học (`/admin/courses`), Chương học (`/admin/chapters`) | **CURRENT** |
-| 29 | **Admin** | CSV Dataset Importer | Trình tải lên tệp CSV, tự động đoán kiểu dữ liệu (`INTEGER`, `REAL`, `DATE`, `TEXT`) và sinh DDL SQLite (`/admin/datasets`) | **CURRENT** |
-| 30 | **Admin** | Sandbox Live Preview & Test Runner | Modal chạy thử công thức Excel & câu lệnh SQLite WASM độc lập không ghi nhận XP (`AdminTestRunnerModal`) | **CURRENT** |
-| 31 | **Admin** | Materialized Learning Map Read Model | Module `learningMapProjector.js` chiếu dữ liệu sang `learning_map_views` loại bỏ N+1 query Firestore | **CURRENT** |
-| 32 | **Admin** | Admin Operational Guide | Trang cẩm nang hướng dẫn luồng tạo và xuất bản nội dung (`/admin/guide`) | **CURRENT** |
-
----
-
-## 5. 🗺 Lộ Trình Sprints Mới (Reconciled Roadmap Summary)
-
-* **Sprint 1: Frontend Foundation** ➔ **CURRENT** (Vite, React, Tailwind, Detective Amber Theme, RBAC).
-* **Sprint 2: Course & Learning Map Baseline** ➔ **CURRENT** (Courses, Course Details, Static Map, Briefing).
-* **Sprint 3: Excel Vertical Slice** ➔ **CURRENT** (Spreadsheet Grid, Formula Bar, Hint Drawer, Excel Checker, Submission Gateway).
-* **Sprint 4: SQL Vertical Slice** ➔ **CURRENT** (SQLite WASM Engine, Worker, Schema Browser, SqlEditor, ResultViewer, Read-only Policy, Build Gate).
-* **Sprint 5: Content Domain & Dataset Decoupling** ➔ **HOÀN THÀNH 100%** (Dataset, Content, Investigation, Question, Progress, XP Reward, Mastery).
-* **Sprint 6: Game Progress & Progression Architecture** ➔ **HOÀN THÀNH 100%** (Step 6.1 Learning Map Adapter, Step 6.2 UX Refactor & Step 6.3 Practice Engine & Mastery Integration).
-* **Sprint 6.5: Learner Onboarding & First-Run Experience** ➔ **HOÀN THÀNH 100%** (Welcome Gate, Tutorial Case 0, Dashboard Tour Spotlight, Dev Reset Tools).
-* **Sprint 7: Learner Engagement & Practice Engine** ➔ **HOÀN THÀNH 100%** (Level Up Modal, Practice Workspace, Profile & Achievements, Activity History, Firebase Production Infrastructure).
-* **Sprint 8: Admin Content Studio** ➔ **HOÀN THÀNH 100%** (Authoring Studio, Dataset CSV Importer & Schema Generator, Test Runner Sandbox, Materialized Learning Map Read Model).
-* **Sprint 9: Backend API & Persistence** ➔ **PROPOSED** (FastAPI Core, PostgreSQL ORM, Real API Gateway Adapters & JWT Security).
-* **Sprint 10: Production Hardening & Release** ➔ **PROPOSED** (Learner Analytics, Bundle Optimization, Security Audit & Launch).
-
-
---- Content of docs/ROADMAP.md ---
-
-# Lộ Trình Phát Triển Dự Án Avi-Mystery (Project Roadmap)
-
-> **Định hướng chiến lược:** Phát triển dự án theo mô hình Vertical Slice & Iterative Sprints. Ưu tiên hoàn thiện các luồng nghiệp vụ lõi (Excel & SQL practice) trước khi tái cấu trúc Learning Domain, tích hợp Game Progress, Admin Builder và Backend API.
-> Các khu vực hệ thống bao gồm: `LRN` (Learner App), `ADM` (Admin App), `SHR` (Shared Layout & System Architecture), `BE` (Backend & Mock Services), `GAME` (Gamification & Progress Domain).
->
-> **Nguồn trạng thái thực thi:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md). Roadmap mô tả thứ tự chiến lược và mục tiêu; không cho phép agent tự chuyển Sprint/Step.
-
----
-
-## 🏛 Khung Phân Loại Kiến Trúc (Architecture Categorization Framework)
-
-| Nhãn Trạng Thái | Ý Nghĩa Architecture |
-|---|---|
-| `CURRENT` | Đã triển khai hoàn tất trong source code, đã verified qua unit & integration tests. |
-| `PLANNED` | Đã chốt spec và step decomposition, sẵn sàng thực thi theo kế hoạch. |
-| `PROPOSED` | Định hướng kiến trúc tương lai, đang chờ phê duyệt hoặc phụ thuộc Sprint trước. |
-| `DEPRECATED` | Mô hình cũ hoặc cấu trúc tạm thời đang trong lộ trình loại bỏ. |
-| `LEGACY` | Các ID/Adapter từ giai đoạn đầu (Sprint 1–2) phục vụ backward compatibility. |
-
----
-
-## 🎯 Phân Định Khái Niệm Domain Lõi (Core Domain Distinctions)
-
-1. **Learning Journey (Hành trình) vs Phase (Giai đoạn) vs Course (Khóa học) vs Learning Map (Bản đồ học tập)**:
-   - `Course`: Danh mục đóng gói kiến thức theo chủ đề (ví dụ: *Excel Adventure*, *SQL Investigation*).
-   - `Learning Map`: Giao diện trực quan dạng cây Node biểu diễn tiến độ di chuyển của người học qua từng giai đoạn (`Phase`) và bài tập.
-   - `Learning Journey`: Tuyến đường tổng thể đưa người học từ *Level 1 (Tập sự)* đến *Mastery*.
-
-2. **Investigation (Vụ án / Câu chuyện) vs Question (Nhiệm vụ / Câu hỏi) vs Question Variant (Biến thể)**:
-   - `Investigation`: Bối cảnh cốt truyện trinh thám, hồ sơ vụ án và tư liệu ban đầu.
-   - `Question`: Nhiệm vụ kỹ thuật cụ thể (viết 1 công thức Excel hoặc 1 câu lệnh SQL) thuộc một Investigation.
-   - `Question Variant`: Các biến thể tham số/dữ liệu của cùng 1 Question dùng cho luyện tập lại (Replay / Practice) hoặc chống gian lận.
-
-3. **Dataset (Bộ dữ liệu độc lập)**:
-   - Bộ dữ liệu (SQL Schema / Excel Table) được quản lý độc lập, tái sử dụng cho nhiều Question/Investigation khác nhau mà không bị nhân bản file.
-
-4. **Main Quest (Nhiệm vụ chính) vs Practice (Luyện tập tự do)**:
-   - `Main Quest`: Luồng mở khóa tuyến tính trên Bản đồ Học tập, ghi nhận `Completion` và tiến trình học.
-   - `Practice`: Chế độ giải bài tự do trong ngân hàng câu hỏi, hỗ trợ rèn luyện kỹ năng mà không ảnh hưởng đến cốt truyện chính.
-
-5. **Completion (Hoàn thành) vs Mastery (Thành thạo)**:
-   - `Completion`: Trạng thái Boolean (Đã đạt / Chưa đạt) xác nhận người học đã giải đúng nhiệm vụ để mở khóa nút tiếp theo.
-   - `Mastery`: Chỉ số đánh giá độ sâu (Độ chính xác, thời gian giải, số gợi ý đã dùng, điểm tối ưu câu lệnh SQL).
-
----
-
-## 🟢 Sprint 1 — Frontend Foundation (`CURRENT`)
-
-* **Dominant Architectural Objective:** Thiết lập khung hạ tầng ứng dụng Frontend, hệ thống phân quyền RBAC 3 roles, giao diện Detective Amber và cơ chế kiểm thử Vitest.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** App Shell, Learner & Admin Layouts, Design System tokens, Mock Adapters (`mockAuthService`, `mockCourseService`, `mockMissionService`).
-
----
-
-## 🟢 Sprint 2 — Course & Learning Map Baseline (`CURRENT`)
-
-* **Dominant Architectural Objective:** Xây dựng luồng khám phá lộ trình học tập, danh sách khóa học, cấu trúc chương và bản đồ học tập tĩnh cho Người học.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** `CoursesPage`, `CourseDetailPage`, `LearningMapPage` (Static nodes), `MissionIntroPage`, Admin Page Status Manager.
-
----
-
-## 🟢 Sprint 3 — Excel Vertical Slice (`CURRENT`)
-
-* **Dominant Architectural Objective:** Môi trường thực hành Excel tương tác trực tiếp, chấm điểm công thức tự động, Hint drawer và Submission gateway.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** `SpreadsheetGrid`, `FormulaBar`, `HintPanel`, pure evaluator `excelChecker.js`, `mockSubmissionService`, targeted 73/73 tests, full regression 133/133 tests pass.
-
----
-
-## 🟢 Sprint 4 — SQL Vertical Slice (`CURRENT`)
-
-* **Dominant Architectural Objective:** Động cơ thực thi SQL SQLite WASM In-Memory chạy trong Web Worker cách ly, Schema Browser, SQL Editor và Security Policy Guard.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** SQLite WASM Worker (`sqlEngine.worker.js`), `sqlEngineAdapter.js`, `sqlQueryPolicy.js` (chặn 12 từ khóa đột biến & multi-statement), `SchemaBrowser`, `SqlEditor`, `ResultViewer`, pure evaluator `sqlChecker.js`, submission integration, 222+ tests pass.
-
----
-
-## 🟢 Sprint 5 — Content Domain & Dataset Decoupling (`CURRENT`)
-
-* **Dominant Architectural Objective:** Tái cấu trúc mô hình nội dung, tách biệt Investigation (Cốt truyện) và Question (Nhiệm vụ), giải phóng Dataset thành tài sản tái sử dụng độc lập, bóc tách evaluator config khỏi `mockSubmissionService`.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** `datasetService` registry, `contentService` hierarchy (Course -> Phase -> Chapter), `investigationService`, `questionService`, `rewardEvaluator`, `masteryEvaluator`.
-
----
-
-## 🟢 Sprint 6 — Game Progress & Progression Architecture (`CURRENT`)
-
-* **Dominant Architectural Objective:** Xây dựng `Progress Service` lưu trữ trạng thái học tập, sổ cái XP (XP Ledger) có tính Idempotent, công thức thăng cấp `levelingEngine`, và kết nối dữ liệu tiến độ thực tế vào `LearningMapPage`.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** pure `levelingEngine.js` (Level 1–50), `progressService.js`, `useProgress.js` hook thời gian thực, `learningMapAdapter.js` hỗ trợ Phase tabs, Skill Mastery Summary card.
-
----
-
-## 🟢 Sprint 6.5 — Learner Onboarding & First-Run Experience (`CURRENT`)
-
-* **Dominant Architectural Objective:** Trải nghiệm tiếp cận lần đầu cho tân binh thám tử (First-Run UX) với Welcome Gate full-screen, Tutorial Case 0 kèm Guided Spotlight và Dashboard Deep Guided Tour.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Key Deliverables:** `onboardingService.js`, `WelcomeGatePage.jsx`, `TutorialCase0Page.jsx`, `tutorialCase0Content.js`, `OnboardingSpotlight.jsx` engine, `dashboardTourContent.js`, Admin Dev Reset Tools.
-
----
-
-## 🟢 Sprint 7 — Learner Engagement & Practice Engine (`CURRENT`)
-
-* **Dominant Architectural Objective:** Phát triển các tính năng tăng cường tương tác cho Học viên (Modal Thăng Cấp, Chuỗi Streak, Ngân hàng Luyện tập, Trang Hồ sơ Cá nhân, Danh hiệu Thám tử & Lịch sử Hoạt động, Di chuyển lưu trữ sang Firebase Firestore).
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Sub-Steps (Completed):**
-  - **Step 7.1:** Level Up Modal & Streak Counter (`GAME-UI-7.1`)
-  - **Step 7.2:** Standalone Practice Workspace (`LRN-PRAC-7.2`)
-  - **Step 7.3:** Learner Profile & Achievement Badges (`GAME-PROF-7.3`)
-  - **Step 7.4:** Activity History Timeline Page (`GAME-HIST-7.4`)
-  - **Step 7.5:** Firebase Production Infrastructure Migration (`SYS-FB-7.5`)
-
----
-
-## 🟢 Sprint 8 — Admin Content Studio & Materialized Read Model (`CURRENT`)
-
-* **Dominant Architectural Objective:** Xây dựng bộ công cụ Quản trị cho Admin để tự soạn thảo Investigation, Question, Khóa học, Chương học, tải lên Dataset CSV và tối ưu hoá Bản đồ học tập Firestore với Materialized Read Model `learning_map_views`.
-* **Status:** `CURRENT` (Hoàn thành 100%).
-* **Sub-Steps (Completed):**
-  - **Step 8.1:** Visual Investigation & Question Authoring Studio (`ADM-STUDIO-8.1`) — `AdminMissionsPage`, `AdminMissionEditorPage`, `AdminCoursesPage`, `AdminChaptersPage`.
-  - **Step 8.2:** Dataset Importer & SQLite Schema Generator (`ADM-DATA-8.2`) — `AdminDatasetsPage`, tự động đoán kiểu dữ liệu và sinh DDL.
-  - **Step 8.3:** Admin Live Preview & Test Runner Sandbox (`ADM-PREV-8.3`) — `AdminTestRunnerModal` chạy thử công thức Excel & câu lệnh SQLite WASM an toàn.
-  - **Step 8.4:** Materialized Learning Map Read Model (`ADM-READMODEL-8.4`) — `learningMapProjector.js`, tạo và cập nhật collection `learning_map_views` giải quyết triệt để N+1 queries.
-  - **Step 8.5:** Admin Workflow & Operational Guide (`ADM-GUIDE-8.5`) — Trang `AdminGuidePage.jsx` giải thích luồng tạo và xuất bản.
-
----
-
-## ⚪ Sprint 9 — Backend API & Persistence (`PROPOSED`)
-
-* **Dominant Architectural Objective:** Triển khai FastAPI Backend, Cơ sở dữ liệu PostgreSQL, Xác thực JWT và chuyển đổi Frontend từ Mock Adapters sang Real API Adapters.
-* **Sub-Steps (Proposed):**
-  - **Step 9.1:** FastAPI Application & PostgreSQL ORM Core (`BE-CORE-9.1`)
-  - **Step 9.2:** Real API Gateway Adapters & JWT Security (`BE-GATEWAY-9.2`)
-
----
-
-## ⚪ Sprint 10 — Production Hardening & Release (`PROPOSED`)
-
-* **Dominant Architectural Objective:** Tối ưu hóa hiệu năng, bảo mật OWASP, Admin Analytics Dashboard và phát hành Production chính thức.
-* **Sub-Steps (Proposed):**
-  - **Step 10.1:** Admin Analytics & Learner Insights Dashboard (`ANL-DASH-10.1`)
-  - **Step 10.2:** Bundle Optimization, Security Audit & Docker Packaging (`SYS-HARD-10.2`)
-
-
---- Content of docs/PROJECT_STATUS.md ---
-
-# Trạng Thái Dự Án Avi-Mystery
-
-> **Cập nhật lần cuối:** 08/09/2026
-> **Nguồn task hiện tại:** [`agent/CURRENT_TASK.md`](./agent/CURRENT_TASK.md)
-
----
-
-## 1. Tổng Quan Tiến Độ
-
-| Hạng mục | Trạng thái |
-|---|---|
-| **Kiến trúc** | Domain-Driven: `Course → Phase → Chapter → Investigation → Question` + Academy Syllabus |
-| **Sprint hoàn thành** | Sprint 1 → 8 (100%), Sprint 9.1 (100%), Sprint 9.5 (Step 9.5.1 & 9.5.2) |
-| **Sprint hiện tại** | **Sprint 9.5 — Academy Mode & Interactive Sandbox (Step 9.5.3 chuẩn bị bắt đầu)** |
-| **Test suite** | `71 / 71` test suites, `562 / 562` tests PASS (Vitest) — cập nhật 08/09/2026 |
-| **Build & Deploy** | `npm run build` PASS (0 errors) — Vercel Production LIVE (`https://avi-mystery.vercel.app`) |
-
----
-
-## 2. Lịch Sử Sprint & Trạng Thái
-
-| Sprint | Tên | Trạng thái |
-|---|---|---|
-| **Sprint 1** | Frontend Foundation & RBAC | `DONE` |
-| **Sprint 2** | Course, Learning Map & Admin | `DONE` |
-| **Sprint 3** | Excel Vertical Slice | `DONE` |
-| **Sprint 4** | SQL Vertical Slice (WASM + Worker) | `DONE` |
-| **Sprint 5** | Content Domain & Dataset Decoupling | `DONE` |
-| **Sprint 6** | Game Progress & Progression Architecture | `DONE` |
-| **Sprint 6.5** | Learner Onboarding & First-Run Experience | `DONE` |
-| **Sprint 6.6** | Dashboard Deep Guided Tour Refinement | `DONE` |
-| **Sprint 6.7** | Admin Onboarding Dev Testing Tools | `DONE` |
-| **Sprint 7.1** | Level Up Popups & Streak Counter Engine | `DONE` |
-| **Sprint 7.2** | Standalone Practice Workspace | `DONE` |
-| **Sprint 7.3** | Learner Profile & Achievement Badges | `DONE` |
-| **Sprint 7.4** | Activity History Timeline Page | `DONE` |
-| **Sprint 7.5** | Firebase Production Infrastructure Migration | `DONE` |
-| **Sprint 8** | Admin Content Studio & Materialized Read Model | `DONE` |
-| **Sprint 9.1** | Excel Mission Workspace UI/UX Refactor | `DONE` |
-| **Sprint 9.5** | Academy Mode & Interactive Sandbox (W3Schools Style) | `IN PROGRESS` |
-| **Sprint 10** | Backend API & Persistence (FastAPI) | `PROPOSED` |
-
----
-
-## 3. Feature Coverage Matrix
-
-| ID | Area | Feature | Sprint | Test |
-|---|---|---|---|---|
-| `SHR-AUTH-001` | Auth | RBAC Guard (`RequireAuth`, `RequireLearner`, `RequireAdmin`) | 1 | PASS |
-| `SHR-AUTH-002` | Auth | Design System Detective Amber (Light/Dark) | 1 | PASS |
-| `SHR-UI-001` | UI | Standard UI Components (`Button`, `Card`, `Input`, `Badge`) | 1 | PASS |
-| `SHR-UI-002` | UI | Accessible Loading Skeletons (`aria-busy`) | 1 | PASS |
-| `LRN-COURSE-001` | Course | Danh sách & Chi tiết Khóa học | 2 | PASS |
-| `LRN-MAP-001` | Map | Learning Map — Multi-Phase Navigation | 2 | PASS |
-| `LRN-EXCEL-001` | Excel | Excel Mission Workspace | 3 | PASS |
-| `LRN-SQL-4.x` | SQL | SQL Engine (WASM Worker, Policy, Checker) | 4 | PASS |
-| `CNT-INV-5.3` | Content | Investigation Domain Contract | 5 | PASS |
-| `DATA-REG-5.1` | Dataset | Independent Dataset Registry | 5 | PASS |
-| `LRN-PRG-5.6` | Progress | Learner Progress State & XP | 5 | PASS |
-| `RWD-XP-5.7` | Reward | Idempotent XP Ledger | 5 | PASS |
-| `MST-SKL-5.8` | Mastery | Skill Mastery Evaluator | 5 | PASS |
-| `MAP-ADP-6.1` | Map | Learning Map Domain Adapter | 6 | PASS |
-| `MAP-UX-6.2` | Map | Learning Map UX (Phase Tabs) | 6 | PASS |
-| `MST-ENG-6.3` | Mastery | Practice Engine & Mastery Hook | 6 | PASS |
-| `ONB-6.5` | Onboarding | Welcome Gate & Tutorial Case 0 | 6.5 | PASS |
-| `TOUR-6.6` | Tour | Dashboard 5-Step Guided Tour | 6.6 | PASS |
-| `DEV-6.7` | Dev Tools | Admin Reset Tour Testing Tools | 6.7 | PASS |
-| `GAM-7.1` | Gamification | Level Up Modal & Streak Detail Modal | 7.1 | PASS |
-| `LRN-7.2` | Practice | Standalone Practice Workspace | 7.2 | PASS |
-| `GAM-7.3` | Profile | Learner Profile & Achievement Badges | 7.3 | PASS |
-| `GAM-7.4` | Profile | Activity History Timeline | 7.4 | PASS |
-| `SYS-FB-7.5` | System | Firebase Firestore Progress & Auth Integration | 7.5 | PASS |
-| `ADM-8.x` | Admin | Admin Content Studio & Materialized Read Model | 8 | PASS |
-| `LRN-UX-9.1` | Excel | Excel Mission 3-Layer Split-Pane & Authentic Canvas | 9.1 | PASS |
-| `LRN-SND-9.5` | Sandbox | Interactive Data Sandbox (Split-pane, In-Cell Overlay, Zero Re-render) | 9.5 | PASS |
-| `LRN-ACD-9.5` | Academy | W3Schools Academy Syllabus, Checkpoint Quiz & Progression | 9.5 | PASS |
-| `SYS-VRC-9.5` | Deploy | Vercel Cloud Safe Fallback to Mock Services | 9.5 | PASS |
-
----
-
-## 4. Công Cụ Dev Testing (Sprint 6.7)
-
-Các nút reset onboarding để test luồng hướng dẫn mà không cần tạo tài khoản mới:
-- **`/admin/settings`** → Card "Công cụ Dev: Test Chế độ Hướng dẫn Onboarding"
-- **`/admin`** → Nút "🧪 Test Onboarding Mode" trong header
-- **`/login`** → Nút "🧪 Test Luồng Hướng Dẫn" trong khu vực DEV ONLY
-
----
-
-## 5. Kiến Trúc Quyết Định Chính (Tóm tắt ADR)
-
-| ADR | Quyết định | Xem chi tiết |
-|---|---|---|
-| ADR-001 | React + Vite + Tailwind + Vitest | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-002 | Mock Adapter → API Adapter Gateway | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-003 | RBAC Route Guards | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-004 | SQLite WASM Worker + Policy Guard | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-005 | Domain-Driven Architecture Sprint 5 | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-006 | Submission ≠ XP; Progress trao XP | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-007 | Firebase Firestore Progress & XP Ledger | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-008 | Materialized Read Model `learning_map_views` | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-009 | Admin Content Studio & Live Sandbox Runner | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-010 | In-Cell Editor Overlay & Session State Machine | [`DECISIONS.md`](./DECISIONS.md) |
-| ADR-011 | Safe Firebase Init & Graceful Mock Fallback | [`DECISIONS.md`](./DECISIONS.md) |
-
-> Xem chi tiết quyết định agent tại [`agent/DECISIONS.md`](./agent/DECISIONS.md) và [`agent/CONTRACTS.md`](./agent/CONTRACTS.md).
-
-
---- Content of docs/agent/PROJECT_CONTEXT.md ---
-
-# Project Context
-
-## Product
-
-- **Name:** Avi-Mystery.
-- **Vision:** nền tảng luyện kỹ năng dữ liệu theo hướng game hóa; người học đóng vai thám tử giải vụ án dữ liệu.
-- **Users:** learner và content/super admin.
-- **Main areas:** Learner và Admin.
-- **MVP learning focus:** Excel trước, SQL tiếp theo; Python learning cố ý nằm ngoài MVP hiện tại.
-
-## Verified Current Architecture
-
-- React 18 và JavaScript ES modules, build bằng Vite; Tailwind CSS cho styling và React Router v6 cho routing.
-- Vitest, React Testing Library và JSDOM cho unit/component tests.
-- Frontend dùng local React state/context. Dữ liệu trạng thái người học (Auth, Progress, XP, Achievements, History) đã được chuyển sang **Firebase Auth & Cloud Firestore** thông qua `firebaseAuthService.js` và `firebaseProgressService.js`.
-- Service contracts hiện có tại `src/services/contracts/`; gateway cấu hình nạp adapter tại `src/services/index.js` tuỳ theo biến môi trường `VITE_USE_FIREBASE`.
-- Luồng Excel/SQL Submission vẫn đi qua mock gateway `src/services/index.js` để đánh giá nhưng sau đó giao dịch phần thưởng XP và lưu tiến độ được uỷ thác an toàn qua Firebase Transaction (Idempotent XP Ledger).
-- Các dữ liệu nội dung tĩnh (Courses, Chapters, Investigations, Datasets) vẫn duy trì dưới dạng JSON mock data để chuẩn bị cho giai đoạn CMS Admin sắp tới.
-- SQL workspace, SQLite WASM Worker engine, Schema Browser, SQL Editor MVP đã hoàn thành.
-
-## Target Architecture (Next Phase)
-
-```text
-UI → stable service contract → Mock Service
-                           └→ API Client → FastAPI → PostgreSQL
-```
-
-Mock Service và API Client phải giữ cùng public interface để Sprint 7 không yêu cầu viết lại UI. Evaluator chỉ đánh giá đáp án; Submission điều phối attempt/result; Progress trao XP có idempotency; backend về sau là nguồn sự thật cuối cùng.
-
-## Intentionally Deferred
-
-- Admin Content Builder: Khởi tạo ở Sprint 8.
-- FastAPI, PostgreSQL backend cho nội dung cốt truyện và bài tập: Sprint 9.
-- Mặc dù Firebase đã được dùng để thay thế Database cho luồng học tập cá nhân (Auth/Progress/XP), phần cấu trúc Nội dung (Content Schema) hiện tại vẫn duy trì JSON vì Firebase Firestore không tối ưu cho mô hình dữ liệu quan hệ phức tạp như Dataset-Question-Investigation của hệ thống, sẽ chờ PostgreSQL ở Sprint 9.
-- Analytics, hardening và launch readiness: Sprint 10.
-
-## Documentation Status
-
-Ngày 01/09/2026, toàn bộ Step 7.1–7.5 đã `DONE` (bao gồm chiến dịch chuyển đổi Firebase Firestore cho Progress Engine). `CURRENT_TASK.md` (được nhúng trong `CURRENT_SPRINT.md`) là nguồn trạng thái duy nhất cho agent.
-
-Các tài liệu vận hành canonical nằm trong `docs/` và bộ tracker ngắn ở `docs/agent/`.
+- **Hiện trạng sản phẩm**: Toàn bộ Frontend từ Sprint 1 đến Sprint 9.5 đã đạt độ chín muồi cao nhất, kiểm thử tự động **72/72 test suites (567/567 tests PASS 100%)**, giao diện bóng bẩy, chạy mượt mà cả offline và online trên Vercel.
+- **Hành động kế tiếp**: Khởi động **Sprint 10 (Backend API & Data Persistence)** bằng việc khởi tạo thư mục `backend/` với **Python FastAPI**, container **PostgreSQL** qua Docker Compose, và tạo migrations theo đúng các bảng dữ liệu đã được đặc tả chi tiết ở Mục 5 của tài liệu này.

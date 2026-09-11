@@ -54,17 +54,44 @@
 
 ---
 
+* **Hoàn thành Phase 2 & 3: Tái thiết kế Luồng Điều Tra Viên & Trải Nghiệm Vụ Án (Detective Experience):**
+  - **Dashboard (Bản Doanh Điều Tra):** Chuyển đổi thành "Detective Home" lấy hồ sơ vụ án đang điều tra làm trọng tâm, danh sách nhiệm vụ ưu tiên, thống kê cấp bậc thám tử và phím tắt điều hướng nhanh.
+  - **Mission Intro (Hồ Sơ Vụ Án / Case Dossier):** Layout hồ sơ tài liệu bảo mật, hạ cấp metadata thông số kỹ thuật xuống footer strip, làm nổi bật bối cảnh cốt truyện và mục tiêu phá án.
+  - **Investigation Workspace & Navigation:**
+    - Tinh giản thanh phân cách co giãn `WorkspaceSplitPane`, loại bỏ nút toggle gây đè trùng vị trí.
+    - Cập nhật nút "Rời bàn làm việc" điều hướng dứt khoát về Bản Đồ Học Tập (`/map`).
+
+* **Hoàn thành Phase 4: Tái cấu trúc Học viện & Vòng Lặp Học Tập Điều Tra (Academy & Investigation Learning Loop):**
+  - **Tuân thủ 5 nguyên tắc chỉ đạo:**
+    1. Evidence là presentation concept, không thay đổi data models backend.
+    2. Metadata hạ cấp hierarchy, không xóa.
+    3. Clarity > role-play trong nút bấm và nhãn điều hướng.
+    4. Workspace tinh gọn, không redesign toàn bộ.
+    5. Taste Audit được thực hiện nghiêm ngặt trước và sau triển khai.
+  - **Triết lý học tập thực chiến:** Tinh giản thủ tục cấp chứng chỉ rườm rà, tập trung tuyệt đối vào chu trình: **"Đọc ➔ Hiểu ➔ Thực hành"**.
+  - **Trung Tâm Đào Tạo Nghiệp Vụ (`/courses`):** Reframe từ giao diện danh mục khóa học LMS thông thường sang Trung tâm Phương pháp luận Điều tra, bổ sung trường **🎯 Ứng dụng điều tra** cho từng khóa học (Excel: kiểm tra sai lệch/đối soát; SQL: truy vết nhật ký/khoanh vùng đối tượng).
+  - **Hồ Sơ Chuyên Đề Nghiệp Vụ (`/courses/:slug`):** Bổ sung khối "Mục tiêu nghiệp vụ & Ứng dụng trong điều tra", tích hợp lối tắt mở nhanh bài giảng chuyên sâu trong Học viện Academy.
+  - **Cơ chế Sổ tay điều tra (`investigationNotebookService.js`):** Cho phép học viên bấm **"Ghim sổ tay"** tại bất kỳ bài đọc nào ở Học viện để lưu lại công thức/câu lệnh mẫu vào `localStorage`, phát event đồng bộ thời gian thực.
+  - **Cầu nối Vòng lặp Học tập (Mission ➔ Academy ➔ Mission):**
+    - Khi bí ý tưởng tại `ProblemPane`, mục Gợi ý cung cấp liên kết **"Tra cứu Học viện ❯"** dẫn thẳng đến bài giảng liên quan.
+    - Tại `AcademyCoursePage`, thanh banner nổi bật hỗ trợ: *"Bạn đang tra cứu tài liệu cho Vụ án X. Đã nắm vững kiến thức? [Quay lại phá án ➔]"*.
+    - Tại `ProblemPane`, thẻ **Sổ tay điều tra** hiển thị ngay các ghi chú đã ghim kèm cú pháp mẫu có thể copy nhanh vào bảng tính.
+  - **Field Check Exam (`/academy/:courseSlug/exam`):** Reframe bài thi thành bài kiểm tra xác thực năng lực thực chiến, màn hình hoàn thành dẫn thẳng vào Bản đồ Phá án (`/map`).
+  - **Chất lượng kiểm thử & biên dịch:** 72/72 test files (567/567 tests) PASS 100%, `npm run build` hoàn thành thành công trong 10.32s.
+
+---
+
 ### 2. Tiếp theo cần làm gì?
-* **Khởi động Sprint 10: Backend API & Data Persistence (FastAPI & PostgreSQL):**
+* **Lựa chọn 1 (Tiếp tục hoàn thiện Frontend UX theo Anti-slop / Taste Audit):**
+  - Đồng bộ giao diện `KnowledgeHubPage` và `PracticeSandboxPage` theo ngôn ngữ thiết kế điều tra tinh gọn.
+  - Mở rộng Sổ tay điều tra cho phép người học tự thêm ghi chú cá nhân dạng text ngắn ngoài các công thức ghim tự động.
+* **Lựa chọn 2 (Khởi động Sprint 10: Backend API & Data Persistence với FastAPI + PostgreSQL):**
   - Xây dựng RESTful API server sử dụng Python FastAPI và PostgreSQL database.
   - Tạo database migrations, thiết lập schema tables cho Users, Courses, Chapters, Investigations, Questions, Submissions, Progress, Exams, Certificates.
   - Thay thế các Frontend Mock Adapters bằng API Client thực tế giữ nguyên Frontend contracts (`src/services/contracts/`).
-  - Duy trì chế độ Dual-Mode (Mock toggle hoặc Firebase fallback) để luôn đảm bảo chạy độc lập client-side khi cần.
 
 ---
 
 ### 3. Bước đầu tiên cần làm trong bước tiếp theo là gì?
-* **Bước 10.1: Khởi tạo kiến trúc FastAPI Server & Docker Compose Database:**
-  - Thiết lập thư mục `backend/` với `pyproject.toml` hoặc `requirements.txt` (FastAPI, SQLAlchemy, Pydantic v2, Alembic, asyncpg).
-  - Thiết lập cấu hình kết nối database PostgreSQL và biến môi trường `.env`.
+* Xác nhận với người dùng về hướng đi ưu tiên tiếp theo (Tiếp tục hoàn thiện UX các trang còn lại hay bắt tay vào Backend Sprint 10).
 

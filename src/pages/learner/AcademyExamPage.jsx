@@ -212,6 +212,10 @@ export function AcademyExamPage() {
               <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                 Kỳ Thi Sát Hạch & Cấp Chứng Chỉ Tốt Nghiệp
               </h1>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/60 border border-border/80 text-xs text-muted-foreground mb-3">
+                <span className="font-bold text-foreground">Trọng tâm:</span>
+                <span>Đọc hiểu bản chất ➔ Kiểm chứng kiến thức ➔ Thực hành phá án</span>
+              </div>
               <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                 {exam.description}
               </p>
@@ -544,6 +548,14 @@ export function AcademyExamPage() {
                 <RotateCcw className="size-4" />
                 <span>Thi lại bài này</span>
               </button>
+
+              <Link
+                to="/map"
+                className="px-5 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5"
+              >
+                <span>Vào Bản đồ Phá án</span>
+                <ChevronRight className="size-4" />
+              </Link>
 
               <Link
                 to={`/academy/${courseSlug}`}

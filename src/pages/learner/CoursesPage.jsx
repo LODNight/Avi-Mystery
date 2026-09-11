@@ -47,20 +47,30 @@ export function CoursesPage() {
   }, [courses.data, searchTerm, selectedTool, selectedDifficulty]);
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
-      {/* ── Section 1: Hero Header ── */}
+    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in pb-12">
+      {/* ── Section 1: Hero Header (Investigation Methodology Archives) ── */}
       <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
         <div className="absolute -right-10 -top-10 size-48 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-3">
-            <Sparkles className="size-3.5" /> Thám tử dữ liệu Academy
+        <div className="relative z-10 max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 mb-3 border border-amber-500/20 uppercase tracking-wider">
+            <Sparkles className="size-3.5" /> Trung Tâm Đào Tạo Nghiệp Vụ Điều Tra
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Danh Sách Khóa Học
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Lựa chọn vụ án và lộ trình kỹ năng phù hợp. Làm chủ công thức Excel, câu lệnh SQL và phương pháp phân tích insight thực tế.
+            Lựa chọn nghiệp vụ và công cụ điều tra phù hợp. Học bản chất công thức Excel, câu lệnh SQL và phương pháp tư duy để giải mã các hồ sơ vụ án thực chiến.
           </p>
+
+          {/* Core Learning Principle Badge */}
+          <div className="mt-4 inline-flex items-center gap-2 text-xs text-muted-foreground bg-muted/40 border border-border/60 px-3 py-1.5 rounded-xl">
+            <span className="font-bold text-foreground">Nguyên tắc học tập:</span>
+            <span>Đọc hiểu bản chất</span>
+            <ChevronRight className="size-3 opacity-50" />
+            <span>Nắm chắc nghiệp vụ</span>
+            <ChevronRight className="size-3 opacity-50" />
+            <span>Thực hành giải quyết vụ án</span>
+          </div>
         </div>
 
         {/* Search & Filter Bar */}
@@ -81,7 +91,7 @@ export function CoursesPage() {
             <select
               value={selectedTool}
               onChange={(e) => setSelectedTool(e.target.value)}
-              className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-medium text-foreground focus:border-primary focus:outline-none shrink-0"
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-medium text-foreground focus:border-primary focus:outline-none shrink-0 cursor-pointer"
               aria-label="Lọc theo công cụ"
             >
               <option value="all">Tất cả công cụ</option>
@@ -93,7 +103,7 @@ export function CoursesPage() {
             <select
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-medium text-foreground focus:border-primary focus:outline-none shrink-0"
+              className="rounded-xl border border-border bg-background px-3 py-2.5 text-xs font-medium text-foreground focus:border-primary focus:outline-none shrink-0 cursor-pointer"
               aria-label="Lọc theo độ khó"
             >
               <option value="all">Tất cả độ khó</option>
@@ -111,6 +121,14 @@ export function CoursesPage() {
           <p className="text-sm text-muted-foreground font-medium">
             Hiển thị <span className="font-bold text-foreground">{filteredCourses.length}</span> khóa học
           </p>
+          <div className="flex items-center gap-2">
+            <Link
+              to="/academy/excel-academy"
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Tra cứu Học viện Academy ❯
+            </Link>
+          </div>
         </div>
 
         {courses.loading ? (
@@ -156,6 +174,12 @@ function CourseCardItem({ course }) {
       ? 'warning'
       : 'danger';
 
+  // Investigation application highlights based on tool/content
+  const investigationUse =
+    course.tool === 'excel'
+      ? 'Phát hiện sai lệch sổ sách, kiểm tra biên độ lợi nhuận, khoanh vùng chi nhánh.'
+      : 'Truy vết nhật ký hoạt động, lọc đối tượng đáng ngờ, đối chiếu dòng tiền chuyển khoản.';
+
   return (
     <div className="group relative flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
       <div>
@@ -178,9 +202,15 @@ function CourseCardItem({ course }) {
         <h3 className="mt-5 text-lg font-bold text-foreground group-hover:text-primary transition-colors">
           {course.title}
         </h3>
-        <p className="mt-2 text-xs leading-relaxed text-muted-foreground line-clamp-3">
+        <p className="mt-2 text-xs leading-relaxed text-muted-foreground line-clamp-2">
           {course.description}
         </p>
+
+        {/* Practical Investigation Application */}
+        <div className="mt-4 rounded-xl border border-border/60 bg-muted/30 p-2.5 text-[11px] text-muted-foreground">
+          <span className="font-bold text-foreground block mb-0.5">🎯 Ứng dụng điều tra:</span>
+          <span className="line-clamp-2">{investigationUse}</span>
+        </div>
       </div>
 
       {/* Card Footer Info */}
@@ -188,7 +218,7 @@ function CourseCardItem({ course }) {
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Layers className="size-3.5 text-amber-500" />
-            {course.totalChapters || 3} Chương · {course.totalMissions || 9} Bài
+            {course.totalChapters || 3} Chương · {course.totalMissions || 9} Vụ án
           </span>
           <span className="flex items-center gap-1.5">
             <Clock className="size-3.5 text-cyan-500" />
@@ -198,7 +228,7 @@ function CourseCardItem({ course }) {
 
         <Link
           to={`/courses/${course.slug || course.id}`}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-xs font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground cursor-pointer"
         >
           Bắt đầu khóa học <ChevronRight className="size-4" />
         </Link>

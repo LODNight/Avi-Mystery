@@ -130,6 +130,27 @@
 
 ---
 
+## ADR-012: Tái Cấu Trúc Học Viện Theo Tư Duy Điều Tra & Vòng Lặp Học Tập Thực Chiến (Phase 4)
+
+* **Bối cảnh:** Giao diện Academy trước đây mang dáng dấp của một hệ thống LMS truyền thống (khóa học đại trà, bài thi cấp chứng chỉ mang tính thủ tục hành chính). Cần tái định hình để người học không chỉ nhìn thấy giao diện thám tử trang trí, mà thực sự suy nghĩ và hành động như một điều tra viên dữ liệu.
+* **Quyết định:**
+  - Áp dụng 5 nguyên tắc cốt lõi:
+    1. Evidence là presentation concept, không tạo backend/data model mới.
+    2. Metadata được hạ cấp hierarchy, không xóa.
+    3. Clarity > role-play trong nút bấm và nhãn chức năng.
+    4. Workspace chỉ tinh gọn, không redesign toàn bộ.
+    5. Taste Audit nghiêm ngặt trước và sau triển khai.
+  - Triết lý học tập: **"Đọc ➔ Hiểu ➔ Thực hành"**, loại bỏ gánh nặng thủ tục hành chính chứng chỉ.
+  - Xây dựng `investigationNotebookService.js` (client-side storage + events) hỗ trợ ghim công thức/truy vấn mẫu vào Sổ tay điều tra.
+  - Thiết lập cầu nối 2 chiều giữa Mission Workspace và Academy:
+    - Khi bí ý tưởng trong lúc phá án, `ProblemPane` cung cấp link "Tra cứu Học viện ❯".
+    - Tại bài giảng Học viện, hiển thị banner sticky "Quay lại phá án" giữ nguyên bối cảnh vụ án đang làm.
+    - Tại `ProblemPane`, thẻ Sổ tay điều tra hiển thị các ghi chú đã ghim cho phép copy nhanh công thức mà không phải chuyển tab.
+  - Bài thi sát hạch chuyển thành kiểm tra xác thực năng lực thực chiến (Field Check), hoàn thành dẫn thẳng vào Bản đồ Phá án (`/map`).
+* **Trạng thái:** `CURRENT` (Đã áp dụng trong Phase 4).
+
+---
+
 ## Agent-facing Decisions
 
 Các quyết định scope/contract chi tiết dành cho AI Agent tiếp tục được duy trì tại [`agent/CONTRACTS.md`](./agent/CONTRACTS.md) và [`agent/MODULE_MAP.md`](./agent/MODULE_MAP.md).

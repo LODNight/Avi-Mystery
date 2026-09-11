@@ -190,6 +190,9 @@ export function CourseDetailPage() {
               <span className="rounded-full bg-muted px-3 py-1 font-mono text-xs font-bold text-muted-foreground uppercase">
                 {toolLabel(course.tool)}
               </span>
+              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase">
+                Hồ Sơ Nghiệp Vụ
+              </span>
             </div>
 
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
@@ -198,6 +201,26 @@ export function CourseDetailPage() {
             <p className="text-sm leading-relaxed text-muted-foreground">
               {course.description}
             </p>
+
+            {/* ── Practical Investigation Application Box ── */}
+            <div className="rounded-2xl border border-border/80 bg-muted/30 p-4 space-y-1.5 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2 font-bold text-foreground">
+                <Sparkles className="size-4 text-amber-500" />
+                <span>Mục tiêu nghiệp vụ & Ứng dụng trong điều tra:</span>
+              </div>
+              <p className="leading-relaxed">
+                Sau khi hoàn thành chuyên đề này, bạn sẽ nắm vững tư duy bóc tách dữ liệu: biết cách kiểm tra các con số bất thường, phát hiện gian lận số liệu tài chính và khoanh vùng chứng cứ trực tiếp trên bảng tính thực tế.
+              </p>
+              <div className="pt-2 flex items-center gap-3">
+                <Link
+                  to={`/academy/${course.slug === 'sql-investigation' ? 'sql-academy' : 'excel-academy'}`}
+                  className="inline-flex items-center gap-1.5 font-bold text-primary hover:underline"
+                >
+                  <BookOpen className="size-3.5" />
+                  <span>Mở bài giảng chuyên sâu trong Học viện Academy</span>
+                </Link>
+              </div>
+            </div>
 
             {/* Course Meta Stats Strip */}
             <div className="mt-2 flex items-center gap-6 flex-wrap text-xs font-medium text-muted-foreground">

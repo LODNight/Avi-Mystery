@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
@@ -15,8 +15,12 @@ import {
   Pin,
   ChevronDown,
   AlertTriangle,
+  BookOpen,
+  Bookmark,
+  Trash2,
 } from 'lucide-react';
 import { formatDuration } from '../../utils/format.js';
+import { investigationNotebookService } from '../../services/index.js';
 
 /**
  * ProblemPane Component (Sprint 9 / Split-Pane Architecture)
@@ -49,6 +53,28 @@ export function ProblemPane({
   extraSlot = null,
 }) {
   const [showHintsAccordion, setShowHintsAccordion] = useState(true);
+  const [showNotebook, setShowNotebook] = useState(true);
+  const [notebookNotes, setNotebookNotes] = useState(() => investigationNotebookService.getNotes());
+
+  useEffect(() => {
+    return investigationNotebookService.subscribe((notes) => {
+      setNotebookNotes(notes);
+    });
+  }, []);
+
+  const missionToTopicMap = {
+    'mission-001': 'topic-001',
+    'mission-002': 'topic-006',
+    'mission-003': 'topic-005',
+    'mission-004': 'topic-002',
+    'mission-005': 'topic-003',
+    'mission-006': 'topic-004',
+    'mission-007': 'topic-007',
+    'mission-008': 'topic-008',
+  };
+
+  const academyCourseSlug = tool === 'sql' ? 'sql-academy' : 'excel-academy';
+  const relatedTopicId = missionToTopicMap[missionId] || (tool === 'sql' ? 'topic-003' : 'topic-001');
 
   // Chuẩn hóa mảng gợi ý
   const normalizedHints = Array.isArray(hints) && hints.length > 0
@@ -304,6 +330,99 @@ export function ProblemPane({
                 );
               })}
             </div>
+
+            {/* Tra cứu bài học liên quan khi bí (Learning Loop Bridge) */}
+            <div className="pt-2 border-t border-border/80 flex items-center justify-between gap-2">
+              <span className="text-[10px] text-muted-foreground">Cần xem lại công thức/cú pháp?</span>
+              <Link
+                to={`/academy/${academyCourseSlug}/${relatedTopicId}?fromMission=${missionId}&tool=${tool}`}
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline"
+              >
+                <BookOpen className="size-3.5" />
+                <span>Tra cứu Học viện ❯</span>
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* ── LEVEL 5: INVESTIGATION NOTEBOOK (Sổ tay điều tra) ── */}
+      <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xs">
+        <button
+          type="button"
+          onClick={() => setShowNotebook(!showNotebook)}
+          className="w-full flex items-center justify-between p-3 bg-muted/30 hover:bg-muted/60 transition-colors text-left cursor-pointer"
+          aria-expanded={showNotebook}
+          aria-label="Sổ tay điều tra"
+        >
+          <div className="flex items-center gap-2">
+            <Bookmark className="size-3.5 text-amber-500 fill-amber-500/20" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground">
+              Sổ tay điều tra
+            </span>
+            <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+              {notebookNotes.length}
+            </span>
+          </div>
+          <ChevronDown className={`size-3.5 text-muted-foreground transition-transform duration-200 ${showNotebook ? 'rotate-180' : ''}`} />
+        </button>
+
+        {showNotebook && (
+          <div className="p-3 space-y-2 border-t border-border animate-fade-in text-xs">
+            {notebookNotes.length === 0 ? (
+              <div className="text-center py-2.5 text-muted-foreground text-[11px] leading-relaxed">
+                <p>Sổ tay đang trống.</p>
+                <p className="mt-1 opacity-80">
+                  Tại Học viện, bấm <strong>"Ghim sổ tay"</strong> để lưu công thức trọng tâm vào đây.
+                </p>
+                <div className="mt-2">
+                  <Link
+                    to={`/academy/${academyCourseSlug}/${relatedTopicId}?fromMission=${missionId}&tool=${tool}`}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
+                  >
+                    <BookOpen className="size-3" />
+                    <span>Mở bài giảng Học viện liên quan</span>
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {notebookNotes.map((note) => (
+                  <div
+                    key={note.id}
+                    className="rounded-lg border border-border/80 bg-background p-2 space-y-1 relative group"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-foreground text-xs truncate">
+                        {note.title}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => investigationNotebookService.unpinNote(note.topicId)}
+                        className="text-muted-foreground hover:text-rose-500 p-0.5 rounded transition-colors"
+                        title="Gỡ khỏi sổ tay"
+                      >
+                        <Trash2 className="size-3" />
+                      </button>
+                    </div>
+                    {note.excerpt && (
+                      <div className="rounded bg-muted/50 p-1.5 font-mono text-[10px] text-emerald-600 dark:text-emerald-400 select-all overflow-x-auto">
+                        {note.excerpt}
+                      </div>
+                    )}
+                    <div className="pt-0.5 flex items-center justify-between text-[10px] text-muted-foreground">
+                      <span className="uppercase font-mono font-semibold text-[9px] bg-muted px-1 rounded">{note.tool}</span>
+                      <Link
+                        to={`/academy/${note.courseSlug || academyCourseSlug}/${note.topicId}?fromMission=${missionId}&tool=${tool}`}
+                        className="hover:underline text-primary font-medium"
+                      >
+                        Xem lại bài ❯
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

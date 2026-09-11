@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   GraduationCap,
   FileSpreadsheet,
@@ -21,16 +21,21 @@ import {
   Share2,
   Award,
   Zap,
+  Bookmark,
+  Pin,
 } from 'lucide-react';
 import { ACADEMY_COURSES, getCourseBySlug, getCourseFlatLessons } from '../../mocks/data/academy/academySyllabus.js';
 import { TOPIC_SANDBOX_PRESETS } from '../../mocks/data/sandbox/defaultSandboxDatasets.js';
-import { knowledgeService } from '../../services/index.js';
+import { knowledgeService, investigationNotebookService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
 
 export function AcademyCoursePage() {
   const { courseSlug = 'excel-academy', topicId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const fromMission = searchParams.get('fromMission');
+  const toolParam = searchParams.get('tool');
   const { user } = useAuth();
   const userId = user?.uid || user?.id;
 
@@ -120,13 +125,42 @@ export function AcademyCoursePage() {
   // If topicId in URL does not match activeLesson, sync URL
   useEffect(() => {
     if (activeLesson && (!topicId || topicId !== activeLesson.topicId)) {
-      navigate(`/academy/${currentCourse.slug}/${activeLesson.topicId}`, { replace: true });
+      const searchStr = searchParams.toString() ? `?${searchParams.toString()}` : '';
+      navigate(`/academy/${currentCourse.slug}/${activeLesson.topicId}${searchStr}`, { replace: true });
     }
-  }, [activeLesson, currentCourse.slug, topicId, navigate]);
+  }, [activeLesson, currentCourse.slug, topicId, navigate, searchParams]);
+
+  // Investigation Notebook state for active topic
+  const [isNotebookPinned, setIsNotebookPinned] = useState(false);
+
+  useEffect(() => {
+    if (activeLesson?.topicId) {
+      setIsNotebookPinned(investigationNotebookService.isNotePinned(activeLesson.topicId));
+    }
+  }, [activeLesson?.topicId]);
 
   // Active topic markdown and preset data
   const currentTopicData = activeLesson ? topicsMap[activeLesson.topicId] : null;
   const sandboxPreset = activeLesson ? TOPIC_SANDBOX_PRESETS[activeLesson.topicId] : null;
+
+  const handleTogglePinNotebook = () => {
+    if (!activeLesson?.topicId) return;
+    if (isNotebookPinned) {
+      investigationNotebookService.unpinNote(activeLesson.topicId);
+      setIsNotebookPinned(false);
+    } else {
+      const formulaSnippet = sandboxPreset?.defaultFormula || sandboxPreset?.defaultSql || '';
+      const excerpt = formulaSnippet ? `Cú pháp mẫu: ${formulaSnippet}` : (activeLesson.title || 'Lý thuyết nghiệp vụ');
+      investigationNotebookService.pinNote({
+        topicId: activeLesson.topicId,
+        title: activeLesson.title,
+        excerpt,
+        tool: currentCourse.tool,
+        courseSlug: currentCourse.slug,
+      });
+      setIsNotebookPinned(true);
+    }
+  };
 
   // Navigation indices
   const currentLessonIndex = flatLessons.findIndex(l => l.topicId === activeLesson?.topicId);
@@ -388,6 +422,19 @@ export function AcademyCoursePage() {
 
           {/* Action CTAs */}
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleTogglePinNotebook}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                isNotebookPinned
+                  ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40'
+                  : 'border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+              title={isNotebookPinned ? 'Đã ghim trong Sổ tay điều tra' : 'Ghim vào Sổ tay điều tra để tra cứu trong Workspace'}
+            >
+              <Bookmark className={`size-3.5 ${isNotebookPinned ? 'fill-current' : ''}`} />
+              <span className="hidden sm:inline">{isNotebookPinned ? 'Đã ghim sổ tay' : 'Ghim sổ tay'}</span>
+            </button>
+
             <Link
               to={`/sandbox?tool=${currentCourse.tool}&topicId=${activeLesson?.topicId || ''}`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-xs font-semibold transition-colors"
@@ -403,7 +450,7 @@ export function AcademyCoursePage() {
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 readTopics.includes(activeLesson?.topicId)
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                  : 'bg-primary text-primary-foreground hover:opacity-90 shadow-xs'
+                  : 'bg-primary text-primary-foreground hover:opacity-90 shadow-xs cursor-pointer'
               }`}
             >
               <CheckCircle2 className="size-3.5" />
@@ -411,6 +458,25 @@ export function AcademyCoursePage() {
             </button>
           </div>
         </header>
+
+        {/* ── RETURN TO INVESTIGATION BANNER (Learning Loop Bridge) ── */}
+        {fromMission && (
+          <div className="bg-amber-500/15 border-b border-amber-500/30 px-4 py-2.5 flex items-center justify-between gap-3 text-xs shrink-0 animate-fade-in">
+            <div className="flex items-center gap-2 text-amber-900 dark:text-amber-200 min-w-0">
+              <Sparkles className="size-4 text-amber-500 shrink-0" />
+              <span className="truncate">
+                Bạn đang tra cứu tài liệu hỗ trợ cho <strong>Vụ án {fromMission}</strong>. Đã nắm vững kiến thức?
+              </span>
+            </div>
+            <Link
+              to={toolParam === 'sql' ? `/missions/${fromMission}/sql` : `/missions/${fromMission}/workspace`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold transition-all shrink-0 shadow-xs cursor-pointer"
+            >
+              <span>Quay lại phá án</span>
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </div>
+        )}
 
         {/* Scrollable Reading Content */}
         <div className="flex-1 overflow-y-auto px-4 py-8 md:px-12 lg:px-20 max-w-4xl w-full mx-auto space-y-10">

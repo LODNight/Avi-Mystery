@@ -128,7 +128,7 @@ export function MissionResultModal({
 
           <div>
             <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-0.5 text-xs font-mono font-bold uppercase tracking-wider mb-2">
-              <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-emerald-600 dark:text-emerald-400">
+              <span className="animate-[bounce_0.5s_ease-out] rounded-full border-2 border-emerald-500 bg-emerald-500/10 px-3 py-1 text-emerald-600 dark:text-emerald-400 shadow-sm transform origin-center">
                 Phá Án Thành Công
               </span>
             </div>

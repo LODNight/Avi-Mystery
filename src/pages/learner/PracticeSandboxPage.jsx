@@ -493,29 +493,29 @@ export function PracticeSandboxPage() {
         </div>
 
         {/* Center: Tool Switcher */}
-        <div className="flex items-center rounded-xl bg-muted p-1 border border-border">
+        <div className="flex items-center rounded-xl bg-black/5 dark:bg-white/5 p-1 border border-border">
           <button
             type="button"
             onClick={() => handleSwitchTool('excel')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
               activeTool === 'excel'
-                ? 'bg-card text-foreground shadow-xs font-bold'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-amber-500 text-black shadow-sm border border-amber-500/50'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
-            <FileSpreadsheet className="size-3.5 text-emerald-500" />
+            <FileSpreadsheet className={`size-3.5 ${activeTool === 'excel' ? 'text-amber-900' : 'text-emerald-500'}`} />
             <span>Excel Formula</span>
           </button>
           <button
             type="button"
             onClick={() => handleSwitchTool('sql')}
-            className={`flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
               activeTool === 'sql'
-                ? 'bg-card text-foreground shadow-xs font-bold'
-                : 'text-muted-foreground hover:text-foreground'
+                ? 'bg-amber-500 text-black shadow-sm border border-amber-500/50'
+                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
-            <Database className="size-3.5 text-blue-500" />
+            <Database className={`size-3.5 ${activeTool === 'sql' ? 'text-amber-900' : 'text-blue-500'}`} />
             <span>SQL Query</span>
           </button>
         </div>
@@ -597,7 +597,7 @@ export function PracticeSandboxPage() {
                   {currentPresets.map((preset, idx) => (
                     <div
                       key={idx}
-                      className="rounded-xl border border-border bg-card/80 p-3 hover:border-amber-500/40 transition-all group"
+                      className="rounded-xl border border-border bg-zinc-50 dark:bg-zinc-900/50 p-3 hover:border-amber-500/50 hover:shadow-sm transition-all group"
                     >
                       <div className="flex items-start justify-between gap-2 mb-1.5">
                         <span className="text-xs font-semibold text-foreground">

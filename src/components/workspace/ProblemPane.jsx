@@ -18,6 +18,7 @@ import {
   BookOpen,
   Bookmark,
   Trash2,
+  Plus,
 } from 'lucide-react';
 import { formatDuration } from '../../utils/format.js';
 import { investigationNotebookService } from '../../services/index.js';
@@ -55,6 +56,17 @@ export function ProblemPane({
   const [showHintsAccordion, setShowHintsAccordion] = useState(true);
   const [showNotebook, setShowNotebook] = useState(true);
   const [notebookNotes, setNotebookNotes] = useState(() => investigationNotebookService.getNotes());
+  const [newCustomNote, setNewCustomNote] = useState('');
+
+  const pinnedNotes = notebookNotes.filter(n => n.type !== 'custom');
+  const customNotes = notebookNotes.filter(n => n.type === 'custom');
+
+  const handleAddCustomNote = (e) => {
+    e.preventDefault();
+    if (!newCustomNote.trim()) return;
+    investigationNotebookService.addCustomNote({ text: newCustomNote, tool });
+    setNewCustomNote('');
+  };
 
   useEffect(() => {
     return investigationNotebookService.subscribe((notes) => {
@@ -243,8 +255,13 @@ export function ProblemPane({
         </button>
 
         {/* Accordion Content */}
-        {showHintsAccordion && (
-          <div className="p-3 space-y-2 border-t border-border animate-fade-in">
+        <div 
+          className={`grid transition-all duration-300 ease-in-out ${
+            showHintsAccordion ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="p-3 space-y-2 border-t border-border">
             {/* Warning / XP Deduction Info */}
             <div className="flex items-center justify-between gap-2 text-[10px] text-muted-foreground">
               <span>Mỗi lần mở gợi ý sẽ trừ {penaltyPerHint} XP</span>
@@ -343,8 +360,9 @@ export function ProblemPane({
               </Link>
             </div>
           </div>
-        )}
+        </div>
       </div>
+    </div>
 
       {/* ── LEVEL 5: INVESTIGATION NOTEBOOK (Sổ tay điều tra) ── */}
       <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xs">
@@ -367,64 +385,108 @@ export function ProblemPane({
           <ChevronDown className={`size-3.5 text-muted-foreground transition-transform duration-200 ${showNotebook ? 'rotate-180' : ''}`} />
         </button>
 
-        {showNotebook && (
-          <div className="p-3 space-y-2 border-t border-border animate-fade-in text-xs">
-            {notebookNotes.length === 0 ? (
-              <div className="text-center py-2.5 text-muted-foreground text-[11px] leading-relaxed">
-                <p>Sổ tay đang trống.</p>
-                <p className="mt-1 opacity-80">
-                  Tại Học viện, bấm <strong>"Ghim sổ tay"</strong> để lưu công thức trọng tâm vào đây.
-                </p>
-                <div className="mt-2">
-                  <Link
-                    to={`/academy/${academyCourseSlug}/${relatedTopicId}?fromMission=${missionId}&tool=${tool}`}
-                    className="inline-flex items-center gap-1 text-[11px] font-bold text-primary hover:underline"
-                  >
-                    <BookOpen className="size-3" />
-                    <span>Mở bài giảng Học viện liên quan</span>
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                {notebookNotes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="rounded-lg border border-border/80 bg-background p-2 space-y-1 relative group"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="font-bold text-foreground text-xs truncate">
-                        {note.title}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => investigationNotebookService.unpinNote(note.topicId)}
-                        className="text-muted-foreground hover:text-rose-500 p-0.5 rounded transition-colors"
-                        title="Gỡ khỏi sổ tay"
-                      >
-                        <Trash2 className="size-3" />
-                      </button>
-                    </div>
-                    {note.excerpt && (
-                      <div className="rounded bg-muted/50 p-1.5 font-mono text-[10px] text-emerald-600 dark:text-emerald-400 select-all overflow-x-auto">
-                        {note.excerpt}
+        <div 
+          className={`grid transition-all duration-300 ease-in-out ${
+            showNotebook ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="p-3 space-y-3 border-t border-border text-xs">
+              <form onSubmit={handleAddCustomNote} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newCustomNote}
+                  onChange={(e) => setNewCustomNote(e.target.value)}
+                  placeholder="Thêm ghi chép cá nhân (Enter)..."
+                  className="flex-1 bg-background border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 placeholder:text-muted-foreground"
+                />
+                <button
+                  type="submit"
+                  disabled={!newCustomNote.trim()}
+                  className="p-1.5 bg-amber-500 text-amber-950 rounded-md hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Plus className="size-3.5" />
+                </button>
+              </form>
+
+              <div className="space-y-4 max-h-56 overflow-y-auto pr-1">
+                {customNotes.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50 pb-1">Ghi chép của bạn</h4>
+                    {customNotes.map(note => (
+                      <div key={note.id} className="group flex items-start justify-between gap-2 bg-muted/30 p-2 rounded-md border border-border/50 hover:border-amber-500/30 transition-colors">
+                        <p className="text-xs text-foreground flex-1 break-words leading-relaxed">{note.text}</p>
+                        <button
+                          type="button"
+                          onClick={() => investigationNotebookService.deleteCustomNote(note.id)}
+                          className="text-muted-foreground hover:text-rose-500 p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          title="Xóa ghi chú"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
                       </div>
-                    )}
-                    <div className="pt-0.5 flex items-center justify-between text-[10px] text-muted-foreground">
-                      <span className="uppercase font-mono font-semibold text-[9px] bg-muted px-1 rounded">{note.tool}</span>
-                      <Link
-                        to={`/academy/${note.courseSlug || academyCourseSlug}/${note.topicId}?fromMission=${missionId}&tool=${tool}`}
-                        className="hover:underline text-primary font-medium"
-                      >
-                        Xem lại bài ❯
-                      </Link>
-                    </div>
+                    ))}
                   </div>
-                ))}
+                )}
+
+                {pinnedNotes.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50 pb-1">Công thức đã ghim</h4>
+                    {pinnedNotes.map((note) => (
+                      <div
+                        key={note.id}
+                        className="relative group rounded-md border border-amber-500/30 bg-amber-50/80 dark:bg-amber-950/20 p-2.5 space-y-2 shadow-sm overflow-hidden transition-all hover:shadow-md"
+                      >
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500/60"></div>
+                        
+                        <div className="flex items-start justify-between gap-2 pl-1">
+                          <span className="font-bold text-amber-900 dark:text-amber-200 text-xs line-clamp-2 leading-tight">
+                            {note.title}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => investigationNotebookService.unpinNote(note.topicId)}
+                            className="text-amber-600/60 hover:text-rose-500 p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100"
+                            title="Gỡ khỏi sổ tay"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
+                        
+                        {note.excerpt && (
+                          <div className="ml-1 rounded border border-amber-500/20 bg-white/60 dark:bg-black/40 p-2 font-mono text-[10px] text-amber-800 dark:text-amber-300 select-all overflow-x-auto whitespace-pre">
+                            {note.excerpt}
+                          </div>
+                        )}
+                        
+                        <div className="ml-1 pt-1 flex items-center justify-between text-[10px] text-amber-700/80 dark:text-amber-400/80">
+                          <span className="uppercase font-mono font-bold tracking-wider text-[9px] bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                            {note.tool}
+                          </span>
+                          <Link
+                            to={`/academy/${note.courseSlug || academyCourseSlug}/${note.topicId}?fromMission=${missionId}&tool=${tool}`}
+                            className="hover:underline text-amber-600 dark:text-amber-400 font-bold inline-flex items-center gap-1"
+                          >
+                            <span>Tra cứu bài học</span>
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {notebookNotes.length === 0 && (
+                  <div className="text-center py-2.5 text-muted-foreground text-[11px] leading-relaxed mt-2">
+                    <p>Sổ tay đang trống.</p>
+                    <p className="mt-1 opacity-80">
+                      Gõ ghi chú cá nhân ở trên, hoặc tại Học viện bấm <strong>"Ghim sổ tay"</strong> để lưu công thức.
+                    </p>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

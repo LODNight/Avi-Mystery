@@ -13,6 +13,16 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    // Helper function to check if the user is an admin
+    function isAdmin() {
+      return isAuthenticated() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper function to check if content is published
+    function isPublished() {
+      return resource.data.status == 'published';
+    }
+
     match /users/{userId} {
       allow read, write: if isOwner(userId);
     }
@@ -34,16 +44,7 @@ service cloud.firestore {
       }
     }
     
-    match /learning_map_views/{courseId} {
-      allow read: if isAuthenticated();
-      allow write: if false; // Server-side / Admin SDK only
-    }
 
-    match /knowledge_topics/{topicId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated();
-    }
-    
     // Default deny
     match /{document=**} {
       allow read, write: if false;

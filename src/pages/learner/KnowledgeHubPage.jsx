@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X, ArrowLeft, ArrowRight, Play, Sparkles } from 'lucide-react';
-import { knowledgeService } from '../../services/index.js';
+import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search, Menu, X, ArrowLeft, ArrowRight, Play, Sparkles, Bookmark } from 'lucide-react';
+import { knowledgeService, investigationNotebookService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
 
@@ -15,6 +15,7 @@ export function KnowledgeHubPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
   
   const userId = user?.uid || user?.id;
 
@@ -74,6 +75,29 @@ export function KnowledgeHubPage() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTopic) {
+      setIsPinned(investigationNotebookService.isNotePinned(activeTopic.id));
+    }
+  }, [activeTopic]);
+
+  const handleTogglePin = () => {
+    if (!activeTopic) return;
+    if (isPinned) {
+      investigationNotebookService.unpinNote(activeTopic.id);
+      setIsPinned(false);
+    } else {
+      investigationNotebookService.pinNote({
+        topicId: activeTopic.id,
+        title: activeTopic.title,
+        excerpt: activeTopic.summary || `Ghi chú nhanh từ ${activeTopic.title}`,
+        tool: activeTopic.tool,
+        courseSlug: 'academy'
+      });
+      setIsPinned(true);
     }
   };
 
@@ -255,20 +279,35 @@ export function KnowledgeHubPage() {
             <div className="max-w-4xl mx-auto p-6 md:p-8 pb-24">
               <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div>
-                  <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground mb-4">
-                    <span className="capitalize">{activeTopic.tool}</span>
-                    <ChevronRight className="size-3.5" />
-                    <span className="capitalize">{activeTopic.category}</span>
+                  <div className="flex items-center gap-2 text-[11px] md:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-4 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20 inline-flex">
+                    <span className="opacity-80">Hồ sơ nghiệp vụ</span>
+                    <span className="opacity-50">/</span>
+                    <span>{activeTopic.tool}</span>
+                    <span className="opacity-50">/</span>
+                    <span>{activeTopic.category}</span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{activeTopic.title}</h1>
+                  <h1 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">{activeTopic.title}</h1>
                 </div>
-                <Link
-                  to={`/sandbox?tool=${activeTopic.tool}&topicId=${activeTopic.id}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
-                >
-                  <Sparkles className="size-4" />
-                  <span>Thực hành Sandbox (Try it Yourself)</span>
-                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleTogglePin}
+                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0 ${
+                      isPinned
+                        ? 'border-amber-500 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20'
+                        : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
+                    }`}
+                  >
+                    <Bookmark className={`size-4 ${isPinned ? 'fill-current' : ''}`} />
+                    <span className="hidden sm:inline">{isPinned ? 'Đã ghim sổ tay' : 'Ghim sổ tay'}</span>
+                  </button>
+                  <Link
+                    to={`/sandbox?tool=${activeTopic.tool}&topicId=${activeTopic.id}`}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0"
+                  >
+                    <Sparkles className="size-4" />
+                    <span>Thực hành Sandbox (Try it Yourself)</span>
+                  </Link>
+                </div>
               </div>
 
               <KnowledgeViewer markdown={activeTopic.contentMarkdown} />

@@ -38,6 +38,7 @@ export const investigationNotebookService = {
     const existingIndex = current.findIndex(n => n.topicId === topicId);
     const newNote = {
       id: `note-${topicId}-${Date.now()}`,
+      type: 'pinned',
       topicId,
       title: title || 'Ghi chú nghiệp vụ',
       excerpt: excerpt || '',
@@ -56,6 +57,26 @@ export const investigationNotebookService = {
 
     saveStoredNotes(updated);
     return newNote;
+  },
+
+  addCustomNote({ text, tool = 'excel' }) {
+    if (!text || !text.trim()) return;
+    const current = getStoredNotes();
+    const newNote = {
+      id: `custom-${Date.now()}`,
+      type: 'custom',
+      text: text.trim(),
+      tool,
+      pinnedAt: new Date().toISOString(),
+    };
+    saveStoredNotes([newNote, ...current]);
+    return newNote;
+  },
+
+  deleteCustomNote(noteId) {
+    const current = getStoredNotes();
+    const updated = current.filter(n => n.id !== noteId);
+    saveStoredNotes(updated);
   },
 
   unpinNote(topicId) {

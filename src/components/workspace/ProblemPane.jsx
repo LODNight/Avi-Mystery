@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { formatDuration } from '../../utils/format.js';
 import { investigationNotebookService } from '../../services/index.js';
+import InvestigationStamp from '../investigation/InvestigationStamp.jsx';
 
 /**
  * ProblemPane Component (Sprint 9 / Split-Pane Architecture)
@@ -184,10 +185,19 @@ export function ProblemPane({
 
       {/* ── LEVEL 2: CASE FILE (Bối cảnh vụ án - Subtle elevated surface) ── */}
       {story && (
-        <div className="rounded-xl border border-border bg-card/60 dark:bg-card/40 p-3.5 space-y-1.5 shadow-2xs">
-          <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
-            <Sparkles className="size-3 text-amber-500" />
-            <span>Hồ sơ vụ án (Case File)</span>
+        <div className="relative rounded-xl border border-border bg-card/60 dark:bg-card/40 p-3.5 space-y-1.5 shadow-2xs overflow-hidden">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground">
+              <Sparkles className="size-3 text-amber-500" />
+              <span>Hồ sơ vụ án (Case File)</span>
+            </div>
+            <InvestigationStamp
+              variant={isCompleted ? 'solved' : 'confidential'}
+              size="sm"
+              rotate="-rotate-2"
+              animated={false}
+              className="scale-90 origin-right"
+            />
           </div>
           <p className="text-xs italic leading-relaxed text-muted-foreground border-l-2 border-amber-500/40 pl-2.5 py-0.5">
             "{story}"

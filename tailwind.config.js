@@ -74,6 +74,26 @@ export default {
         card: '1rem',
         button: '0.75rem',
       },
+      keyframes: {
+        stamp: {
+          '0%': { opacity: '0', transform: 'scale(1.4) rotate(12deg)' },
+          '50%': { opacity: '0.9', transform: 'scale(0.92) rotate(-4deg)' },
+          '100%': { opacity: '1', transform: 'scale(1) rotate(var(--stamp-rotate, -6deg))' },
+        },
+        reveal: {
+          '0%': { opacity: '0', filter: 'blur(6px)', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', filter: 'blur(0)', transform: 'translateY(0)' },
+        },
+        'amber-pulse': {
+          '0%, 100%': { boxShadow: '0 0 0 0 rgba(245, 158, 11, 0.4)' },
+          '50%': { boxShadow: '0 0 20px 4px rgba(245, 158, 11, 0.25)' },
+        },
+      },
+      animation: {
+        stamp: 'stamp 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+        reveal: 'reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'amber-pulse': 'amber-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
     },
   },
   plugins: [],

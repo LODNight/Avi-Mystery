@@ -81,17 +81,26 @@
 
 ---
 
-### 2. Tiếp theo cần làm gì?
-* **Lựa chọn 1 (Tiếp tục hoàn thiện Frontend UX theo Anti-slop / Taste Audit):**
-  - Đồng bộ giao diện `KnowledgeHubPage` và `PracticeSandboxPage` theo ngôn ngữ thiết kế điều tra tinh gọn.
-  - Mở rộng Sổ tay điều tra cho phép người học tự thêm ghi chú cá nhân dạng text ngắn ngoài các công thức ghim tự động.
-* **Lựa chọn 2 (Khởi động Sprint 10: Backend API & Data Persistence với FastAPI + PostgreSQL):**
-  - Xây dựng RESTful API server sử dụng Python FastAPI và PostgreSQL database.
-  - Tạo database migrations, thiết lập schema tables cho Users, Courses, Chapters, Investigations, Questions, Submissions, Progress, Exams, Certificates.
-  - Thay thế các Frontend Mock Adapters bằng API Client thực tế giữ nguyên Frontend contracts (`src/services/contracts/`).
+* **Hoàn thành Sprint 9.6 — Phase 5 & 6: Ngôn Ngữ Detective Amber & Motion Điều Tra [HOÀN THÀNH 100%]:**
+  - **Quy hoạch Firebase Exports:** Dọn dẹp các thư mục `firebase-export-*` rải rác ngoài root vào thư mục tập trung `backups/firebase-exports/`, cập nhật `.gitignore`.
+  - **Con dấu & Thẻ Vật chứng (`InvestigationStamp`, `EvidenceCard`):** Tạo component con dấu nghiệp vụ mộc đỏ/hổ phách (`ÁN ĐÃ PHÁ`, `ĐÃ XÁC THỰC`, `HỒ SƠ TUYỆT MẬT`) và thẻ vật chứng hồ sơ giải mật.
+  - **Nghi thức Phá án & Hồ sơ Vụ án:** Tái cấu trúc `MissionResultModal` thành nghi thức dập dấu niêm phong vật chứng; gắn con dấu bảo mật vào Case File của `ProblemPane`.
+  - **Tiếp cận & Chống chóng mặt (WCAG 2.3.3):** Tích hợp `motion-reduce:animate-none` cho toàn bộ animation dập dấu (`animate-stamp`) và mở thẻ (`animate-reveal`).
+  - **Kiểm thử & Build:** Bổ sung `InvestigationComponents.test.jsx` (6/6 tests); đạt **73/73 test suites (573/573 tests PASS 100%)**, `npm run build` thành công tuyệt đối.
 
 ---
 
-### 3. Bước đầu tiên cần làm trong bước tiếp theo là gì?
-* Xác nhận với người dùng về hướng đi ưu tiên tiếp theo (Tiếp tục hoàn thiện UX các trang còn lại hay bắt tay vào Backend Sprint 10).
+### 2. Tiếp theo cần làm gì? (Ngắn gọn)
+* **Lựa chọn 1 (Tiếp tục hoàn thiện UX các trang phụ):**
+  - Đồng bộ tone điều tra cho `KnowledgeHubPage` và `PracticeSandboxPage`.
+  - Nâng cấp Sổ tay điều tra cho phép người học tự gõ thêm ghi chú tự do.
+* **Lựa chọn 2 (Khởi động Sprint 10: Backend FastAPI + PostgreSQL):**
+  - Dựng RESTful API server (FastAPI + SQLAlchemy/PostgreSQL).
+  - Tạo schema migrations và kết nối thay thế các Frontend Mock Adapters.
+
+---
+
+### 3. Bước đầu tiên cần làm tiếp theo?
+* Người dùng xác nhận lựa chọn ưu tiên: **Lựa chọn 1** (UX Polish các trang phụ) hay **Lựa chọn 2** (Khởi động Backend Sprint 10).
+
 

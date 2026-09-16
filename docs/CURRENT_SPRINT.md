@@ -658,6 +658,26 @@
 
 ---
 
+## 🟢 Sprint 9.6 — Learner UX: Phase 5 & 6 (Detective Amber & Motion) *(HOÀN THÀNH 100%)*
+
+*Mục tiêu: Hiện thực hóa ngôn ngữ thiết kế Detective Amber toàn diện, con dấu nghiệp vụ và nghi thức phá án (Case Closed Protocol).*
+
+### 🔹 Step 9.6.1: Dọn dẹp & Quy hoạch Firebase Exports
+- [x] Di chuyển toàn bộ các thư mục `firebase-export-*` ra khỏi root vào `backups/firebase-exports/`.
+- [x] Cập nhật `.gitignore` để bỏ qua `backups/`, giữ môi trường repository sạch sẽ.
+
+### 🔹 Step 9.6.2: Design Tokens & Component Primitives
+- [x] **Tokens & Motion (`tailwind.config.js`)**: Cấu hình keyframes `animate-stamp` (dập dấu góc nghiêng), `animate-reveal` (giải mật làm mờ sang rõ), `animate-amber-pulse`. Tích hợp hỗ trợ `motion-reduce:animate-none` chống chóng mặt (WCAG 2.3.3).
+- [x] **InvestigationStamp Component (`InvestigationStamp.jsx`)**: Con dấu nghiệp vụ phong cách mộc đỏ/hổ phách vintage (`ÁN ĐÃ PHÁ`, `ĐÃ XÁC THỰC`, `HỒ SƠ TUYỆT MẬT`, `TÀI LIỆU ĐIỀU TRA`, `MANH MỐI NIÊM PHONG`).
+- [x] **EvidenceCard Component (`EvidenceCard.jsx`)**: Thẻ hồ sơ vật chứng hỗ trợ trạng thái niêm phong / giải mật, hiển thị trích dẫn dữ liệu và nhãn hồ sơ.
+
+### 🔹 Step 9.6.3: Nâng cấp Nghi Thức Phá Án & Hồ Sơ Vụ Án
+- [x] **MissionResultModal (`MissionResultModal.jsx`)**: Tích hợp con dấu dập `InvestigationStamp` ("ÁN ĐÃ PHÁ / CASE CLOSED") và thẻ vật chứng `EvidenceCard` đã xác thực. Bảo toàn 100% contracts và text cũ.
+- [x] **ProblemPane (`ProblemPane.jsx`)**: Gắn con dấu hồ sơ mật `InvestigationStamp` tại tiêu đề Case File mà không gây layout shift.
+- [x] **Kiểm thử hồi quy 100%**: Tạo bộ test `InvestigationComponents.test.jsx` (6/6 tests PASS); toàn bộ dự án đạt **73/73 test suites (573/573 tests PASS 100%)**, build production hoàn tất thành công (16.11s).
+
+---
+
 ## ⚪ Sprint 10 — Backend API & Persistence *(PROPOSED)*
 
 ### 🔹 Step 10.1: FastAPI Server & PostgreSQL Database

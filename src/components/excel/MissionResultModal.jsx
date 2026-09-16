@@ -7,6 +7,8 @@ import {
   X,
   CheckCircle2,
 } from 'lucide-react';
+import InvestigationStamp from '../investigation/InvestigationStamp.jsx';
+import EvidenceCard from '../investigation/EvidenceCard.jsx';
 
 /**
  * MissionResultModal Component (Step 3.4)
@@ -100,7 +102,7 @@ export function MissionResultModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-fade-in overflow-y-auto"
     >
       <div
         ref={dialogRef}
@@ -109,7 +111,7 @@ export function MissionResultModal({
         aria-labelledby="modal-result-title"
         aria-describedby="modal-result-feedback"
         tabIndex={-1}
-        className="relative w-full max-w-lg rounded-3xl border border-emerald-500/40 bg-card p-6 shadow-2xl shadow-emerald-500/10 outline-none transition-all animate-scale-up dark:border-emerald-500/30 sm:p-8"
+        className="relative w-full max-w-lg rounded-3xl border-2 border-emerald-500/40 bg-card p-6 shadow-2xl shadow-emerald-500/10 outline-none transition-all animate-scale-up dark:border-emerald-500/30 sm:p-8 my-auto"
       >
         {/* Nút Đóng Modal */}
         <button
@@ -120,10 +122,22 @@ export function MissionResultModal({
           <X className="size-5" />
         </button>
 
-        {/* ── Modal Header: Animated Result Badge ── */}
-        <div className="flex flex-col items-center text-center space-y-4">
-          <div className="grid size-20 place-items-center rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-600 shadow-lg ring-8 ring-emerald-500/5 transition-transform dark:text-emerald-400">
-            <Trophy className="size-10 fill-current animate-bounce-subtle" />
+        {/* ── Modal Header: Detective Seal & Stamp ── */}
+        <div className="flex flex-col items-center text-center space-y-3">
+          <div className="relative">
+            <div className="grid size-20 place-items-center rounded-3xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-emerald-600 shadow-lg ring-8 ring-emerald-500/5 transition-transform dark:text-emerald-400">
+              <Trophy className="size-10 fill-current animate-bounce-subtle" />
+            </div>
+
+            {/* Rubber Stamp Slammed on Top Corner */}
+            <div className="absolute -top-3 -right-16 sm:-right-20 pointer-events-none">
+              <InvestigationStamp
+                variant="solved"
+                size="sm"
+                rotate="-rotate-12"
+                animated={true}
+              />
+            </div>
           </div>
 
           <div>
@@ -147,7 +161,7 @@ export function MissionResultModal({
 
         {/* Reward Card: Displays +XP for first completion, +0 XP for re-submissions */}
         <div
-          className={`mt-6 space-y-2 rounded-2xl border p-4 text-center animate-fade-in transition-colors duration-500 ${
+          className={`mt-5 space-y-2 rounded-2xl border p-4 text-center animate-fade-in transition-colors duration-500 ${
             isResubmission
               ? 'border-amber-500/20 bg-muted/40'
               : 'border-emerald-500/30 bg-emerald-500/10'
@@ -168,6 +182,18 @@ export function MissionResultModal({
                {currentStatus.text}
              </p>
           </div>
+        </div>
+
+        {/* ── Evidence Dossier Card ── */}
+        <div className="mt-4">
+          <EvidenceCard
+            title={missionTitle}
+            clueId="VẬT-CHỨNG-ĐÃ-XÁC-THỰC"
+            status="verified"
+            description="Dữ liệu điều tra đã được kiểm chứng trùng khớp 100% với hiện trường. Bằng chứng được niêm phong an toàn vào hồ sơ học tập."
+            tags={['Hồ Sơ Hợp Lệ', `+${displayXp} XP`, 'Đã Lưu Trữ']}
+            animated={true}
+          />
         </div>
 
         {/* ── Feedback Message ── */}

@@ -12,7 +12,7 @@
 |---|---|---|
 | **Cài đặt phụ thuộc** | `npm install` | Cài đặt các package cần thiết cho dự án |
 | **Khởi chạy ứng dụng (Dev)** | `npm run dev` | Chạy dev server tại `http://localhost:5173` |
-| **Kiểm thử tự động** | `npm test -- --run` | Chạy toàn bộ **66 test files / 529 test cases (Pass 100%)** |
+| **Kiểm thử tự động** | `npm test -- --run` | Chạy toàn bộ **75 test files / 583 test cases (Pass 100%)** |
 | **Đóng gói sản phẩm** | `npm run build` | Đóng gói bản Production vào thư mục `dist/` |
 | **Xem trước bản Build** | `npm run preview` | Chạy xem trước bản Production sau khi build |
 
@@ -21,7 +21,7 @@
 ## 🕵️ 2. Luồng Vận Hành Giao Diện Người Học (Learner Operations)
 
 ```text
-[Đăng ký/Login] ➔ [/onboarding (Case 0)] ➔ [/dashboard (Guided Tour)] ➔ [/courses] ➔ [/map] ➔ [/missions/:id] ➔ [Excel/SQL Workspace] ➔ [/practice | /profile | /achievements]
+[Đăng ký/Login] ➔ [/onboarding (Case 0)] ➔ [/dashboard (Guided Tour)] ➔ [/courses] ➔ [/map] ➔ [/missions/:id] ➔ [Excel/SQL Workspace] ➔ [/academy | /sandbox | /practice | /profile]
 ```
 
 ### 🔹 Step 0: Đón Tiếp Học Viên Mới (Onboarding & Tutorial Case 0)
@@ -31,11 +31,11 @@
 
 ### 🔹 Step 1: Đăng Nhập & Bảng Điều Khiển (`/login`, `/dashboard`)
 - Sử dụng nút **"Demo Login"** (ở môi trường DEV) hoặc tài khoản học viên để vào hệ thống.
-- Bảng điều khiển (`/dashboard`) tích hợp **Deep Guided Tour 5 bước** giới thiệu toàn diện: Chỉ số XP, Cấp bậc thám tử, Lối tắt vụ án đang làm, Khóa học đề xuất và Chuỗi ngày học 🔥.
+- Bảng điều khiển (`/dashboard`) theo phong cách **Bản Doanh Điều Tra (Detective Home)**: Thẻ hồ sơ vụ án ưu tiên, cấp bậc thám tử, lối tắt học viện và chuỗi ngày học 🔥.
 
 ### 🔹 Step 2: Khám Phá & Chọn Khóa Học (`/courses`, `/courses/:slug`)
-- Trang danh sách khóa học (`/courses`): Hỗ trợ tìm kiếm theo từ khóa, lọc công cụ (**Excel** hoặc **SQL**) và mức độ khó (**Easy**, **Medium**, **Hard**).
-- Trang chi tiết khóa học (`/courses/:slug`): Hiển thị thông tin tổng quan, cấu trúc các Chương học (Accordion) và các Bài học vụ án.
+- Trang danh sách khóa học (`/courses`): Hỗ trợ tìm kiếm theo từ khóa, lọc công cụ (**Excel** hoặc **SQL**) và mức độ khó (**Easy**, **Medium**, **Hard**). Mỗi khóa học gắn liền với **🎯 Ứng dụng điều tra** thực tế (đối soát, truy vết).
+- Trang chi tiết khóa học (`/courses/:slug`): Hiển thị thông tin tổng quan, cấu trúc các Chương học (Accordion) và lối tắt tra cứu Học viện liên quan.
 
 ### 🔹 Step 3: Định Hướng Trên Bản Đồ Học Tập (`/map`)
 - Bản đồ dạng Node/Tree tương tác hiển thị tiến trình của Người học theo từng Giai đoạn (Phase Navigation Tabs) với thẻ tổng quan trình độ thám tử (**Skill Mastery Summary**).
@@ -46,23 +46,37 @@
   - 🔒 **Locked**: Vụ án bị khóa (yêu cầu hoàn thành các bài trước).
 
 ### 🔹 Step 4: Đọc Hồ Sơ Vụ Án (`/missions/:missionId`)
-- Xem bối cảnh câu chuyện điều tra trinh thám, mục tiêu vụ án, tập dữ liệu liên quan và phần thưởng XP.
+- Xem bối cảnh câu chuyện điều tra trinh thám dưới dạng **Hồ sơ bảo mật (Case Dossier)**, mục tiêu vụ án, tập dữ liệu liên quan và phần thưởng XP.
 - Nút **"Bắt đầu điều tra"** sẽ chuyển tiếp tới không gian làm việc công cụ phù hợp (Excel hoặc SQL).
 
-### 🔹 Step 5: Không Gian Làm Việc Thực Hành
+### 🔹 Step 5: Không Gian Làm Việc Thực Hành & Bàn Làm Việc Phá Án
 - **Excel Workspace (`/missions/:missionId/workspace`)**:
-  - Nhập công thức vào thanh `FormulaBar` hoặc ô lưới `SpreadsheetGrid`.
-  - Bấm **"Chạy thử"** để xem kết quả tính toán hoặc **"Nộp bài vụ án"** để chấm điểm tự động.
-  - Sử dụng bảng **Gợi ý (Hint Panel)** khi cần hỗ trợ (có tính năng ghim gợi ý lên thanh công thức).
+  - Tỷ lệ Split-Pane vàng Desktop (34:66), Focus Mode mở rộng 100%.
+  - Ô mục tiêu viền sáng hổ phách (`ring-2 ring-amber-500`), không che khuất số liệu, tự động bổ sung Ghost Rows bù đủ 16 dòng.
+  - In-cell Editor Overlay nổi (`createPortal`), hỗ trợ phím Enter/Tab/Esc, zero re-render.
+  - Thanh công thức Name Box `[ E2 ]` $\to$ `fx` $\to$ Input $\to$ Reset $\to$ Run.
+  - Thẻ **Sổ tay điều tra** ngay trong Problem Pane: tra cứu công thức đã ghim, sửa inline ghi chú cá nhân và 1-click chèn vào bảng tính.
 - **SQL Workspace (`/missions/:missionId/sql`)**:
   - Tra cứu cấu trúc bảng & dữ liệu mẫu tại **Schema Browser** bên trái.
   - Soạn thảo câu lệnh SQL tại **SQL Code Editor** (hỗ trợ phím tắt `Ctrl + Enter` và thụt lề Tab 2 khoảng trắng).
   - Bấm **"Chạy thử"** để thực thi câu lệnh trên trình duyệt (SQLite WASM Engine) và xem bảng kết quả tại **ResultViewer**.
-  - Bấm **"Nộp bài vụ án"** để chấm điểm tự động. Khi đúng, cửa sổ **`MissionResultModal`** sẽ xuất hiện chúc mừng phá án thành công.
+  - Bấm **"Nộp bài vụ án"** để chấm điểm tự động. Khi đúng, cửa sổ **`MissionResultModal`** dập con dấu nghiệp vụ `InvestigationStamp` ("ÁN ĐÃ PHÁ / CASE CLOSED") cùng thẻ niêm phong vật chứng `EvidenceCard`.
 
-### 🔹 Step 6: Rèn Luyện & Phát Triển Kỹ Năng
+### 🔹 Step 6: Học Viện Academy & Kỳ Thi Sát Hạch (`/academy`, `/academy/:courseSlug/exam`)
+- **Học viện W3Schools Style (`/academy`)**: Cung cấp 2 lộ trình chuyên sâu **Excel Academy** và **SQL Academy**.
+  - Sidebar mục lục giáo trình, thanh % tiến độ học tập, cây bài học accordion có tick xanh hoàn thành.
+  - Vòng lặp học tập khép kín: Lý thuyết Markdown $\to$ Thẻ Try it Yourself $\to$ Quick Checkpoint trắc nghiệm 4 lựa chọn (+20 XP).
+- **Kỳ thi Tốt nghiệp & Chứng chỉ số (`/academy/:courseSlug/exam`)**:
+  - Bài kiểm tra năng lực thực chiến 10 câu trắc nghiệm chuyên sâu, đếm ngược 15 phút, điều kiện đạt $\ge 80\%$ (+100 XP).
+  - Cấp **Chứng chỉ điện tử Detective Amber** với mã xác thực duy nhất (`AVI-EXCEL-CERT-XXXXX`), hỗ trợ In / Lưu PDF (`window.print()`) và lưu vĩnh viễn trên Profile cá nhân.
+
+### 🔹 Step 7: Phòng Thực Nghiệm Pháp Chứng & Sổ Tay Điều Tra (`/sandbox`, `/knowledge`)
+- **Phòng Thực Nghiệm Pháp Chứng (`/sandbox`)**: Trình thực hành tự do không áp lực trừ XP, tính toán tức thì với Excel Formula Checker & SQLite WASM. Hỗ trợ 2 Tabs: Lý thuyết/Presets và Sổ tay ghi chép thực địa.
+- **Thư Viện Nghiệp Vụ (`/knowledge`)**: Lưu trữ tài liệu nghiệp vụ chuẩn hóa, gắn con dấu dập mộc `InvestigationStamp`, tích hợp nút mở ngăn kéo **Sổ tay điều tra (Drawer)** mọi lúc mọi nơi.
+
+### 🔹 Step 8: Rèn Luyện & Phát Triển Kỹ Năng
 - **Ngân Hàng Luyện Tập Tự Do (`/practice`)**: Giải bài tập củng cố kỹ năng Excel & SQL không ảnh hưởng tuyến tính đến cốt truyện.
-- **Hồ Sơ Cá Nhân (`/profile`)**: Xem tổng quan chỉ số Level, XP tích lũy, số bài đã giải.
+- **Hồ Sơ Cá Nhân (`/profile`)**: Xem tổng quan chỉ số Level, XP tích lũy, bộ sưu tập **Chứng chỉ Học viện (Academy Certificates)** và các huy hiệu thám tử.
 - **Bảng Danh Hiệu Thám Tử (`/achievements`)**: Xem danh sách huân chương và điều kiện mở khóa.
 - **Lịch Sử Hoạt Động (`/profile/history`)**: Dải timeline ghi nhận từng mốc phá án, thăng cấp với bộ lọc thời gian thực.
 - **Cơ Chế Gamification**: Modal mừng thăng cấp (`LevelUpModal`) kèm hiệu ứng confetti và popup theo dõi chuỗi ngày học 7 ngày (`StreakDetailModal`).

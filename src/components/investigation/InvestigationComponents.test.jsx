@@ -72,3 +72,29 @@ describe('EvidenceCard Component', () => {
     expect(screen.getByText(/SELECT \* FROM transactions/)).toBeInTheDocument();
   });
 });
+
+describe('InvestigationNotebookDrawer Component', () => {
+  it('renders embedded notebook correctly with list and add custom note', async () => {
+    const { InvestigationNotebookDrawer } = await import('./InvestigationNotebookDrawer');
+    const { fireEvent } = await import('@testing-library/react');
+    const { MemoryRouter } = await import('react-router-dom');
+
+    render(
+      <MemoryRouter>
+        <InvestigationNotebookDrawer embedded={true} />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText('Sổ Tay Điều Tra')).toBeInTheDocument();
+    expect(screen.getByText(/Tư liệu & ghi chép nghiệp vụ hiện trường/i)).toBeInTheDocument();
+
+    // Thêm ghi chú
+    const input = screen.getByPlaceholderText(/Thêm ghi chép \/ manh mối cá nhân/i);
+    fireEvent.change(input, { target: { value: 'Manh mối điều tra mới' } });
+
+    const submitBtn = screen.getByRole('button', { name: /Ghi chép/i });
+    fireEvent.click(submitBtn);
+
+    expect(screen.getByText('Manh mối điều tra mới')).toBeInTheDocument();
+  });
+});

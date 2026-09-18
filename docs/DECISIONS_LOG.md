@@ -263,12 +263,20 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: Tránh lỗi màn hình trắng trên Vercel; người dùng luôn có trải nghiệm demo mượt mà.
 - Related modules: SYS-FB, BE, SHR
 
+## ADR-AGT-012 — Ưu tiên Trải nghiệm Frontend & Tạm hoãn Backend Server
+
+- Status: Accepted
+- Date: 2026-09-18
+- Context: Người dùng yêu cầu không can thiệp vào tầng Backend ở giai đoạn này và muốn tiếp tục tối ưu hóa sâu hơn trải nghiệm người học, công cụ học tập và tính trinh thám ở Frontend.
+- Decision: Tạm hoãn (DEFERRED) kế hoạch Sprint 10 Backend (FastAPI + PostgreSQL). Khởi tạo Sprint 10 mới tập trung 100% vào Frontend & Gameplay Enhancements (Pro SQL Workspace, Bảng Manh Mối Evidence Board, Mở rộng Vụ án Cốt truyện). Tiếp tục tận dụng toàn bộ kiến trúc Client Storage, SQLite WASM in-memory và Firestore persistent cache đã pass 75/75 test suites.
+- Consequences: Không phát sinh chi phí vận hành máy chủ backend, quy trình phát triển và kiểm thử giao diện đạt tốc độ tối đa, bảo toàn 100% contracts hiện tại.
+- Related modules: LRN-SQL, GAME, LRN-EXCEL, LRN-ACADEMY
 
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
 
-> **Cập nhật lần cuối:** 08/09/2026
+> **Cập nhật lần cuối:** 18/09/2026
 > **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
 > **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
@@ -295,6 +303,9 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-018` | Academy Course Page with W3Schools syllabus tree & checkpoint quiz | Academy Course Page | `LRN-ACADEMY` | `CURRENT` | Tested | `src/pages/learner/AcademyCoursePage.jsx` |
 | `UI-019` | Academy Exam Page with countdown timer & comprehensive review | Academy Exam Runner | `LRN-ACADEMY` | `CURRENT` | Tested | `src/pages/learner/AcademyExamPage.jsx` |
 | `UI-020` | Digital Certificate Modal with Detective Amber Gold theme & print PDF | Academy Certificate Modal | `LRN-ACADEMY` | `CURRENT` | Tested | `src/components/academy/AcademyCertificateModal.jsx` |
+| `UI-021` | Con dấu nghiệp vụ vintage `InvestigationStamp` (mộc đỏ/hổ phách) | Thư viện, Case File, Victory Modal | `SHR-UI` | `CURRENT` | Tested | `src/components/ui/InvestigationStamp.jsx` |
+| `UI-022` | Thẻ hồ sơ vật chứng niêm phong/giải mật `EvidenceCard` | Victory Modal, Hồ sơ vụ án | `SHR-UI` | `CURRENT` | Tested | `src/components/ui/EvidenceCard.jsx` |
+| `UI-023` | Sổ tay điều tra 2 chiều (`InvestigationNotebookDrawer`) | Drawer toàn cục, Sandbox, ProblemPane | `LRN-NOTE` | `CURRENT` | Tested | `src/components/notebook/InvestigationNotebookDrawer.jsx` |
 | `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/features/gamification/LevelUpModal.jsx` |
 | `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/pages/learner/ProfilePage.jsx` |
 | `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `CURRENT` | Tested | `src/pages/admin/AdminMissionsPage.jsx` |

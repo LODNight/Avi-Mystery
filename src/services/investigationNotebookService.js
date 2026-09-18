@@ -73,6 +73,22 @@ export const investigationNotebookService = {
     return newNote;
   },
 
+  updateCustomNote(noteId, newText) {
+    if (!noteId || !newText || !newText.trim()) return null;
+    const current = getStoredNotes();
+    const targetIdx = current.findIndex(n => n.id === noteId);
+    if (targetIdx === -1) return null;
+
+    const updated = [...current];
+    updated[targetIdx] = {
+      ...updated[targetIdx],
+      text: newText.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+    saveStoredNotes(updated);
+    return updated[targetIdx];
+  },
+
   deleteCustomNote(noteId) {
     const current = getStoredNotes();
     const updated = current.filter(n => n.id !== noteId);

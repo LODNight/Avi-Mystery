@@ -4,6 +4,8 @@ import { BookOpen, CheckCircle2, ChevronRight, FileSpreadsheet, Database, Search
 import { knowledgeService, investigationNotebookService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
+import InvestigationStamp from '../../components/investigation/InvestigationStamp.jsx';
+import { InvestigationNotebookDrawer } from '../../components/investigation/InvestigationNotebookDrawer.jsx';
 
 export function KnowledgeHubPage() {
   const { topicId } = useParams();
@@ -16,6 +18,7 @@ export function KnowledgeHubPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
+  const [isNotebookOpen, setIsNotebookOpen] = useState(false);
   
   const userId = user?.uid || user?.id;
 
@@ -133,10 +136,18 @@ export function KnowledgeHubPage() {
       >
         {/* Sidebar Header */}
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-bold text-foreground flex items-center gap-2">
-            <BookOpen className="size-5 text-amber-500" />
-            Thư Viện Kiến Thức
-          </h2>
+          <div>
+            <h2 className="font-bold text-foreground flex items-center gap-2">
+              <BookOpen className="size-5 text-amber-500" />
+              Thư Viện Kiến Thức
+            </h2>
+            <div className="flex items-center gap-1.5 mt-1">
+              <span className="text-[10px] font-mono tracking-wider uppercase text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                TƯ LIỆU NGHIỆP VỤ
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground">ARC-01</span>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setIsMobileSidebarOpen(false)}
@@ -278,20 +289,39 @@ export function KnowledgeHubPage() {
           {activeTopic ? (
             <div className="max-w-4xl mx-auto p-6 md:p-8 pb-24">
               <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2 text-[11px] md:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-4 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20 inline-flex">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 text-[11px] md:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20 inline-flex">
                     <span className="opacity-80">Hồ sơ nghiệp vụ</span>
                     <span className="opacity-50">/</span>
                     <span>{activeTopic.tool}</span>
                     <span className="opacity-50">/</span>
                     <span>{activeTopic.category}</span>
                   </div>
-                  <h1 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">{activeTopic.title}</h1>
+                  <div className="flex items-start justify-between gap-3">
+                    <h1 className="text-2xl md:text-3xl font-black text-foreground tracking-tight">{activeTopic.title}</h1>
+                    <div className="shrink-0 hidden md:block">
+                      <InvestigationStamp
+                        variant={readTopics.includes(activeTopic.id) ? 'verified' : 'classified'}
+                        size="sm"
+                        rotate={readTopics.includes(activeTopic.id) ? '-rotate-3' : 'rotate-2'}
+                        animated={false}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setIsNotebookOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-border bg-card hover:bg-muted text-xs sm:text-sm font-bold shadow-xs text-foreground transition-colors shrink-0 cursor-pointer"
+                    title="Mở toàn bộ sổ tay điều tra"
+                  >
+                    <Bookmark className="size-4 text-amber-500" />
+                    <span className="hidden sm:inline">Mở sổ tay</span>
+                  </button>
                   <button
                     onClick={handleTogglePin}
-                    className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0 ${
+                    className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-xs sm:text-sm font-bold shadow-xs transition-colors shrink-0 cursor-pointer ${
                       isPinned
                         ? 'border-amber-500 bg-amber-500/10 text-amber-500 hover:bg-amber-500/20'
                         : 'border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground'
@@ -415,6 +445,13 @@ export function KnowledgeHubPage() {
           )}
         </div>
       </div>
+      
+      {/* Sổ tay điều tra Drawer */}
+      <InvestigationNotebookDrawer
+        isOpen={isNotebookOpen}
+        onClose={() => setIsNotebookOpen(false)}
+        activeTool={activeTopic?.tool}
+      />
     </div>
   );
 }

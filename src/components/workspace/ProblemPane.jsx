@@ -19,6 +19,9 @@ import {
   Bookmark,
   Trash2,
   Plus,
+  Edit2,
+  Check,
+  X,
 } from 'lucide-react';
 import { formatDuration } from '../../utils/format.js';
 import { investigationNotebookService } from '../../services/index.js';
@@ -58,6 +61,8 @@ export function ProblemPane({
   const [showNotebook, setShowNotebook] = useState(true);
   const [notebookNotes, setNotebookNotes] = useState(() => investigationNotebookService.getNotes());
   const [newCustomNote, setNewCustomNote] = useState('');
+  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editingNoteText, setEditingNoteText] = useState('');
 
   const pinnedNotes = notebookNotes.filter(n => n.type !== 'custom');
   const customNotes = notebookNotes.filter(n => n.type === 'custom');
@@ -67,6 +72,23 @@ export function ProblemPane({
     if (!newCustomNote.trim()) return;
     investigationNotebookService.addCustomNote({ text: newCustomNote, tool });
     setNewCustomNote('');
+  };
+
+  const handleStartEditNote = (note) => {
+    setEditingNoteId(note.id);
+    setEditingNoteText(note.text);
+  };
+
+  const handleSaveEditNote = (noteId) => {
+    if (!editingNoteText.trim()) return;
+    investigationNotebookService.updateCustomNote(noteId, editingNoteText);
+    setEditingNoteId(null);
+    setEditingNoteText('');
+  };
+
+  const handleCancelEditNote = () => {
+    setEditingNoteId(null);
+    setEditingNoteText('');
   };
 
   useEffect(() => {
@@ -424,16 +446,58 @@ export function ProblemPane({
                   <div className="space-y-2">
                     <h4 className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50 pb-1">Ghi chép của bạn</h4>
                     {customNotes.map(note => (
-                      <div key={note.id} className="group flex items-start justify-between gap-2 bg-muted/30 p-2 rounded-md border border-border/50 hover:border-amber-500/30 transition-colors">
-                        <p className="text-xs text-foreground flex-1 break-words leading-relaxed">{note.text}</p>
-                        <button
-                          type="button"
-                          onClick={() => investigationNotebookService.deleteCustomNote(note.id)}
-                          className="text-muted-foreground hover:text-rose-500 p-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-                          title="Xóa ghi chú"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
+                      <div key={note.id} className="group bg-muted/30 p-2 rounded-md border border-border/50 hover:border-amber-500/30 transition-colors">
+                        {editingNoteId === note.id ? (
+                          <div className="space-y-1.5">
+                            <textarea
+                              value={editingNoteText}
+                              onChange={(e) => setEditingNoteText(e.target.value)}
+                              rows={2}
+                              className="w-full bg-background border border-amber-500/50 rounded p-1.5 text-xs text-foreground focus:outline-none resize-none"
+                              autoFocus
+                            />
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                type="button"
+                                onClick={() => handleSaveEditNote(note.id)}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-500 text-amber-950 font-bold text-[10px] hover:bg-amber-600 transition-colors"
+                              >
+                                <Check className="size-3" />
+                                <span>Lưu</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={handleCancelEditNote}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-muted text-muted-foreground font-medium text-[10px] hover:text-foreground transition-colors"
+                              >
+                                <X className="size-3" />
+                                <span>Hủy</span>
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-xs text-foreground flex-1 break-words leading-relaxed">{note.text}</p>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => handleStartEditNote(note)}
+                                className="text-muted-foreground hover:text-amber-500 p-0.5 rounded transition-colors"
+                                title="Sửa ghi chú"
+                              >
+                                <Edit2 className="size-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => investigationNotebookService.deleteCustomNote(note.id)}
+                                className="text-muted-foreground hover:text-rose-500 p-0.5 rounded transition-colors"
+                                title="Xóa ghi chú"
+                              >
+                                <Trash2 className="size-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>

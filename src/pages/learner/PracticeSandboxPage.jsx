@@ -16,8 +16,10 @@ import {
   Layers,
   Code2,
   Info,
+  Bookmark,
 } from 'lucide-react';
 import { WorkspaceSplitPane } from '../../components/workspace/WorkspaceSplitPane.jsx';
+import { InvestigationNotebookDrawer } from '../../components/investigation/InvestigationNotebookDrawer.jsx';
 import { KnowledgeViewer } from '../../components/knowledge/KnowledgeViewer.jsx';
 import { FormulaBar } from '../../components/excel/FormulaBar.jsx';
 import { SpreadsheetGrid } from '../../components/excel/SpreadsheetGrid.jsx';
@@ -46,6 +48,7 @@ export function PracticeSandboxPage() {
   // Active Tool: 'excel' | 'sql'
   const initialTool = routeTool || searchParams.get('tool') || 'excel';
   const [activeTool, setActiveTool] = useState(initialTool === 'sql' ? 'sql' : 'excel');
+  const [leftPaneTab, setLeftPaneTab] = useState('theory'); // 'theory' | 'notebook'
 
   // Topics & Active Topic
   const [topics, setTopics] = useState([]);
@@ -371,6 +374,23 @@ export function PracticeSandboxPage() {
     return true;
   }, [handleRunExcelFormula]);
 
+  // ── Apply Code from Investigation Notebook ──
+  const handleApplyCodeFromNotebook = useCallback((code, tool) => {
+    if (!code) return;
+    if (tool === 'sql' || activeTool === 'sql') {
+      if (activeTool !== 'sql') setActiveTool('sql');
+      setUserSql(code);
+    } else {
+      if (activeTool !== 'excel') setActiveTool('excel');
+      const targetCell = selectedCellRef.current || 'D10';
+      if (sessionRef.current.status === 'IDLE') {
+        startEditing(targetCell, getCellValueForInput(targetCell), code);
+      } else {
+        updateDraft(code);
+      }
+    }
+  }, [activeTool, startEditing, updateDraft, getCellValueForInput]);
+
   // ── Reset Excel Grid ──
   const handleResetExcel = () => {
     const fresh = getInitialExcelSandboxCells();
@@ -479,8 +499,11 @@ export function PracticeSandboxPage() {
           <div>
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-amber-500" />
-              <h1 className="text-sm font-bold text-foreground tracking-tight">
-                Practice Sandbox
+              <h1 className="text-sm font-bold text-foreground tracking-tight flex items-center gap-2">
+                <span>Practice Sandbox</span>
+                <span className="hidden xl:inline-block text-[10px] font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 uppercase">
+                  PHÒNG THỰC NGHIỆM PHÁP CHỨNG
+                </span>
               </h1>
               <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider">
                 Try it Yourself
@@ -520,7 +543,7 @@ export function PracticeSandboxPage() {
           </button>
         </div>
 
-        {/* Right: Topic Selector & Reset */}
+        {/* Right: Topic Selector, Notebook Toggle & Reset */}
         <div className="flex items-center gap-2">
           {topics.length > 0 && (
             <div className="relative hidden lg:block">
@@ -538,6 +561,20 @@ export function PracticeSandboxPage() {
               <ChevronDown className="absolute right-2.5 top-2.5 size-3.5 text-muted-foreground pointer-events-none" />
             </div>
           )}
+
+          <button
+            type="button"
+            onClick={() => setLeftPaneTab((prev) => (prev === 'notebook' ? 'theory' : 'notebook'))}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
+              leftPaneTab === 'notebook'
+                ? 'border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold'
+                : 'border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground'
+            }`}
+            title="Chuyển đổi Sổ tay điều tra"
+          >
+            <Bookmark className="size-3.5 text-amber-500" />
+            <span className="hidden md:inline">{leftPaneTab === 'notebook' ? 'Đóng sổ tay' : 'Sổ tay điều tra'}</span>
+          </button>
 
           <button
             type="button"
@@ -563,105 +600,144 @@ export function PracticeSandboxPage() {
           isFocusMode={isFocusMode}
           onToggleFocusMode={toggleFocusMode}
           leftContent={
-            <div className="space-y-6 pb-12">
-              {/* Topic Header */}
-              {activeTopic ? (
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                      {activeTopic.tool}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
-                      {activeTopic.category}
-                    </span>
-                  </div>
-                  <h2 className="text-xl font-bold text-foreground tracking-tight">
-                    {activeTopic.title}
-                  </h2>
+            <div className="space-y-5 pb-12">
+              {/* Tab Selector: Lý thuyết & Ví dụ vs Sổ tay điều tra */}
+              <div className="flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border">
+                <button
+                  type="button"
+                  onClick={() => setLeftPaneTab('theory')}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    leftPaneTab === 'theory'
+                      ? 'bg-background text-foreground shadow-xs border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Lý thuyết & Ví dụ
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLeftPaneTab('notebook')}
+                  className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    leftPaneTab === 'notebook'
+                      ? 'bg-amber-500 text-amber-950 shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Bookmark className="size-3.5" />
+                  <span>Sổ tay điều tra</span>
+                </button>
+              </div>
+
+              {leftPaneTab === 'notebook' ? (
+                <div className="rounded-2xl border border-border overflow-hidden bg-card shadow-xs min-h-[500px]">
+                  <InvestigationNotebookDrawer
+                    embedded={true}
+                    activeTool={activeTool}
+                    onApplyCode={handleApplyCodeFromNotebook}
+                  />
                 </div>
               ) : (
-                <div className="text-sm text-muted-foreground">Đang tải bài học...</div>
-              )}
-
-              {/* Quick Presets / Try It Examples Cards */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Sparkles className="size-3.5 text-amber-500" />
-                    Ví dụ thực hành nhanh
-                  </h3>
-                  <span className="text-[10px] text-muted-foreground">Bấm để chạy thử</span>
-                </div>
-
-                <div className="space-y-2.5">
-                  {currentPresets.map((preset, idx) => (
-                    <div
-                      key={idx}
-                      className="rounded-xl border border-border bg-zinc-50 dark:bg-zinc-900/50 p-3 hover:border-amber-500/50 hover:shadow-sm transition-all group"
-                    >
-                      <div className="flex items-start justify-between gap-2 mb-1.5">
-                        <span className="text-xs font-semibold text-foreground">
-                          {preset.title}
+                <>
+                  {/* Topic Header */}
+                  {activeTopic ? (
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                          {activeTopic.tool}
                         </span>
-                        <button
-                          type="button"
-                          onClick={() => handleApplyPreset(preset)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold shadow-xs transition-colors shrink-0 cursor-pointer"
-                        >
-                          <Play className="size-2.5 fill-current" />
-                          <span>Thử ngay</span>
-                        </button>
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                          {activeTopic.category}
+                        </span>
                       </div>
-                      <div className="p-2 rounded-lg bg-zinc-950 font-mono text-xs text-amber-400 overflow-x-auto border border-white/5 mb-1.5">
-                        <code>{preset.code}</code>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                        {preset.explanation}
-                      </p>
+                      <h2 className="text-xl font-bold text-foreground tracking-tight">
+                        {activeTopic.title}
+                      </h2>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">Đang tải bài học...</div>
+                  )}
 
-              {/* Full Lesson Markdown Viewer */}
-              {activeTopic && (
-                <div className="pt-4 border-t border-border/80">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
-                    <BookOpen className="size-3.5 text-blue-500" />
-                    Lý thuyết chi tiết
-                  </h3>
-                  <div className="rounded-2xl border border-border bg-card p-4">
-                    <KnowledgeViewer markdown={activeTopic.contentMarkdown} />
+                  {/* Quick Presets / Try It Examples Cards */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                        <Sparkles className="size-3.5 text-amber-500" />
+                        Ví dụ thực hành nhanh
+                      </h3>
+                      <span className="text-[10px] text-muted-foreground">Bấm để chạy thử</span>
+                    </div>
+
+                    <div className="space-y-2.5">
+                      {currentPresets.map((preset, idx) => (
+                        <div
+                          key={idx}
+                          className="rounded-xl border border-border bg-zinc-50 dark:bg-zinc-900/50 p-3 hover:border-amber-500/50 hover:shadow-sm transition-all group"
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-1.5">
+                            <span className="text-xs font-semibold text-foreground">
+                              {preset.title}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleApplyPreset(preset)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-bold shadow-xs transition-colors shrink-0 cursor-pointer"
+                            >
+                              <Play className="size-2.5 fill-current" />
+                              <span>Thử ngay</span>
+                            </button>
+                          </div>
+                          <div className="p-2 rounded-lg bg-zinc-950 font-mono text-xs text-amber-400 overflow-x-auto border border-white/5 mb-1.5">
+                            <code>{preset.code}</code>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground leading-relaxed">
+                            {preset.explanation}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+
+                  {/* Full Lesson Markdown Viewer */}
+                  {activeTopic && (
+                    <div className="pt-4 border-t border-border/80">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-1.5">
+                        <BookOpen className="size-3.5 text-blue-500" />
+                        Lý thuyết chi tiết
+                      </h3>
+                      <div className="rounded-2xl border border-border bg-card p-4">
+                        <KnowledgeViewer markdown={activeTopic.contentMarkdown} />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sequential Progression Buttons (W3Schools Style) */}
+                  <div className="pt-4 border-t border-border flex items-center justify-between gap-3">
+                    {prevTopic ? (
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTopic(prevTopic.id)}
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-medium text-foreground transition-colors cursor-pointer"
+                      >
+                        <ArrowLeft className="size-3.5" />
+                        <span className="truncate max-w-[120px]">Bài trước</span>
+                      </button>
+                    ) : (
+                      <div />
+                    )}
+
+                    {nextTopic && (
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTopic(nextTopic.id)}
+                        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 text-xs font-bold transition-opacity ml-auto cursor-pointer"
+                      >
+                        <span>Bài tiếp theo</span>
+                        <ArrowRight className="size-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </>
               )}
-
-              {/* Sequential Progression Buttons (W3Schools Style) */}
-              <div className="pt-4 border-t border-border flex items-center justify-between gap-3">
-                {prevTopic ? (
-                  <button
-                    type="button"
-                    onClick={() => handleSelectTopic(prevTopic.id)}
-                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border bg-card hover:bg-muted text-xs font-medium text-foreground transition-colors"
-                  >
-                    <ArrowLeft className="size-3.5" />
-                    <span className="truncate max-w-[120px]">Bài trước</span>
-                  </button>
-                ) : (
-                  <div />
-                )}
-
-                {nextTopic && (
-                  <button
-                    type="button"
-                    onClick={() => handleSelectTopic(nextTopic.id)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-primary-foreground hover:opacity-90 text-xs font-bold transition-opacity ml-auto"
-                  >
-                    <span>Bài tiếp theo</span>
-                    <ArrowRight className="size-3.5" />
-                  </button>
-                )}
-              </div>
             </div>
           }
           rightContent={

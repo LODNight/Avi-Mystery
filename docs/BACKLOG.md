@@ -62,3 +62,33 @@
    - *Vấn đề:* Sau khi hoàn thành các bài học W3Schools Style, học viên thiếu bài đánh giá tổng hợp để kiểm chứng năng lực và nhận chứng chỉ ghi nhận thành quả.
    - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Xây dựng bộ đề 10 câu hỏi sát hạch trắc nghiệm chuyên sâu cho Excel & SQL Academy kèm giải thích, đồng hồ đếm ngược 15 phút, điều kiện đỗ $\ge 80\%$, và hệ thống cấp Chứng chỉ số Detective Amber Gold (`AcademyCertificateModal.jsx`) hỗ trợ In/Tải PDF, sao chép mã xác thực, lưu trữ trên Profile.
 
+---
+
+## Hạng mục từ Sprint 9.6 (Detective Amber & Sổ Tay Điều Tra Toàn Diện) — [ĐÃ HOÀN TẤT DỌN DẸP]
+
+1. **Sổ Tay Điều Tra & Đồng Bộ 2 Chiều (`investigationNotebookService.js`):**
+   - *Vấn đề:* Ghi chú của học viên trước đây chỉ ghim tĩnh, không cho phép chỉnh sửa trực tiếp nội dung ghi chú và thiếu phương thức đồng bộ thời gian thực giữa Bàn làm việc vụ án và Phòng thực nghiệm.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Bổ sung hàm `updateCustomNote`, xây dựng `InvestigationNotebookDrawer.jsx` hỗ trợ cả 2 chế độ Drawer trượt và nhúng Inline, tìm kiếm ghi chép, sao chép và chèn 1-click vào trình thực thi.
+
+2. **Đồng Bộ Ngôn Ngữ Thị Giác Trinh Thám (`KnowledgeHubPage`, `PracticeSandboxPage`, `ProblemPane`):**
+   - *Vấn đề:* Các trang lý thuyết và sandbox mang giao diện tài liệu thông thường, chưa toát lên không khí hồ sơ vụ án nghiệp vụ.
+   - *Trạng thái:* **ĐÃ XỬ LÝ (Resolved).** Gắn con dấu nghiệp vụ `InvestigationStamp` (mộc đỏ `TÀI LIỆU ĐIỀU TRA`, mộc hổ phách `ĐÃ XÁC THỰC`), chuyển đổi sidebar sang phong cách lưu trữ `HỒ SƠ TƯ LIỆU NGHIỆP VỤ • ARC-01`, thêm huy hiệu `PHÒNG THỰC NGHIỆM PHÁP CHỨNG` và tích hợp Tab Sổ tay song song với Lý thuyết.
+
+---
+
+## Hạng mục Backlog Tiếp Theo — Sprint 10 (Frontend & Gameplay Focus)
+
+> *Ghi chú: Toàn bộ công việc Backend (FastAPI + PostgreSQL) tạm thời được hoãn lại (`DEFERRED`) theo yêu cầu của người dùng để ưu tiên hoàn thiện trải nghiệm Frontend.*
+
+| Mã Task | Tiêu đề Hạng mục | Area | Ưu tiên | Trạng thái | Mô tả & Tiêu chí Nghiệm thu |
+|---|---|---|---|---|---|
+| `LRN-SQL-PRO-001` | SQL Editor Nâng Cao (Syntax & Autocomplete) | `LRN-SQL` | `High` | `PROPOSED` | Tích hợp syntax highlighting cho từ khóa SQL, tự động gợi ý bảng/cột từ Schema hiện hành |
+| `LRN-SQL-PRO-002` | SQL Query History & 1-Click Formatter | `LRN-SQL` | `Medium` | `PROPOSED` | Lưu lịch sử các câu lệnh đã chạy trong session, bổ sung nút làm đẹp (beautify) câu lệnh SQL |
+| `LRN-SQL-PRO-003` | Mini Data Visualizer cho SQL Results | `LRN-SQL` | `Medium` | `PROPOSED` | Cho phép chuyển đổi xem bảng kết quả SQL sang biểu đồ cột/đường đơn giản |
+| `GAM-EVBD-001` | Bảng Manh Mối Vụ Án (Detective Evidence Board) | `GAME` | `High` | `PROPOSED` | Màn hình Cork Board ghim các bằng chứng đã thu thập, kết nối dây đỏ và màn suy luận kết án |
+| `GAM-DALY-001` | Vụ Án Mỗi Ngày (Daily Case) & Streak Multiplier | `GAME` | `Medium` | `PROPOSED` | Câu đố mini 3-5 phút ngẫu nhiên mỗi ngày thưởng XP nhân đôi và giữ lửa chuỗi ngày học |
+| `GAM-LEAD-001` | Bảng Vinh Danh Thám Tử (Detective Leaderboard) | `GAME` | `Medium` | `PROPOSED` | Bảng xếp hạng thám tử theo tuần/tháng theo XP, cấp bậc và số vụ án đã phá |
+| `CNT-CASE-001` | Mở rộng Vụ Án Cốt Truyện (Case 01 & Case 02) | `CONTENT` | `High` | `PROPOSED` | Thiết kế kịch bản vụ án gian lận thương mại & rò rỉ dữ liệu với dataset phong phú |
+| `SHR-TOAST-001` | Hệ Thống Toast Notification Thay Thế `alert()` | `SHR` | `Medium` | `PROPOSED` | Loại bỏ các hàm `alert()` native, chuẩn hóa Toast phong cách Detective Amber |
+| `BE-FASTAPI-001` | Dựng Backend API Server & PostgreSQL | `BE` | `Low` | `DEFERRED` | Dựng FastAPI server, Docker compose, database migrations (Tạm hoãn theo yêu cầu người dùng) |
+

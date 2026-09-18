@@ -676,13 +676,50 @@
 - [x] **ProblemPane (`ProblemPane.jsx`)**: Gắn con dấu hồ sơ mật `InvestigationStamp` tại tiêu đề Case File mà không gây layout shift.
 - [x] **Kiểm thử hồi quy 100%**: Tạo bộ test `InvestigationComponents.test.jsx` (6/6 tests PASS); toàn bộ dự án đạt **73/73 test suites (573/573 tests PASS 100%)**, build production hoàn tất thành công (16.11s).
 
+### 🔹 Step 9.6.4 (Phase 7): Đồng Bộ Phong Cách Trinh Thám & Nâng Cấp Toàn Diện Sổ Tay Điều Tra *(HOÀN THÀNH 100%)*
+- [x] **Nâng cấp Sổ tay điều tra (`investigationNotebookService.js` & `InvestigationNotebookDrawer.jsx`)**:
+  - Mở rộng service với hàm `updateCustomNote` cho phép chỉnh sửa trực tiếp nội dung ghi chú kèm timestamp cập nhật.
+  - Xây dựng component đa năng `InvestigationNotebookDrawer.jsx` hỗ trợ cả chế độ ngăn kéo trượt (drawer) và nhúng nội tuyến (embedded), lọc theo công cụ (Excel/SQL), tìm kiếm ghi chép, sao chép 1-click và chèn trực tiếp mã vào trình thực nghiệm.
+- [x] **Đồng bộ hóa Hồ sơ Nghiệp vụ Thư Viện (`KnowledgeHubPage.jsx`)**:
+  - Sidebar mang phong cách lưu trữ hồ sơ nghiệp vụ (`HỒ SƠ TƯ LIỆU NGHIỆP VỤ • ARC-01`).
+  - Gắn con dấu nghiệp vụ `InvestigationStamp` (mộc đỏ `TÀI LIỆU ĐIỀU TRA` khi đang nghiên cứu và mộc hổ phách `ĐÃ XÁC THỰC` khi hoàn thành bài đọc).
+  - Tích hợp nút **"Mở sổ tay"** mở trực tiếp drawer Sổ tay điều tra ngay trên trang đọc bài mà không cần rời màn hình.
+- [x] **Phòng Thực Nghiệm Pháp Chứng (`PracticeSandboxPage.jsx`)**:
+  - Bổ sung huy hiệu nghiệp vụ `PHÒNG THỰC NGHIỆM PHÁP CHỨNG` trong thanh tiêu đề.
+  - Cột Trái Split-Pane tích hợp bộ chuyển đổi tab linh hoạt: **Tab Lý thuyết & Ví dụ** (bảo toàn 100% cấu trúc giáo trình, heading, presets và nút "Thử ngay") và **Tab Sổ tay điều tra** (tra cứu công thức đã ghim, viết ghi chép thực địa và 1-click áp dụng vào bảng tính/SQL editor).
+- [x] **Chỉnh sửa Ghi chú trong Bàn làm việc Phá án (`ProblemPane.jsx`)**:
+  - Hỗ trợ chế độ chỉnh sửa inline cho các ghi chép cá nhân với icon bút chì, hủy và lưu nhanh chóng.
+- [x] **Kiểm thử tự động & Build**:
+  - Bổ sung test suites mới: `KnowledgeHubPage.test.jsx` (5/5 tests), `investigationNotebookService.test.js` (4/4 tests), mở rộng `InvestigationComponents.test.jsx`.
+  - Toàn bộ dự án đạt **75/75 test suites (583/583 tests PASS 100%)**, `npm run build` thành công tuyệt đối (18.45s).
+
 ---
 
-## ⚪ Sprint 10 — Backend API & Persistence *(PROPOSED)*
+## 🟢 Sprint 10 — Frontend & Gameplay Enhancements *(PROPOSED / READY)*
+> *Lưu ý: Công việc Backend (FastAPI + PostgreSQL) tạm thời hoãn lại (`DEFERRED`) theo yêu cầu người dùng để tập trung nâng tầm trải nghiệm Frontend & Client-side.*
 
-### 🔹 Step 10.1: FastAPI Server & PostgreSQL Database
-- [ ] Xây dựng RESTful API với Python FastAPI & PostgreSQL database.
-- [ ] Thay thế các Mock Services bằng API Client thực tế giữ nguyên Frontend contracts.
+### 🔹 Option A: Nâng cấp SQL Workspace Lên Chuẩn Pro (SQL Syntax, Autocomplete & History)
+- [ ] Xây dựng SQL Syntax Highlighter & Autocomplete gợi ý tên bảng/cột từ Schema hiện hành.
+- [ ] Bổ sung Query History (lưu và chạy lại các câu lệnh trong session) & nút Format SQL 1-click.
+- [ ] Mini Data Visualizer: Chuyển đổi bảng kết quả SQL sang biểu đồ cột/đường đơn giản.
+
+### 🔹 Option B: Bảng Manh Mối & Bằng Chứng Vụ Án (Detective Evidence Board)
+- [ ] Màn hình Cork Board ghim các bằng chứng đã thu thập, kết nối dây đỏ giữa các nghi phạm và số liệu bất thường.
+- [ ] Màn hình suy luận tổng hợp để người học xâu chuỗi manh mối và đưa ra cáo trạng cuối cùng.
+
+### 🔹 Option C: Mở Rộng Nội Dung Thực Chiến (Content Expansion)
+- [ ] Thêm các Vụ án Cốt truyện mới (Case 01, Case 02) với kịch bản chi tiết và bộ dataset phong phú.
+- [ ] Bổ sung các chương nâng cao cho Academy (XLOOKUP, Pivot Tables, SQL Window Functions).
+
+### 🔹 Option D: Thử Thách Hàng Ngày (Daily Case) & Bảng Xếp Hạng (Leaderboard)
+- [ ] Mini-puzzle 3-5 phút mỗi ngày giữ chuỗi streak và nhân đôi XP.
+- [ ] Bảng xếp hạng thám tử theo tuần/tháng với danh hiệu và huy hiệu vinh danh.
+
+---
+
+## ⏸️ Sprint 10 (Backend) — Backend API & Persistence *(DEFERRED)*
+> *Tạm hoãn theo yêu cầu của người dùng. Có thể kích hoạt lại bất kỳ lúc nào.*
+- [ ] FastAPI Server, Docker compose PostgreSQL, Alembic migrations, dual-mode client adapter.
 
 ---
 
@@ -691,25 +728,14 @@
 # AVI-MYSTERY — CURRENT TASK
 
 ## Primary Module
-- **Module Name**: `Academy Mode & Interactive Sandbox (W3Schools Style)`
-- **Primary Path**: `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/AcademyExamPage.jsx`, `src/components/academy/AcademyCertificateModal.jsx`, `src/mocks/data/academy/academyExams.js`
-- **Current Sprint**: **SPRINT 9.5 — Academy Mode & Interactive Sandbox — COMPLETED (100%)**
-- **Current Step**: **STEP 9.5.3: Academy Certification & Mini-Exams — COMPLETED**
-- **Next Sprint**: **SPRINT 10: Backend API & Persistence**
+- **Module Name**: `Sprint 10 — Frontend & Gameplay Enhancements (Planning)`
+- **Current Sprint**: **SPRINT 9.6 (Phase 7) — COMPLETED (100%)** | **SPRINT 10 — PLANNING**
+- **Current Status**: **All 75 test suites (583/583 tests) PASSING (100%)**, Production build SUCCESS
+- **Next Decision**: Chọn định hướng triển khai Frontend Sprint 10 (SQL Pro Workspace / Evidence Board / Content Expansion / Daily Case & Leaderboard)
 
-## Completed Sub-steps
-1. **Step 9.5.1.1: Sandbox Split-Pane & Engine**: Xây dựng `PracticeSandboxPage`, tích hợp tính toán Excel Formula & SQLite WASM.
-2. **Step 9.5.1.2: Sandbox UX Refactor & Verification**: In-cell Editor Overlay (`createPortal`), state machine draft/commit/cancel, keyboard nav, ghost row currency format.
-3. **Step 9.5.1.3: Production Hotfix**: Khắc phục lỗi crash `auth/invalid-api-key` trên Vercel khi thiếu env vars; graceful fallback sang Mock Services.
-4. **Step 9.5.2.1: Academy Syllabus Data**: Tạo `academySyllabus.js` với cây cấu trúc giáo trình cho Excel Academy và SQL Academy kèm câu hỏi checkpoint và presets sandbox.
-5. **Step 9.5.2.2: AcademyCoursePage UI**: Giao diện học viện chuẩn W3Schools với sidebar mục lục, thanh % tiến độ, nội dung bài học, thẻ Try it Yourself và câu đố Quick Checkpoint.
-6. **Step 9.5.2.3: Closed-Loop Progression**: Tích hợp trả lời câu hỏi trắc nghiệm, phản hồi Đúng/Sai, thưởng +20 XP và tự động đánh dấu hoàn thành qua `knowledgeService`.
-7. **Step 9.5.2.4: Routing & Navigation**: Đăng ký `/academy`, `/academy/:courseSlug`, `/academy/:courseSlug/:topicId` và mục menu `Học viện Academy` trên Sidebar.
-8. **Step 9.5.3.1: Academy Exam Data**: Tạo `academyExams.js` với bộ đề 10 câu hỏi chuẩn hóa cho Excel & SQL Academy.
-9. **Step 9.5.3.2: Exam Service & Certificate Engine**: `academyExamService.js` chấm điểm tự động, phân loại kết quả, cấp mã chứng chỉ số duy nhất và trao thưởng +100 XP idempotent.
-10. **Step 9.5.3.3: Exam Page UI & Flow**: `AcademyExamPage.jsx` với bộ đếm giờ 15 phút, thanh chuyển câu hỏi nhanh, thẻ trắc nghiệm và màn hình kết quả kèm lời giải chi tiết.
-11. **Step 9.5.3.4: Certificate Modal UI**: `AcademyCertificateModal.jsx` thiết kế chuẩn mực Detective Amber, hỗ trợ In/Lưu PDF và sao chép mã xác thực.
-12. **Step 9.5.3.5: System Integration**: Liên thông từ `AcademyCoursePage`, lưu và hiển thị chứng chỉ trong `ProfilePage`, đăng ký route `/academy/:courseSlug/exam`.
-13. **Step 9.5.3.6: Full Regression Testing & Build**: Bổ sung `AcademyExamPage.test.jsx`, pass **567/567 tests (72 test suites 100% PASS)**, Vite build production hoàn tất thành công.
+## Completed Sprints Summary
+1. **Sprint 9.5 (Academy & Sandbox)**: Màn hình Sandbox Split-pane, In-cell editor overlay, W3Schools Academy course, Bài thi tốt nghiệp & Chứng chỉ số Detective Amber.
+2. **Sprint 9.6 (Phase 7 - Detective Immersion & Investigation Notebook)**: Sổ tay điều tra 2 chiều, con dấu nghiệp vụ InvestigationStamp, thẻ vật chứng EvidenceCard, đồng bộ hồ sơ thư viện & phòng thực nghiệm pháp chứng.
+3. **Backend Status**: DEFERRED (Tạm dừng phát triển backend, tập trung 100% frontend).
 
 

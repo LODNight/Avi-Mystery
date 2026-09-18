@@ -6,7 +6,7 @@
 > - Báo cáo phân tích rủi ro hệ thống tiềm ẩn (System & Product Risks).
 > - Dự đoán và đặc tả chi tiết các trường dữ liệu (Database Schemas & Fields) cần bổ sung.
 > 
-> **Cập nhật lần cuối:** 10/09/2026 sau khi hoàn tất Sprint 9.5 (Academy Certification & Mini-Exams).
+> **Cập nhật lần cuối:** 18/09/2026 sau khi hoàn tất Sprint 9.6 (Phase 7: Đồng Bộ Phong Cách Trinh Thám & Sổ Tay Điều Tra).
 
 ---
 
@@ -32,11 +32,11 @@
 | **Editor Trực Quan** | `CellEditorOverlay` (`createPortal`) | In-cell formula editor nổi, điều hướng Enter/Tab/Esc, zero re-render |
 | **Markdown Renderer** | `react-markdown`, `remark-gfm` | Hiển thị bài giảng, bảng dữ liệu, khối code có nút copy |
 | **Hạ tầng Dữ liệu** | Firebase Firestore + Client Storage (`storage.js`) | Lưu trữ tiến trình học tập, XP Ledger, Chứng chỉ, cache offline IndexedDB |
-| **Testing Framework** | Vitest, React Testing Library, `@testing-library/jest-dom` | **72 test suites, 567 tests PASS 100%** |
+| **Testing Framework** | Vitest, React Testing Library, `@testing-library/jest-dom` | **75 test suites, 583 tests PASS 100%** |
 
 ---
 
-## 2. ✅ TOÀN BỘ MỌI THỨ ĐÃ HOÀN THÀNH (SPRINT 1 ĐẾN SPRINT 9.5)
+## 2. ✅ TOÀN BỘ MỌI THỨ ĐÃ HOÀN THÀNH (SPRINT 1 ĐẾN SPRINT 9.6)
 
 Dự án đã trải qua 14 giai đoạn phát triển liên tục, đạt trạng thái hoàn thiện 100% trên toàn bộ Frontend:
 
@@ -133,6 +133,16 @@ Dự án đã trải qua 14 giai đoạn phát triển liên tục, đạt trạ
    - Modal Chứng chỉ số Detective Amber Gold (`AcademyCertificateModal.jsx`) hỗ trợ In/Tải PDF (`window.print()`) và sao chép mã xác thực.
    - Đồng bộ hiển thị danh sách chứng chỉ đã đạt được vào Hồ sơ cá nhân (`/profile`).
 
+### 🔹 Sprint 9.6 — Detective Immersion & Investigation Notebook (100%)
+1. **Sổ tay Điều tra Đa Năng (`investigationNotebookService.js` & `InvestigationNotebookDrawer.jsx`)**:
+   - Cho phép học viên ghim công thức Excel và câu lệnh SQL trực tiếp từ bài giảng Học viện.
+   - Hỗ trợ xem, tìm kiếm, chỉnh sửa inline và 1-click sao chép hoặc áp dụng mã vào trình thực nghiệm.
+   - Hoạt động ở cả 2 chế độ: Drawer ngăn kéo trượt (trên Knowledge Hub) và Nhúng trực tiếp (trên Problem Pane và Practice Sandbox).
+2. **Ngôn ngữ Thị giác Trinh thám Detective Amber**:
+   - Con dấu nghiệp vụ `InvestigationStamp`: Mộc đỏ "TÀI LIỆU ĐIỀU TRA", mộc hổ phách "ĐÃ XÁC THỰC", mộc "ÁN ĐÃ PHÁ / CASE CLOSED".
+   - Thẻ hồ sơ vật chứng `EvidenceCard`: Trạng thái niêm phong / giải mật khi phá án thành công.
+   - Đồng bộ hóa Thư viện thành Kho Hồ sơ Lưu trữ Nghiệp vụ (`ARC-01`) và Phòng Thực nghiệm Pháp chứng (`/sandbox`).
+
 ---
 
 ## 3. ⏳ TOÀN BỘ NHỮNG GÌ CHƯA LÀM (FUTURE ROADMAP & UNFINISHED WORK)
@@ -140,28 +150,43 @@ Dự án đã trải qua 14 giai đoạn phát triển liên tục, đạt trạ
 Dưới đây là các tính năng và module chưa được triển khai, được sắp xếp theo mức độ ưu tiên từ gần đến xa:
 
 ```
-[Hiện tại: Sprint 9.5 Hoàn tất] 
+[Hiện tại: Sprint 9.6 Hoàn tất (75 test suites / 583 tests)] 
        ↓
-[Sprint 10: Backend API & PostgreSQL] 
+[Sprint 10: Frontend & Gameplay Enhancements (Pro SQL / Evidence Board / Content)] 
        ↓
 [Sprint 11: Competitive Seasons & Agencies] 
        ↓
 [Sprint 12: Detective Audio & Immersion]
+       ↓
+[Backend FastAPI + PostgreSQL: Tạm hoãn (Deferred)]
 ```
 
-### 🔹 Sprint 10 — Backend API & Data Persistence *(Ưu tiên P0 - Kế hoạch tiếp theo)*
-*Hiện tại Frontend vẫn dùng song song Firebase Firestore và Mock Adapters/LocalStorage. Sprint 10 sẽ chuyển đổi sang Backend Server độc lập:*
-- [ ] **Khởi tạo FastAPI Server (`backend/`)**: Xây dựng kiến trúc thư mục chuẩn (Routers, Controllers, Services, Repositories, Schemas, Core Config).
-- [ ] **Docker Compose Hạ tầng**: Cấu hình container chạy PostgreSQL 16 và pgAdmin.
-- [ ] **Alembic Database Migrations**: Khởi tạo cấu trúc bảng CSDL quan hệ chuẩn hóa.
-- [ ] **Hệ thống Xác thực JWT**: Endpoint `/api/auth/register`, `/api/auth/login`, `/api/auth/me`, `/api/auth/refresh` bằng JWT Token có gắn Role-Based Access Control (RBAC).
-- [ ] **RESTful API Endpoints**:
-  - Courses & Chapters CRUD API.
-  - Investigations & Questions API (bao gồm nạp dataset).
-  - Submission & Evaluation API (chấm điểm tập trung phía server chống can thiệp client).
-  - Progress, XP Ledger & Leveling API với Database Transactions chống race condition.
-  - Exams & Certificates Verification API.
-- [ ] **Dual-Mode Adapter trên Frontend**: Kết nối API client vào `src/services/contracts/` mà không làm thay đổi bất kỳ component UI nào, tự động fallback về Mock/Firebase khi mất kết nối mạng.
+### 🔹 Sprint 10 — Frontend & Gameplay Enhancements *(Ưu tiên P0 - Kế hoạch tiếp theo)*
+> *Lưu ý: Công việc Backend (FastAPI + PostgreSQL) tạm thời được hoãn lại (`DEFERRED`) theo yêu cầu người dùng để tập trung 100% tài nguyên nâng cấp trải nghiệm người học trên Frontend.*
+
+- [ ] **Nâng Cấp SQL Workspace Lên Chuẩn Pro (`LRN-SQL-PRO`)**:
+  - SQL Syntax Highlighting và Autocomplete thông minh (gợi ý từ khóa, tên bảng, tên cột từ Schema).
+  - SQL Query History: Lưu và chạy lại các câu lệnh trong phiên làm việc.
+  - SQL 1-Click Formatter: Định dạng câu lệnh SQL ngay ngắn, chuyên nghiệp.
+  - Mini Data Visualizer: Chuyển đổi bảng kết quả SELECT sang biểu đồ cột/đường trực quan.
+- [ ] **Bảng Manh Mối Vụ Án (`GAM-EVBD`)**:
+  - Bảng ghim bần (Detective Cork Board) nối dây đỏ kết nối các bằng chứng thu thập được sau từng vụ án.
+  - Màn hình suy luận tổng hợp và chỉ điểm đối tượng gian lận / biển thủ.
+- [ ] **Mở Rộng Nội Dung Thực Chiến (`CNT-CASE`)**:
+  - Thiết kế các Vụ án Cốt truyện mới (Case 01, Case 02) với kịch bản sâu sắc và tập dữ liệu phong phú.
+  - Bổ sung chương nâng cao cho Academy (XLOOKUP, Pivot Tables, SQL Window Functions).
+- [ ] **Thử Thách Hàng Ngày & Bảng Xếp Hạng (`GAM-DALY`, `GAM-LEAD`)**:
+  - Câu đố Daily Case 3-5 phút mỗi ngày duy trì chuỗi ngày học Streak.
+  - Bảng xếp hạng thám tử theo tuần/tháng với danh hiệu và huy hiệu vinh danh.
+
+### 🔹 Sprint 10 (Backend) — Backend API & Data Persistence *(TẠM HOÃN / DEFERRED)*
+*Khi cần kích hoạt lại, hạ tầng Backend sẽ bao gồm:*
+- [ ] Khởi tạo FastAPI Server (`backend/`), Docker Compose PostgreSQL 16.
+- [ ] Alembic Database Migrations & Entities Schemas.
+- [ ] JWT Authentication & RBAC.
+- [ ] RESTful API Endpoints cho Courses, Missions, Datasets, Submissions, Progress.
+- [ ] Dual-Mode Client Adapter trên Frontend tự động fallback về Mock/Firestore.
+
 
 ### 🔹 Sprint 11 — Leaderboard, Competitive Seasons & Detective Agencies *(Ưu tiên P1)*
 - [ ] **Bảng Xếp Hạng Thám Tử Toàn Hệ Thống (`/leaderboard`)**: Xếp hạng theo Tuần, Tháng và Toàn thời gian dựa trên XP và độ chính xác phá án (Mastery).

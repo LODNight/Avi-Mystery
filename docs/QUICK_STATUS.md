@@ -81,26 +81,46 @@
 
 ---
 
-* **Hoàn thành Sprint 9.6 — Phase 5 & 6: Ngôn Ngữ Detective Amber & Motion Điều Tra [HOÀN THÀNH 100%]:**
-  - **Quy hoạch Firebase Exports:** Dọn dẹp các thư mục `firebase-export-*` rải rác ngoài root vào thư mục tập trung `backups/firebase-exports/`, cập nhật `.gitignore`.
-  - **Con dấu & Thẻ Vật chứng (`InvestigationStamp`, `EvidenceCard`):** Tạo component con dấu nghiệp vụ mộc đỏ/hổ phách (`ÁN ĐÃ PHÁ`, `ĐÃ XÁC THỰC`, `HỒ SƠ TUYỆT MẬT`) và thẻ vật chứng hồ sơ giải mật.
-  - **Nghi thức Phá án & Hồ sơ Vụ án:** Tái cấu trúc `MissionResultModal` thành nghi thức dập dấu niêm phong vật chứng; gắn con dấu bảo mật vào Case File của `ProblemPane`.
-  - **Tiếp cận & Chống chóng mặt (WCAG 2.3.3):** Tích hợp `motion-reduce:animate-none` cho toàn bộ animation dập dấu (`animate-stamp`) và mở thẻ (`animate-reveal`).
-  - **Kiểm thử & Build:** Bổ sung `InvestigationComponents.test.jsx` (6/6 tests); đạt **73/73 test suites (573/573 tests PASS 100%)**, `npm run build` thành công tuyệt đối.
+* **Hoàn thành Sprint 9.6 — Phase 7: Đồng Bộ Phong Cách Trinh Thám & Nâng Cấp Toàn Diện Sổ Tay Điều Tra [HOÀN THÀNH 100%]:**
+  - **Nâng cấp Sổ tay điều tra (`investigationNotebookService.js` & `InvestigationNotebookDrawer.jsx`):**
+    - Mở rộng service với hàm `updateCustomNote` cho phép chỉnh sửa trực tiếp nội dung ghi chú kèm timestamp cập nhật.
+    - Xây dựng component đa năng `InvestigationNotebookDrawer.jsx` hỗ trợ cả chế độ ngăn kéo trượt (drawer) và nhúng nội tuyến (embedded), lọc theo công cụ (Excel/SQL), tìm kiếm ghi chép, sao chép 1-click và chèn trực tiếp mã vào trình thực nghiệm.
+  - **Đồng bộ hóa Hồ sơ Nghiệp vụ Thư Viện (`KnowledgeHubPage.jsx`):**
+    - Sidebar mang phong cách lưu trữ hồ sơ nghiệp vụ (`HỒ SƠ TƯ LIỆU NGHIỆP VỤ • ARC-01`).
+    - Gắn con dấu nghiệp vụ `InvestigationStamp` (mộc đỏ `TÀI LIỆU ĐIỀU TRA` khi đang nghiên cứu và mộc hổ phách `ĐÃ XÁC THỰC` khi hoàn thành bài đọc).
+    - Tích hợp nút **"Mở sổ tay"** mở trực tiếp drawer Sổ tay điều tra ngay trên trang đọc bài mà không cần rời màn hình.
+  - **Phòng Thực Nghiệm Pháp Chứng (`PracticeSandboxPage.jsx`):**
+    - Bổ sung huy hiệu nghiệp vụ `PHÒNG THỰC NGHIỆM PHÁP CHỨNG` trong thanh tiêu đề.
+    - Cột Trái Split-Pane tích hợp bộ chuyển đổi tab linh hoạt: **Tab Lý thuyết & Ví dụ** (bảo toàn 100% cấu trúc giáo trình, heading, presets và nút "Thử ngay") và **Tab Sổ tay điều tra** (tra cứu công thức đã ghim, viết ghi chép thực địa và 1-click áp dụng vào bảng tính/SQL editor).
+  - **Chỉnh sửa Ghi chú trong Bàn làm việc Phá án (`ProblemPane.jsx`):**
+    - Hỗ trợ chế độ chỉnh sửa inline cho các ghi chép cá nhân với icon bút chì, hủy và lưu nhanh chóng.
+  - **Kiểm thử tự động & Build:**
+    - Bổ sung test suites mới: `KnowledgeHubPage.test.jsx` (5/5 tests), `investigationNotebookService.test.js` (4/4 tests), mở rộng `InvestigationComponents.test.jsx`.
+    - Toàn bộ dự án đạt **75/75 test suites (583/583 tests PASS 100%)**, `npm run build` thành công tuyệt đối (18.45s).
 
 ---
 
-### 2. Tiếp theo cần làm gì? (Ngắn gọn)
-* **Lựa chọn 1 (Tiếp tục hoàn thiện UX các trang phụ):**
-  - Đồng bộ tone điều tra cho `KnowledgeHubPage` và `PracticeSandboxPage`.
-  - Nâng cấp Sổ tay điều tra cho phép người học tự gõ thêm ghi chú tự do.
-* **Lựa chọn 2 (Khởi động Sprint 10: Backend FastAPI + PostgreSQL):**
-  - Dựng RESTful API server (FastAPI + SQLAlchemy/PostgreSQL).
-  - Tạo schema migrations và kết nối thay thế các Frontend Mock Adapters.
+### 2. Tiếp theo cần làm gì? (Ngắn gọn — Frontend & Product Focus)
+> *Lưu ý: Theo yêu cầu của người dùng, tạm hoãn toàn bộ phần Backend (FastAPI + PostgreSQL) để tập trung mở rộng và nâng cấp trải nghiệm người dùng phía Frontend & Client-side.*
+
+* **Lựa chọn các hướng đi Frontend & Gameplay tiếp theo:**
+  1. **Nâng cấp SQL Workspace & Pro SQL Playground:**
+     - Nâng cấp SQL Editor tương xứng với Excel: Syntax highlighting, auto-complete từ khóa & schema bảng/cột, lịch sử truy vấn (Query History), Format SQL 1-click.
+     - Trực quan hóa kết quả truy vấn dạng biểu đồ đơn giản (Mini Bar/Line Chart).
+  2. **Bảng Manh Mối & Bằng Chứng Vụ Án (Detective Evidence Board / Mindmap):**
+     - Bảng ghim bần (Cork Board) nối dây đỏ kết nối các manh mối sau mỗi vụ án.
+     - Cung cấp màn hình suy luận tổng hợp và chỉ điểm đối tượng gian lận/biển thủ.
+  3. **Mở rộng Nội dung Thực chiến (Content Expansion):**
+     - Thiết kế thêm các vụ án mới (Case 01, Case 02) cho nhánh cốt truyện chính với datasets phong phú và câu hỏi phân tích nhiều cấp độ.
+     - Bổ sung chương nâng cao cho Academy (Pivot Table, XLOOKUP, Window Functions, Subqueries).
+  4. **Thử Thách Hàng Ngày (Daily Case) & Bảng Xếp Hạng (Leaderboard):**
+     - Mỗi ngày 1 câu đố ngắn 3-5 phút duy trì chuỗi streak học tập.
+     - Bảng xếp hạng thám tử theo tuần/tháng với danh hiệu và cấp bậc vinh danh.
 
 ---
 
 ### 3. Bước đầu tiên cần làm tiếp theo?
-* Người dùng xác nhận lựa chọn ưu tiên: **Lựa chọn 1** (UX Polish các trang phụ) hay **Lựa chọn 2** (Khởi động Backend Sprint 10).
+* Thống nhất hướng đi Frontend ưu tiên (SQL Workspace Pro, Bảng Manh Mối Evidence Board, hay Mở rộng Case Vụ Án Mới) và khởi tạo kế hoạch chi tiết (Sprint 10 Frontend).
+
 
 

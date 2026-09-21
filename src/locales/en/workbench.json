@@ -1,0 +1,22 @@
+{
+  "valueDerivedFromAnalysis": "Value derived from analysis: {{value}}",
+  "analysisContext": "Analysis of {{source}}",
+  "targetCellPrefix": "Target cell:",
+  "selectedCellPrefix": "Selected cell:",
+  "inputPlaceholderTarget": "Enter formula for cell {{cell}} (starting with =, e.g., =C{{row}}*D{{row}})...",
+  "inputPlaceholderDefault": "Enter formula starting with = (e.g., =SUM(B2:B5))...",
+  "resetTooltip": "Reset spreadsheet to initial state",
+  "reset": "Reset",
+  "fillDownTooltip": "Auto-fill formula down to remaining cells",
+  "fillDown": "Fill down",
+  "runActionAria": "Test formula (Apply)",
+  "runActionTooltip": "Check syntax & test formula (Enter)",
+  "calculating": "Calculating...",
+  "run": "Run",
+  "hintPrefix": "Hint:",
+  "hideHintTooltip": "Hide inline hint",
+  "emptySpreadsheet": "No Excel spreadsheet data.",
+  "emptyState": "Empty",
+  "rowsByCols": "{{rows}} rows x {{cols}} cols",
+  "shortcutHint": "💡 Tip: Press <1>Enter</1> to test • Use <3>Submit Answer</3> in the bottom bar to grade"
+}

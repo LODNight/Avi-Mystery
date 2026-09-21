@@ -1,0 +1,22 @@
+{
+  "valueDerivedFromAnalysis": "Giá trị rút ra từ phân tích: {{value}}",
+  "analysisContext": "Phân tích {{source}}",
+  "targetCellPrefix": "Ô mục tiêu phá án:",
+  "selectedCellPrefix": "Ô đang chọn:",
+  "inputPlaceholderTarget": "Nhập công thức cho ô {{cell}} (bắt đầu bằng dấu =, ví dụ: =C{{row}}*D{{row}})...",
+  "inputPlaceholderDefault": "Nhập công thức bắt đầu bằng dấu = (ví dụ: =SUM(B2:B5))...",
+  "resetTooltip": "Đặt lại bảng tính về trạng thái ban đầu",
+  "reset": "Đặt lại",
+  "fillDownTooltip": "Tự động kéo công thức xuống các ô còn lại",
+  "fillDown": "Fill down",
+  "runActionAria": "Chạy thử công thức (Áp dụng)",
+  "runActionTooltip": "Kiểm duyệt cú pháp & chạy thử công thức (Enter)",
+  "calculating": "Đang tính...",
+  "run": "Chạy thử",
+  "hintPrefix": "Gợi ý:",
+  "hideHintTooltip": "Ẩn gợi ý nội tuyến",
+  "emptySpreadsheet": "Chưa có dữ liệu bảng tính Excel.",
+  "emptyState": "Chưa có",
+  "rowsByCols": "{{rows}} hàng x {{cols}} cột",
+  "shortcutHint": "💡 Mẹo: Bấm <1>Enter</1> để chạy thử • Dùng nút <3>Nộp bài</3> ở thanh dưới để chấm điểm"
+}

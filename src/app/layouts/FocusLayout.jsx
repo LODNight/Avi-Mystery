@@ -1,10 +1,12 @@
 import React, { useState, createContext, useContext } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ArrowLeft, X, Sun, Moon, Sparkles, Maximize2, Minimize2 } from 'lucide-react';
+import { ArrowLeft, X, Sun, Moon, Sparkles, Maximize2, Minimize2, Settings } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../providers/ThemeProvider.jsx';
 import { useBrand, BrandLogoIcon } from '../providers/BrandProvider.jsx';
 import { formatXP } from '../../utils/format.js';
+import { useTranslation } from 'react-i18next';
+
 
 export const FocusModeContext = createContext({
   isFocusMode: false,
@@ -20,9 +22,11 @@ export function FocusLayout({ children }) {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { brand } = useBrand();
+  const { t } = useTranslation(['common']);
   const navigate = useNavigate();
   const location = useLocation();
   const [isFocusMode, setIsFocusMode] = useState(false);
+
 
   const toggleFocusMode = () => setIsFocusMode((prev) => !prev);
 
@@ -43,11 +47,11 @@ export function FocusLayout({ children }) {
             <button
               onClick={handleExit}
               className="flex items-center gap-1.5 sm:gap-2 rounded-xl border border-border bg-background px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:bg-muted hover:text-foreground transition-all shadow-xs cursor-pointer"
-              title="Rời bàn làm việc (Quay lại)"
-              aria-label="Rời bàn làm việc"
+              title={t('common:exitWorkspaceTooltip', 'Rời bàn làm việc (Quay lại)')}
+              aria-label={t('common:exitWorkspace', 'Rời bàn làm việc')}
             >
               <ArrowLeft className="size-4" />
-              <span>Rời bàn làm việc</span>
+              <span>{t('common:exitWorkspace', 'Rời bàn làm việc')}</span>
             </button>
 
             <div className="h-4 w-px bg-border hidden sm:block" />
@@ -72,48 +76,63 @@ export function FocusLayout({ children }) {
               }`}
               title={
                 isFocusMode
-                  ? 'Đang bật Focus Mode (Thu gọn đề bài để tập trung). Bấm để mở lại đề bài.'
-                  : 'Bật Focus Mode để mở rộng tối đa không gian bảng tính'
+                  ? t('common:focusModeOnTooltip', 'Đang bật Focus Mode (Thu gọn đề bài để tập trung). Bấm để mở lại đề bài.')
+                  : t('common:focusModeOffTooltip', 'Bật Focus Mode để mở rộng tối đa không gian bảng tính')
               }
               aria-pressed={isFocusMode}
             >
               {isFocusMode ? <Minimize2 className="size-3" /> : <Maximize2 className="size-3" />}
-              <span>{isFocusMode ? 'FOCUS ON' : 'FOCUS MODE'}</span>
+              <span>{isFocusMode ? t('common:focusOn', 'FOCUS ON') : t('common:focusMode', 'FOCUS MODE')}</span>
             </button>
           </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* User XP pill */}
-          <div className="flex items-center gap-1.5 rounded-xl border border-border bg-background px-2.5 py-1 text-xs font-mono font-bold text-muted-foreground">
-            <Sparkles className="size-3.5 text-amber-500" />
-            <span>{formatXP(user?.xp || 0)}</span>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* User XP pill */}
+            <div className="flex items-center gap-1.5 rounded-xl border border-border bg-background px-2.5 py-1 text-xs font-mono font-bold text-muted-foreground">
+              <Sparkles className="size-3.5 text-amber-500" />
+              <span>{formatXP(user?.xp || 0)}</span>
+            </div>
+
+            {/* User Settings Button */}
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="rounded-xl border border-border bg-background p-1.5 sm:p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+              title={t('common:userSettings', 'Cài đặt người dùng')}
+              aria-label={t('common:userSettings', 'Cài đặt người dùng')}
+            >
+              <Settings className="size-4" />
+            </button>
+
+            {/* Theme toggle */}
+            <button
+              onClick={toggleTheme}
+              className="rounded-xl border border-border bg-background p-1.5 sm:p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+              title={theme === 'dark' ? t('common:switchToLight', 'Chuyển sang chế độ Sáng') : t('common:switchToDark', 'Chuyển sang chế độ Tối')}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
+            </button>
+
+            {/* User Avatar */}
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-xs hover:opacity-90 transition-opacity cursor-pointer select-none"
+              title={user?.name ? `${user.name} (${t('common:userSettings', 'Cài đặt người dùng')})` : t('common:userSettings', 'Cài đặt người dùng')}
+              aria-label={t('common:userSettings', 'Cài đặt người dùng')}
+            >
+              {initials}
+            </button>
           </div>
+        </header>
 
-          {/* Theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="rounded-xl border border-border bg-background p-1.5 sm:p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-            title={theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối'}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
-          </button>
-
-          {/* User Avatar */}
-          <div
-            className="grid size-8 place-items-center rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-xs select-none"
-            title={user?.name}
-          >
-            {initials}
-          </div>
-        </div>
-      </header>
-
-      {/* ── Main Workspace ── */}
-      <main className="flex-1 min-h-0 w-full p-2 sm:p-2.5 overflow-hidden flex flex-col">
-        {children}
-      </main>
+        {/* ── Main Workspace ── */}
+        <main className="flex-1 min-h-0 w-full p-2 sm:p-2.5 overflow-hidden flex flex-col">
+          {children}
+        </main>
       </div>
+
     </FocusModeContext.Provider>
   );
 }

@@ -1,0 +1,22 @@
+{
+  "title": "Cài đặt người dùng",
+  "subtitle": "Tùy chỉnh ngôn ngữ hiển thị và giao diện học tập",
+  "languageTitle": "Ngôn ngữ hiển thị",
+  "languageDesc": "Chọn ngôn ngữ hiển thị trên toàn bộ giao diện và hồ sơ điều tra",
+  "viTitle": "Tiếng Việt",
+  "viDesc": "Ngôn ngữ bản địa hóa mặc định của Học viện",
+  "enTitle": "English",
+  "enDesc": "Tiếng Anh quốc tế cho công cụ và tài liệu vụ án",
+  "activeBadge": "Đang dùng",
+  "selectAction": "Chọn",
+  "appearanceTitle": "Giao diện hệ thống",
+  "appearanceDesc": "Tùy chỉnh tông màu sáng hoặc tối phù hợp môi trường điều tra",
+  "lightMode": "Chế độ Sáng",
+  "darkMode": "Chế độ Tối",
+  "accountTitle": "Hồ sơ điều tra viên",
+  "accountDesc": "Thông tin định danh của tài khoản hiện tại",
+  "roleBadge": "Nhà Điều Tra",
+  "totalXp": "Tổng điểm tích lũy",
+  "quickNotice": "Mọi thay đổi cài đặt được lưu tự động và áp dụng tức thì trên toàn hệ thống.",
+  "closeBtn": "Đóng"
+}

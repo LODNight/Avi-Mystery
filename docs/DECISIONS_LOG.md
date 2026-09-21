@@ -272,11 +272,26 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: Không phát sinh chi phí vận hành máy chủ backend, quy trình phát triển và kiểm thử giao diện đạt tốc độ tối đa, bảo toàn 100% contracts hiện tại.
 - Related modules: LRN-SQL, GAME, LRN-EXCEL, LRN-ACADEMY
 
+## ADR-AGT-013 — Kiến Trúc Đa Ngôn Ngữ 3 Tầng & Phản Ứng Runtime Ngôn Ngữ (Localization Foundation)
+
+- Status: Accepted
+- Date: 2026-09-19
+- Context: Dự án Avi-Mystery chuyển dịch sang mô hình Bàn làm việc điều tra viên thực thụ và mở rộng hỗ trợ song ngữ Tiếng Việt (`vi`) và Tiếng Anh (`en`). Nguy cơ: Dịch nhầm dữ liệu domain (tên cột bảng tính, ID thực thể) và giá trị kiểm định (`rules[].expected`) làm phá vỡ logic chấm điểm phá án; việc chuyển đổi ngôn ngữ có thể làm reset hoặc mất dữ liệu điều tra đang dở dang của người học.
+- Decision:
+  1. Phân định ranh giới tuyệt đối giữa 3 tầng:
+     - **Tầng A (Application UI):** Quản lý qua `i18next` + `react-i18next` với 4 namespaces độc lập (`nav`, `investigation`, `workbench`, `common`). Ngôn ngữ mặc định `vi`, fallback an toàn `vi`.
+     - **Tầng B (Case Presentation):** Quản lý qua `caseLocalizationService.js`. Case definition lưu trữ song ngữ `{ en, vi }`, service tự động giải quyết cấu trúc sang ngôn ngữ hiển thị mà không can thiệp vào raw definition.
+     - **Tầng C (Domain & Verification Values):** Dữ liệu bảng tính, ID kỹ thuật và các quy tắc kiểm định (`rules[].expected`) được bảo toàn bất biến dưới dạng raw string/number, cấm tuyệt đối việc dịch thuật.
+  2. Phản ứng Runtime Ngôn Ngữ Tức Thì (Runtime Reactivity): Tách biệt hook tải dữ liệu Case localized khỏi hook lưu trữ/khôi phục tiến độ điều tra trong `useDetectiveWorkspace.js`. Khi chuyển ngôn ngữ, Case Briefing, Clues và Report Fields cập nhật ngay lập tức mà không reload trang và không mất state.
+  3. Môi trường Test Runner: Khởi tạo i18n chuẩn mực trong test setup (`src/tests/setup.js`), khóa detection navigator để giữ môi trường test deterministic 100%.
+- Consequences: Miễn nhiễm hoàn toàn với lỗi rò rỉ ngôn ngữ giữa UI và Domain; toàn bộ 76 test suites (586 tests) vượt qua 100%; mở đường cho việc mở rộng song ngữ sang các màn hình tiếp theo một cách độc lập.
+- Related modules: LRN-DETECTIVE, SHR-I18N, CASE-CONTENT, VERIFICATION-ENGINE
+
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
 
-> **Cập nhật lần cuối:** 18/09/2026
+> **Cập nhật lần cuối:** 19/09/2026
 > **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
 > **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
@@ -309,6 +324,11 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-013` | Level Up Popup Modal & Leveling animation | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/features/gamification/LevelUpModal.jsx` |
 | `UI-014` | Learner Profile Page (`/profile`) & Achievements Grid | Learner App Shell | `GAME` | `CURRENT` | Tested | `src/pages/learner/ProfilePage.jsx` |
 | `UI-015` | Admin Visual Investigation & Question Studio | Admin App Shell | `ADM` | `CURRENT` | Tested | `src/pages/admin/AdminMissionsPage.jsx` |
+| `UI-024` | Bàn làm việc điều tra viên 3 cột (`DetectiveWorkspacePage`) | `/cases/:caseId/investigate` | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/pages/detective/DetectiveWorkspacePage.jsx` |
+| `UI-025` | Hồ sơ vụ án & Nguồn chứng cứ (`CaseFilePanel`) | Detective Workspace | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/components/detective/CaseFilePanel.jsx` |
+| `UI-026` | Khảo sát chứng cứ & Bàn phân tích (`EvidencePanel` / `InvestigationWorkbench`) | Detective Workspace | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/components/detective/EvidencePanel.jsx` |
+| `UI-027` | Trung tâm chỉ huy & Thẩm định Báo cáo (`HQCommunicationPanel` / `VerificationResultPanel`) | Detective Workspace | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/components/detective/HQCommunicationPanel.jsx` |
+| `UI-028` | Bộ chuyển đổi ngôn ngữ tức thì (`vi`/`en`) | Learner Layout Header | `SHR-I18N` | `CURRENT` | Tested | `src/app/layouts/LearnerLayout.jsx` |
 
 ---
 
@@ -317,3 +337,4 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 1. **NO direct mock JSON imports in UI**: Mọi trang UI JSX tuyệt đối không import trực tiếp `.json` trong `src/mocks/data/` hoặc gọi trực tiếp `mockSubmissionService.js`. Mọi giao tiếp đi qua `src/services/index.js`.
 2. **Wording Standard for Potential XP**: Giao diện UI chỉ sử dụng cụm từ *"Phần thưởng dự kiến"* (`potentialXp`) khi hiển thị thông tin bài tập. Tuyệt đối không dùng câu chữ hàm ý điểm XP đã được ghi nhận vào tài khoản khi `progressService` chưa chạy.
 3. **Responsive Grid & WASM Cleanup**: Mọi màn hình workspace (Excel & SQL) bảo đảm hiển thị mượt trên 390px, 768px, 1440px và tự động cleanup Web Worker / memory timers khi unmount.
+4. **Three-Layer Localization Boundary**: Tuyệt đối không dùng `t()` của tầng UI dịch dữ liệu bảng tính, ID thực thể hay giá trị kiểm định (`rules[].expected`). Phải dùng `caseLocalizationService` cho Case Presentation và giữ nguyên Domain/Verification values dạng raw.

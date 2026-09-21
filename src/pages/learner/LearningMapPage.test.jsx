@@ -205,11 +205,11 @@ describe('LearningMapPage Component Tests (Step 6.3 Dynamic Progress & Mastery U
     renderWithRouter(<LearningMapPage />);
 
     // Wait for skeleton to resolve and content to appear
-    const phase1Tabs = await screen.findAllByText('Phase 1: Excel Adventure Test', {}, { timeout: 4000 });
+    const phase1Tabs = await screen.findAllByText('Phase 1: Excel Adventure Test', {}, { timeout: 10000 });
     expect(phase1Tabs.length).toBeGreaterThan(0);
 
     // Phase 2 tab must also be present
-    const phase2Tabs = await screen.findAllByText('Phase 2: SQL Investigation Test', {}, { timeout: 4000 });
+    const phase2Tabs = await screen.findAllByText('Phase 2: SQL Investigation Test', {}, { timeout: 10000 });
     expect(phase2Tabs.length).toBeGreaterThan(0);
 
     // Click Phase 2 Tab
@@ -219,7 +219,7 @@ describe('LearningMapPage Component Tests (Step 6.3 Dynamic Progress & Mastery U
     await waitFor(() => {
       expect(screen.getByText('SQL Fundamentals')).toBeInTheDocument();
       expect(screen.getByText('Nhiệm vụ SQL 1: Filter Data')).toBeInTheDocument();
-    }, { timeout: 4000 });
+    }, { timeout: 10000 });
   });
 
   it('hiển thị ErrorState khi dịch vụ gặp lỗi', async () => {

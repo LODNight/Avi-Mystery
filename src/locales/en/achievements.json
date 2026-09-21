@@ -1,0 +1,13 @@
+{
+  "collection": "Collection",
+  "title": "Detective Titles",
+  "description": "Unlock special titles by solving tough cases, maintaining your learning streak, and improving your data analysis skills.",
+  "progress": "Progress",
+  "filterAll": "All",
+  "filterUnlocked": "Unlocked",
+  "filterLocked": "Locked",
+  "itemProgress": "Progress",
+  "unlockedAt": "Unlocked: {{date}}",
+  "emptyTitle": "No titles available",
+  "emptyDesc": "Keep solving cases to unlock new titles!"
+}

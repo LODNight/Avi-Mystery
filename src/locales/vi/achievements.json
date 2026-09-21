@@ -1,0 +1,13 @@
+{
+  "collection": "Bộ sưu tập",
+  "title": "Danh hiệu Thám tử",
+  "description": "Mở khóa các danh hiệu đặc biệt bằng cách vượt qua các vụ án hóc búa, duy trì chuỗi học tập và nâng cao kỹ năng phân tích dữ liệu của bạn.",
+  "progress": "Tiến trình",
+  "filterAll": "Tất cả",
+  "filterUnlocked": "Đã mở khóa",
+  "filterLocked": "Chưa đạt",
+  "itemProgress": "Tiến độ",
+  "unlockedAt": "Đạt được: {{date}}",
+  "emptyTitle": "Không có danh hiệu nào",
+  "emptyDesc": "Hãy tiếp tục phá án để mở khóa thêm nhiều danh hiệu mới!"
+}

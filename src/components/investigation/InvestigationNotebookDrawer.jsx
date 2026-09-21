@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Bookmark,
   Plus,
@@ -24,6 +25,7 @@ export function InvestigationNotebookDrawer({
   embedded = false,
   activeTool = null,
 }) {
+  const { t } = useTranslation('investigation');
   const [notes, setNotes] = useState(() => investigationNotebookService.getNotes());
   const [newText, setNewText] = useState('');
   const [selectedTool, setSelectedTool] = useState(activeTool || 'all');
@@ -101,12 +103,12 @@ export function InvestigationNotebookDrawer({
           </div>
           <div>
             <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
-              <span>Sổ Tay Điều Tra</span>
+              <span>{t('caseNotebook')}</span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 {notes.length}
               </span>
             </h3>
-            <p className="text-[11px] text-muted-foreground">Tư liệu & ghi chép nghiệp vụ hiện trường</p>
+            <p className="text-[11px] text-muted-foreground">{t('drawerNotebookSubtitle')}</p>
           </div>
         </div>
 
@@ -115,7 +117,7 @@ export function InvestigationNotebookDrawer({
             type="button"
             onClick={onClose}
             className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-            title="Đóng sổ tay"
+            title={t('closeNotebook')}
           >
             <X className="size-4" />
           </button>
@@ -128,7 +130,7 @@ export function InvestigationNotebookDrawer({
           <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Tìm kiếm trong sổ tay..."
+            placeholder={t('searchNotebook')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-lg border border-input bg-background pl-8 pr-7 py-1.5 text-xs focus:ring-1 focus:ring-amber-500 focus:outline-none placeholder:text-muted-foreground"
@@ -155,7 +157,7 @@ export function InvestigationNotebookDrawer({
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }`}
           >
-            Tất cả ({notes.length})
+            {t('all')} ({notes.length})
           </button>
           <button
             type="button"
@@ -190,13 +192,13 @@ export function InvestigationNotebookDrawer({
           <textarea
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
-            placeholder="Thêm ghi chép / manh mối cá nhân..."
+            placeholder={t('addNotePlaceholder')}
             rows={2}
             className="w-full rounded-lg border border-border bg-background p-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none"
           />
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted-foreground">
-              Ghi chép lưu tự động trên trình duyệt
+              {t('autoSaveDesc')}
             </span>
             <button
               type="submit"
@@ -204,7 +206,7 @@ export function InvestigationNotebookDrawer({
               className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-40 disabled:cursor-not-allowed text-amber-950 font-bold text-xs shadow-xs transition-colors cursor-pointer"
             >
               <Plus className="size-3.5" />
-              <span>Ghi chép</span>
+              <span>{t('note')}</span>
             </button>
           </div>
         </form>
@@ -216,7 +218,7 @@ export function InvestigationNotebookDrawer({
         {customNotes.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between border-b border-border/50 pb-1">
-              <span>Ghi chép của bạn</span>
+              <span>{t('yourNotes')}</span>
               <span className="font-mono text-[9px]">{customNotes.length}</span>
             </h4>
             <div className="space-y-2">
@@ -241,7 +243,7 @@ export function InvestigationNotebookDrawer({
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500 text-amber-950 font-bold text-xs hover:bg-amber-600 transition-colors cursor-pointer"
                         >
                           <Check className="size-3" />
-                          <span>Lưu</span>
+                          <span>{t('save')}</span>
                         </button>
                         <button
                           type="button"
@@ -249,7 +251,7 @@ export function InvestigationNotebookDrawer({
                           className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-muted text-muted-foreground font-medium text-xs hover:text-foreground transition-colors cursor-pointer"
                         >
                           <X className="size-3" />
-                          <span>Hủy</span>
+                          <span>{t('cancel')}</span>
                         </button>
                       </div>
                     </div>
@@ -261,7 +263,7 @@ export function InvestigationNotebookDrawer({
                             {note.tool || 'note'}
                           </span>
                           {note.updatedAt && (
-                            <span className="text-[10px] text-muted-foreground italic">đã sửa</span>
+                            <span className="text-[10px] text-muted-foreground italic">{t('edited')}</span>
                           )}
                         </div>
                         <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
@@ -269,7 +271,7 @@ export function InvestigationNotebookDrawer({
                             type="button"
                             onClick={() => handleCopy(note.id, note.text)}
                             className="p-1 text-muted-foreground hover:text-foreground rounded transition-colors"
-                            title="Sao chép nội dung"
+                            title={t('copyContent')}
                           >
                             {copiedId === note.id ? (
                               <Check className="size-3.5 text-emerald-500" />
@@ -281,7 +283,7 @@ export function InvestigationNotebookDrawer({
                             type="button"
                             onClick={() => handleStartEdit(note)}
                             className="p-1 text-muted-foreground hover:text-amber-500 rounded transition-colors"
-                            title="Chỉnh sửa ghi chú"
+                            title={t('editNote')}
                           >
                             <Edit2 className="size-3.5" />
                           </button>
@@ -289,7 +291,7 @@ export function InvestigationNotebookDrawer({
                             type="button"
                             onClick={() => investigationNotebookService.deleteCustomNote(note.id)}
                             className="p-1 text-muted-foreground hover:text-rose-500 rounded transition-colors"
-                            title="Xóa ghi chú"
+                            title={t('deleteNote')}
                           >
                             <Trash2 className="size-3.5" />
                           </button>
@@ -310,7 +312,7 @@ export function InvestigationNotebookDrawer({
         {pinnedNotes.length > 0 && (
           <div className="space-y-2">
             <h4 className="text-[10px] font-mono font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-between border-b border-border/50 pb-1">
-              <span>Công thức & Cú pháp đã ghim</span>
+              <span>{t('pinnedFormulas')}</span>
               <span className="font-mono text-[9px]">{pinnedNotes.length}</span>
             </h4>
             <div className="space-y-2.5">
@@ -329,7 +331,7 @@ export function InvestigationNotebookDrawer({
                       type="button"
                       onClick={() => investigationNotebookService.unpinNote(note.topicId)}
                       className="text-amber-700/60 hover:text-rose-500 p-0.5 rounded transition-colors opacity-70 group-hover:opacity-100"
-                      title="Gỡ khỏi sổ tay"
+                      title={t('unpin')}
                     >
                       <Trash2 className="size-3.5" />
                     </button>
@@ -352,10 +354,10 @@ export function InvestigationNotebookDrawer({
                           type="button"
                           onClick={() => onApplyCode(note.excerpt, note.tool)}
                           className="inline-flex items-center gap-1 font-bold text-amber-600 dark:text-amber-400 hover:text-amber-500 transition-colors cursor-pointer"
-                          title="Áp dụng mã này vào trình thực nghiệm"
+                          title={t('applyCodeTooltip')}
                         >
                           <Sparkles className="size-3" />
-                          <span>Áp dụng</span>
+                          <span>{t('apply')}</span>
                         </button>
                       )}
 
@@ -363,14 +365,14 @@ export function InvestigationNotebookDrawer({
                         type="button"
                         onClick={() => handleCopy(note.id, note.excerpt || note.title)}
                         className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                        title="Sao chép"
+                        title={t('copy')}
                       >
                         {copiedId === note.id ? (
                           <Check className="size-3 text-emerald-500" />
                         ) : (
                           <Copy className="size-3" />
                         )}
-                        <span>{copiedId === note.id ? 'Đã chép' : 'Chép'}</span>
+                        <span>{copiedId === note.id ? t('copied') : t('copyShort')}</span>
                       </button>
 
                       {note.topicId && (
@@ -378,7 +380,7 @@ export function InvestigationNotebookDrawer({
                           to={`/knowledge/${note.topicId}`}
                           className="inline-flex items-center gap-0.5 text-amber-600 dark:text-amber-400 hover:underline font-medium"
                         >
-                          <span>Tài liệu</span>
+                          <span>{t('documentation')}</span>
                           <ExternalLink className="size-2.5" />
                         </Link>
                       )}
@@ -394,9 +396,9 @@ export function InvestigationNotebookDrawer({
         {filteredNotes.length === 0 && (
           <div className="text-center py-10 px-4 text-muted-foreground">
             <BookOpen className="size-8 mx-auto mb-2 opacity-30 text-amber-500" />
-            <p className="text-xs font-semibold text-foreground">Sổ tay đang trống</p>
+            <p className="text-xs font-semibold text-foreground">{t('notebookEmpty')}</p>
             <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-              Hãy nhấn nút <strong>"Ghim sổ tay"</strong> tại các bài giảng hoặc viết ghi chép ở ô bên trên để lưu lại phương pháp điều tra.
+              {t('notebookEmptyDesc')}
             </p>
           </div>
         )}

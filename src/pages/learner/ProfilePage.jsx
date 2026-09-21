@@ -5,15 +5,19 @@ import { progressService, academyExamService } from '../../services/index.js';
 import { formatXP } from '../../utils/format.js';
 import { 
   User, Award, Flame, Target, BookOpen, Clock, 
-  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown, GraduationCap
+  Activity, Star, TrendingUp, Shield, BarChart3, Sparkles, Info, Calendar, ChevronDown, GraduationCap, Settings
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Skeleton, ProfileSkeleton } from '../../components/ui/Skeleton.jsx';
 import { AcademyCertificateModal } from '../../components/academy/AcademyCertificateModal.jsx';
 
+
 export function ProfilePage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['profile', 'common', 'nav', 'settings']);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+
   const [heatmapFilter, setHeatmapFilter] = useState('6months');
   const [certificates, setCertificates] = useState([]);
   const [selectedCert, setSelectedCert] = useState(null);
@@ -88,7 +92,7 @@ export function ProfilePage() {
     for (let i = 0; i < numMonths; i++) {
       const year = startMonth.getFullYear();
       const monthNum = startMonth.getMonth();
-      const monthLabel = `Thg ${monthNum + 1}`;
+      const monthLabel = t('profile:month', 'Thg {{month}}', { month: monthNum + 1 });
       const key = `${year}-${monthNum}`;
       
       const daysInMonth = new Date(year, monthNum + 1, 0).getDate();
@@ -170,12 +174,12 @@ export function ProfilePage() {
           const yesterday = new Date(today);
           yesterday.setDate(yesterday.getDate() - 1);
           
-          if (dateObj.toDateString() === today.toDateString()) return 'Hôm nay';
-          if (dateObj.toDateString() === yesterday.toDateString()) return 'Hôm qua';
+          if (dateObj.toDateString() === today.toDateString()) return t('profile:today', 'Hôm nay');
+          if (dateObj.toDateString() === yesterday.toDateString()) return t('profile:yesterday', 'Hôm qua');
           
           const diffTime = Math.abs(today - dateObj);
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-          if (diffDays <= 7) return `${diffDays} ngày trước`;
+          if (diffDays <= 7) return t('profile:daysAgo', '{{count}} ngày trước', { count: diffDays });
           return dateObj.toLocaleDateString('vi-VN');
         };
 
@@ -218,10 +222,10 @@ export function ProfilePage() {
   const initials = user?.name ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2) : 'US';
   
   const getRankName = (xp) => {
-    if (xp >= 5000) return 'Thám tử Huyền thoại';
-    if (xp >= 2000) return 'Thám tử Trưởng';
-    if (xp >= 500) return 'Thám tử Cấp cao';
-    return 'Thám tử Tập sự';
+    if (xp >= 5000) return t('profile:rankLegendary', 'Thám tử Huyền thoại');
+    if (xp >= 2000) return t('profile:rankChief', 'Thám tử Trưởng');
+    if (xp >= 500) return t('profile:rankSenior', 'Thám tử Cấp cao');
+    return t('profile:rankApprentice', 'Thám tử Tập sự');
   };
   
   const currentRank = getRankName(stats.xp);
@@ -250,19 +254,31 @@ export function ProfilePage() {
               <Award className="size-3" /> {currentRank}
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-              {user?.name || 'Học viên thám tử'}
+              {user?.name || t('profile:defaultName', 'Học viên thám tử')}
             </h1>
             <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <span className="flex items-center gap-1"><User className="size-3.5" /> {user?.email || 'email@example.com'}</span>
               <span className="h-3 w-px bg-border hidden sm:inline-block" />
-              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> Chuỗi {stats.streak} ngày 🔥</span>
+              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> {t('profile:streakDays', 'Chuỗi {{count}} ngày 🔥', { count: stats.streak })}</span>
             </div>
           </div>
           
-          {/* XP Total Badge */}
-          <div className="flex sm:flex-col items-center justify-center gap-2 sm:gap-0.5 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border px-5 py-3 min-w-[130px] shrink-0">
-            <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest">Tổng XP</span>
-            <span className="text-2xl font-black text-amber-700 dark:text-amber-400 font-mono tracking-tight">{formatXP(stats.xp)}</span>
+          {/* Action buttons & XP Total Badge */}
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="flex sm:flex-col items-center justify-center gap-2 sm:gap-0.5 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border px-5 py-3 min-w-[130px] shrink-0">
+              <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest">{t('profile:totalXp', 'Tổng XP')}</span>
+              <span className="text-2xl font-black text-amber-700 dark:text-amber-400 font-mono tracking-tight">{formatXP(stats.xp)}</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted hover:border-amber-500/40 transition-colors shadow-xs cursor-pointer shrink-0"
+              title={t('common:userSettings', 'Cài đặt người dùng')}
+            >
+              <Settings className="size-4 text-amber-500" />
+              <span className="hidden sm:inline">{t('common:userSettings', 'Cài đặt')}</span>
+            </button>
           </div>
         </div>
       </div>
@@ -278,22 +294,22 @@ export function ProfilePage() {
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <Target className="size-5 text-blue-500 mb-1" />
               <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.completedMissionsCount}</span>
-              <span className="text-xs text-muted-foreground font-medium">Vụ án hoàn thành</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('profile:completedMissions', 'Vụ án hoàn thành')}</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <BookOpen className="size-5 text-emerald-500 mb-1" />
               <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.practiceCount}</span>
-              <span className="text-xs text-muted-foreground font-medium">Bài luyện tập</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('profile:practiceCount', 'Bài luyện tập')}</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <Star className="size-5 text-amber-500 mb-1" />
               <span className="text-2xl font-extrabold tracking-tight font-mono">{stats.achievementsCount}</span>
-              <span className="text-xs text-muted-foreground font-medium">Danh hiệu đạt được</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('profile:achievementsCount', 'Danh hiệu đạt được')}</span>
             </div>
             <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col gap-1 hover:border-primary/30 transition-all">
               <TrendingUp className="size-5 text-rose-500 mb-1" />
-              <span className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400 font-mono">Top 5%</span>
-              <span className="text-xs text-muted-foreground font-medium">Thứ hạng tuần</span>
+              <span className="text-2xl font-extrabold tracking-tight text-rose-600 dark:text-rose-400 font-mono">{t('profile:top5', 'Top 5%')}</span>
+              <span className="text-xs text-muted-foreground font-medium">{t('profile:weeklyRank', 'Thứ hạng tuần')}</span>
             </div>
           </div>
 
@@ -305,12 +321,12 @@ export function ProfilePage() {
                   <GraduationCap className="size-4" />
                 </div>
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-foreground">Chứng Chỉ Học Viện (Academy Certificates)</h2>
-                  <p className="text-xs text-muted-foreground">Chứng nhận tốt nghiệp chính thức sau khi vượt qua kỳ thi sát hạch</p>
+                  <h2 className="text-base sm:text-lg font-bold text-foreground">{t('profile:academyCertificates', 'Chứng Chỉ Học Viện (Academy Certificates)')}</h2>
+                  <p className="text-xs text-muted-foreground">{t('profile:certDesc', 'Chứng nhận tốt nghiệp chính thức sau khi vượt qua kỳ thi sát hạch')}</p>
                 </div>
               </div>
               <span className="text-xs font-mono font-bold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-lg">
-                {certificates.length} Chứng chỉ
+                {t('profile:certCount', '{{count}} Chứng chỉ', { count: certificates.length })}
               </span>
             </div>
 
@@ -324,7 +340,7 @@ export function ProfilePage() {
                     <div>
                       <div className="flex items-center justify-between gap-2 mb-2">
                         <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
-                          <Award className="size-3" /> {cert.grade || 'Đạt Chuẩn'}
+                          <Award className="size-3" /> {cert.grade || t('profile:passed', 'Đạt Chuẩn')}
                         </span>
                         <span className="text-[10px] font-mono text-muted-foreground">
                           {cert.issuedAt ? new Date(cert.issuedAt).toLocaleDateString('vi-VN') : ''}
@@ -334,7 +350,7 @@ export function ProfilePage() {
                         {cert.courseTitle}
                       </h3>
                       <div className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
-                        Điểm: {cert.scorePercent}% • {cert.certificateId}
+                        {t('profile:score', 'Điểm: {{score}}% • {{id}}', { score: cert.scorePercent, id: cert.certificateId })}
                       </div>
                     </div>
 
@@ -344,7 +360,7 @@ export function ProfilePage() {
                       className="w-full py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs transition-colors flex items-center justify-center gap-1.5"
                     >
                       <Award className="size-3.5" />
-                      <span>Xem & In Chứng Chỉ</span>
+                      <span>{t('profile:viewAndPrintCert', 'Xem & In Chứng Chỉ')}</span>
                     </button>
                   </div>
                 ))}
@@ -353,14 +369,14 @@ export function ProfilePage() {
               <div className="p-6 rounded-2xl border border-dashed border-border text-center bg-muted/20">
                 <GraduationCap className="size-10 text-muted-foreground/40 mx-auto mb-2" />
                 <p className="text-xs text-muted-foreground max-w-md mx-auto mb-3">
-                  Bạn chưa có chứng chỉ nào. Hãy hoàn thành khóa học Excel hoặc SQL Academy và vượt qua bài thi tốt nghiệp để nhận chứng chỉ chính thức!
+                  {t('profile:noCert', 'Bạn chưa có chứng chỉ nào. Hãy hoàn thành khóa học Excel hoặc SQL Academy và vượt qua bài thi tốt nghiệp để nhận chứng chỉ chính thức!')}
                 </p>
                 <button
                   type="button"
                   onClick={() => navigate('/academy')}
                   className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-bold shadow-xs hover:opacity-90 transition-opacity"
                 >
-                  Khám phá Học viện Academy
+                  {t('profile:exploreAcademy', 'Khám phá Học viện Academy')}
                 </button>
               </div>
             )}
@@ -373,10 +389,10 @@ export function ProfilePage() {
                 <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Activity className="size-4" />
                 </div>
-                <h2 className="text-base sm:text-lg font-bold text-foreground">Phân tích Kỹ năng (Mastery)</h2>
+                <h2 className="text-base sm:text-lg font-bold text-foreground">{t('profile:skillMastery', 'Phân tích Kỹ năng (Mastery)')}</h2>
               </div>
               <span className="text-xs font-mono font-semibold text-muted-foreground bg-muted px-2.5 py-1 rounded-lg">
-                {stats.skills.filter(s => s.masteryScore > 0).length} Kỹ năng đã đánh giá
+                {t('profile:skillsEvaluated', '{{count}} Kỹ năng đã đánh giá', { count: stats.skills.filter(s => s.masteryScore > 0).length })}
               </span>
             </div>
             
@@ -390,12 +406,12 @@ export function ProfilePage() {
                         {skill.skillId === 'data_analysis' && (
                           <div 
                             className="group/tooltip relative flex items-center justify-center cursor-help"
-                            aria-label="Thông tin về kỹ năng Tư duy phân tích"
+                            aria-label={t('profile:analyticalThinkingInfo', 'Thông tin về kỹ năng Tư duy phân tích')}
                           >
                             <Info className="size-3.5 text-muted-foreground hover:text-primary transition-colors" />
                             {/* Tooltip */}
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-popover border border-border p-2.5 shadow-md opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-50 text-[11px] font-medium text-popover-foreground text-center leading-relaxed">
-                              Đo lường tỷ lệ độc lập giải án (ít dùng gợi ý) và kết quả các câu hỏi trắc nghiệm logic.
+                              {t('profile:analyticalThinkingDesc', 'Đo lường tỷ lệ độc lập giải án (ít dùng gợi ý) và kết quả các câu hỏi trắc nghiệm logic.')}
                               <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-border" />
                             </div>
                           </div>
@@ -434,9 +450,9 @@ export function ProfilePage() {
                   <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-muted text-muted-foreground">
                     <BarChart3 className="size-6" />
                   </div>
-                  <h3 className="text-sm font-bold text-foreground">Chưa mở khóa bản đồ Kỹ năng</h3>
+                  <h3 className="text-sm font-bold text-foreground">{t('profile:skillsLocked', 'Chưa mở khóa bản đồ Kỹ năng')}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">
-                    Hoàn thành các bài tập thực hành Excel & SQL để kích hoạt chỉ số đánh giá kỹ năng thám tử của bạn.
+                    {t('profile:skillsLockedDesc', 'Hoàn thành các bài tập thực hành Excel & SQL để kích hoạt chỉ số đánh giá kỹ năng thám tử của bạn.')}
                   </p>
                 </div>
               </div>
@@ -452,7 +468,7 @@ export function ProfilePage() {
                   {heatmapData.totalContributions}
                 </span>
                 <span className="text-xs font-medium text-muted-foreground">
-                  lượt phá án trong
+                  {t('profile:investigationsIn', 'lượt phá án trong')}
                 </span>
                 
                 {/* Heatmap Time Filter */}
@@ -461,19 +477,19 @@ export function ProfilePage() {
                   onChange={(e) => setHeatmapFilter(e.target.value)}
                   className="bg-muted/50 border border-border/80 px-2.5 py-1 rounded-lg text-xs font-semibold text-foreground hover:bg-muted transition-colors outline-none cursor-pointer"
                 >
-                  <option value="6months">6 tháng qua</option>
+                  <option value="6months">{t('profile:last6Months', '6 tháng qua')}</option>
                   {availableYears.map(yr => (
-                    <option key={yr} value={String(yr)}>Năm {yr}</option>
+                    <option key={yr} value={String(yr)}>{t('profile:year', 'Năm {{year}}', { year: yr })}</option>
                   ))}
                 </select>
 
                 <div 
                   className="group/tooltip relative flex items-center justify-center cursor-help ml-1"
-                  aria-label="Thông tin chuỗi đóng góp"
+                  aria-label={t('profile:contributionInfo', 'Thông tin chuỗi đóng góp')}
                 >
                   <Info className="size-3.5 text-muted-foreground hover:text-foreground transition-colors" />
                   <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-xl bg-popover border border-border p-2.5 shadow-md opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all z-50 text-[11px] font-medium text-popover-foreground text-center leading-relaxed">
-                    Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong khoảng thời gian đã chọn.
+                    {t('profile:contributionDesc', 'Thống kê tổng số lượt bài giải Excel & SQL bạn đã hoàn thành trong khoảng thời gian đã chọn.')}
                   </div>
                 </div>
               </div>
@@ -481,11 +497,11 @@ export function ProfilePage() {
               {/* Right Side Stats (Responsive Wrapper) */}
               <div className="flex items-center gap-3 text-xs text-muted-foreground font-medium bg-muted/30 px-3 py-2 rounded-xl border border-border/50 w-fit">
                 <div className="flex items-center gap-1.5">
-                  Ngày hoạt động: <span className="font-bold text-foreground font-mono">{heatmapData.activeDays}</span>
+                  {t('profile:activeDays', 'Ngày hoạt động:')} <span className="font-bold text-foreground font-mono">{heatmapData.activeDays}</span>
                 </div>
                 <div className="h-3 w-px bg-border" />
                 <div className="flex items-center gap-1.5">
-                  Streak dài nhất: <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{heatmapData.maxStreak}</span>
+                  {t('profile:longestStreak', 'Streak dài nhất:')} <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono">{heatmapData.maxStreak}</span>
                 </div>
               </div>
             </div>
@@ -498,9 +514,9 @@ export function ProfilePage() {
               <div className="flex gap-4 min-w-max" style={{ direction: 'ltr' }}>
                 {/* Day Labels - Sticky Left */}
                 <div className="flex flex-col justify-between text-[10px] font-medium text-muted-foreground py-0.5 sticky left-0 bg-card z-10 pr-2 select-none shrink-0">
-                  <span>T2</span>
-                  <span>T4</span>
-                  <span>T6</span>
+                  <span>{t('profile:monday', 'T2')}</span>
+                  <span>{t('profile:wednesday', 'T4')}</span>
+                  <span>{t('profile:friday', 'T6')}</span>
                 </div>
 
                 {/* Grouped by Months */}
@@ -525,7 +541,7 @@ export function ProfilePage() {
                               return (
                                 <div
                                   key={dIdx}
-                                  title={`${day.formattedDate}: ${day.count} lượt làm bài`}
+                                  title={t('profile:attempts', '{{date}}: {{count}} lượt làm bài', { date: day.formattedDate, count: day.count })}
                                   className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-[3px] transition-all hover:scale-125 hover:z-20 cursor-pointer shrink-0 ${colorClass}`}
                                 />
                               );
@@ -553,7 +569,7 @@ export function ProfilePage() {
                 <div className="grid size-8 place-items-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
                   <Clock className="size-4" />
                 </div>
-                <h2 className="text-base font-bold text-foreground">Hoạt động gần đây</h2>
+                <h2 className="text-base font-bold text-foreground">{t('profile:recentActivity', 'Hoạt động gần đây')}</h2>
               </div>
               
               {/* Clean Left-aligned Timeline (Nút icon ở bên trái, text trải rộng bên phải) */}
@@ -591,7 +607,7 @@ export function ProfilePage() {
               onClick={() => navigate('/profile/history')}
               className="w-full mt-6 py-2.5 rounded-xl text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 transition-colors"
             >
-              Xem lịch sử đầy đủ
+              {t('profile:viewFullHistory', 'Xem lịch sử đầy đủ')}
             </button>
           </div>
         </div>
@@ -603,6 +619,7 @@ export function ProfilePage() {
         onClose={() => setSelectedCert(null)}
         certificate={selectedCert}
       />
+
     </div>
   );
 }

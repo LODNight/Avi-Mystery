@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, Edit3, Database } from 'lucide-react';
 import { formatCurrency, formatNumber } from '../../utils/format.js';
 
@@ -28,6 +29,8 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
   containerRef,
   editorOverlay,
 }) {
+  const { t } = useTranslation('workbench');
+
   // Render counter phục vụ Performance Verification Gate
   if (typeof window !== 'undefined') {
     window.__SPREADSHEET_GRID_RENDER_COUNT__ =
@@ -37,7 +40,7 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
   if (!dataset || !dataset.columns || dataset.columns.length === 0) {
     return (
       <div className="flex h-48 items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-xs text-muted-foreground">
-        Chưa có dữ liệu bảng tính Excel.
+        {t('emptySpreadsheet')}
       </div>
     );
   }
@@ -79,7 +82,7 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
     }
 
     if (rawValue === null || rawValue === undefined || rawValue === '') {
-      return <span className="text-muted-foreground/50 italic">Chưa có</span>;
+      return <span className="text-muted-foreground/50 italic">{t('emptyState')}</span>;
     }
 
     if (isCurrencyCol) return formatCurrency(rawValue);
@@ -104,7 +107,7 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
             <span className="font-bold text-foreground">{dataset.name}</span>
           </div>
           <span className="text-[10px] font-mono bg-background px-2 py-0.5 rounded border border-border text-muted-foreground font-bold">
-            {rows.length} hàng x {columns.length} cột
+            {t('rowsByCols', { rows: rows.length, cols: columns.length })}
           </span>
         </div>
       )}
@@ -212,7 +215,7 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
                         {isTarget && (
                           <div
                             className="absolute top-1 right-1 size-1.5 rounded-full bg-amber-500 pointer-events-none"
-                            title="Ô mục tiêu phá án"
+                            title={t('targetCellPrefix')}
                             data-testid="target-cell-marker"
                           />
                         )}
@@ -233,10 +236,10 @@ export const SpreadsheetGrid = React.memo(function SpreadsheetGrid({
                               e.stopPropagation();
                               if (onFillDown) onFillDown(cellAddr);
                             }}
-                            title="Kéo (Fill down) công thức xuống các hàng bên dưới"
+                            title={t('fillDownTooltip')}
                             className="absolute -bottom-1.5 -right-1.5 z-30 size-2.5 rounded-[1px] bg-amber-500 hover:bg-amber-400 border-2 border-background shadow-xs cursor-pointer transition-transform hover:scale-125 flex items-center justify-center"
                           >
-                            <span className="sr-only">Fill down</span>
+                            <span className="sr-only">{t('fillDown')}</span>
                           </div>
                         )}
 

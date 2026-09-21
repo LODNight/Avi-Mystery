@@ -23,9 +23,11 @@ import { SkeletonCard, MissionCardSkeleton, DashboardSkeleton } from '../../comp
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { OnboardingSpotlight } from '../../features/onboarding/OnboardingSpotlight.jsx';
 import { DASHBOARD_TOUR_STEPS } from '../../features/onboarding/dashboardTourContent.js';
+import { useTranslation } from 'react-i18next';
 
 export function DashboardPage() {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation(['dashboard', 'common', 'nav']);
   const courses = useAsync();
   const recommended = useAsync();
   const [isTourOpen, setIsTourOpen] = useState(false);
@@ -137,7 +139,8 @@ export function DashboardPage() {
     return <Navigate to="/onboarding" replace />;
   }
 
-  const formattedDate = new Date().toLocaleDateString('vi-VN', {
+  const activeLocale = (i18n.language || 'vi').toLowerCase().startsWith('en') ? 'en-US' : 'vi-VN';
+  const formattedDate = new Date().toLocaleDateString(activeLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -159,21 +162,21 @@ export function DashboardPage() {
           <div className="flex items-center gap-2">
             <span className="size-2 rounded-full bg-amber-500 animate-pulse" />
             <span className="font-mono text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-              Bản tin Tổng hành dinh · {formattedDate}
+              {t('dashboard:hqBriefing', 'Bản tin Tổng hành dinh')} · {formattedDate}
             </span>
           </div>
           <h2 className="mt-1.5 text-2xl font-black tracking-tight sm:text-3xl text-foreground">
-            Chào mừng nhà điều tra, {user?.name?.split(' ').pop() || 'bạn'} 👋
+            {t('dashboard:welcomeInvestigator', { name: user?.name?.split(' ').pop() || 'bạn', defaultValue: `Chào mừng nhà điều tra, ${user?.name?.split(' ').pop() || 'bạn'} 👋` })}
           </h2>
           <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            Bàn làm việc điều tra dữ liệu. Mỗi truy vấn và bảng tính là một manh mối đưa bạn tới sự thật vụ án.
+            {t('dashboard:welcomeSubtitle', 'Bàn làm việc điều tra dữ liệu. Mỗi truy vấn và bảng tính là một manh mối đưa bạn tới sự thật vụ án.')}
           </p>
           {onboardingStatus === ONBOARDING_STATUS.COMPLETED && (
             <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
               <CheckCircle2 className="size-4 text-amber-500 shrink-0" />
-              <span>Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP</span>
+              <span>{t('dashboard:onboardingCompleted', 'Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP')}</span>
               <Link to="/onboarding/case-0" className="ml-1 text-amber-600 dark:text-amber-400 font-semibold hover:underline">
-                Xem lại
+                {t('dashboard:review', 'Xem lại')}
               </Link>
             </div>
           )}
@@ -183,10 +186,10 @@ export function DashboardPage() {
           <button
             onClick={handleStartTour}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted hover:border-amber-500/40 transition-colors"
-            title="Xem hướng dẫn giao diện Dashboard"
+            title={t('dashboard:dashboardTour', 'Xem hướng dẫn giao diện Dashboard')}
           >
             <HelpCircle className="size-4 text-primary" />
-            <span>Hướng dẫn Dashboard</span>
+            <span>{t('dashboard:dashboardTour', 'Hướng dẫn Dashboard')}</span>
           </button>
         </div>
       </section>
@@ -203,26 +206,24 @@ export function DashboardPage() {
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-md bg-primary/15 border border-primary/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-primary">
-                  HỒ SƠ ĐANG THỤ LÝ · CASE #{dashboardStats.lastMission ? '01' : '01'}
+                <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  SPRINT 1 PROTOTYPE · CASE #001
                 </span>
                 <span className="text-xs text-muted-foreground font-medium">
-                  Chương 1 · Manh mối ưu tiên
+                  {t('dashboard:newCaseFile', 'Hồ sơ Vụ án mới')}
                 </span>
               </div>
               <h3 className="mt-2 text-xl sm:text-2xl font-black tracking-tight text-foreground truncate">
-                {dashboardStats.lastMission ? dashboardStats.lastMission.title.replace('Vụ án: ', '') : 'Vì sao doanh thu tháng 3 giảm?'}
+                {t('dashboard:case001Title', 'Đường Dây Buôn Lậu Cà Phê')}
               </h3>
-              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                Mục tiêu điều tra: <strong className="text-foreground">Truy vấn và xử lý số liệu bảng tính</strong> để phân tích nguyên nhân tụt giảm doanh số chi nhánh.
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2" dangerouslySetInnerHTML={{ __html: t('dashboard:case001Desc', 'Mục tiêu điều tra: Khám phá <strong class="text-foreground">Detective Workspace mới</strong>, kiểm tra bảng điều khiển Case File, Evidence Panel và HQ Communication.') }} />
 
               {/* Progress track */}
               <div className="mt-3.5 flex items-center gap-3 max-w-sm">
                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                   <div className="h-full w-[72%] rounded-full bg-primary" />
                 </div>
-                <span className="font-mono text-xs font-bold text-primary shrink-0">72% hoàn thành</span>
+                <span className="font-mono text-xs font-bold text-primary shrink-0">{t('dashboard:percentCompleted', '{{percent}}% hoàn thành', { percent: 72 })}</span>
               </div>
             </div>
           </div>
@@ -230,13 +231,15 @@ export function DashboardPage() {
           {/* SINGLE DOMINANT CTA */}
           <div className="flex items-center shrink-0">
             <Link
-              to={dashboardStats.lastMission?.link ? `${dashboardStats.lastMission.link}/workspace` : '/missions/mission-001/workspace'}
-              className="inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-primary px-6 py-3.5 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98] transition-all"
-              title="Mở ngay bàn làm việc toàn màn hình để phá án"
+              to="/cases/case-001/investigate"
+              className="inline-flex w-full sm:w-auto items-center justify-center gap-2.5 rounded-xl bg-amber-500 px-6 py-3.5 text-sm font-bold text-amber-950 shadow-md shadow-amber-500/20 hover:bg-amber-600 hover:scale-[1.01] active:scale-[0.98] transition-all"
+              title="Launch Prototype Workspace"
             >
-              <Play className="size-4 fill-current" />
-              <span>Tiếp tục điều tra vụ án</span>
-              <ArrowUpRight className="size-4" />
+              <div className="flex flex-col text-left">
+                <span className="leading-tight text-base">Launch Prototype</span>
+                <span className="text-[10px] font-medium text-amber-950/80">Detective Workspace</span>
+              </div>
+              <ArrowUpRight className="size-5 shrink-0 opacity-80" />
             </Link>
           </div>
         </div>
@@ -260,10 +263,10 @@ export function DashboardPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Danh hiệu thám tử
+                  {t('dashboard:detectiveTitle', 'Danh hiệu thám tử')}
                 </span>
                 <span className="rounded bg-primary/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary">
-                  Cấp {user?.level || 1}
+                  {t('dashboard:level', 'Cấp {{level}}', { level: user?.level || 1 })}
                 </span>
               </div>
               <p className="text-sm font-bold text-foreground truncate">Data Investigator</p>
@@ -285,12 +288,12 @@ export function DashboardPage() {
             </div>
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                Chuỗi phá án
+                {t('dashboard:streakTitle', 'Chuỗi phá án')}
               </p>
               <p className="text-base font-bold text-foreground">
-                {dashboardStats.streak} ngày liên tiếp
+                {dashboardStats.streak} {t('dashboard:streakUnit', 'ngày liên tiếp')}
               </p>
-              <p className="text-xs text-muted-foreground">Giữ nhịp phân tích mỗi ngày</p>
+              <p className="text-xs text-muted-foreground">{t('dashboard:streakSub', 'Giữ nhịp phân tích mỗi ngày')}</p>
             </div>
           </div>
 
@@ -301,14 +304,14 @@ export function DashboardPage() {
             </div>
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                Chỉ tiêu điều tra tuần
+                {t('dashboard:weeklyMissionsTitle', 'Chỉ tiêu điều tra tuần')}
               </p>
               <p className="text-base font-bold text-foreground">
-                {dashboardStats.weeklyMissions} / 5 vụ án
+                {dashboardStats.weeklyMissions} / 5
               </p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Clock3 className="size-3 inline text-muted-foreground" />
-                Đã xử lý {dashboardStats.timeSpent}
+                {t('dashboard:timeSpentTitle', 'Thời gian điều tra')}: {dashboardStats.timeSpent}
               </p>
             </div>
           </div>
@@ -328,13 +331,13 @@ export function DashboardPage() {
               <div className="flex items-center gap-2">
                 <FolderOpen className="size-4 text-primary" />
                 <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Hồ sơ chuyên án
+                  {t('dashboard:specializedCaseFiles', 'Hồ sơ chuyên án')}
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-foreground">Chuyên án điều tra dữ liệu</h3>
+              <h3 className="text-lg font-bold text-foreground">{t('dashboard:specializedDataInvestigation', 'Chuyên án điều tra dữ liệu')}</h3>
             </div>
             <Link to="/courses" className="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
-              Xem tất cả <ArrowUpRight className="size-3.5" />
+              {t('dashboard:viewAll', 'Xem tất cả')} <ArrowUpRight className="size-3.5" />
             </Link>
           </div>
 
@@ -365,10 +368,10 @@ export function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Briefcase className="size-4 text-primary" />
                 <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Nhiệm vụ hiện trường
+                  {t('dashboard:fieldMissions', 'Nhiệm vụ hiện trường')}
                 </span>
               </div>
-              <h3 className="text-lg font-bold text-foreground">Vụ án cần phối hợp xử lý</h3>
+              <h3 className="text-lg font-bold text-foreground">{t('dashboard:casesNeedCoordination', 'Vụ án cần phối hợp xử lý')}</h3>
             </div>
           </div>
 
@@ -404,6 +407,7 @@ export function DashboardPage() {
 /* ── Detective Dossier & Incident Card Sub-components ── */
 
 function CaseDossierCard({ course }) {
+  const { t } = useTranslation(['dashboard']);
   const isExcel = course.tool === 'excel';
   const progress = course.id === 'course-001' ? 72 : 38;
 
@@ -423,7 +427,7 @@ function CaseDossierCard({ course }) {
             </span>
           </div>
           <span className="rounded bg-muted px-2 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
-            {course.totalMissions || 12} giai đoạn
+            {t('dashboard:totalMissions', '{{count}} giai đoạn', { count: course.totalMissions || 12 })}
           </span>
         </div>
 
@@ -436,7 +440,7 @@ function CaseDossierCard({ course }) {
       </div>
 
       <div className="mt-3 pt-2.5 border-t border-border/60 flex items-center justify-between text-xs">
-        <span className="text-muted-foreground">Tiến độ điều tra</span>
+        <span className="text-muted-foreground">{t('dashboard:investigationProgress', 'Tiến độ điều tra')}</span>
         <span className="font-mono font-bold text-primary">{progress}%</span>
       </div>
     </Link>
@@ -444,6 +448,7 @@ function CaseDossierCard({ course }) {
 }
 
 function IncidentReportCard({ mission }) {
+  const { t } = useTranslation(['dashboard']);
   const isExcel = mission.tool === 'excel';
 
   return (

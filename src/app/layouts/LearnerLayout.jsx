@@ -11,6 +11,8 @@ import { isAdmin } from '../../constants/roles.js';
 import { LearnerSidebar, isLearnerNavPathActive, learnerNav, learnerNavItems } from '../../components/learner/navigation/LearnerSidebar.jsx';
 import { LearnerTopBar } from '../../components/learner/navigation/LearnerTopBar.jsx';
 
+import { useTranslation } from 'react-i18next';
+
 // Re-export for compatibility with other files (like LearnerLayout.test.jsx)
 export { learnerNavItems, learnerNav, isLearnerNavPathActive };
 
@@ -18,6 +20,7 @@ export function LearnerLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const { t } = useTranslation(['nav', 'common']);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('avi_sidebar_collapsed') === 'true';
@@ -68,15 +71,17 @@ export function LearnerLayout({ children }) {
   }, [collapsed]);
 
   const activeNavItem = learnerNav.find((item) => item.to === location.pathname);
-  const pageTitle = activeNavItem ? activeNavItem.label : 'Nhiệm vụ & Báo cáo';
+  const pageTitle = activeNavItem
+    ? (activeNavItem.labelKey ? t(`nav:${activeNavItem.labelKey}`, activeNavItem.label) : activeNavItem.label)
+    : t('nav:currentMission', 'Nhiệm vụ & Báo cáo');
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-200">
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <button
-          aria-label="Đóng menu điều hướng"
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+          aria-label={t('common:closeMenu', 'Đóng menu điều hướng')}
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden cursor-pointer"
           onClick={() => setMobileOpen(false)}
         />
       )}

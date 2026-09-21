@@ -119,12 +119,14 @@ Admin có toàn quyền điều khiển khả năng truy cập của Người h�
 
 ---
 
-## 📚 5. Tài Liệu Kỹ Thuật Chi Tiết
+## 📚 5. Tài Liệu Dự Án & Kỹ Thuật
 
-Dự án được tài liệu hóa đồng bộ trong thư mục `docs/`:
+Dự án được tài liệu hóa đồng bộ và tinh gọn trong thư mục `docs/`:
 
-- 📓 **[`docs/PROJECT_CONTEXT.md`](./docs/PROJECT_CONTEXT.md)**: Báo cáo tổng quan dự án, cấu trúc mã nguồn, danh sách tính năng và lộ trình Sprints.
-- 📋 **[`docs/CURRENT_SPRINT.md`](./docs/CURRENT_SPRINT.md)**: Bảng theo dõi tiến độ chi tiết theo từng Step, Backlog nhiệm vụ và trạng thái task hiện tại.
-- 🏛️ **[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)**: Sơ đồ phân vùng Module, hợp đồng ranh giới, ánh xạ thực thể Domain và chiến lược kiểm thử tự động.
-- ⚖️ **[`docs/DECISIONS_LOG.md`](./docs/DECISIONS_LOG.md)**: Nhật ký quyết định kiến trúc quan trọng (ADR-001 đến ADR-009).
+- 📊 **[`docs/PROJECT_STATUS.md`](./docs/PROJECT_STATUS.md)**: **Bảng theo dõi tiến độ chính** — Đọc nhanh 2 phút: Đã làm, đang làm, to-do tiếp theo, 6 rủi ro then chốt và các điểm cần tối ưu.
+- 🎯 **[`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md)**: Định vị sản phẩm (Game phá án dữ liệu), nguyên tắc thiết kế Learner UX và Master Roadmap.
+- 🏛️ **[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)**: Kiến trúc hệ thống, 4 miền trạng thái (4 State Domains), đa ngôn ngữ 3 tầng, phân vùng module và schema CSDL.
+- ⚖️ **[`docs/DECISIONS_LOG.md`](./docs/DECISIONS_LOG.md)**: Nhật ký quyết định kiến trúc quan trọng (ADR-001 đến ADR-010).
 - 🤖 **[`docs/AGENT_PROTOCOLS.md`](./docs/AGENT_PROTOCOLS.md)**: Quy chuẩn giao thức hoạt động, hợp đồng service dành cho AI Agent.
+- 📂 **`docs/specs/`**: Thư mục chứa các đặc tả kỹ thuật chi tiết (`detective-workspace.md`, `investigation-state.md`, `report-schema.md`, `localization.md`).
+- 📦 **`docs/archive/`**: Thư mục lưu trữ lịch sử các sprint và checklist cũ.

@@ -1,0 +1,14 @@
+{
+  "evidenceData": "Dữ liệu chứng cứ",
+  "exitWorkspace": "Rời bàn làm việc",
+  "exitWorkspaceTooltip": "Rời bàn làm việc (Quay lại)",
+  "focusMode": "FOCUS MODE",
+  "focusOn": "FOCUS ON",
+  "focusModeOnTooltip": "Đang bật Focus Mode (Thu gọn đề bài để tập trung). Bấm để mở lại đề bài.",
+  "focusModeOffTooltip": "Bật Focus Mode để mở rộng tối đa không gian bảng tính",
+  "userSettings": "Cài đặt người dùng",
+  "switchToLight": "Chuyển sang chế độ Sáng",
+  "switchToDark": "Chuyển sang chế độ Tối",
+  "openMenu": "Mở menu",
+  "closeMenu": "Đóng menu điều hướng"
+}

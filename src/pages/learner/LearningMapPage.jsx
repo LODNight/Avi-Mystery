@@ -22,9 +22,11 @@ import { Skeleton, LearningMapSkeleton } from '../../components/ui/Skeleton.jsx'
 import { EmptyState, ErrorState } from '../../components/ui/EmptyState.jsx';
 import { Badge } from '../../components/ui/Badge.jsx';
 import { getSkillMasteryLevel } from '../../domain/mastery/masteryEvaluator.js';
+import { useTranslation } from 'react-i18next';
 
 export function LearningMapPage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['map', 'common']);
   const { progressList, masteryList, overallMastery, loading: progressLoading } = useProgress(user?.id);
 
   const [mapRawData, setMapRawData] = useState(null);
@@ -45,7 +47,7 @@ export function LearningMapPage() {
         const res = await learningMapService.getLearningMapTree();
         if (res?.error || !res?.data || res.data.length === 0) {
           if (isMounted) {
-            setError(res?.error || 'Không tìm thấy dữ liệu lộ trình học tập.');
+            setError(res?.error || t('map:notFound', 'Không tìm thấy dữ liệu lộ trình học tập.'));
             setLoading(false);
           }
           return;
@@ -55,7 +57,7 @@ export function LearningMapPage() {
           setMapRawData(res.data);
         }
       } catch (err) {
-        if (isMounted) setError('Không thể tải dữ liệu bản đồ lộ trình học tập.');
+        if (isMounted) setError(t('map:fetchError', 'Không thể tải dữ liệu bản đồ lộ trình học tập.'));
       } finally {
         if (isMounted) setLoading(false);
         const fetchEnd = performance.now();
@@ -118,21 +120,21 @@ export function LearningMapPage() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-3">
-              <Compass className="size-3.5" /> Lộ Trình Hành Trình Điều Tra
+              <Compass className="size-3.5" /> {t('map:investigationJourney', 'Lộ Trình Hành Trình Điều Tra')}
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Bản Đồ Học Tập
+              {t('map:title', 'Bản Đồ Học Tập')}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-              Theo dõi tiến trình thám tử dữ liệu của bạn trên toàn bộ các Giai đoạn (Phase) học tập.
+              {t('map:subtitle', 'Theo dõi tiến trình thám tử dữ liệu của bạn trên toàn bộ các Giai đoạn (Phase) học tập.')}
             </p>
           </div>
 
           <div className="shrink-0 flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
             <Sparkles className="size-6 text-amber-500" />
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Tổng tiến độ</p>
-              <p className="text-lg font-bold text-foreground">{summary.overallProgress}% Hoàn thành</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:overallProgressTitle', 'Tổng tiến độ')}</p>
+              <p className="text-lg font-bold text-foreground">{t('map:overallProgress', '{{percent}}% Hoàn thành', { percent: summary.overallProgress })}</p>
             </div>
           </div>
         </div>
@@ -144,8 +146,8 @@ export function LearningMapPage() {
               <Compass className="size-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Giai đoạn (Phase)</p>
-              <p className="text-sm font-bold text-foreground">{summary.totalPhases} Phase</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:phaseTitle', 'Giai đoạn (Phase)')}</p>
+              <p className="text-sm font-bold text-foreground">{t('map:phases', '{{count}} Phase', { count: summary.totalPhases })}</p>
             </div>
           </div>
 
@@ -154,8 +156,8 @@ export function LearningMapPage() {
               <Layers className="size-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Số chương</p>
-              <p className="text-sm font-bold text-foreground">{summary.totalChapters} Chương</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:chapterTitle', 'Số chương')}</p>
+              <p className="text-sm font-bold text-foreground">{t('map:chapters', '{{count}} Chương', { count: summary.totalChapters })}</p>
             </div>
           </div>
 
@@ -164,8 +166,8 @@ export function LearningMapPage() {
               <BookOpen className="size-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Tổng vụ án</p>
-              <p className="text-sm font-bold text-foreground">{summary.totalInvestigations} Vụ án</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:investigationTitle', 'Tổng vụ án')}</p>
+              <p className="text-sm font-bold text-foreground">{t('map:investigations', '{{count}} Vụ án', { count: summary.totalInvestigations })}</p>
             </div>
           </div>
 
@@ -174,8 +176,8 @@ export function LearningMapPage() {
               <Zap className="size-5" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">Tổng XP</p>
-              <p className="text-sm font-bold text-foreground">+{summary.totalXp} XP</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:xpTitle', 'Tổng XP')}</p>
+              <p className="text-sm font-bold text-foreground">{t('map:xp', '+{{amount}} XP', { amount: summary.totalXp })}</p>
             </div>
           </div>
         </div>
@@ -187,14 +189,14 @@ export function LearningMapPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <ShieldCheck className="size-5 text-amber-500" />
-              <h3 className="font-bold text-base text-foreground">Độ Thành Thạo Kỹ Năng (Skill Mastery)</h3>
+              <h3 className="font-bold text-base text-foreground">{t('map:skillMastery', 'Độ Thành Thạo Kỹ Năng (Skill Mastery)')}</h3>
             </div>
             <Badge
               variant="outline"
               size="sm"
               className={`font-semibold ${overallMastery.overallLevel.border || 'border-amber-500/30'} ${overallMastery.overallLevel.bg || 'bg-amber-500/10'} ${overallMastery.overallLevel.color || 'text-amber-600 dark:text-amber-400'}`}
             >
-              Cấp độ: {overallMastery.overallLevel.badge} {overallMastery.overallLevel.name}
+              {t('map:level', 'Cấp độ:')} {overallMastery.overallLevel.badge} {overallMastery.overallLevel.name}
             </Badge>
           </div>
 
@@ -221,9 +223,9 @@ export function LearningMapPage() {
                     />
                   </div>
                   <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                    <span>{skill.successfulAttempts}/{skill.totalAttempts} lượt đúng</span>
+                    <span>{t('map:correctAttempts', '{{success}}/{{total}} lượt đúng', { success: skill.successfulAttempts, total: skill.totalAttempts })}</span>
                     <span className={`font-semibold ${skillLevel.color}`}>
-                      Cấp: {skillLevel.badge} {skillLevel.name}
+                      {t('map:rank', 'Cấp:')} {skillLevel.badge} {skillLevel.name}
                     </span>
                   </div>
                 </div>
@@ -278,8 +280,8 @@ export function LearningMapPage() {
         ) : !activePhase || activePhase.chapters.length === 0 ? (
           <EmptyState
             type="empty"
-            title="Chưa có dữ liệu giai đoạn"
-            description="Giai đoạn này đang được cập nhật thêm các chương vụ án mới."
+            title={t('map:noDataTitle', 'Chưa có dữ liệu giai đoạn')}
+            description={t('map:noDataDesc', 'Giai đoạn này đang được cập nhật thêm các chương vụ án mới.')}
           />
         ) : (
           <div className="relative flex flex-col gap-10">
@@ -288,7 +290,7 @@ export function LearningMapPage() {
               <div>
                 <div className="mb-1">
                   <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                    Giai đoạn hiện tại
+                    {t('map:currentPhase', 'Giai đoạn hiện tại')}
                   </span>
                 </div>
                 <Link to={`/courses/${activePhase.courseId || activePhase.id.replace('phase-', '')}`} className="block">
@@ -319,7 +321,7 @@ export function LearningMapPage() {
                     </div>
                     <div className="rounded-2xl border border-amber-500/30 bg-card p-4 shadow-sm flex-1">
                       <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
-                        Chương {chIdx + 1}
+                        {t('map:chapter', 'Chương {{index}}', { index: chIdx + 1 })}
                       </span>
                       <h3 className="text-base font-bold text-foreground">{cleanTitle || chapter.title}</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">{chapter.description}</p>
@@ -337,6 +339,7 @@ export function LearningMapPage() {
                         isCompleted={node.isCompleted}
                         isCurrent={node.isCurrent}
                         isLocked={node.isLocked}
+                        t={t}
                       />
                     ))}
                   </div>
@@ -358,6 +361,7 @@ function MissionNodeCard({
   isCompleted,
   isCurrent,
   isLocked,
+  t,
 }) {
   return (
     <div
@@ -393,11 +397,11 @@ function MissionNodeCard({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase">
-              Vụ án {missionIndex}
+              {t('map:case', 'Vụ án {{index}}', { index: missionIndex })}
             </span>
             {isCurrent && (
               <Badge variant="warning" size="sm">
-                Bài tiếp theo
+                {t('map:nextLesson', 'Bài tiếp theo')}
               </Badge>
             )}
           </div>
@@ -422,7 +426,7 @@ function MissionNodeCard({
             disabled
             className="inline-flex items-center gap-1.5 rounded-xl bg-muted px-3.5 py-2 text-xs font-bold text-muted-foreground cursor-not-allowed"
           >
-            <Lock className="size-3.5" /> Chưa mở khóa
+            <Lock className="size-3.5" /> {t('map:locked', 'Chưa mở khóa')}
           </button>
         ) : (
           <Link
@@ -433,7 +437,7 @@ function MissionNodeCard({
                 : 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'
             }`}
           >
-            <Play className="size-3.5 fill-current" /> {isCurrent ? 'Làm bài ngay' : 'Luyện tập'}
+            <Play className="size-3.5 fill-current" /> {isCurrent ? t('map:startNow', 'Làm bài ngay') : t('map:practice', 'Luyện tập')}
           </Link>
         )}
       </div>

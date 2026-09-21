@@ -30,9 +30,11 @@ import { KnowledgeHubPage } from '../../pages/learner/KnowledgeHubPage.jsx';
 import { AcademyCoursePage } from '../../pages/learner/AcademyCoursePage.jsx';
 import { AcademyExamPage } from '../../pages/learner/AcademyExamPage.jsx';
 import { PracticeSandboxPage } from '../../pages/learner/PracticeSandboxPage.jsx';
+import { DetectiveWorkspacePage } from '../../pages/learner/DetectiveWorkspacePage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
+import { SettingsPage } from '../../pages/learner/SettingsPage.jsx';
 import { AdminCoursesPage } from '../../pages/admin/AdminCoursesPage.jsx';
 import { AdminChaptersPage } from '../../pages/admin/AdminChaptersPage.jsx';
 import { AdminMissionsPage } from '../../pages/admin/AdminMissionsPage.jsx';
@@ -133,6 +135,7 @@ export function AppRouter() {
           <Route path="/practice" element={<PracticePage />} />
           <Route path="/achievements" element={<AchievementsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile/history" element={<ActivityHistoryPage />} />
           <Route path="/knowledge" element={<KnowledgeHubPage />} />
           <Route path="/knowledge/:topicId" element={<KnowledgeHubPage />} />
@@ -155,6 +158,8 @@ export function AppRouter() {
           <Route path="/sandbox" element={<PracticeSandboxPage />} />
           <Route path="/sandbox/:tool" element={<PracticeSandboxPage />} />
           <Route path="/sandbox/topic/:topicId" element={<PracticeSandboxPage />} />
+          {/* Detective Workspace — new case-based investigation system */}
+          <Route path="/cases/:caseId/investigate" element={<DetectiveWorkspacePage />} />
         </Route>
 
         {/* Onboarding routes — inside RequireAuth, outside LearnerLayout (full-screen) */}

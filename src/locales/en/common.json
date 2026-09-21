@@ -1,0 +1,14 @@
+{
+  "evidenceData": "evidence data",
+  "exitWorkspace": "Exit Workspace",
+  "exitWorkspaceTooltip": "Exit Workspace (Go back)",
+  "focusMode": "FOCUS MODE",
+  "focusOn": "FOCUS ON",
+  "focusModeOnTooltip": "Focus Mode is active (Collapsing panel for focus). Click to expand.",
+  "focusModeOffTooltip": "Enable Focus Mode to maximize spreadsheet workspace",
+  "userSettings": "User Settings",
+  "switchToLight": "Switch to Light mode",
+  "switchToDark": "Switch to Dark mode",
+  "openMenu": "Open menu",
+  "closeMenu": "Close navigation menu"
+}

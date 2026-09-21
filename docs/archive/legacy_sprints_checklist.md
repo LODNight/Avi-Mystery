@@ -695,31 +695,41 @@
 
 ---
 
-## 🟢 Sprint 10 — Frontend & Gameplay Enhancements *(PROPOSED / READY)*
-> *Lưu ý: Công việc Backend (FastAPI + PostgreSQL) tạm thời hoãn lại (`DEFERRED`) theo yêu cầu người dùng để tập trung nâng tầm trải nghiệm Frontend & Client-side.*
+## 🟢 Sprint 11 (Pivot Sprint 1) — New Detective Workspace Core *(CURRENT - 100%)*
+*Mục tiêu: Đặt nền móng cho mô hình học tập mới dựa trên Vụ án (Case -> Investigation -> Evidence -> HQ Communication), loại bỏ UX dạng làm bài quiz.*
+*Chi tiết chiến lược & lộ trình master: Xem [docs/PRODUCT_STRATEGY_ROADMAP.md](file:///d:/Coding_Design/Personal/Avi-Mystery/docs/PRODUCT_STRATEGY_ROADMAP.md)*
 
-### 🔹 Option A: Nâng cấp SQL Workspace Lên Chuẩn Pro (SQL Syntax, Autocomplete & History)
-- [ ] Xây dựng SQL Syntax Highlighter & Autocomplete gợi ý tên bảng/cột từ Schema hiện hành.
-- [ ] Bổ sung Query History (lưu và chạy lại các câu lệnh trong session) & nút Format SQL 1-click.
-- [ ] Mini Data Visualizer: Chuyển đổi bảng kết quả SQL sang biểu đồ cột/đường đơn giản.
+### 🔹 Step 11.1: UX Spec & Architecture (HOÀN THÀNH)
+- [x] Đặc tả UX và mô hình 4 miền trạng thái (Case, Investigation, UI, Report).
 
-### 🔹 Option B: Bảng Manh Mối & Bằng Chứng Vụ Án (Detective Evidence Board)
-- [ ] Màn hình Cork Board ghim các bằng chứng đã thu thập, kết nối dây đỏ giữa các nghi phạm và số liệu bất thường.
-- [ ] Màn hình suy luận tổng hợp để người học xâu chuỗi manh mối và đưa ra cáo trạng cuối cùng.
+### 🔹 Step 11.2: State Management & Service Layer (HOÀN THÀNH)
+- [x] Tạo `investigationSessionService.js` (quản lý LocalStorage) và `caseContentService.js`.
+- [x] Định nghĩa dữ liệu mock cho Case #001 (Table, Document, Witness).
 
-### 🔹 Option C: Mở Rộng Nội Dung Thực Chiến (Content Expansion)
-- [ ] Thêm các Vụ án Cốt truyện mới (Case 01, Case 02) với kịch bản chi tiết và bộ dataset phong phú.
-- [ ] Bổ sung các chương nâng cao cho Academy (XLOOKUP, Pivot Tables, SQL Window Functions).
+### 🔹 Step 11.3: Workspace Prototype & Route (HOÀN THÀNH)
+- [x] Tạo `DetectiveWorkspacePage` với route `/cases/:caseId/investigate`.
+- [x] Xây dựng `CaseFilePanel`, `EvidencePanel`, `HQCommunicationPanel`.
+- [x] Đưa luồng truy cập chính (Main CTA) trên `DashboardPage` vào Prototype.
 
-### 🔹 Option D: Thử Thách Hàng Ngày (Daily Case) & Bảng Xếp Hạng (Leaderboard)
-- [ ] Mini-puzzle 3-5 phút mỗi ngày giữ chuỗi streak và nhân đôi XP.
-- [ ] Bảng xếp hạng thám tử theo tuần/tháng với danh hiệu và huy hiệu vinh danh.
+### 🔹 Step 11.4: Application-wide Localization Foundation & Runtime Language Reactivity (HOÀN THÀNH)
+- [x] Thiết lập mô hình 3 tầng: UI App (`i18next`), Case Presentation (`caseLocalizationService`), Domain & Verification Values (Bảo toàn raw values).
+- [x] Tách biệt hook lifecycle trong `useDetectiveWorkspace.js`: Case Content phản ứng tức thì theo ngôn ngữ mà không reset State điều tra.
+- [x] Đăng ký 4 namespaces chuẩn hóa: `nav`, `investigation`, `workbench`, `common` với ngôn ngữ mặc định `vi` (fallback `vi`, hỗ trợ `en`).
+- [x] Di chuyển toàn bộ chuỗi ký tự hiển thị trên Detective Workspace & Shared Workbench sang i18n (`FormulaBar`, `SpreadsheetGrid`, `EvidencePanel`, `FindingCard`).
+- [x] Tích hợp i18n vào test setup (`src/tests/setup.js`); toàn bộ 76 test suites (586/586 tests PASS 100%), build production Vite thành công.
 
 ---
 
-## ⏸️ Sprint 10 (Backend) — Backend API & Persistence *(DEFERRED)*
-> *Tạm hoãn theo yêu cầu của người dùng. Có thể kích hoạt lại bất kỳ lúc nào.*
-- [ ] FastAPI Server, Docker compose PostgreSQL, Alembic migrations, dual-mode client adapter.
+## 🟢 Sprint 12 (Pivot Sprint 2) — Investigation Tools & Layout Integration *(PLANNED)*
+*Mục tiêu: Tích hợp công cụ phá án thực tế (Excel/SQL) vào Workspace mới và hoàn thiện vòng lặp Case 001.*
+
+### 🔹 Step 12.1: Tool Integration
+- [ ] Tích hợp bảng tính Excel / Editor SQL vào vùng Workspace bên phải của Detective Workspace.
+- [ ] Cho phép sao chép dữ liệu từ Evidence sang công cụ.
+
+### 🔹 Step 12.2: Workflow Polish
+- [ ] Đảm bảo dữ liệu báo cáo (Report) và Xác thực (Verification) được kiểm tra kỹ với case thực tế.
+- [ ] Hoàn thiện luồng chuyển Phase (Phase 1 -> Phase 2).
 
 ---
 
@@ -728,14 +738,14 @@
 # AVI-MYSTERY — CURRENT TASK
 
 ## Primary Module
-- **Module Name**: `Sprint 10 — Frontend & Gameplay Enhancements (Planning)`
-- **Current Sprint**: **SPRINT 9.6 (Phase 7) — COMPLETED (100%)** | **SPRINT 10 — PLANNING**
-- **Current Status**: **All 75 test suites (583/583 tests) PASSING (100%)**, Production build SUCCESS
-- **Next Decision**: Chọn định hướng triển khai Frontend Sprint 10 (SQL Pro Workspace / Evidence Board / Content Expansion / Daily Case & Leaderboard)
+- **Module Name**: `Sprint 11 (Pivot Sprint 1) — Detective Workspace Core & Localization Foundation`
+- **Current Sprint**: **SPRINT 11 — COMPLETED (100%)** | **SPRINT 12 — PLANNING**
+- **Current Status**: **All 76 test suites (586/586 tests) PASSING (100%)**, Production build SUCCESS. Prototype UX & Localization Foundation hoàn tất 100%.
+- **Next Decision**: Lên kế hoạch chi tiết cho Sprint 12 để đưa bảng tính Excel hoặc Terminal SQL vào màn hình điều tra mới và tích hợp công cụ phá án.
 
 ## Completed Sprints Summary
-1. **Sprint 9.5 (Academy & Sandbox)**: Màn hình Sandbox Split-pane, In-cell editor overlay, W3Schools Academy course, Bài thi tốt nghiệp & Chứng chỉ số Detective Amber.
-2. **Sprint 9.6 (Phase 7 - Detective Immersion & Investigation Notebook)**: Sổ tay điều tra 2 chiều, con dấu nghiệp vụ InvestigationStamp, thẻ vật chứng EvidenceCard, đồng bộ hồ sơ thư viện & phòng thực nghiệm pháp chứng.
-3. **Backend Status**: DEFERRED (Tạm dừng phát triển backend, tập trung 100% frontend).
+1. **Sprints 1-9.6**: Các tính năng legacy Excel/SQL, Academy, Knowledge Hub (Hoàn tất & Bảo lưu nguyên trạng, không can thiệp).
+2. **Sprint 11**: Khởi tạo kiến trúc Vụ án thực thụ. Xây dựng 4 miền trạng thái và các Panel UI linh hoạt (CaseFile, Evidence, HQCommunication) không dính cứng với công cụ. Thiết lập nền tảng Localization Foundation 3 tầng và kiểm định 76 test suites.
+3. **Backend Status**: DEFERRED (Tạm dừng phát triển backend, tập trung kiến trúc luồng chơi phía Client).
 
 

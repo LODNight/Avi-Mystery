@@ -3,9 +3,11 @@ import { useAuth } from '../../hooks/useAuth.js';
 import { progressService } from '../../services/index.js';
 import { Trophy, Lock, Search, Target, FileSpreadsheet, Database, Flame, Award, Shield } from 'lucide-react';
 import { Skeleton, AchievementsSkeleton } from '../../components/ui/Skeleton.jsx';
+import { useTranslation } from 'react-i18next';
 
 export function AchievementsPage() {
   const { user } = useAuth();
+  const { t } = useTranslation(['achievements', 'common']);
   const [achievements, setAchievements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all'); // 'all', 'unlocked', 'locked'
@@ -75,18 +77,18 @@ export function AchievementsPage() {
         
         <div className="relative z-10 text-center sm:text-left">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-primary mb-3">
-            <Trophy className="size-3" /> Bộ sưu tập
+            <Trophy className="size-3" /> {t('achievements:collection', 'Bộ sưu tập')}
           </div>
           <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-foreground">
-            Danh hiệu Thám tử
+            {t('achievements:title', 'Danh hiệu Thám tử')}
           </h1>
           <p className="text-sm text-muted-foreground mt-2 max-w-md">
-            Mở khóa các danh hiệu đặc biệt bằng cách vượt qua các vụ án hóc búa, duy trì chuỗi học tập và nâng cao kỹ năng phân tích dữ liệu của bạn.
+            {t('achievements:description', 'Mở khóa các danh hiệu đặc biệt bằng cách vượt qua các vụ án hóc búa, duy trì chuỗi học tập và nâng cao kỹ năng phân tích dữ liệu của bạn.')}
           </p>
         </div>
 
         <div className="relative z-10 flex flex-col items-center bg-background rounded-2xl border border-border p-4 min-w-[160px] shadow-sm">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">Tiến trình</span>
+          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-2">{t('achievements:progress', 'Tiến trình')}</span>
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-black text-foreground">{unlockedCount}</span>
             <span className="text-sm font-bold text-muted-foreground">/ {totalCount}</span>
@@ -107,19 +109,19 @@ export function AchievementsPage() {
             onClick={() => setFilter('all')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'all' ? 'bg-background shadow-xs text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            Tất cả
+            {t('achievements:filterAll', 'Tất cả')}
           </button>
           <button
             onClick={() => setFilter('unlocked')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'unlocked' ? 'bg-background shadow-xs text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            Đã mở khóa
+            {t('achievements:filterUnlocked', 'Đã mở khóa')}
           </button>
           <button
             onClick={() => setFilter('locked')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${filter === 'locked' ? 'bg-background shadow-xs text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            Chưa đạt
+            {t('achievements:filterLocked', 'Chưa đạt')}
           </button>
         </div>
       </div>
@@ -162,7 +164,7 @@ export function AchievementsPage() {
               {!badge.isUnlocked && badge.maxProgress > 1 && (
                 <div className="w-full mt-auto">
                   <div className="flex justify-between text-[10px] font-bold text-muted-foreground mb-1">
-                    <span>Tiến độ</span>
+                    <span>{t('achievements:itemProgress', 'Tiến độ')}</span>
                     <span>{badge.currentProgress} / {badge.maxProgress}</span>
                   </div>
                   <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
@@ -178,7 +180,7 @@ export function AchievementsPage() {
               {badge.isUnlocked && badge.unlockedAt && (
                 <div className="w-full mt-auto pt-4 border-t border-border">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Đạt được: {new Date(badge.unlockedAt).toLocaleDateString('vi-VN')}
+                    {t('achievements:unlockedAt', 'Đạt được: {{date}}', { date: new Date(badge.unlockedAt).toLocaleDateString('vi-VN') })}
                   </p>
                 </div>
               )}
@@ -190,9 +192,9 @@ export function AchievementsPage() {
       {filteredAchievements.length === 0 && (
         <div className="flex flex-col items-center justify-center h-64 rounded-3xl border border-dashed border-border bg-card p-6 text-center">
           <Trophy className="size-10 text-muted-foreground mb-4 opacity-50" />
-          <h3 className="text-lg font-bold text-foreground">Không có danh hiệu nào</h3>
+          <h3 className="text-lg font-bold text-foreground">{t('achievements:emptyTitle', 'Không có danh hiệu nào')}</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            Hãy tiếp tục phá án để mở khóa thêm nhiều danh hiệu mới!
+            {t('achievements:emptyDesc', 'Hãy tiếp tục phá án để mở khóa thêm nhiều danh hiệu mới!')}
           </p>
         </div>
       )}

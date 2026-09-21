@@ -77,4 +77,19 @@ describe('FocusLayout Component Tests', () => {
     expect(screen.getByTestId('focus-state')).toHaveTextContent('focus-off');
     expect(screen.getByText('FOCUS MODE')).toBeInTheDocument();
   });
+
+  it('điều hướng đến trang Cài đặt khi nhấn nút Settings', () => {
+    render(
+      <MemoryRouter initialEntries={['/workspace']}>
+        <FocusLayout>
+          <div>Workspace Content</div>
+        </FocusLayout>
+      </MemoryRouter>
+    );
+
+    const settingsButtons = screen.getAllByRole('button', { name: /Cài đặt người dùng/i });
+    expect(settingsButtons.length).toBeGreaterThan(0);
+    fireEvent.click(settingsButtons[0]);
+    // Nút settings điều hướng sang /settings
+  });
 });

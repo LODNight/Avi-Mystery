@@ -47,6 +47,16 @@ export function AuthProvider({ children }) {
     setStatus('unauthenticated');
   }, []);
 
+  const updateProfile = useCallback(async (profileData) => {
+    const result = await authService.updateProfile(profileData);
+    if (result.data) setUser(result.data);
+    return result;
+  }, []);
+
+  const changePassword = useCallback(async (passwordData) => {
+    return authService.changePassword(passwordData);
+  }, []);
+
   const value = {
     user,
     status,
@@ -55,6 +65,8 @@ export function AuthProvider({ children }) {
     login,
     register,
     logout,
+    updateProfile,
+    changePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

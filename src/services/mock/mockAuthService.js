@@ -79,4 +79,28 @@ export const mockAuthService = {
     if (!user) return { data: null, error: null };
     return { data: user, error: null };
   },
+
+  async updateProfile({ name, avatar }) {
+    await delay(200);
+    const currentUser = storage.get(SESSION_KEY);
+    if (!currentUser) return { data: null, error: 'Phiên đăng nhập không hợp lệ.' };
+    const updated = { ...currentUser };
+    if (name !== undefined) updated.name = name.trim();
+    if (avatar !== undefined) updated.avatar = avatar;
+    storage.set(SESSION_KEY, updated);
+    return { data: updated, error: null };
+  },
+
+  async changePassword({ currentPassword, newPassword }) {
+    await delay(300);
+    const currentUser = storage.get(SESSION_KEY);
+    if (!currentUser) return { data: null, error: 'Phiên đăng nhập không hợp lệ.' };
+    // Verify current password against usersData (in-memory)
+    const userRecord = usersData.find((u) => u.id === currentUser.id);
+    if (userRecord && userRecord.password !== currentPassword) {
+      return { data: null, error: 'Mật khẩu hiện tại không đúng.' };
+    }
+    if (userRecord) userRecord.password = newPassword;
+    return { data: { success: true }, error: null };
+  },
 };

@@ -5,6 +5,7 @@ import { ThemeProvider } from './app/providers/ThemeProvider.jsx';
 import { PageStatusProvider } from './app/providers/PageStatusProvider.jsx';
 import { BrandProvider } from './app/providers/BrandProvider.jsx';
 import { AppRouter } from './app/router/index.jsx';
+import './i18n.js';
 import './styles/index.css';
 
 const root = document.getElementById('root');

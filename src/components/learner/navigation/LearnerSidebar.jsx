@@ -13,8 +13,10 @@ import {
   GraduationCap,
   Sparkles,
   Dumbbell,
-  PanelLeft
+  PanelLeft,
+  Settings
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth.js';
 import { usePageStatus } from '../../../hooks/usePageStatus.js';
 import { useBrand, BrandLogoIcon } from '../../../app/providers/BrandProvider.jsx';
@@ -22,29 +24,34 @@ import { FEATURE_FLAGS } from '../../../config/envConfig.js';
 import { formatXP } from '../../../utils/format.js';
 import { isAdmin } from '../../../constants/roles.js';
 
+
 export const learnerNavItems = [
   {
     id: 'case',
     label: 'Vụ án',
+    labelKey: 'sectionCase',
     children: [
-      { label: 'Nhiệm vụ hiện tại', to: '/dashboard', icon: Home },
-      { label: 'Hồ sơ vụ án', to: '/map', icon: Map },
+      { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home },
+      { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map },
     ]
   },
   {
     id: 'academy',
     label: 'Đào tạo',
+    labelKey: 'sectionAcademy',
     children: [
-      { label: 'Học viện Academy', to: '/academy', icon: GraduationCap },
-      { label: 'Phòng luyện tập', to: '/practice', icon: Dumbbell },
+      { id: 'academy', label: 'Học viện Academy', labelKey: 'academy', to: '/academy', icon: GraduationCap },
+      { id: 'practice', label: 'Phòng luyện tập', labelKey: 'practiceLab', to: '/practice', icon: Dumbbell },
     ],
   },
   {
     id: 'profile',
     label: 'Cá nhân',
+    labelKey: 'sectionProfile',
     children: [
-      { label: 'Thành tựu', to: '/achievements', icon: Trophy },
-      { label: 'Hồ sơ', to: '/profile', icon: User },
+      { id: 'achievements', label: 'Thành tựu', labelKey: 'achievements', to: '/achievements', icon: Trophy },
+      { id: 'profile', label: 'Hồ sơ', labelKey: 'profile', to: '/profile', icon: User },
+      { id: 'settings', label: 'Cài đặt', labelKey: 'settings', to: '/settings', icon: Settings },
     ],
   },
 ];
@@ -59,6 +66,7 @@ export function isLearnerNavPathActive(pathname, navPath) {
   if (navPath === '/practice' && /^\/practice(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/achievements' && /^\/achievements(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/profile' && /^\/profile(?:\/|$)/.test(pathname)) return true;
+  if (navPath === '/settings' && /^\/settings(?:\/|$)/.test(pathname)) return true;
   return pathname.startsWith(`${navPath}/`);
 }
 
@@ -75,6 +83,8 @@ export function LearnerSidebar({
   const { brand } = useBrand();
   const navigate = useNavigate();
   const { getPageStatus } = usePageStatus();
+  const { t } = useTranslation(['nav', 'common']);
+
   
   const [openGroups, setOpenGroups] = useState({
     case: true,
@@ -83,7 +93,7 @@ export function LearnerSidebar({
   });
 
   useEffect(() => {
-    const isProfileActive = ['/profile', '/achievements'].some(path => location.pathname.startsWith(path));
+    const isProfileActive = ['/profile', '/achievements', '/settings'].some(path => location.pathname.startsWith(path));
     if (isProfileActive) {
       setOpenGroups(prev => ({ ...prev, profile: true }));
     }
@@ -144,18 +154,18 @@ export function LearnerSidebar({
         {(!collapsed || mobileOpen) && (
           <button
             onClick={() => setCollapsed(true)}
-            className="hidden lg:flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0"
-            title="Thu gọn sidebar"
-            aria-label="Thu gọn sidebar"
+            className="hidden lg:flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0 cursor-pointer"
+            title={t('nav:collapseSidebar', 'Thu gọn sidebar')}
+            aria-label={t('nav:collapseSidebar', 'Thu gọn sidebar')}
           >
             <ChevronLeft className="size-4" />
           </button>
         )}
 
         <button
-          className="rounded-lg p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden"
+          className="rounded-lg p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden cursor-pointer"
           onClick={() => setMobileOpen(false)}
-          aria-label="Close menu"
+          aria-label={t('common:closeMenu', 'Close menu')}
         >
           <X className="size-5" />
         </button>
@@ -176,14 +186,14 @@ export function LearnerSidebar({
                 {user?.name || 'Học viên'}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                Cấp {liveStats.level} · Investigator
+                {t('nav:level', 'Cấp')} {liveStats.level} · {t('nav:investigator', 'Nhà Điều Tra')}
               </p>
             </div>
           )}
           {(!collapsed || mobileOpen) && (
             <div className="flex items-center gap-1 text-amber-500 shrink-0">
               <Flame className="size-4 fill-amber-500" />
-              <span className="text-xs font-bold">{liveStats.streak} ngày</span>
+              <span className="text-xs font-bold">{liveStats.streak} {t('nav:streak', 'ngày')}</span>
             </div>
           )}
         </div>
@@ -194,19 +204,20 @@ export function LearnerSidebar({
         {learnerNavItems.map((group) => {
           const groupId = group.id;
           const isOpen = openGroups[groupId];
+          const groupLabel = group.labelKey ? t(`nav:${group.labelKey}`, group.label) : group.label;
           return (
             <div key={groupId} className="flex flex-col gap-1">
               <button
                 type="button"
                 onClick={() => toggleGroup(groupId)}
-                title={collapsed && !mobileOpen ? group.label : undefined}
+                title={collapsed && !mobileOpen ? groupLabel : undefined}
                 className={`w-full flex items-center justify-between gap-3 rounded-xl transition-all ${
                   collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-1 text-sm font-medium'
-                } hover:text-sidebar-foreground text-muted-foreground`}
+                } hover:text-sidebar-foreground text-muted-foreground cursor-pointer`}
               >
                 {(!collapsed || mobileOpen) && (
                   <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] animate-fade-in">
-                    {group.label}
+                    {groupLabel}
                   </span>
                 )}
                 {(!collapsed || mobileOpen) && (
@@ -217,22 +228,23 @@ export function LearnerSidebar({
                   />
                 )}
                 {(collapsed && !mobileOpen) && (
-                  <span className="font-mono text-[10px] font-bold uppercase">{group.label[0]}</span>
+                  <span className="font-mono text-[10px] font-bold uppercase">{groupLabel[0]}</span>
                 )}
               </button>
 
-              {isOpen && group.children.map(({ label, to, icon: Icon }) => {
+              {isOpen && group.children.map(({ label, labelKey, to, icon: Icon }) => {
                 const navStatus = getPageStatus(to);
                 const isItemMaintenance = navStatus?.status === 'maintenance';
                 const isItemNotice = navStatus?.status === 'notice';
                 const isPathActive = isLearnerNavPathActive(location.pathname, to);
+                const itemLabel = labelKey ? t(`nav:${labelKey}`, label) : label;
 
                 return (
                   <NavLink
                     key={to}
                     to={to}
                     onClick={() => setMobileOpen(false)}
-                    title={collapsed && !mobileOpen ? `${label}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
+                    title={collapsed && !mobileOpen ? `${itemLabel}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
                     className={`relative flex items-center justify-between gap-2 rounded-xl transition-all ${
                       collapsed && !mobileOpen ? 'justify-center p-3 mt-1' : 'px-3.5 py-2.5 text-sm'
                     } ${
@@ -243,7 +255,7 @@ export function LearnerSidebar({
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary dark:text-amber-400' : ''}`} />
-                      {(!collapsed || mobileOpen) && <span className="truncate">{label}</span>}
+                      {(!collapsed || mobileOpen) && <span className="truncate">{itemLabel}</span>}
                     </div>
 
                     {(!collapsed || mobileOpen) && isItemMaintenance && (
@@ -258,7 +270,7 @@ export function LearnerSidebar({
                 );
               })}
             </div>
-          )
+          );
         })}
       </nav>
 
@@ -283,17 +295,18 @@ export function LearnerSidebar({
         </div>
       )}
 
+
       {/* Logout */}
       <div className="mt-1 flex flex-col gap-1 border-t border-sidebar-border pt-2">
         <button
           onClick={handleLogout}
-          title={collapsed && !mobileOpen ? 'Đăng xuất' : undefined}
-          className={`flex items-center gap-3 rounded-xl text-destructive hover:bg-sidebar-accent transition-all ${
+          title={collapsed && !mobileOpen ? t('nav:logout', 'Đăng xuất') : undefined}
+          className={`flex items-center gap-3 rounded-xl text-destructive hover:bg-sidebar-accent transition-all cursor-pointer ${
             collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-left text-sm font-medium'
           }`}
         >
           <LogOut className="size-[18px] shrink-0" />
-          {(!collapsed || mobileOpen) && <span>Đăng xuất</span>}
+          {(!collapsed || mobileOpen) && <span>{t('nav:logout', 'Đăng xuất')}</span>}
         </button>
       </div>
 
@@ -306,7 +319,7 @@ export function LearnerSidebar({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-amber-500 fill-amber-500/20" />
-              <span className="text-xs font-bold text-stone-800 dark:text-stone-100">Chuỗi học tập 🔥</span>
+              <span className="text-xs font-bold text-stone-800 dark:text-stone-100">{t('nav:streak', 'Chuỗi')} 🔥</span>
             </div>
             <span className="rounded-full border border-stone-200 dark:border-amber-500/30 bg-stone-100 dark:bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-300">
               {formatXP(liveStats.xp)}
@@ -324,6 +337,7 @@ export function LearnerSidebar({
           </button>
         </div>
       )}
+
     </aside>
   );
 }

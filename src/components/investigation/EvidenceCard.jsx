@@ -1,5 +1,6 @@
 import React from 'react';
 import { Lock, FileCheck, Search, Key } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import InvestigationStamp from './InvestigationStamp';
 
 /**
@@ -17,6 +18,7 @@ export default function EvidenceCard({
   className = '',
   testId = 'evidence-card',
 }) {
+  const { t } = useTranslation('investigation');
   const isUnlocked = status === 'verified' || status === 'unlocked';
 
   if (!isUnlocked) {
@@ -28,14 +30,14 @@ export default function EvidenceCard({
         <div className="flex items-center justify-between text-muted-foreground mb-2">
           <span className="font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
             <Lock className="w-3.5 h-3.5" />
-            {clueId} • NIÊM PHONG
+            {clueId} • {t('evidenceSecured')}
           </span>
           <span className="text-[11px] font-medium bg-muted px-2 py-0.5 rounded">
-            Chưa giải mật
+            {t('evidenceNotDecrypted')}
           </span>
         </div>
         <p className="text-sm text-muted-foreground italic line-clamp-2">
-          {description || 'Manh mối quan trọng của vụ án. Hãy vượt qua thử thách này để giải mật dữ liệu điều tra.'}
+          {description || t('evidenceLockedDesc')}
         </p>
       </div>
     );
@@ -59,10 +61,10 @@ export default function EvidenceCard({
           </div>
           <div>
             <span className="font-mono text-[11px] font-bold text-primary uppercase tracking-wider">
-              {clueId} • VẬT CHỨNG
+              {clueId} • {t('evidenceArtifact')}
             </span>
             <h4 className="text-sm font-semibold text-foreground leading-tight">
-              {title || 'Manh mối đã thu thập'}
+              {title || t('evidenceCollectedClue')}
             </h4>
           </div>
         </div>

@@ -1,0 +1,22 @@
+{
+  "title": "User Settings",
+  "subtitle": "Customize display language and learning interface",
+  "languageTitle": "Display Language",
+  "languageDesc": "Select display language across the entire interface and investigation dossiers",
+  "viTitle": "Tiếng Việt",
+  "viDesc": "Default localized language of the Academy",
+  "enTitle": "English",
+  "enDesc": "International English for tools and case dossiers",
+  "activeBadge": "Active",
+  "selectAction": "Select",
+  "appearanceTitle": "Appearance & Theme",
+  "appearanceDesc": "Customize dark or light tone to suit your investigation workspace",
+  "lightMode": "Light Mode",
+  "darkMode": "Dark Mode",
+  "accountTitle": "Investigator Profile",
+  "accountDesc": "Identity details for the current active account",
+  "roleBadge": "Investigator",
+  "totalXp": "Total Accumulated XP",
+  "quickNotice": "All changes are saved automatically and synchronized immediately across the system.",
+  "closeBtn": "Close"
+}

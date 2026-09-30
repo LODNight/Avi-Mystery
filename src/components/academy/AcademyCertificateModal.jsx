@@ -5,6 +5,7 @@ import {
   Copy,
   Check,
   Printer,
+  Download,
   X,
   ShieldCheck,
   Sparkles,
@@ -41,6 +42,119 @@ export function AcademyCertificateModal({ isOpen, onClose, certificate }) {
 
   const isExcel = certificate.tool === 'excel' || certificate.courseSlug?.includes('excel');
 
+  const handleDownloadPNG = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 800;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Background gradient
+    const bgGrad = ctx.createLinearGradient(0, 0, 1200, 800);
+    bgGrad.addColorStop(0, '#0c0f17');
+    bgGrad.addColorStop(0.5, '#171e2e');
+    bgGrad.addColorStop(1, '#0c0f17');
+    ctx.fillStyle = bgGrad;
+    ctx.fillRect(0, 0, 1200, 800);
+
+    // Amber radial spotlight
+    const radial = ctx.createRadialGradient(600, 400, 50, 600, 400, 500);
+    radial.addColorStop(0, 'rgba(217, 119, 6, 0.12)');
+    radial.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = radial;
+    ctx.fillRect(0, 0, 1200, 800);
+
+    // Ornate outer border
+    ctx.strokeStyle = '#d97706';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(40, 40, 1120, 720);
+
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(52, 52, 1096, 696);
+
+    // Corner decorative accents
+    const corners = [
+      [56, 56],
+      [1144, 56],
+      [56, 744],
+      [1144, 744],
+    ];
+    ctx.fillStyle = '#f59e0b';
+    for (const [cx, cy] of corners) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Header branding
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 16px monospace';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('AVI-MYSTERY DATA ACADEMY • HỌC VIỆN DỮ LIỆU THỰC CHIẾN', 600, 120);
+
+    // Title
+    ctx.font = '900 42px serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('CHỨNG NHẬN TỐT NGHIỆP', 600, 190);
+
+    ctx.font = 'italic 18px serif';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('Certificate of Academic & Practical Excellence', 600, 225);
+
+    // Awarded to
+    ctx.font = '16px sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('Chứng chỉ này trân trọng được trao cho Thám tử Dữ liệu', 600, 310);
+
+    // Learner Name
+    ctx.font = 'bold 44px serif';
+    ctx.fillStyle = '#fbbf24';
+    ctx.fillText(certificate.learnerName || 'Thám Tử Dữ Liệu', 600, 375);
+
+    // Course Title
+    ctx.font = '20px sans-serif';
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillText('Đã hoàn thành xuất sắc kỳ sát hạch điều tra chuyên sâu khóa học:', 600, 440);
+
+    ctx.font = 'bold 26px sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(certificate.courseTitle || 'Chuyên viên Phân tích Dữ liệu Thực chiến', 600, 485);
+
+    // Horizontal divider
+    ctx.strokeStyle = 'rgba(217, 119, 6, 0.3)';
+    ctx.beginPath();
+    ctx.moveTo(250, 530);
+    ctx.lineTo(950, 530);
+    ctx.stroke();
+
+    // Footer columns
+    ctx.textAlign = 'left';
+    ctx.font = '14px sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText(`Mã chứng nhận: ${certificate.certificateId || 'CERT-0000'}`, 250, 580);
+    ctx.fillText(`Ngày cấp: ${formattedDate}`, 250, 610);
+    ctx.fillText(`Điểm số: ${certificate.score !== undefined ? `${certificate.score}/100` : 'XUẤT SẮC'}`, 250, 640);
+
+    // HQ Seal
+    ctx.textAlign = 'right';
+    ctx.font = 'bold 15px monospace';
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText('XÁC THỰC BỞI TRỤ SỞ HQ', 950, 580);
+    ctx.font = '13px sans-serif';
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText('Hội đồng Khảo thí Avi-Mystery', 950, 610);
+    ctx.font = 'italic 12px sans-serif';
+    ctx.fillStyle = '#10b981';
+    ctx.fillText('● Chữ ký số mã hóa bảo mật', 950, 640);
+
+    // Trigger download
+    const link = document.createElement('a');
+    link.download = `Chung_Nhan_${certificate.certificateId || 'AviMystery'}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto bg-black/80 backdrop-blur-md animate-fade-in print:p-0 print:bg-white print:static">
       {/* Container */}
@@ -53,6 +167,15 @@ export function AcademyCertificateModal({ isOpen, onClose, certificate }) {
             <span>Chứng Chỉ Số Chính Thức — Avi-Mystery Academy</span>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDownloadPNG}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-500 transition-colors"
+              title="Tải Chứng chỉ dạng ảnh PNG sắc nét"
+            >
+              <Download className="size-3.5" />
+              <span className="hidden sm:inline">Tải ảnh PNG</span>
+            </button>
             <button
               type="button"
               onClick={handlePrint}

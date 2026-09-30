@@ -242,24 +242,24 @@ export function extractTableNames(query) {
 
   // 2. Identify CTE aliases defined in WITH ... AS (
   const cteNames = new Set()
-  const cteRegex = /\bWITH\s+([A-Za-z0-9_"`\[\]]+)\s+AS\s*\(/gi
+  const cteRegex = /\bWITH\s+([A-Za-z0-9_"`\u005B\u005D]+)\s+AS\s*\(/gi
   let cteMatch
   while ((cteMatch = cteRegex.exec(cleanSql)) !== null) {
-    const rawName = cteMatch[1].replace(/["`\[\]]/g, '').toLowerCase()
+    const rawName = cteMatch[1].replace(/["`\u005B\u005D]/g, '').toLowerCase()
     cteNames.add(rawName)
   }
 
   // Also match subsequent CTEs: , cte_two AS (
-  const nextCteRegex = /,\s*([A-Za-z0-9_"`\[\]]+)\s+AS\s*\(/gi
+  const nextCteRegex = /,\s*([A-Za-z0-9_"`\u005B\u005D]+)\s+AS\s*\(/gi
   while ((cteMatch = nextCteRegex.exec(cleanSql)) !== null) {
-    const rawName = cteMatch[1].replace(/["`\[\]]/g, '').toLowerCase()
+    const rawName = cteMatch[1].replace(/["`\u005B\u005D]/g, '').toLowerCase()
     cteNames.add(rawName)
   }
 
   const tableNames = new Set()
 
   // 3. Match FROM / JOIN clauses
-  const fromJoinRegex = /\b(?:FROM|JOIN)\s+([A-Za-z0-9_"`\[\].]+)/gi
+  const fromJoinRegex = /\b(?:FROM|JOIN)\s+([A-Za-z0-9_"`\u005B\u005D.]+)/gi
   let match
   while ((match = fromJoinRegex.exec(cleanSql)) !== null) {
     let raw = match[1].trim()
@@ -268,7 +268,7 @@ export function extractTableNames(query) {
     if (raw.includes('.')) {
       raw = raw.split('.').pop()
     }
-    raw = raw.replace(/["`\[\]]/g, '').toLowerCase()
+    raw = raw.replace(/["`\u005B\u005D]/g, '').toLowerCase()
     if (raw && !cteNames.has(raw)) {
       tableNames.add(raw)
     }
@@ -289,7 +289,7 @@ export function extractTableNames(query) {
       if (tableName.includes('.')) {
         tableName = tableName.split('.').pop()
       }
-      tableName = tableName.replace(/["`\[\]]/g, '').toLowerCase()
+      tableName = tableName.replace(/["`\u005B\u005D]/g, '').toLowerCase()
       if (tableName && !cteNames.has(tableName)) {
         tableNames.add(tableName)
       }

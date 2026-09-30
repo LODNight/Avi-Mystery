@@ -146,15 +146,14 @@ Lõi Workspace mới        Tích hợp Excel/SQL      Thêm 2 vụ án mới   
 
 ## 🛠️ 5. Các Phần Cần Tối Ưu Lại & Nợ Kỹ Thuật (Tech Debts)
 
-1. **Chuẩn hóa Thông Báo Toast Notification**:
-   - Hiện trạng: Còn một số vị trí sử dụng popup `alert()` mặc định của trình duyệt để báo lỗi hoặc thành công.
-   - Hướng tối ưu: Thay thế bằng component Toast màu Hổ phách tự biến mất sau 3 giây, có âm báo nhẹ.
-2. **Xuất Chứng Chỉ dạng File Ảnh PNG (`html2canvas`)**:
-   - Hiện trạng: Nút In chứng chỉ đang phụ thuộc vào hộp thoại `window.print()` của trình duyệt.
-   - Hướng tối ưu: Cho phép tải trực tiếp file `.png` sắc nét để người học dễ dàng đăng lên Facebook/LinkedIn.
-3. **Phân Trang & Đánh Index Firestore**:
-   - Hiện trạng: Một số truy vấn lịch sử hoạt động tải toàn bộ danh sách.
-   - Hướng tối ưu: Bổ sung phân trang theo con trỏ (cursor-based pagination) khi lượng hoạt động vượt quá 100 dòng.
-4. **Chuẩn hóa Format Dữ liệu Kiểm Định (Canonical Verification Schema)**:
-   - Hiện trạng: So khớp đáp án đang dùng raw string matching (`ORD-1842`, `4210`).
-   - Hướng tối ưu: Chuẩn hóa theo format canonical verification rules để sau này Backend có thể tái sử dụng trực tiếp mà không cần sửa đổi.
+1. **Chuẩn hóa Thông Báo Toast Notification** (✅ ĐÃ GIẢI QUYẾT):
+   - Đã xây dựng component `ToastProvider` & hook `useToast` màu Hổ phách chuẩn HQ tại [`src/components/ui/Toast.jsx`](file:///d:/Coding_Design/Personal/Avi-Mystery/src/components/ui/Toast.jsx) với đầy đủ các mức độ `success`, `error`, `warning`, `info`, `hq`. Tự động tan biến sau 3.5 giây kèm animation mượt mà.
+2. **Xuất Chứng Chỉ dạng File Ảnh PNG** (✅ ĐÃ GIẢI QUYẾT):
+   - Đã tích hợp nút *"Tải ảnh PNG"* trực tiếp vào [`AcademyCertificateModal.jsx`](file:///d:/Coding_Design/Personal/Avi-Mystery/src/components/academy/AcademyCertificateModal.jsx). Sử dụng HTML5 Canvas render ảnh chứng nhận độ phân giải cao (1200x800) mang phong cách cổ điển HQ, không phụ thuộc thư viện ngoài, tải về máy tức thì.
+3. **Cấu Hình Linter ESLint v9 Flat Config** (✅ ĐÃ GIẢI QUYẾT):
+   - Đã bổ sung [`eslint.config.js`](file:///d:/Coding_Design/Personal/Avi-Mystery/eslint.config.js) tương thích hoàn toàn với ESLint v9 và chuẩn hóa các biểu thức regex trong `sqlQueryPolicy.js`.
+4. **Phân Trang & Đánh Index Firestore** (🟡 Tối ưu theo lộ trình):
+   - Một số truy vấn lịch sử hoạt động tải toàn bộ danh sách. Bổ sung phân trang theo con trỏ (cursor-based pagination) khi lượng hoạt động thực tế vượt quá 100 dòng.
+5. **Chuẩn hóa Format Dữ liệu Kiểm Định (Canonical Verification Schema)** (🟡 Giai đoạn đóng kín Case 001):
+   - So khớp đáp án đang kết hợp `exact`, `case_insensitive`, `numeric_exact` và `numeric_tolerance`. Sẽ được đồng bộ hóa triệt để khi hoàn thiện Schema Case Content.
+

@@ -4,7 +4,7 @@ import {
   SqlEngineError,
   toSqlError,
 } from './sqlErrors.js'
-import { validateReadOnlyQuery } from './sqlQueryPolicy.js'
+import { validateReadOnlyQuery, validateTableScope } from './sqlQueryPolicy.js'
 
 const DEFAULT_QUERY_TIMEOUT_MS = 2000
 const DEFAULT_INITIALIZATION_TIMEOUT_MS = 10000
@@ -179,6 +179,11 @@ export class SqlEngineAdapter {
         )
       }
       validateReadOnlyQuery(query)
+      if (options.allowedTables || this.lastDataset?.tables) {
+        const allowed =
+          options.allowedTables || this.lastDataset.tables.map((t) => t.name)
+        validateTableScope(query, allowed)
+      }
       return await this.request(
         'execute',
         { query, maxRows: options.maxRows || this.maxRows },

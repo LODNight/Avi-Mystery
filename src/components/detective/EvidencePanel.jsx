@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, MessageSquare, Archive, X } from 'lucide-react';
+import { FileText, MessageSquare, Archive, X, FlaskConical } from 'lucide-react';
 import { SpreadsheetGrid } from '../excel/SpreadsheetGrid.jsx';
 
 /**
@@ -95,11 +95,11 @@ export function EvidencePanel({
           <button
             type="button"
             onClick={() => onInvestigateInSpreadsheet(source.id, dataset)}
-            className="mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-600 dark:text-emerald-400 transition-colors cursor-pointer w-full"
+            className="mt-2 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-500/35 hover:bg-amber-500/25 text-xs font-bold text-amber-700 dark:text-amber-300 transition-all cursor-pointer w-full shadow-xs"
             title={t('investigateInSpreadsheetTooltip')}
           >
-            <span className="text-emerald-500">⚗</span>
-            {t('investigateInSpreadsheet')}
+            <FlaskConical className="size-4 text-amber-500" />
+            <span>{t('investigateInSpreadsheet')}</span>
           </button>
         )}
       </div>
@@ -112,6 +112,7 @@ export function EvidencePanel({
             dataset={dataset}
             onSelectDataValue={onSelectDataValue}
             activeFieldId={activeFieldId}
+            onInvestigateInSpreadsheet={onInvestigateInSpreadsheet ? () => onInvestigateInSpreadsheet(source.id, dataset) : null}
           />
         )}
 
@@ -135,7 +136,7 @@ export function EvidencePanel({
   );
 }
 
-function EvidenceTable({ dataset, onSelectDataValue, activeFieldId }) {
+function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigateInSpreadsheet }) {
   const { t } = useTranslation('investigation');
 
   if (!dataset?.rows || !dataset?.schema) {
@@ -148,8 +149,8 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId }) {
 
   return (
     <div className="p-3 h-full overflow-auto">
-      {/* Dataset title & Click-to-Fill banner */}
-      <div className="mb-2 flex items-center justify-between flex-wrap gap-2">
+      {/* Dataset title & Action banner */}
+      <div className="mb-2.5 flex items-center justify-between flex-wrap gap-2">
         <div>
           <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
             {dataset.title}
@@ -158,12 +159,25 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId }) {
             <p className="text-[10px] text-muted-foreground mt-0.5">{dataset.description}</p>
           )}
         </div>
-        {onSelectDataValue && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 rounded-md text-[10px] text-amber-700 dark:text-amber-300 font-medium">
-            <span>{t('clickToFillTitle')}</span>
-            <span className="text-muted-foreground">{t('clickToFillDesc')}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {onInvestigateInSpreadsheet && (
+            <button
+              type="button"
+              onClick={onInvestigateInSpreadsheet}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-[11px] font-bold text-amber-700 dark:text-amber-300 transition-colors cursor-pointer"
+              title={t('investigateInSpreadsheetTooltip')}
+            >
+              <FlaskConical className="size-3 text-amber-500" />
+              <span>{t('loadEvidenceToSpreadsheet', 'Nạp vào Bàn Điều Tra')}</span>
+            </button>
+          )}
+          {onSelectDataValue && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/40 border border-border/70 rounded-lg text-[10px] text-muted-foreground font-medium">
+              <span className="font-semibold text-foreground">{t('clickToFillTitle')}</span>
+              <span className="hidden sm:inline text-muted-foreground">{t('clickToFillDesc')}</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Data table */}

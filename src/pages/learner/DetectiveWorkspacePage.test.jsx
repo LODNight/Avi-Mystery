@@ -106,4 +106,21 @@ describe('DetectiveWorkspacePage Component & Layout Tests', () => {
       expect(screen.getByText(/GỬI BÁO CÁO LÊN HQ/i)).toBeInTheDocument();
     });
   });
+
+  it('cho phép chuyển đổi sang tab Xử Lý Dữ Liệu (Data Processing Workspace)', async () => {
+    renderWithRouter('/cases/case-001/investigate');
+
+    await waitFor(() => {
+      expect(screen.getByText(/Xử Lý Dữ Liệu|Data Processing/i)).toBeInTheDocument();
+    });
+
+    const processingTabBtn = screen.getByText(/Xử Lý Dữ Liệu|Data Processing/i);
+    fireEvent.click(processingTabBtn);
+
+    // Chuyển sang Data Processing Workspace
+    await waitFor(() => {
+      expect(screen.getByText(/Khảo Sát Dữ Liệu|Data Explorer/i)).toBeInTheDocument();
+      expect(screen.getByText(/Ghi Nhận Manh Mối/i)).toBeInTheDocument();
+    });
+  });
 });

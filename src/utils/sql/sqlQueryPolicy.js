@@ -172,3 +172,158 @@ export function validateReadOnlyQuery(query) {
   return query.trim()
 }
 
+/**
+ * Extracts referenced table names from a read-only SQL query (SELECT / WITH).
+ * Strips comments, string literals, subqueries, and accounts for CTEs.
+ *
+ * @param {string} query
+ * @returns {string[]} Array of lowercased referenced table names
+ */
+export function extractTableNames(query) {
+  if (typeof query !== 'string' || !query.trim()) return []
+
+  // 1. Remove comments and string literals
+  let cleanSql = ''
+  let state = 'normal'
+
+  for (let i = 0; i < query.length; i += 1) {
+    const ch = query[i]
+    const next = query[i + 1]
+
+    if (state === 'line-comment') {
+      if (ch === '\n') {
+        state = 'normal'
+        cleanSql += '\n'
+      } else {
+        cleanSql += ' '
+      }
+      continue
+    }
+
+    if (state === 'block-comment') {
+      if (ch === '*' && next === '/') {
+        state = 'normal'
+        cleanSql += '  '
+        i += 1
+      } else {
+        cleanSql += ' '
+      }
+      continue
+    }
+
+    if (state === 'single-quote') {
+      if (ch === "'" && next === "'") {
+        cleanSql += '  '
+        i += 1
+      } else if (ch === "'") {
+        state = 'normal'
+        cleanSql += ' '
+      } else {
+        cleanSql += ' '
+      }
+      continue
+    }
+
+    if (ch === '-' && next === '-') {
+      state = 'line-comment'
+      cleanSql += '  '
+      i += 1
+    } else if (ch === '/' && next === '*') {
+      state = 'block-comment'
+      cleanSql += '  '
+      i += 1
+    } else if (ch === "'") {
+      state = 'single-quote'
+      cleanSql += ' '
+    } else {
+      cleanSql += ch
+    }
+  }
+
+  // 2. Identify CTE aliases defined in WITH ... AS (
+  const cteNames = new Set()
+  const cteRegex = /\bWITH\s+([A-Za-z0-9_"`\[\]]+)\s+AS\s*\(/gi
+  let cteMatch
+  while ((cteMatch = cteRegex.exec(cleanSql)) !== null) {
+    const rawName = cteMatch[1].replace(/["`\[\]]/g, '').toLowerCase()
+    cteNames.add(rawName)
+  }
+
+  // Also match subsequent CTEs: , cte_two AS (
+  const nextCteRegex = /,\s*([A-Za-z0-9_"`\[\]]+)\s+AS\s*\(/gi
+  while ((cteMatch = nextCteRegex.exec(cleanSql)) !== null) {
+    const rawName = cteMatch[1].replace(/["`\[\]]/g, '').toLowerCase()
+    cteNames.add(rawName)
+  }
+
+  const tableNames = new Set()
+
+  // 3. Match FROM / JOIN clauses
+  const fromJoinRegex = /\b(?:FROM|JOIN)\s+([A-Za-z0-9_"`\[\].]+)/gi
+  let match
+  while ((match = fromJoinRegex.exec(cleanSql)) !== null) {
+    let raw = match[1].trim()
+    if (raw.startsWith('(')) continue
+    raw = raw.replace(/[);,\s]+$/, '')
+    if (raw.includes('.')) {
+      raw = raw.split('.').pop()
+    }
+    raw = raw.replace(/["`\[\]]/g, '').toLowerCase()
+    if (raw && !cteNames.has(raw)) {
+      tableNames.add(raw)
+    }
+  }
+
+  // 4. Match comma-separated tables in FROM clause: FROM table1, table2
+  const fromClauseRegex =
+    /\bFROM\s+([^;]+?)(?=\bWHERE\b|\bGROUP\b|\bORDER\b|\bHAVING\b|\bLIMIT\b|\bJOIN\b|\bUNION\b|;|$)/gi
+  let fromMatch
+  while ((fromMatch = fromClauseRegex.exec(cleanSql)) !== null) {
+    const clause = fromMatch[1]
+    const parts = clause.split(',')
+    for (let part of parts) {
+      part = part.trim()
+      if (!part || part.startsWith('(')) continue
+      const firstToken = part.split(/\s+/)[0]
+      let tableName = firstToken.trim().replace(/[);,\s]+$/, '')
+      if (tableName.includes('.')) {
+        tableName = tableName.split('.').pop()
+      }
+      tableName = tableName.replace(/["`\[\]]/g, '').toLowerCase()
+      if (tableName && !cteNames.has(tableName)) {
+        tableNames.add(tableName)
+      }
+    }
+  }
+
+  return Array.from(tableNames)
+}
+
+/**
+ * Validates that all tables referenced in a query belong to the allowed table set.
+ * Prevents players from manually querying hidden/future datasets.
+ *
+ * @param {string} query
+ * @param {string[]} allowedTableNames - List of authorized table names
+ * @throws {SqlEngineError} if an unauthorized/unlocked table is referenced
+ */
+export function validateTableScope(query, allowedTableNames = []) {
+  if (!allowedTableNames || allowedTableNames.length === 0) return
+
+  const allowedSet = new Set(
+    allowedTableNames.map((name) => String(name).toLowerCase())
+  )
+
+  const referencedTables = extractTableNames(query)
+
+  for (const table of referencedTables) {
+    if (!allowedSet.has(table)) {
+      throw new SqlEngineError(
+        SQL_ERROR_CODES.TABLE_UNAVAILABLE || 'SQL_TABLE_UNAVAILABLE',
+        `Bảng '${table}' không khả dụng hoặc chưa được mở khóa trong bước điều tra này.`,
+        { table, allowedTables: Array.from(allowedSet) }
+      )
+    }
+  }
+}
+

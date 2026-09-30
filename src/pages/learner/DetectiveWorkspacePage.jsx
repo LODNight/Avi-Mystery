@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Radio,
@@ -19,6 +19,8 @@ import { CaseFilePanel } from '../../components/detective/CaseFilePanel.jsx';
 import { EvidencePanel } from '../../components/detective/EvidencePanel.jsx';
 import { HQCommunicationPanel } from '../../components/detective/HQCommunicationPanel.jsx';
 import { InvestigationWorkbench } from '../../components/detective/InvestigationWorkbench.jsx';
+import { DataProcessingWorkspace } from '../../components/detective/DataProcessingWorkspace.jsx';
+import { Database } from 'lucide-react';
 
 import { useTranslation } from 'react-i18next';
 
@@ -107,6 +109,56 @@ export function DetectiveWorkspacePage() {
 
   // ── Findings (from investigation state) ───────────────────────────────────
   const findings = investigationState?.findings || [];
+
+  // ── Step Data Sources (Strictly isolated by current Step/Phase) ────────────
+  const currentPhaseRelevantSourceIds = useMemo(() => {
+    const ids = new Set();
+    if (currentPhase?.relevantSourceIds && Array.isArray(currentPhase.relevantSourceIds)) {
+      currentPhase.relevantSourceIds.forEach((id) => ids.add(id));
+    }
+    if (clues && Array.isArray(clues)) {
+      clues.forEach((c) => {
+        if (c.relevantSourceIds && Array.isArray(c.relevantSourceIds)) {
+          c.relevantSourceIds.forEach((id) => ids.add(id));
+        }
+      });
+    }
+    return ids;
+  }, [currentPhase, clues]);
+
+  const stepSources = useMemo(() => {
+    if (!caseData?.sources) return [];
+    return caseData.sources
+      .filter((s) => {
+        if (s.type !== 'table' && s.type !== 'sql_table') return false;
+
+        // If current phase explicitly designates relevant source IDs, strictly follow them
+        if (currentPhaseRelevantSourceIds.size > 0) {
+          return currentPhaseRelevantSourceIds.has(s.id);
+        }
+
+        // Otherwise restrict strictly by unlockedAtPhase (current phase only)
+        if (s.unlockedAtPhase) {
+          return s.unlockedAtPhase === caseState?.currentPhaseId;
+        }
+
+        return s.isUnlocked;
+      })
+      .map((s) => {
+        const titleStr =
+          typeof s.title === 'object'
+            ? s.title[i18n.language] || s.title.vi || s.title.en || s.id
+            : s.title || s.id;
+
+        return {
+          id: s.id,
+          tableName: s.id.replace(/[^a-zA-Z0-9_]/g, '_'),
+          title: titleStr,
+          type: s.type,
+          dataset: caseData?.datasets?.[s.datasetId],
+        };
+      });
+  }, [caseData, currentPhaseRelevantSourceIds, caseState?.currentPhaseId, i18n.language]);
 
   // ── Center mode: 'dossier' | 'workbench' ─────────────────────────────────
   const [centerMode, setCenterMode] = useState('dossier');
@@ -343,18 +395,55 @@ export function DetectiveWorkspacePage() {
             </button>
             <button
               type="button"
-              onClick={() => centerMode === 'dossier' && workbenchContext && setCenterMode('workbench')}
-              disabled={!workbenchContext}
-              className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed ${
+              onClick={() => {
+                if (workbenchContext) {
+                  setCenterMode('workbench');
+                } else {
+                  // Auto-load available table source
+                  let targetSource = activeSource?.type === 'table' ? activeSource : null;
+                  let targetDataset = activeDataset;
+                  if (!targetSource || !targetDataset) {
+                    targetSource = caseData?.sources?.find(s => s.type === 'table' && s.isUnlocked);
+                    if (targetSource) {
+                      targetDataset = caseData?.datasets?.[targetSource.datasetId];
+                    }
+                  }
+                  if (targetSource && targetDataset) {
+                    setWorkbenchContext({
+                      sourceId: targetSource.id,
+                      sourceTitle: targetSource.title,
+                      dataset: targetDataset,
+                    });
+                  }
+                  setCenterMode('workbench');
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${
                 centerMode === 'workbench'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-background/60'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
-              title={!workbenchContext ? t('workbenchEmptyDesc') : undefined}
             >
               <FlaskConical className="size-3" />
               {t('investigationWorkbench')}
               {workbenchContext && <span className="size-1.5 rounded-full bg-amber-500 ml-0.5" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => setCenterMode('processing')}
+              className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${
+                centerMode === 'processing'
+                  ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-background/60'
+                  : 'border-transparent text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Database className="size-3" />
+              <span>{t('dataProcessing.title', 'Xử Lý Dữ Liệu')}</span>
+              {stepSources.length > 0 && (
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                  {stepSources.length}
+                </span>
+              )}
             </button>
           </div>
 
@@ -372,6 +461,43 @@ export function DetectiveWorkspacePage() {
                 onSelectDataValue={handleSelectDataValue}
                 activeFieldId={activeFieldId}
                 onInvestigateInSpreadsheet={(sourceId, dataset) => handleInvestigateInSpreadsheet(sourceId, dataset)}
+              />
+            )}
+
+            {/* Data Processing Workspace */}
+            {centerMode === 'processing' && (
+              <DataProcessingWorkspace
+                step={{
+                  id: caseState?.currentPhaseId || 'phase-1',
+                  caseId,
+                  chapterId: caseState?.currentPhaseId || 'phase-1',
+                  stepId: caseState?.currentPhaseId || 'phase-1',
+                  investigationQuestion:
+                    investigationQuestion?.question || currentPhase?.investigationQuestion?.question,
+                  context: {
+                    title: typeof currentPhase?.title === 'object'
+                      ? currentPhase.title[i18n.language] || currentPhase.title.vi || currentPhase.title.en
+                      : currentPhase?.title,
+                    narrative: investigationQuestion?.context || (
+                      typeof currentPhase?.description === 'object'
+                        ? currentPhase.description[i18n.language] || currentPhase.description.vi || currentPhase.description.en
+                        : currentPhase?.description
+                    ),
+                    location: caseData?.title,
+                  },
+                  location: caseData?.title,
+                  processor: (caseData?.tool === 'sql' || currentPhase?.processor === 'sql') ? 'sql' : 'excel',
+                  availableSources: stepSources.map((s) => s.id),
+                  dataSources: stepSources,
+                }}
+                caseId={caseId}
+                chapterId={caseState?.currentPhaseId}
+                stepId={caseState?.currentPhaseId}
+                onRecordFinding={handleRecordFinding}
+                onDeleteFinding={handleDeleteFinding}
+                findings={findings}
+                onBack={() => setCenterMode('dossier')}
+                userId={userId}
               />
             )}
 
@@ -393,11 +519,32 @@ export function DetectiveWorkspacePage() {
             {/* Workbench empty state (tab clicked but no context) */}
             {centerMode === 'workbench' && !workbenchContext && (
               <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                <FlaskConical className="size-8 text-muted-foreground/20 mb-3" />
-                <p className="text-sm font-semibold text-foreground/60">{t('investigationWorkbench')}</p>
-                <p className="text-xs text-muted-foreground mt-1 max-w-xs">
-                  {t('workbenchEmptyDesc')}
+                <FlaskConical className="size-10 text-amber-500/40 mb-3" />
+                <p className="text-sm font-bold text-foreground">{t('investigationWorkbench')}</p>
+                <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+                  {t('selectEvidenceTableToAnalyze', 'Chọn một bảng dữ liệu bên dưới để nạp vào Bàn Phân Tích:')}
                 </p>
+                <div className="mt-4 flex flex-col gap-2 w-full max-w-xs">
+                  {caseData?.sources?.filter(s => (s.type === 'table' || s.type === 'sql_table') && s.isUnlocked).map(s => {
+                    const ds = caseData?.datasets?.[s.datasetId];
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => handleInvestigateInSpreadsheet(s.id, ds)}
+                        className="flex items-center justify-between p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:bg-muted/40 transition-all text-left cursor-pointer group"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <p className="text-xs font-bold text-foreground truncate group-hover:text-amber-500">{s.title}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{s.description}</p>
+                        </div>
+                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded shrink-0">
+                          {t('loadEvidenceToSpreadsheet', 'Nạp bảng')}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

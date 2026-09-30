@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { SQL_ERROR_CODES } from './sqlErrors.js'
-import { validateReadOnlyQuery } from './sqlQueryPolicy.js'
+import { validateReadOnlyQuery, extractTableNames, validateTableScope } from './sqlQueryPolicy.js'
 
 function expectPolicyError(query, code) {
   expect(() => validateReadOnlyQuery(query)).toThrow(
@@ -91,6 +91,54 @@ describe('SQL read-only query policy', () => {
     expect(validateReadOnlyQuery('SELECT * FROM sales;   \n  ')).toBe(
       'SELECT * FROM sales;'
     )
+  })
+
+  describe('extractTableNames & validateTableScope', () => {
+    it('trích xuất chính xác tên bảng từ câu lệnh SELECT, JOIN, CTE', () => {
+      expect(extractTableNames('SELECT * FROM camera_logs;')).toEqual(['camera_logs'])
+      expect(extractTableNames('SELECT * FROM "camera_logs";')).toEqual(['camera_logs'])
+      expect(
+        extractTableNames('SELECT * FROM camera_logs c JOIN transactions t ON c.id = t.id')
+      ).toEqual(['camera_logs', 'transactions'])
+      expect(
+        extractTableNames('SELECT * FROM camera_logs, employee_records WHERE 1=1')
+      ).toEqual(['camera_logs', 'employee_records'])
+      // CTE alias không bị coi là bảng vật lý
+      expect(
+        extractTableNames('WITH local_cte AS (SELECT * FROM camera_logs) SELECT * FROM local_cte')
+      ).toEqual(['camera_logs'])
+    })
+
+    it('cho phép truy vấn khi tất cả các bảng nằm trong danh sách được phép', () => {
+      expect(() =>
+        validateTableScope('SELECT * FROM camera_logs;', ['camera_logs'])
+      ).not.toThrow()
+      expect(() =>
+        validateTableScope('SELECT c.*, a.* FROM camera_logs c JOIN access_logs a ON c.id = a.id', [
+          'camera_logs',
+          'access_logs',
+        ])
+      ).not.toThrow()
+    })
+
+    it('chặn truy vấn khi người chơi cố tình gọi bảng ẩn/tương lai (transactions)', () => {
+      expect(() =>
+        validateTableScope('SELECT * FROM transactions;', ['camera_logs'])
+      ).toThrow(
+        expect.objectContaining({
+          code: SQL_ERROR_CODES.TABLE_UNAVAILABLE,
+          message: expect.stringContaining("Bảng 'transactions' không khả dụng"),
+        })
+      )
+
+      expect(() =>
+        validateTableScope('SELECT * FROM camera_logs JOIN transactions ON 1=1', ['camera_logs'])
+      ).toThrow(
+        expect.objectContaining({
+          code: SQL_ERROR_CODES.TABLE_UNAVAILABLE,
+        })
+      )
+    })
   })
 })
 

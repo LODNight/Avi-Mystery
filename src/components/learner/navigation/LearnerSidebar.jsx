@@ -14,7 +14,8 @@ import {
   Sparkles,
   Dumbbell,
   PanelLeft,
-  Settings
+  Settings,
+  Briefcase
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth.js';
@@ -32,6 +33,7 @@ export const learnerNavItems = [
     labelKey: 'sectionCase',
     children: [
       { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home },
+      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases/case-001/investigate', icon: Briefcase },
       { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map },
     ]
   },
@@ -61,6 +63,7 @@ export const learnerNav = learnerNavItems.flatMap((item) => item.children || [it
 export function isLearnerNavPathActive(pathname, navPath) {
   if (pathname === navPath) return true;
   if (navPath === '/dashboard') return false; // Strict match for dashboard
+  if (navPath === '/cases/case-001/investigate' && /^\/cases(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/map' && /^\/missions(?:\/|$)/.test(pathname)) return true; // Missions belong to Case Files (map)
   if (navPath === '/academy' && /^\/academy(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/practice' && /^\/practice(?:\/|$)/.test(pathname)) return true;

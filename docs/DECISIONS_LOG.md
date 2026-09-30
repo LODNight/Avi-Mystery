@@ -287,6 +287,35 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: Miễn nhiễm hoàn toàn với lỗi rò rỉ ngôn ngữ giữa UI và Domain; toàn bộ 76 test suites (586 tests) vượt qua 100%; mở đường cho việc mở rộng song ngữ sang các màn hình tiếp theo một cách độc lập.
 - Related modules: LRN-DETECTIVE, SHR-I18N, CASE-CONTENT, VERIFICATION-ENGINE
 
+## ADR-AGT-014 — Bàn Xử Lý Dữ Liệu Điều Tra Tái Sử Dụng (Data Processing Workspace) & Tách Biệt Ngữ Nghĩa Manh Mối
+
+- Status: Accepted
+- Date: 2026-09-25
+- Context: Trước đây, các màn hình học SQL và Excel mang tính chất bài tập lý thuyết/thực hành độc lập, không gắn kết chặt chẽ vào bối cảnh phá án của điều tra viên. Ngoài ra, việc ghi nhận manh mối trước đây có nguy cơ tự động kết luận hoặc tự chấm đúng/sai sớm (phát sinh XP ngay khi viết manh mối), làm triệt tiêu trải nghiệm tư duy trinh thám.
+- Decision:
+  1. Xây dựng component `DataProcessingWorkspace` có khả năng tái sử dụng độc lập, cấu hình hóa theo Step (`investigationQuestion`, `context`, `location`, `processor`, `dataSources`).
+  2. Áp dụng triệt để nguyên lý: *"CASE IS THE PRODUCT. DATA PROCESSING IS AN INVESTIGATION TOOL."*
+  3. Tái cấu trúc mô hình ngữ nghĩa Manh mối:
+     - **RAW EVIDENCE**: Bằng chứng số liệu khách quan.
+     - **PLAYER FINDING**: Do người chơi tự xây dựng, phân biệt rõ giữa `FACT` (sự kiện thực tế quan sát được) và `INTERPRETATION` (suy đoán, giả thuyết logic của điều tra viên).
+     - **Không phán xét đúng/sai tức thì**: Không chấm điểm, không cộng XP tại bước ghi nhận; việc thẩm định chỉ diễn ra khi nộp Báo cáo HQ.
+     - Tự động đồng bộ hóa Manh mối sang Sổ tay điều tra (`Note`) với metadata tọa độ đầy đủ.
+- Consequences: Trải nghiệm người học được nâng cấp thành điều tra viên thực thụ; các Step trong tương lai có thể dễ dàng nhúng SQL hoặc Excel Processor chỉ bằng khai báo config.
+- Related modules: LRN-DATAPROCESSING, LRN-DETECTIVE, LRN-NOTE, LRN-SQL, LRN-EXCEL
+
+## ADR-AGT-015 — Bảo Vệ Tiến Trình Điều Tra Bằng Cơ Chế Giới Hạn Bảng Dữ Liệu Ở Tầng SQL Engine (Step-Level Data Source Enforcement)
+
+- Status: Accepted
+- Date: 2026-09-25
+- Context: Trong một vụ án có nhiều Step với dữ liệu tiến triển dần dần (ví dụ: Step 1 chỉ được xem `camera_logs`, bảng `transactions` chứa tình tiết bất ngờ của Step sau). Nếu chỉ ẩn bảng ở giao diện DataExplorer/DataSourceSelector, người chơi am hiểu kỹ thuật có thể đoán tên bảng và gõ tay `SELECT * FROM transactions;` để đọc trộm dữ liệu, phá vỡ nhịp độ kịch bản.
+- Decision:
+  1. Triển khai cơ chế kiểm duyệt table scope trực tiếp ở tầng SQL execution layer bằng cách phân tích AST/Tokens câu lệnh (`extractTableNames`) và đối chiếu với danh sách bảng được phân quyền của Step hiện tại (`validateTableScope`).
+  2. Bổ sung mã lỗi chuẩn `SQL_TABLE_UNAVAILABLE` trong `sqlErrors.js` và ánh xạ thông báo giải thích rõ ràng trong `ResultViewer.jsx`.
+  3. Thực thi kiểm duyệt ở cả `sqlEngineAdapter.js` và `SQLProcessor.jsx`, đồng thời lọc nghiêm ngặt multi-table datasets trong `normalizeSources()` để các bảng bí mật hoàn toàn không được nạp vào in-memory SQLite engine của Step đó.
+  4. Bổ sung test hồi quy bắt buộc: *"hidden dataset cannot be queried manually even when the player knows its table name"*.
+- Consequences: Bảo vệ 100% tính toàn vẹn câu chuyện và độ khó của vụ án; không thể bypass giới hạn dữ liệu bằng query thủ công; không can thiệp sâu hay thay thế SQLite engine gốc.
+- Related modules: LRN-SQL, LRN-DATAPROCESSING, LRN-DETECTIVE
+
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
@@ -329,6 +358,9 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-026` | Khảo sát chứng cứ & Bàn phân tích (`EvidencePanel` / `InvestigationWorkbench`) | Detective Workspace | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/components/detective/EvidencePanel.jsx` |
 | `UI-027` | Trung tâm chỉ huy & Thẩm định Báo cáo (`HQCommunicationPanel` / `VerificationResultPanel`) | Detective Workspace | `LRN-DETECTIVE` | `CURRENT` | Tested | `src/components/detective/HQCommunicationPanel.jsx` |
 | `UI-028` | Bộ chuyển đổi ngôn ngữ tức thì (`vi`/`en`) | Learner Layout Header | `SHR-I18N` | `CURRENT` | Tested | `src/app/layouts/LearnerLayout.jsx` |
+| `UI-029` | Bàn Xử Lý Dữ Liệu Tái Sử Dụng Step-driven (`DataProcessingWorkspace`) | Detective Workspace | `LRN-DATAPROCESSING` | `CURRENT` | Tested | `src/components/detective/dataProcessing/DataProcessingWorkspace.jsx` |
+| `UI-030` | Bảng Ghi Nhận Manh Mối FACT vs INTERPRETATION (`RecordFindingPanel`) | Data Processing Workspace | `LRN-DATAPROCESSING` | `CURRENT` | Tested | `src/components/detective/dataProcessing/RecordFindingPanel.jsx` |
+| `UI-031` | Cảnh báo Truy Vấn Bảng Chưa Mở Khóa (`SQL_TABLE_UNAVAILABLE`) | Result Viewer | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/ResultViewer.jsx` |
 
 ---
 
@@ -338,3 +370,4 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 2. **Wording Standard for Potential XP**: Giao diện UI chỉ sử dụng cụm từ *"Phần thưởng dự kiến"* (`potentialXp`) khi hiển thị thông tin bài tập. Tuyệt đối không dùng câu chữ hàm ý điểm XP đã được ghi nhận vào tài khoản khi `progressService` chưa chạy.
 3. **Responsive Grid & WASM Cleanup**: Mọi màn hình workspace (Excel & SQL) bảo đảm hiển thị mượt trên 390px, 768px, 1440px và tự động cleanup Web Worker / memory timers khi unmount.
 4. **Three-Layer Localization Boundary**: Tuyệt đối không dùng `t()` của tầng UI dịch dữ liệu bảng tính, ID thực thể hay giá trị kiểm định (`rules[].expected`). Phải dùng `caseLocalizationService` cho Case Presentation và giữ nguyên Domain/Verification values dạng raw.
+5. **Step-Level Data Isolation at SQL Execution**: Tuyệt đối không cho phép người chơi query vượt rào sang các table chưa mở khóa của các Step sau. SQL engine adapter và SQLProcessor phải luôn thực thi `validateTableScope`.

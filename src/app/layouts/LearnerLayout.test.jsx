@@ -18,4 +18,10 @@ describe('LearnerLayout route active matching', () => {
     expect(isLearnerNavPathActive('/dashboard', '/dashboard')).toBe(true);
     expect(isLearnerNavPathActive('/dashboard-preview', '/dashboard')).toBe(false);
   });
+
+  it('ánh xạ case investigation workspace về menu Vụ án', () => {
+    expect(isLearnerNavPathActive('/cases/case-001/investigate', '/cases/case-001/investigate')).toBe(true);
+    expect(isLearnerNavPathActive('/cases/case-002/investigate', '/cases/case-001/investigate')).toBe(true);
+    expect(isLearnerNavPathActive('/cases-archive', '/cases/case-001/investigate')).toBe(false);
+  });
 });

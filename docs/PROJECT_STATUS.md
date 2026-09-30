@@ -8,9 +8,9 @@
 
 | Chỉ số | Trạng thái | Ghi chú |
 |---|---|---|
-| **Sprint hiện tại** | 🟢 **Sprint 11 (Xong 100%)** ➔ 🟡 **Sprint 12 (Đang triển khai)** | Đã hoàn thành lõi Bàn làm việc thám tử, Đồng bộ Đa ngôn ngữ toàn trang & Tái cấu trúc Hồ sơ Điều tra viên. |
-| **Kiểm thử tự động** | 🟢 **77/77 test suites PASS (592/592 tests — 100%)** | Toàn bộ các luồng nghiệp vụ, giao diện, localization và settings đều có test bảo vệ. |
-| **Production Build** | 🟢 **Vite Build SUCCESS** | Không có lỗi biên dịch; bundle và WASM tối ưu. |
+| **Sprint hiện tại** | 🟢 **Sprint 11 (Xong 100%)** ➔ 🟡 **Sprint 12 (Đang hoàn thiện lõi Data Processing)** | Đã hoàn thành Bàn làm việc thám tử, Đồng bộ i18n, Tái cấu trúc Cài đặt, và Lõi Bàn Xử Lý Dữ Liệu (Data Processing Workspace). |
+| **Kiểm thử tự động** | 🟢 **80/80 test suites PASS (619/619 tests — 100%)** | Toàn bộ các luồng nghiệp vụ, giao diện, localization, settings, SQL engine scoping và DataProcessingWorkspace đều có test bảo vệ. |
+| **Production Build** | 🟢 **Vite Build SUCCESS** | Không có lỗi biên dịch; bundle và WASM tối ưu (8.55s). |
 | **Bản chạy thử (Demo)** | 🌐 [avi-mystery.vercel.app](https://avi-mystery.vercel.app/dashboard) | Chạy song song nhánh `dev` và `main`. |
 | **Backend API** | ⏸️ **Tạm hoãn (Deferred)** | Tập trung 100% tài nguyên hoàn thiện trải nghiệm phá án phía Client trước. |
 
@@ -73,16 +73,50 @@ Lõi Workspace mới        Tích hợp Excel/SQL      Thêm 2 vụ án mới   
 & Đa ngôn ngữ (i18n)     & Đóng kín Case 001     & Tự nạp dataset       (SFX / Voice / Jazz)
 ```
 
+### 7. Bàn Xử Lý Dữ Liệu Tái Sử Dụng & Bảo Toàn Dữ Liệu SQL (Data Processing Workspace)
+- **Triết lý kiến trúc**: *"CASE IS THE PRODUCT. DATA PROCESSING IS AN INVESTIGATION TOOL."* Không biến công cụ thành trang học SQL/Excel độc lập mà phục vụ trực tiếp tiến trình phá án.
+- **Vòng lặp nghiệp vụ Step-driven**:
+  - `Step Context` ➔ `Investigation Question` ➔ `Data Processing (SQL / Excel)` ➔ `Result Viewer` ➔ `Evidence Selection` ➔ `Record Finding` ➔ `Investigation Note`.
+- **Mô hình Ngữ nghĩa Manh Mối (Finding Semantic Model)**:
+  - Phân tách rõ ràng giữa **FACT** (Sự kiện khách quan trích xuất từ dữ liệu) và **INTERPRETATION** (Suy đoán/Nhận định mang tính phán đoán của điều tra viên).
+  - Tự động đồng bộ sang Sổ tay điều tra (`Note`) có kèm metadata nguồn (`caseId`, `stepId`, `sourceId`, tọa độ dữ liệu).
+  - **Không tự phán xét đúng/sai tức thì**: Không chấm điểm, không cộng XP, không phán xét đúng/sai khi ghi nhận manh mối. Việc thẩm định độ chính xác chuyển dời về giai đoạn Báo cáo Trụ sở (HQ Report).
+- **Cơ chế Bảo vệ Toàn vẹn Dữ liệu ở Tầng SQL Engine (Step-Level SQL Scoping)**:
+  - Tích hợp lớp kiểm duyệt an toàn `validateTableScope` và `extractTableNames` trong `sqlQueryPolicy.js`.
+  - Phân tích cú pháp câu lệnh (FROM, JOIN, CTE), chặn đứng mọi nỗ lực gõ lệnh thủ công để đọc trộm các bảng của Step tương lai hoặc bảng bị ẩn (`SQL_TABLE_UNAVAILABLE`).
+  - Đi kèm bộ test hồi quy tự động bảo vệ tính toàn vẹn câu chuyện trinh thám.
+
+---
+
+## 🚀 3. Đang Làm & Kế Hoạch Tiếp Theo (To-Do & Roadmaps)
+
+```
+[Sprint 11: ĐÃ XONG] ➔ [Sprint 12: ĐANG LÀM] ➔ [Sprint 13: SẮP TỚI] ➔ [Sprint 14: TƯƠNG LAI]
+Lõi Workspace mới        Tích hợp Excel/SQL      Thêm 2 vụ án mới       Âm thanh & Nhập vai
+& Đa ngôn ngữ (i18n)     & Đóng kín Case 001     & Tự nạp dataset       (SFX / Voice / Jazz)
+```
+
 ### 🔹 Sprint 12: Tích hợp Công Cụ Thực Chiến & Hoàn Thiện Case #001 (Ưu tiên P0)
 - [x] **Đồng bộ hóa Đa ngôn ngữ**: Chuyển ngữ Dashboard, Learning Map, Practice, Achievements, Profile theo hạ tầng i18n.
 - [x] **Tái cấu trúc Cài đặt & Hồ sơ**: Giao diện dạng Section "Hồ sơ điều tra viên", tích hợp đổi mật khẩu modal và tùy chọn điều tra.
-- [ ] **Đưa Bảng tính Excel & Terminal SQL vào Bàn Phân Tích trung tâm (`InvestigationWorkbench`)**:
-  - Nhúng lưới bảng tính và thanh nhập công thức `fx` vào khu vực làm việc giữa.
-  - Cho phép người học tự do phân tích số liệu trên bảng tính mà không bị gò bó vào 1 ô đích duy nhất.
-- [ ] **Cơ chế nạp dữ liệu 1-click từ Bằng chứng vào Bảng tính**:
-  - Bấm nút *"Mở bảng này trong bảng tính"* trên thẻ chứng cứ để đẩy toàn bộ hàng/cột vào lưới làm việc.
-- [ ] **Hoàn thiện chu trình khép kín cho Case #001**:
-  - Đọc hồ sơ ➔ Nạp chứng cứ vào bảng tính ➔ Dùng hàm `=SUM(...)` đối soát ➔ Ghi nhận manh mối sai lệch 4.210 kg ➔ Điền Báo cáo gửi Trụ sở ➔ Trụ sở phê duyệt ➔ Mở khóa Phase 2 ➔ Khép lại vụ án (*Case Closed*).
+- [x] **Xây dựng Bàn Xử Lý Dữ Liệu Tái Sử Dụng (`DataProcessingWorkspace`)**:
+  - Kiến trúc cấu hình hóa theo Step: `investigationQuestion`, `context`, `location`, `processor` (SQL/Excel), `dataSources`.
+  - Khảo sát dữ liệu (`DataExplorer`): Tìm kiếm bảng/cột, danh sách bảng, kiểu dữ liệu, số dòng, xem mẫu dữ liệu.
+  - Tái sử dụng trọn vẹn SQL Worker/WASM in-browser (`SQLProcessor`): Giữ nguyên tính năng chỉ đọc, xử lý lỗi thân thiện.
+  - Bảng kết quả truy vấn (`ResultViewer`): Xem dữ liệu dạng bảng, cuộn 2 chiều, chọn dòng, sao chép ô/dòng, đưa vào manh mối (không biến thành spreadsheet editor).
+  - Phân tách ngữ nghĩa Manh mối (`RecordFindingPanel`): Phân biệt rõ **FACT (Sự kiện thực tế)** và **INTERPRETATION (Suy đoán/Nhận định)**.
+  - Tự động đồng bộ hóa Manh mối sang Ghi chép (`Note`): Lưu trữ tham chiếu Case/Chapter/Step/Source mà không lưu trữ tràn lan 500 dòng thô.
+  - Không phán xét đúng/sai tức thì (No immediate correctness): Không cộng XP, không phán xét đúng/sai, giữ trọn vẹn tâm thế điều tra viên.
+- [x] **Cơ chế nạp dữ liệu 1-click từ Bằng chứng vào Bảng tính & Chuyển đổi linh hoạt**:
+  - Bấm nút *"Nạp vào Bàn Điều Tra"* trên thẻ chứng cứ để đẩy toàn bộ hàng/cột vào lưới làm việc.
+  - Hỗ trợ chuyển đổi mượt mà giữa Hồ Sơ Chứng Cứ, Bàn Phân Tích (Excel Workbench) và Bàn Xử Lý Dữ Liệu (Data Processing).
+- [x] **Step-level Data Source Enforcement tại tầng SQL execution level**:
+  - Chặn đứng hoàn toàn việc vượt rào Step bằng cách gõ tay câu lệnh SQL tới bảng tương lai/bị ẩn.
+  - Mã lỗi chuẩn hóa `SQL_TABLE_UNAVAILABLE` kèm thông báo UI thân thiện.
+  - Test hồi quy chuyên biệt: *"hidden dataset cannot be queried manually even when the player knows its table name"*.
+- [ ] **Kiến trúc Nội dung Vụ án / Chương / Bước (Case / Chapter / Step Content Architecture)**:
+  - Chuẩn hóa schema dữ liệu cho các Step điều tra theo Case 001 ("Đường dây buôn lậu cà phê").
+  - Đóng kín chu trình: Đọc hồ sơ ➔ Nạp chứng cứ / truy vấn dữ liệu theo Step ➔ Ghi nhận FACT/INTERPRETATION ➔ Báo cáo HQ ➔ Khép lại vụ án (*Case Closed*).
 
 ### 🔹 Sprint 13: Mở Rộng Vụ Án & Tự Do Nạp Dữ Liệu (Ưu tiên P1)
 - [ ] **Thiết kế 2 Chuyên án mới**:

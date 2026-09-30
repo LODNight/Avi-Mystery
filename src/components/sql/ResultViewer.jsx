@@ -32,6 +32,8 @@ export function mapSqlErrorMessage(code, defaultMessage) {
       return 'Kết quả vượt quá giới hạn 500 dòng tối đa và đã được cắt bớt.';
     case 'SQL_RUNTIME_ERROR':
       return defaultMessage || 'Lỗi phát sinh khi cơ sở dữ liệu thực thi câu lệnh SQL.';
+    case 'SQL_TABLE_UNAVAILABLE':
+      return defaultMessage || 'Bảng dữ liệu này không khả dụng hoặc chưa được mở khóa trong bước điều tra này.';
     default:
       return defaultMessage || 'Đã xảy ra lỗi không xác định khi chạy câu lệnh SQL.';
   }

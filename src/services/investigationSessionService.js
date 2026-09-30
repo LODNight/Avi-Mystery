@@ -10,6 +10,8 @@
  * Four domains are stored separately to allow independent updates.
  */
 
+import { createFinding, createNoteFromFinding } from '../domain/investigation/findingModel.js';
+
 const STORAGE_KEYS = {
   caseState:           (caseId, userId) => `avi:case:${caseId}:${userId}:state`,
   investigationState:  (caseId, userId) => `avi:investigation:${caseId}:${userId}`,
@@ -168,13 +170,31 @@ export const investigationStateService = {
     return next;
   },
 
-  addNote(caseId, userId, { category = 'custom', text, sourceId = null, evidenceRef = null }) {
+  addNote(caseId, userId, {
+    category = 'custom',
+    text = '',
+    content = null,
+    sourceId = null,
+    evidenceRef = null,
+    chapterId = null,
+    stepId = null,
+    findingId = null,
+    findingType = null,
+    source = null,
+  }) {
     const state = this.getState(caseId, userId);
+    const noteText = String(text || content || '').trim();
     const note = {
       id: uid(),
       caseId,
+      chapterId: chapterId || null,
+      stepId: stepId || null,
+      findingId: findingId || null,
+      findingType: findingType || null,
       category: NOTE_CATEGORIES.includes(category) ? category : 'custom',
-      text: text.trim(),
+      text: noteText,
+      content: content || noteText,
+      source: source || (sourceId ? { sourceId, tableId: sourceId } : null),
       sourceId,
       evidenceRef,
       createdAt: now(),
@@ -269,31 +289,36 @@ export const investigationStateService = {
    * @param {object} finding
    *   { phaseId, claim, value, sourceEvidenceId, investigationContext }
    */
-  recordFinding(caseId, userId, { phaseId, claim, value, sourceEvidenceId, investigationContext = '' }) {
+  recordFinding(caseId, userId, findingData) {
     const state = this.getState(caseId, userId);
-    const finding = {
-      findingId: uid(),
-      phaseId,
-      claim: String(claim).trim(),
-      value,
-      sourceEvidenceId,
-      investigationContext: String(investigationContext).trim(),
-      recordedAt: now(),
-    };
+    const finding = createFinding({
+      ...findingData,
+      caseId,
+    });
+    const note = createNoteFromFinding(finding);
+
+    const existingFindings = (state.findings || []).filter(
+      f => f.id !== finding.id && f.findingId !== finding.id
+    );
+
     return this._save(caseId, userId, {
       ...state,
-      findings: [finding, ...(state.findings || [])],
+      findings: [finding, ...existingFindings],
+      notes: note ? [note, ...(state.notes || [])] : (state.notes || []),
     });
   },
 
   /**
-   * Delete a recorded finding by ID.
+   * Delete a recorded finding by ID (removes both finding and linked note).
    */
   deleteFinding(caseId, userId, findingId) {
     const state = this.getState(caseId, userId);
     return this._save(caseId, userId, {
       ...state,
-      findings: (state.findings || []).filter(f => f.findingId !== findingId),
+      findings: (state.findings || []).filter(
+        f => f.findingId !== findingId && f.id !== findingId
+      ),
+      notes: (state.notes || []).filter(n => n.findingId !== findingId),
     });
   },
 

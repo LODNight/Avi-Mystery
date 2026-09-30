@@ -159,6 +159,8 @@ export function AppRouter() {
           <Route path="/sandbox/:tool" element={<PracticeSandboxPage />} />
           <Route path="/sandbox/topic/:topicId" element={<PracticeSandboxPage />} />
           {/* Detective Workspace — new case-based investigation system */}
+          <Route path="/cases" element={<Navigate to="/cases/case-001/investigate" replace />} />
+          <Route path="/cases/:caseId" element={<Navigate to="/cases/case-001/investigate" replace />} />
           <Route path="/cases/:caseId/investigate" element={<DetectiveWorkspacePage />} />
         </Route>
 

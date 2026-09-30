@@ -12,7 +12,7 @@
 |---|---|---|
 | **Cài đặt phụ thuộc** | `npm install` | Cài đặt các package cần thiết cho dự án |
 | **Khởi chạy ứng dụng (Dev)** | `npm run dev` | Chạy dev server tại `http://localhost:5173` |
-| **Kiểm thử tự động** | `npm test -- --run` | Chạy toàn bộ **75 test files / 583 test cases (Pass 100%)** |
+| **Kiểm thử tự động** | `npm test -- --run` | Chạy toàn bộ **80 test files / 619 test cases (Pass 100%)** |
 | **Đóng gói sản phẩm** | `npm run build` | Đóng gói bản Production vào thư mục `dist/` |
 | **Xem trước bản Build** | `npm run preview` | Chạy xem trước bản Production sau khi build |
 
@@ -61,6 +61,13 @@
   - Soạn thảo câu lệnh SQL tại **SQL Code Editor** (hỗ trợ phím tắt `Ctrl + Enter` và thụt lề Tab 2 khoảng trắng).
   - Bấm **"Chạy thử"** để thực thi câu lệnh trên trình duyệt (SQLite WASM Engine) và xem bảng kết quả tại **ResultViewer**.
   - Bấm **"Nộp bài vụ án"** để chấm điểm tự động. Khi đúng, cửa sổ **`MissionResultModal`** dập con dấu nghiệp vụ `InvestigationStamp` ("ÁN ĐÃ PHÁ / CASE CLOSED") cùng thẻ niêm phong vật chứng `EvidenceCard`.
+
+### 🔹 Step 5b: Bàn Phân Tích Thám Tử & Xử Lý Dữ Liệu (`/cases/:caseId/investigate`)
+- **Bàn Làm Việc 3 Cột Nghiệp Vụ (`DetectiveWorkspacePage`)**:
+  - *Hồ sơ vụ án (Trái)*: Bối cảnh, mục tiêu điều tra, kho chứng cứ (hóa đơn, thẻ kho, lời khai).
+  - *Bàn Xử Lý Dữ Liệu Tái Sử Dụng (`DataProcessingWorkspace`)*: Step-driven workspace kết hợp `DataExplorer` (tra cứu schema, preview dòng), `SQLProcessor` (truy vấn SQLite WASM với cơ chế Step-level data scoping), `ResultViewer` (kết quả truy vấn, chọn dòng, đính kèm tham chiếu) và `RecordFindingPanel` (phân tách rõ **FACT** vs **INTERPRETATION**).
+  - *Trung tâm chỉ huy HQ (Phải)*: Sổ tay ghi chú, danh sách manh mối, biểu mẫu thẩm định báo cáo phá án gửi Trụ sở.
+
 
 ### 🔹 Step 6: Học Viện Academy & Kỳ Thi Sát Hạch (`/academy`, `/academy/:courseSlug/exam`)
 - **Học viện W3Schools Style (`/academy`)**: Cung cấp 2 lộ trình chuyên sâu **Excel Academy** và **SQL Academy**.

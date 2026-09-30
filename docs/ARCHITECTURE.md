@@ -17,7 +17,7 @@
 | **Editor Bảng Tính** | `CellEditorOverlay` (`createPortal`) | In-cell formula editor nổi, điều hướng Enter/Tab/Esc, zero re-render |
 | **Hạ tầng Lưu trữ** | Firebase Firestore + LocalStorage (`storage.js`) | Lưu trữ tiến độ học tập, XP Ledger bất biến, cache offline IndexedDB |
 | **Localization (i18n)** | `i18next`, `react-i18next` | Đa ngôn ngữ 3 tầng phản ứng tức thì (Runtime Reactivity) |
-| **Test Framework** | Vitest 2, React Testing Library | **77 test suites, 592 tests PASS (100%)** |
+| **Test Framework** | Vitest 2, React Testing Library | **80 test suites, 619 tests PASS (100%)** |
 
 ---
 
@@ -55,7 +55,56 @@ flowchart LR
 
 ---
 
-## 3. 🌐 Kiến Trúc Đa Ngôn Ngữ 3 Tầng (3-Layer Localization Contract)
+## 3. 🔍 Kiến Trúc Bàn Xử Lý Dữ Liệu Tái Sử Dụng (Data Processing Workspace)
+
+> **Nguyên tắc cốt lõi:** *"CASE IS THE PRODUCT. DATA PROCESSING IS AN INVESTIGATION TOOL."*
+
+Data Processing không phải là một trang học SQL/Excel độc lập, mà là công cụ nghiệp vụ được tích hợp trong luồng phá án theo từng Step:
+
+```
+Step Context
+   ↓
+Investigation Question
+   ↓
+Data Processing (SQL / Excel)
+   ↓
+Result Viewer
+   ↓
+Player Identifies Evidence
+   ↓
+Record Finding (FACT vs INTERPRETATION)
+   ↓
+Investigation Note Sync
+```
+
+### Cấu Trúc Khối Thành Phần
+
+```
+DataProcessingWorkspace
+├── Top Banner: Step Location, Context Narrative & Investigation Question
+├── DataSourceSelector: Lựa chọn dataset được phân quyền trong Step
+└── Master 3-Column Layout:
+    ├── DataExplorer (Trái): Danh sách bảng, schema cột, types, row count, sample preview
+    ├── ProcessingArea (Giữa - Trên): SQLProcessor (SQLite WASM) hoặc ExcelProcessor
+    ├── ResultViewer (Giữa - Dưới): Bảng kết quả truy vấn, phân trang, chọn dòng, đính kèm manh mối
+    └── RecordFindingPanel (Phải): Phân loại FACT / INTERPRETATION, chèn tọa độ, đồng bộ Sổ tay
+```
+
+### Mô Hình Ngữ Nghĩa Manh Mối (Finding Semantic Model)
+- **RAW EVIDENCE**: Dữ liệu thô từ bảng tính hoặc kết quả truy vấn SQL.
+- **PLAYER FINDING**: Nhận định do chính người chơi diễn đạt:
+  - **FACT**: Sự kiện thực tế khách quan quan sát được từ dữ liệu (ví dụ: *"Bình An truy cập khu vực quỹ lúc 17:24"*).
+  - **INTERPRETATION**: Suy đoán, giả định logic của điều tra viên (ví dụ: *"Bình An vào kho nhằm mục đích lấy tiền"*).
+- **INVESTIGATION NOTE**: Tự động liên kết vào Sổ tay với đầy đủ metadata: `caseId`, `stepId`, `sourceId`, tọa độ ô/hàng hoặc câu truy vấn SQL đã chạy.
+- **Không tự động phán xét đúng/sai**: Không chấm điểm, không cộng XP khi ghi manh mối; tính đúng đắn chỉ được thẩm định tại bước Báo cáo Trụ sở (HQ Verification).
+
+### Cơ Chế Bảo Vệ Tiến Trình (Step-Level Data Scoping at SQL Layer)
+- **Vấn đề**: Người chơi có thể đoán hoặc biết trước tên bảng của Step tương lai và gõ lệnh thủ công `SELECT * FROM secret_table;` để vượt rào.
+- **Giải pháp**: Lớp bảo vệ `validateTableScope(query, allowedTableNames)` phân tích AST / Tokens của câu lệnh SQL trước khi thực thi. Nếu phát hiện bảng chưa được mở khóa cho Step hiện tại, hệ thống chặn thực thi với mã lỗi chuẩn `SQL_TABLE_UNAVAILABLE` và thông báo lý do rõ ràng.
+
+---
+
+## 4. 🌐 Kiến Trúc Đa Ngôn Ngữ 3 Tầng (3-Layer Localization Contract)
 
 Để hỗ trợ song ngữ (Tiếng Việt `vi` và Tiếng Anh `en`) mà không làm hỏng dữ liệu nghiệp vụ:
 
@@ -67,22 +116,23 @@ flowchart LR
 
 ---
 
-## 4. 🗂️ Phân Phối Module & Quyền Sở Hữu (Module Map)
+## 5. 🗂️ Phân Phối Module & Quyền Sở Hữu (Module Map)
 
 | Module ID | Tên Module | Trách nhiệm | Đường dẫn thực tế |
 |---|---|---|---|
 | `SHR` | Shared UI & Layouts | UI Primitives, Layouts, Topbar, Modals, Brand Tokens | `src/components/ui/`, `src/app/layouts/` |
 | `LRN-DETECTIVE` | Detective Workspace | Bàn làm việc thám tử, CaseFile, Evidence, HQ Communication | `src/pages/learner/DetectiveWorkspacePage.jsx`, `src/components/detective/` |
+| `LRN-DATAPROCESSING` | Data Processing Workspace | Bàn xử lý dữ liệu Step-driven, DataExplorer, SQL/Excel processor, RecordFinding | `src/components/detective/dataProcessing/`, `src/domain/investigation/` |
 | `LRN-SETTINGS` | Detective Profile & Settings | Hồ sơ điều tra viên, mật danh, giao diện & tùy chọn điều tra | `src/pages/learner/SettingsPage.jsx` |
 | `LRN-EXCEL` | Excel Workspace | Lưới bảng tính, In-cell overlay, Formula bar, Checker | `src/components/excel/`, `src/utils/excelChecker.js` |
-| `LRN-SQL` | SQL Workspace | SQLite WASM Worker, Query Editor, Result Viewer, Policy | `src/utils/sql/`, `src/workers/sql/`, `src/components/sql/` |
+| `LRN-SQL` | SQL Workspace | SQLite WASM Worker, Query Editor, Result Viewer, Policy, Scoping | `src/utils/sql/`, `src/workers/sql/`, `src/components/sql/` |
 | `LRN-ACADEMY` | Academy & Sandbox | Khóa học W3Schools style, Sandbox tự do, Kỳ thi tốt nghiệp | `src/pages/learner/AcademyCoursePage.jsx`, `src/pages/learner/PracticeSandboxPage.jsx` |
 | `GAME` | Game Progression | Leveling engine, XP Ledger, Achievements, Streak | `src/utils/game/levelingEngine.js`, `src/services/api/firebaseProgressService.js` |
 | `ADM` | Admin Studio | Quản lý vụ án, editor trực quan, import CSV sinh schema DDL | `src/pages/admin/`, `src/services/contracts/adminContentService.js` |
 
 ---
 
-## 5. 🗄️ Thiết Kế Cơ Sở Dữ Liệu Dự Kiến (Database Schemas)
+## 6. 🗄️ Thiết Kế Cơ Sở Dữ Liệu Dự Kiến (Database Schemas)
 
 Chuẩn bị sẵn sàng cho giai đoạn phát triển Backend Server (FastAPI + PostgreSQL):
 

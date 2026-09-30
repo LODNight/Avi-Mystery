@@ -79,7 +79,8 @@ export function LearnerSidebar({
   collapsed,
   setCollapsed,
   liveStats,
-  setShowStreakModal
+  setShowStreakModal,
+  onOpenSettings,
 }) {
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -246,7 +247,12 @@ export function LearnerSidebar({
                   <NavLink
                     key={to}
                     to={to}
-                    onClick={() => setMobileOpen(false)}
+                    onClick={() => {
+                      setMobileOpen(false);
+                      if (to === '/settings' && onOpenSettings) {
+                        onOpenSettings('profile');
+                      }
+                    }}
                     title={collapsed && !mobileOpen ? `${itemLabel}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
                     className={`relative flex items-center justify-between gap-2 rounded-xl transition-all ${
                       collapsed && !mobileOpen ? 'justify-center p-3 mt-1' : 'px-3.5 py-2.5 text-sm'

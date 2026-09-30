@@ -10,6 +10,7 @@ import { isAdmin } from '../../constants/roles.js';
 
 import { LearnerSidebar, isLearnerNavPathActive, learnerNav, learnerNavItems } from '../../components/learner/navigation/LearnerSidebar.jsx';
 import { LearnerTopBar } from '../../components/learner/navigation/LearnerTopBar.jsx';
+import { SettingsSecondarySidebar } from '../../components/learner/navigation/SettingsSecondarySidebar.jsx';
 
 import { useTranslation } from 'react-i18next';
 
@@ -20,6 +21,8 @@ export function LearnerLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
+  const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
+  const [settingsSection, setSettingsSection] = useState('appearance');
   const { t } = useTranslation(['nav', 'common']);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -70,6 +73,21 @@ export function LearnerLayout({ children }) {
     localStorage.setItem('avi_sidebar_collapsed', collapsed ? 'true' : 'false');
   }, [collapsed]);
 
+  const isSettingsPage = location.pathname === '/settings';
+  const isSecondaryActive = isSettingsPage || settingsSidebarOpen;
+
+  const handleOpenSettings = (section = 'appearance-color') => {
+    setSettingsSection(section);
+    setSettingsSidebarOpen((prev) => (!prev || settingsSection !== section ? true : false));
+  };
+
+  // When secondary settings sidebar is open, it sits directly next to the main sidebar (w-80 = 320px).
+  // Main sidebar is 80px (w-20) when collapsed, 288px (w-72) when open.
+  // The content dynamically pads to 400px (80+320) or 608px (288+320) so they NEVER overlap on desktop!
+  const mainContentPadding = isSecondaryActive
+    ? (collapsed ? 'lg:pl-[400px]' : 'lg:pl-[608px]')
+    : (collapsed ? 'lg:pl-20' : 'lg:pl-72');
+
   const activeNavItem = learnerNav.find((item) => item.to === location.pathname);
   const pageTitle = activeNavItem
     ? (activeNavItem.labelKey ? t(`nav:${activeNavItem.labelKey}`, activeNavItem.label) : activeNavItem.label)
@@ -86,7 +104,7 @@ export function LearnerLayout({ children }) {
         />
       )}
 
-      {/* ── Sidebar ── */}
+      {/* ── Main Sidebar ── */}
       <LearnerSidebar
         mobileOpen={mobileOpen}
         setMobileOpen={setMobileOpen}
@@ -94,13 +112,19 @@ export function LearnerLayout({ children }) {
         setCollapsed={setCollapsed}
         liveStats={liveStats}
         setShowStreakModal={setShowStreakModal}
+        onOpenSettings={handleOpenSettings}
       />
 
-      {/* ── Main Content Area ── */}
+      {/* ── Secondary Sidebar (Settings) - Sits right next to Main Sidebar ── */}
+      <SettingsSecondarySidebar
+        isOpen={isSecondaryActive}
+        onClose={() => setSettingsSidebarOpen(false)}
+        collapsedMain={collapsed}
+      />
+
+      {/* ── Main Content Area (Never overlapped by secondary sidebar) ── */}
       <div
-        className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${
-          collapsed ? 'lg:pl-20' : 'lg:pl-72'
-        }`}
+        className={`flex flex-col min-h-screen transition-all duration-300 ease-in-out ${mainContentPadding}`}
       >
         {/* Sticky Header */}
         <LearnerTopBar
@@ -109,6 +133,9 @@ export function LearnerLayout({ children }) {
           collapsed={collapsed}
           setCollapsed={setCollapsed}
           pageTitle={pageTitle}
+          setThemeSidebarOpen={setSettingsSidebarOpen}
+          onOpenSettings={handleOpenSettings}
+          isSettingsOpen={isSecondaryActive}
         />
 
         {/* Banners Area */}

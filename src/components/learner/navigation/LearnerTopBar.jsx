@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Sun, Moon, PanelLeft, Settings } from 'lucide-react';
+import { Menu, Sun, Moon, PanelLeft } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth.js';
 import { useTheme } from '../../../app/providers/ThemeProvider.jsx';
 import { useTranslation } from 'react-i18next';
@@ -10,12 +10,25 @@ export function LearnerTopBar({
   setMobileOpen,
   collapsed,
   setCollapsed,
-  pageTitle
+  pageTitle,
+  setThemeSidebarOpen,
+  onOpenSettings,
+  isSettingsOpen = false,
 }) {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation(['nav', 'common']);
   const navigate = useNavigate();
+
+  const handleOpenSettings = (section) => {
+    if (onOpenSettings) {
+      onOpenSettings(section);
+    } else if (setThemeSidebarOpen) {
+      setThemeSidebarOpen(true);
+    } else {
+      navigate('/settings');
+    }
+  };
 
   const initials = user?.name
     ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
@@ -23,7 +36,7 @@ export function LearnerTopBar({
 
   return (
     <>
-      <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
+      <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-stone-200 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 px-4 sm:px-6 backdrop-blur-md shadow-xs">
         <div className="flex items-center gap-3">
           {/* Mobile Menu Button */}
           <button
@@ -53,30 +66,10 @@ export function LearnerTopBar({
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* User Settings Button */}
-          <button
-            onClick={() => navigate('/settings')}
-            className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-            title={t('common:userSettings', 'Cài đặt người dùng')}
-            aria-label={t('common:userSettings', 'Cài đặt người dùng')}
-          >
-            <Settings className="size-4" />
-          </button>
-
-          {/* Dark/Light mode toggle */}
-          <button
-            onClick={toggleTheme}
-            className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
-            title={theme === 'dark' ? t('common:switchToLight', 'Chuyển sang chế độ Sáng') : t('common:switchToDark', 'Chuyển sang chế độ Tối')}
-            aria-label="Toggle theme"
-          >
-            {theme === 'dark' ? <Sun className="size-4 text-amber-400" /> : <Moon className="size-4" />}
-          </button>
-
           {/* User Avatar Initials */}
           <button
             type="button"
-            onClick={() => navigate('/settings')}
+            onClick={() => handleOpenSettings('profile')}
             className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground font-mono text-xs font-bold shadow-xs hover:opacity-90 transition-opacity cursor-pointer"
             title={user?.name ? `${user.name} (${t('common:userSettings', 'Cài đặt người dùng')})` : t('common:userSettings', 'Cài đặt người dùng')}
             aria-label={t('common:userSettings', 'Cài đặt người dùng')}

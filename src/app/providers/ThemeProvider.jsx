@@ -4,6 +4,8 @@ const ThemeContext = createContext({
   theme: 'light',
   setTheme: () => null,
   toggleTheme: () => null,
+  primaryColor: null,
+  setPrimaryColor: () => null,
 });
 
 export function ThemeProvider({ children }) {
@@ -16,6 +18,13 @@ export function ThemeProvider({ children }) {
     return 'light';
   });
 
+  const [primaryColor, setPrimaryColorState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('avi_primary_color') || null;
+    }
+    return null;
+  });
+
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -26,6 +35,21 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('avi_theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (primaryColor) {
+      root.style.setProperty('--primary', primaryColor);
+      root.style.setProperty('--sidebar-primary', primaryColor);
+      root.style.setProperty('--ring', primaryColor);
+      localStorage.setItem('avi_primary_color', primaryColor);
+    } else {
+      root.style.removeProperty('--primary');
+      root.style.removeProperty('--sidebar-primary');
+      root.style.removeProperty('--ring');
+      localStorage.removeItem('avi_primary_color');
+    }
+  }, [primaryColor]);
+
   const toggleTheme = () => {
     setThemeState((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -34,8 +58,12 @@ export function ThemeProvider({ children }) {
     setThemeState(newTheme);
   };
 
+  const setPrimaryColor = (color) => {
+    setPrimaryColorState(color);
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, primaryColor, setPrimaryColor }}>
       {children}
     </ThemeContext.Provider>
   );

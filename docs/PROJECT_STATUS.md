@@ -99,6 +99,17 @@ Lõi Workspace mới        Tích hợp Excel/SQL      Thêm 2 vụ án mới   
 ### 🔹 Sprint 12: Tích hợp Công Cụ Thực Chiến & Hoàn Thiện Case #001 (Ưu tiên P0)
 - [x] **Đồng bộ hóa Đa ngôn ngữ**: Chuyển ngữ Dashboard, Learning Map, Practice, Achievements, Profile theo hạ tầng i18n.
 - [x] **Tái cấu trúc Cài đặt & Hồ sơ**: Giao diện dạng Section "Hồ sơ điều tra viên", tích hợp đổi mật khẩu modal và tùy chọn điều tra.
+- [x] **Hệ thống Secondary Sidebar Song Song & Giao diện Cài đặt Tập trung**:
+  - Xây dựng thanh điều hướng phụ (`SettingsSecondarySidebar`) hiển thị danh mục phân cấp: Hồ sơ, Giao diện (Màu sắc, Ngôn ngữ & cỡ chữ), Điều tra, Tài khoản (Mật khẩu, Data), Quyền.
+  - Cơ chế đệm lề tự động (`lg:pl-[608px]` khi mở rộng, `lg:pl-[400px]` khi thu gọn), **100% không đè chồng** lên nội dung chính.
+  - Tinh giản TopBar Header: Loại bỏ các nút icon dư thừa, giữ không gian thoáng đãng.
+  - Thẩm mỹ Stone-50 dịu mắt, độ tương phản hài hòa, chấm hiển thị màu sắc trực tiếp.
+  - Tách biệt rõ ràng: Thanh phụ chỉ giữ vai trò menu danh mục; toàn bộ nội dung thao tác chi tiết hiển thị ở không gian làm việc chính (`SettingsPage`).
+- [ ] **Hệ thống Tuỳ chỉnh Màu sắc Thám tử & Engine Tự động Cân bằng Tương phản (WCAG AA/AAA)**:
+  - Bản kế hoạch chi tiết tại [`docs/COLOR_CUSTOMIZATION_PLAN.md`](file:///d:/Coding_Design/Personal/Avi-Mystery/docs/COLOR_CUSTOMIZATION_PLAN.md).
+  - 7 bộ màu phong cách Thám tử (Amber Noir, Cyber Forensics, Emerald Evidence, Crimson Dossier, Cyan Protocol, Shadow Amethyst, Monochrome Agent).
+  - Thuật toán Relative Luminance tự động điều chỉnh `--primary-foreground` (chữ trắng/đen) bảo đảm độ sắc nét và khả năng đọc tuyệt đối.
+  - Thao trường xem trước tương tác (Interactive Live Playground) cho nút bấm, badge, thẻ manh mối.
 - [x] **Xây dựng Bàn Xử Lý Dữ Liệu Tái Sử Dụng (`DataProcessingWorkspace`)**:
   - Kiến trúc cấu hình hóa theo Step: `investigationQuestion`, `context`, `location`, `processor` (SQL/Excel), `dataSources`.
   - Khảo sát dữ liệu (`DataExplorer`): Tìm kiếm bảng/cột, danh sách bảng, kiểu dữ liệu, số dòng, xem mẫu dữ liệu.

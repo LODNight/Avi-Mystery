@@ -190,7 +190,7 @@ Hệ thống tuân thủ mô hình Kim tự tháp Kiểm thử (Test Pyramid) ng
          /-----------\ Unit Tests (pure excelChecker, sqlChecker, levelingEngine)
 ```
 
-- **Mệnh đề Zero Regression:** Toàn bộ test suite (`77 files, 592 tests`) phải đạt 100% PASS trước khi đóng bất kỳ Sprint/Step nào.
+- **Mệnh đề Zero Regression:** Toàn bộ test suite (`80 files, 619 tests`) phải đạt 100% PASS trước khi đóng bất kỳ Sprint/Step nào.
 - **Lệnh chạy kiểm thử chuẩn:**
   ```bash
   npm test -- --run
@@ -199,3 +199,23 @@ Hệ thống tuân thủ mô hình Kim tự tháp Kiểm thử (Test Pyramid) ng
   ```bash
   npm run build
   ```
+
+---
+
+## 7. 🎛️ Kiến Trúc Điều Hướng App Shell & Hệ Thống Màu Sắc (Navigation Shell & Theme Engine)
+
+### 7.1. Kiến Trúc Dual-Rail Sidebar Song Song Không Đè Chồng
+Giao diện App Shell (`LearnerLayout`) áp dụng mô hình thanh điều hướng kép (Dual-Rail Navigation):
+1. **Primary Sidebar (`LearnerSidebar`)**: Thanh điều hướng chính của hệ thống (Vụ án, Đào tạo, Cá nhân), hỗ trợ mở rộng (`288px` - `w-72`) và thu gọn (`80px` - `w-20`).
+2. **Secondary Sidebar (`SettingsSecondarySidebar`)**: Thanh điều hướng danh mục chuyên sâu (Hồ sơ, Giao diện, Điều tra, Tài khoản, Quyền).
+   - Tọa độ cố định sát lề phải của Primary Sidebar (`lg:left-72` hoặc `lg:left-20`).
+   - Đệm lề động cho nội dung chính (`mainContentPadding`):
+     - Mở rộng: `lg:pl-[608px]` (`288px + 320px`)
+     - Thu gọn: `lg:pl-[400px]` (`80px + 320px`)
+   - Chuyển động mượt mà `transition-all duration-300 ease-in-out`, **100% không che khuất hay đè chồng lên Canvas nội dung**.
+
+### 7.2. Hệ Thống Màu Sắc Cá Nhân Hoá (Adaptive Theme Engine)
+- Sử dụng biến CSS `:root` (`--primary`, `--primary-foreground`, `--ring`, `--sidebar-primary`).
+- Thuật toán Relative Luminance theo chuẩn WCAG tự động phân tích mã màu HEX để quyết định màu chữ tương phản cao (`#ffffff` hoặc `#0f172a`), bảo đảm tỷ lệ tương phản tối thiểu 4.5:1 (WCAG AA).
+- 7 bộ màu phong cách Thám tử chuyên biệt: Amber Noir, Cyber Forensics, Emerald Evidence, Crimson Dossier, Cyan Protocol, Shadow Amethyst, Monochrome Agent.
+

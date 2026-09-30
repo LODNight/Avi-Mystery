@@ -316,11 +316,36 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: Bảo vệ 100% tính toàn vẹn câu chuyện và độ khó của vụ án; không thể bypass giới hạn dữ liệu bằng query thủ công; không can thiệp sâu hay thay thế SQLite engine gốc.
 - Related modules: LRN-SQL, LRN-DATAPROCESSING, LRN-DETECTIVE
 
+## ADR-AGT-016 — Kiến Trúc Secondary Sidebar Song Song Không Đè Chồng & Bàn Làm Việc Cài Đặt Tập Trung
+
+- Status: Accepted
+- Date: 2026-09-30
+- Context: Giao diện Cài đặt và tuỳ chỉnh trước đây có nguy cơ đè chồng lên nội dung chính khi mở drawer, hoặc gom quá nhiều nội dung vào trong thanh phụ làm chật chội và khó thao tác. Người dùng yêu cầu Secondary Sidebar nằm kế bên Sidebar chính (không đè lên nhau), chỉ hiển thị các mục điều hướng chính, và toàn bộ khu vực cấu hình hiển thị tập trung tại màn hình làm việc chính.
+- Decision:
+  1. Triển khai Secondary Sidebar (`SettingsSecondarySidebar.jsx`) cố định sát lề phải của Primary Sidebar (`lg:left-72` khi mở rộng, `lg:left-20` khi thu gọn).
+  2. Bố cục đệm lề động (`mainContentPadding`): Tự động tính toán `lg:pl-[608px]` hoặc `lg:pl-[400px]` khi thanh phụ mở, bảo đảm **100% không đè chồng** lên nội dung chính.
+  3. Bóc tách vai trò: Thanh phụ chỉ hiển thị danh mục menu phân cấp (Hồ sơ, Giao diện [Màu sắc, Ngôn ngữ & cỡ chữ], Điều tra, Tài khoản [Mật khẩu, Data], Quyền). Toàn bộ nội dung biểu mẫu chuyển về `SettingsPage.jsx`.
+  4. Nâng cấp thẩm mỹ Stone-50 (`bg-stone-50/95 dark:bg-stone-900/95`) dịu mắt, active pill rõ nét, và tinh giản TopBar Header (bỏ icon Settings/Palette dư thừa).
+- Consequences: Trải nghiệm mượt mà, chuyên nghiệp chuẩn SaaS; dễ mở rộng thêm các mục cài đặt mới trong tương lai.
+- Related modules: LRN-SETTINGS, SHR-SHELL, LRN-LAYOUT
+
+## ADR-AGT-017 — Hệ Thống Bảng Màu Thám Tử & Engine Tự Động Cân Bằng Tương Phản (WCAG AA/AAA Theme Engine)
+
+- Status: Accepted
+- Date: 2026-09-30
+- Context: Nhu cầu cá nhân hoá màu sắc giao diện theo sở thích của học viên. Nếu chỉ cho phép nhập mã màu tuỳ ý mà không kiểm soát, màu quá sáng hoặc quá tối sẽ làm chữ trên nút bấm bị tàng hình / không đọc được, vi phạm nguyên tắc tiếp cận (accessibility).
+- Decision:
+  1. Xây dựng 7 bộ màu Preset Thám tử (Amber Noir, Cyber Forensics, Emerald Evidence, Crimson Dossier, Cyan Protocol, Shadow Amethyst, Monochrome Agent).
+  2. Triển khai thuật toán Relative Luminance trong `ThemeProvider.jsx` tự động phân tích độ sáng của mã HEX để gán `--primary-foreground` (chữ trắng hoặc chữ đen/navy) đạt chuẩn WCAG AA (4.5:1).
+  3. Bổ sung Live Interactive Playground mô phỏng nút bấm, badge, thẻ manh mối trước khi lưu.
+- Consequences: Cho phép học viên tự do chọn mọi mã màu HEX yêu thích mà giao diện luôn giữ được độ sắc nét và tính thẩm mỹ cao cấp.
+- Related modules: SHR-THEME, LRN-SETTINGS, LRN-DETECTIVE
+
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
 
-> **Cập nhật lần cuối:** 19/09/2026
+> **Cập nhật lần cuối:** 30/09/2026
 > **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
 > **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
@@ -361,6 +386,10 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-029` | Bàn Xử Lý Dữ Liệu Tái Sử Dụng Step-driven (`DataProcessingWorkspace`) | Detective Workspace | `LRN-DATAPROCESSING` | `CURRENT` | Tested | `src/components/detective/dataProcessing/DataProcessingWorkspace.jsx` |
 | `UI-030` | Bảng Ghi Nhận Manh Mối FACT vs INTERPRETATION (`RecordFindingPanel`) | Data Processing Workspace | `LRN-DATAPROCESSING` | `CURRENT` | Tested | `src/components/detective/dataProcessing/RecordFindingPanel.jsx` |
 | `UI-031` | Cảnh báo Truy Vấn Bảng Chưa Mở Khóa (`SQL_TABLE_UNAVAILABLE`) | Result Viewer | `LRN-SQL` | `CURRENT` | Tested | `src/components/sql/ResultViewer.jsx` |
+| `UI-032` | Secondary Sidebar Điều Hướng Song Song Không Đè Chồng (`SettingsSecondarySidebar`) | Learner App Shell | `SHR-SHELL` | `CURRENT` | Tested | `src/components/learner/navigation/SettingsSecondarySidebar.jsx` |
+| `UI-033` | Giao Diện Cài Đặt Tập Trung & Đổi Mật Khẩu (`SettingsPage`) | `/settings` | `LRN-SETTINGS` | `CURRENT` | Tested | `src/pages/learner/SettingsPage.jsx` |
+| `UI-034` | Tinh Giản TopBar Header & Thẩm Mỹ Stone-50 Chống Chìm | Learner Layout | `SHR-SHELL` | `CURRENT` | Tested | `src/components/learner/navigation/LearnerTopBar.jsx` |
+| `UI-035` | Hệ Thống Bảng Màu Thám Tử & Engine Cân Bằng Tương Phản | Theme Provider & Settings | `SHR-THEME` | `PLANNED` | Planned | `docs/COLOR_CUSTOMIZATION_PLAN.md` |
 
 ---
 
@@ -371,3 +400,5 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 3. **Responsive Grid & WASM Cleanup**: Mọi màn hình workspace (Excel & SQL) bảo đảm hiển thị mượt trên 390px, 768px, 1440px và tự động cleanup Web Worker / memory timers khi unmount.
 4. **Three-Layer Localization Boundary**: Tuyệt đối không dùng `t()` của tầng UI dịch dữ liệu bảng tính, ID thực thể hay giá trị kiểm định (`rules[].expected`). Phải dùng `caseLocalizationService` cho Case Presentation và giữ nguyên Domain/Verification values dạng raw.
 5. **Step-Level Data Isolation at SQL Execution**: Tuyệt đối không cho phép người chơi query vượt rào sang các table chưa mở khóa của các Step sau. SQL engine adapter và SQLProcessor phải luôn thực thi `validateTableScope`.
+6. **Side-by-Side Secondary Sidebar Isolation**: Secondary Sidebar bắt buộc phải nằm song song kế bên Primary Sidebar và tự động padding cho Main Content (`lg:pl-[608px]` hoặc `lg:pl-[400px]`), tuyệt đối cấm đè chồng hoặc che khuất giao diện làm việc chính.
+

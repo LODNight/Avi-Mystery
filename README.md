@@ -86,6 +86,9 @@
 - **Hồ Sơ Cá Nhân (`/profile`)**: Xem tổng quan chỉ số Level, XP tích lũy, bộ sưu tập **Chứng chỉ Học viện (Academy Certificates)** và các huy hiệu thám tử.
 - **Bảng Danh Hiệu Thám Tử (`/achievements`)**: Xem danh sách huân chương và điều kiện mở khóa.
 - **Lịch Sử Hoạt Động (`/profile/history`)**: Dải timeline ghi nhận từng mốc phá án, thăng cấp với bộ lọc thời gian thực.
+- **Cài Đặt & Tuỳ Chỉnh Hệ Thống (`/settings`)**:
+  - Kiến trúc **Secondary Sidebar song song không đè chồng**: Menu phân cấp gồm Hồ sơ, Giao diện (Màu sắc, Ngôn ngữ & cỡ chữ), Điều tra, Tài khoản (Mật khẩu, Data), Quyền.
+  - Giao diện điều chỉnh trung tâm hỗ trợ đổi màu chủ đạo (Color Picker & HEX), đổi mật khẩu an toàn và tuỳ biến môi trường điều tra.
 - **Cơ Chế Gamification**: Modal mừng thăng cấp (`LevelUpModal`) kèm hiệu ứng confetti và popup theo dõi chuỗi ngày học 7 ngày (`StreakDetailModal`).
 
 ---
@@ -131,9 +134,10 @@ Admin có toàn quyền điều khiển khả năng truy cập của Người h�
 Dự án được tài liệu hóa đồng bộ và tinh gọn trong thư mục `docs/`:
 
 - 📊 **[`docs/PROJECT_STATUS.md`](./docs/PROJECT_STATUS.md)**: **Bảng theo dõi tiến độ chính** — Đọc nhanh 2 phút: Đã làm, đang làm, to-do tiếp theo, 6 rủi ro then chốt và các điểm cần tối ưu.
+- 🎨 **[`docs/COLOR_CUSTOMIZATION_PLAN.md`](./docs/COLOR_CUSTOMIZATION_PLAN.md)**: Kế hoạch & brainstorm chi tiết hệ thống tuỳ chỉnh màu sắc thám tử, cân bằng tương phản WCAG AA/AAA.
 - 🎯 **[`docs/PRODUCT_STRATEGY.md`](./docs/PRODUCT_STRATEGY.md)**: Định vị sản phẩm (Game phá án dữ liệu), nguyên tắc thiết kế Learner UX và Master Roadmap.
 - 🏛️ **[`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md)**: Kiến trúc hệ thống, 4 miền trạng thái (4 State Domains), đa ngôn ngữ 3 tầng, phân vùng module và schema CSDL.
-- ⚖️ **[`docs/DECISIONS_LOG.md`](./docs/DECISIONS_LOG.md)**: Nhật ký quyết định kiến trúc quan trọng (ADR-001 đến ADR-010).
+- ⚖️ **[`docs/DECISIONS_LOG.md`](./docs/DECISIONS_LOG.md)**: Nhật ký quyết định kiến trúc quan trọng (ADR-001 đến ADR-017).
 - 🤖 **[`docs/AGENT_PROTOCOLS.md`](./docs/AGENT_PROTOCOLS.md)**: Quy chuẩn giao thức hoạt động, hợp đồng service dành cho AI Agent.
 - 📂 **`docs/specs/`**: Thư mục chứa các đặc tả kỹ thuật chi tiết (`detective-workspace.md`, `investigation-state.md`, `report-schema.md`, `localization.md`).
 - 📦 **`docs/archive/`**: Thư mục lưu trữ lịch sử các sprint và checklist cũ.

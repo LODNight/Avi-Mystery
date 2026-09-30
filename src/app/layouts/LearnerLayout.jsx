@@ -17,12 +17,15 @@ import { useTranslation } from 'react-i18next';
 // Re-export for compatibility with other files (like LearnerLayout.test.jsx)
 export { learnerNavItems, learnerNav, isLearnerNavPathActive };
 
+export function isSettingsRoute(pathname) {
+  if (!pathname) return false;
+  return pathname === '/settings' || pathname.startsWith('/settings/');
+}
+
 export function LearnerLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [showLevelUpModal, setShowLevelUpModal] = useState(false);
-  const [settingsSidebarOpen, setSettingsSidebarOpen] = useState(false);
-  const [settingsSection, setSettingsSection] = useState('appearance');
   const { t } = useTranslation(['nav', 'common']);
   const [collapsed, setCollapsed] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -73,18 +76,11 @@ export function LearnerLayout({ children }) {
     localStorage.setItem('avi_sidebar_collapsed', collapsed ? 'true' : 'false');
   }, [collapsed]);
 
-  const isSettingsPage = location.pathname === '/settings';
-  const isSecondaryActive = isSettingsPage || settingsSidebarOpen;
+  const isSettingsPage = isSettingsRoute(location.pathname);
 
-  const handleOpenSettings = (section = 'appearance-color') => {
-    setSettingsSection(section);
-    setSettingsSidebarOpen((prev) => (!prev || settingsSection !== section ? true : false));
-  };
-
-  // When secondary settings sidebar is open, it sits directly next to the main sidebar (w-80 = 320px).
-  // Main sidebar is 80px (w-20) when collapsed, 288px (w-72) when open.
-  // The content dynamically pads to 400px (80+320) or 608px (288+320) so they NEVER overlap on desktop!
-  const mainContentPadding = isSecondaryActive
+  // Secondary settings sidebar exists strictly on the Settings page (w-80 = 320px).
+  // On other pages, padding is standard (lg:pl-20 or lg:pl-72).
+  const mainContentPadding = isSettingsPage
     ? (collapsed ? 'lg:pl-[400px]' : 'lg:pl-[608px]')
     : (collapsed ? 'lg:pl-20' : 'lg:pl-72');
 
@@ -112,15 +108,15 @@ export function LearnerLayout({ children }) {
         setCollapsed={setCollapsed}
         liveStats={liveStats}
         setShowStreakModal={setShowStreakModal}
-        onOpenSettings={handleOpenSettings}
       />
 
-      {/* ── Secondary Sidebar (Settings) - Sits right next to Main Sidebar ── */}
-      <SettingsSecondarySidebar
-        isOpen={isSecondaryActive}
-        onClose={() => setSettingsSidebarOpen(false)}
-        collapsedMain={collapsed}
-      />
+      {/* ── Secondary Sidebar (Settings) - Chỉ tồn tại duy nhất trong page Setting ── */}
+      {isSettingsPage && (
+        <SettingsSecondarySidebar
+          isOpen={true}
+          collapsedMain={collapsed}
+        />
+      )}
 
       {/* ── Main Content Area (Never overlapped by secondary sidebar) ── */}
       <div
@@ -133,9 +129,6 @@ export function LearnerLayout({ children }) {
           collapsed={collapsed}
           setCollapsed={setCollapsed}
           pageTitle={pageTitle}
-          setThemeSidebarOpen={setSettingsSidebarOpen}
-          onOpenSettings={handleOpenSettings}
-          isSettingsOpen={isSecondaryActive}
         />
 
         {/* Banners Area */}

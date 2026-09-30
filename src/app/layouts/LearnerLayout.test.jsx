@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isLearnerNavPathActive } from './LearnerLayout.jsx';
+import { isLearnerNavPathActive, isSettingsRoute } from './LearnerLayout.jsx';
 
 describe('LearnerLayout route active matching', () => {
   it('match route chính xác và route con theo segment boundary', () => {
@@ -25,3 +25,24 @@ describe('LearnerLayout route active matching', () => {
     expect(isLearnerNavPathActive('/cases-archive', '/cases/case-001/investigate')).toBe(false);
   });
 });
+
+describe('Settings Secondary Sidebar Route Isolation', () => {
+  it('chỉ kích hoạt secondary sidebar khi ở đúng trang /settings hoặc route con của /settings', () => {
+    expect(isSettingsRoute('/settings')).toBe(true);
+    expect(isSettingsRoute('/settings/')).toBe(true);
+    expect(isSettingsRoute('/settings/profile')).toBe(true);
+    expect(isSettingsRoute('/settings/appearance')).toBe(true);
+  });
+
+  it('tuyệt đối không kích hoạt trên các trang học tập, bảng điều khiển hoặc route giả mạo', () => {
+    expect(isSettingsRoute('/dashboard')).toBe(false);
+    expect(isSettingsRoute('/')).toBe(false);
+    expect(isSettingsRoute('/map')).toBe(false);
+    expect(isSettingsRoute('/cases')).toBe(false);
+    expect(isSettingsRoute('/academy')).toBe(false);
+    expect(isSettingsRoute('/practice')).toBe(false);
+    expect(isSettingsRoute('/settings-preview')).toBe(false);
+    expect(isSettingsRoute('/settings_test')).toBe(false);
+  });
+});
+

@@ -11,23 +11,14 @@ export function LearnerTopBar({
   collapsed,
   setCollapsed,
   pageTitle,
-  setThemeSidebarOpen,
-  onOpenSettings,
-  isSettingsOpen = false,
 }) {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t } = useTranslation(['nav', 'common']);
   const navigate = useNavigate();
 
-  const handleOpenSettings = (section) => {
-    if (onOpenSettings) {
-      onOpenSettings(section);
-    } else if (setThemeSidebarOpen) {
-      setThemeSidebarOpen(true);
-    } else {
-      navigate('/settings');
-    }
+  const handleOpenSettings = (section = 'profile') => {
+    navigate(`/settings?tab=${section}`);
   };
 
   const initials = user?.name

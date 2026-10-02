@@ -5,21 +5,13 @@ import {
   Check,
   Moon,
   Sun,
-  Shield,
   User,
   Lock,
   Eye,
   EyeOff,
   RotateCcw,
   KeyRound,
-  Download,
-  Upload,
-  Trash2,
-  FileSearch,
-  ShieldCheck,
   Palette,
-  Type,
-  Maximize2,
   CheckCircle,
   AlertCircle,
   Loader2,
@@ -28,7 +20,6 @@ import {
 import { useTheme, getContrastForeground } from '../../app/providers/ThemeProvider.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { formatXP } from '../../utils/format.js';
-import { isAdmin } from '../../constants/roles.js';
 import { DETECTIVE_PERSONA_PRESETS, analyzeContrast, parseHex } from '../../utils/colorEngine.js';
 import InvestigationStamp from '../../components/investigation/InvestigationStamp.jsx';
 
@@ -141,7 +132,12 @@ function ToggleSwitch({ value, onChange }) {
 /* ══════════════════════════════════════════════════════════════ */
 export function SettingsPage() {
   const [searchParams] = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'profile';
+  const rawTab = searchParams.get('tab') || 'profile';
+  const activeTab = (rawTab === 'appearance-color' || rawTab === 'appearance-typography')
+    ? 'appearance'
+    : (rawTab === 'account')
+    ? 'account-password'
+    : (['profile', 'appearance', 'account-password'].includes(rawTab) ? rawTab : 'profile');
 
   const { theme, toggleTheme, primaryColor, setPrimaryColor } = useTheme();
   const { user, updateProfile, changePassword } = useAuth();
@@ -154,14 +150,6 @@ export function SettingsPage() {
 
   /* ── Appearance state ── */
   const currentLang = (i18n.language || 'vi').toLowerCase().startsWith('en') ? 'en' : 'vi';
-  const [density, setDensity] = useState(() => localStorage.getItem('avi_density') || 'comfortable');
-  const [textSize, setTextSize] = useState(() => localStorage.getItem('avi_textsize') || 'medium');
-  const [reducedMotion, setReducedMotion] = useState(() => localStorage.getItem('avi_motion') === 'reduced');
-
-  /* ── Investigation state ── */
-  const [hintLevel, setHintLevel] = useState(() => localStorage.getItem('avi_hints') || 'standard');
-  const [evidenceDisplay, setEvidenceDisplay] = useState(() => localStorage.getItem('avi_evidence') || 'list');
-  const [autoEvidence, setAutoEvidence] = useState(() => localStorage.getItem('avi_autoevidence') !== 'false');
 
   /* ── Password change state ── */
   const [curPwd, setCurPwd] = useState('');
@@ -372,11 +360,11 @@ export function SettingsPage() {
         </SectionWrapper>
       )}
 
-      {/* 2. GIAO DIỆN -> MÀU SẮC */}
-      {activeTab === 'appearance-color' && (
+      {/* 2. GIAO DIỆN & TRẢI NGHIỆM */}
+      {activeTab === 'appearance' && (
         <SectionWrapper
-          title="Giao diện: Màu sắc"
-          description="Tuỳ chỉnh chế độ hiển thị Sáng/Tối và bảng màu chủ đạo (Primary Color) theo sở thích"
+          title="Giao diện & Trải nghiệm"
+          description="Tuỳ chỉnh chế độ hiển thị Sáng/Tối, bảng màu chủ đạo (Primary Color) và ngôn ngữ hệ thống"
           icon={Palette}
         >
           {/* Display Mode (Light / Dark) */}
@@ -514,6 +502,21 @@ export function SettingsPage() {
             </div>
           </SettingRow>
 
+          {/* Ngôn ngữ hiển thị */}
+          <SettingRow label="Ngôn ngữ hiển thị" description="Ngôn ngữ áp dụng trên toàn bộ ứng dụng">
+            <SegmentedControl
+              value={currentLang}
+              onChange={(code) => {
+                i18n.changeLanguage(code);
+                try { localStorage.setItem('i18nextLng', code); } catch { /* noop */ }
+              }}
+              options={[
+                { value: 'vi', label: '🇻🇳 Tiếng Việt' },
+                { value: 'en', label: '🇬🇧 English' },
+              ]}
+            />
+          </SettingRow>
+
           {/* Interactive Live Preview */}
           <div className="mt-4 rounded-2xl border border-border/80 bg-muted/20 p-5 space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -586,128 +589,10 @@ export function SettingsPage() {
         </SectionWrapper>
       )}
 
-      {/* 2. GIAO DIỆN -> NGÔN NGỮ & CỠ CHỮ */}
-      {activeTab === 'appearance-typography' && (
-        <SectionWrapper
-          title="Giao diện: Ngôn ngữ & Cỡ chữ"
-          description="Thiết lập ngôn ngữ, kích thước font chữ và độ tương phản hiển thị"
-          icon={Type}
-        >
-          {/* Language */}
-          <SettingRow label="Ngôn ngữ hiển thị" description="Ngôn ngữ áp dụng trên toàn bộ ứng dụng">
-            <SegmentedControl
-              value={currentLang}
-              onChange={(code) => {
-                i18n.changeLanguage(code);
-                try { localStorage.setItem('i18nextLng', code); } catch { /* noop */ }
-              }}
-              options={[
-                { value: 'vi', label: '🇻🇳 Tiếng Việt' },
-                { value: 'en', label: '🇬🇧 English' },
-              ]}
-            />
-          </SettingRow>
-
-          {/* Text size */}
-          <SettingRow label="Cỡ chữ giao diện" description="Kích cỡ font văn bản tổng thể trong không gian làm việc">
-            <SegmentedControl
-              value={textSize}
-              onChange={(v) => {
-                setTextSize(v);
-                localStorage.setItem('avi_textsize', v);
-              }}
-              options={[
-                { value: 'small',  label: 'Nhỏ' },
-                { value: 'medium', label: 'Vừa (Mặc định)' },
-                { value: 'large',  label: 'Lớn' },
-              ]}
-            />
-          </SettingRow>
-
-          {/* Density */}
-          <SettingRow label="Mật độ hiển thị" description="Khoảng cách và độ đệm giữa các thành phần giao diện">
-            <SegmentedControl
-              value={density}
-              onChange={(v) => {
-                setDensity(v);
-                localStorage.setItem('avi_density', v);
-              }}
-              options={[
-                { value: 'compact',     label: 'Gọn (Compact)' },
-                { value: 'comfortable', label: 'Chuẩn (Comfortable)' },
-                { value: 'spacious',    label: 'Rộng (Spacious)' },
-              ]}
-            />
-          </SettingRow>
-
-          {/* Reduced Motion */}
-          <SettingRow label="Giảm chuyển động" description="Hạn chế các hiệu ứng chuyển cảnh phức tạp và chuyển động liên tục">
-            <ToggleSwitch
-              value={reducedMotion}
-              onChange={(v) => {
-                setReducedMotion(v);
-                localStorage.setItem('avi_motion', v ? 'reduced' : 'normal');
-              }}
-            />
-          </SettingRow>
-        </SectionWrapper>
-      )}
-
-      {/* 3. ĐIỀU TRA */}
-      {activeTab === 'investigation' && (
-        <SectionWrapper
-          title="Tuỳ chọn Điều tra"
-          description="Thiết lập các trợ giúp và phương thức làm việc trong không gian phá án"
-          icon={FileSearch}
-        >
-          {/* Hint level */}
-          <SettingRow label="Mức hỗ trợ gợi ý" description="Điều chỉnh mức độ hướng dẫn khi giải các câu hỏi truy vấn">
-            <SegmentedControl
-              value={hintLevel}
-              onChange={(v) => {
-                setHintLevel(v);
-                localStorage.setItem('avi_hints', v);
-              }}
-              options={[
-                { value: 'none',     label: 'Không có' },
-                { value: 'standard', label: 'Tiêu chuẩn' },
-                { value: 'guided',   label: 'Có dẫn dắt' },
-              ]}
-            />
-          </SettingRow>
-
-          {/* Evidence display */}
-          <SettingRow label="Trình bày bảng bằng chứng" description="Phương thức sắp xếp các thẻ bằng chứng thu thập được">
-            <SegmentedControl
-              value={evidenceDisplay}
-              onChange={(v) => {
-                setEvidenceDisplay(v);
-                localStorage.setItem('avi_evidence', v);
-              }}
-              options={[
-                { value: 'list', label: 'Dạng danh sách' },
-                { value: 'grid', label: 'Dạng lưới' },
-              ]}
-            />
-          </SettingRow>
-
-          {/* Auto open evidence */}
-          <SettingRow label="Tự động mở ngăn bằng chứng" description="Tự động bung ngăn bằng chứng khi mở màn hình điều tra vụ án">
-            <ToggleSwitch
-              value={autoEvidence}
-              onChange={(v) => {
-                setAutoEvidence(v);
-                localStorage.setItem('avi_autoevidence', String(v));
-              }}
-            />
-          </SettingRow>
-        </SectionWrapper>
-      )}
-
-      {/* 4. TÀI KHOẢN -> MẬT KHẨU */}
+      {/* 3. BẢO MẬT & MẬT KHẨU */}
       {activeTab === 'account-password' && (
         <SectionWrapper
-          title="Tài khoản: Mật khẩu"
+          title="Bảo mật & Mật khẩu"
           description="Quản lý và cập nhật mật khẩu bảo mật cho tài khoản của bạn"
           icon={KeyRound}
         >
@@ -819,115 +704,6 @@ export function SettingsPage() {
               </button>
             </div>
           </form>
-        </SectionWrapper>
-      )}
-
-      {/* 4. TÀI KHOẢN -> DATA */}
-      {activeTab === 'account-data' && (
-        <SectionWrapper
-          title="Tài khoản: Quản lý Dữ liệu (Data)"
-          description="Sao lưu, xuất dữ liệu và quản lý lịch sử tiến độ điều tra của bạn"
-          icon={Database}
-        >
-          {/* Export Data */}
-          <SettingRow
-            label="Xuất dữ liệu điều tra"
-            description="Tải xuống tệp dữ liệu .json lưu toàn bộ lịch sử vụ án, ghi chép và kết quả SQL"
-          >
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-muted/40 px-4 py-2 text-xs font-semibold text-muted-foreground opacity-60 cursor-not-allowed"
-            >
-              <Download className="size-3.5" /> Xuất (.json)
-            </button>
-          </SettingRow>
-
-          {/* Import Data */}
-          <SettingRow
-            label="Khôi phục dữ liệu"
-            description="Nhập tệp dữ liệu đã sao lưu trước đó để đồng bộ lại trạng thái điều tra"
-          >
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-muted/40 px-4 py-2 text-xs font-semibold text-muted-foreground opacity-60 cursor-not-allowed"
-            >
-              <Upload className="size-3.5" /> Nhập (.json)
-            </button>
-          </SettingRow>
-
-          {/* Reset Data */}
-          <SettingRow
-            label="Xoá toàn bộ dữ liệu điều tra"
-            description="Đặt lại tiến độ vụ án về ban đầu. Hành động này không thể hoàn tác"
-          >
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-2 text-xs font-bold text-red-500 opacity-60 cursor-not-allowed"
-            >
-              <Trash2 className="size-3.5" /> Xóa dữ liệu
-            </button>
-          </SettingRow>
-        </SectionWrapper>
-      )}
-
-      {/* 5. QUYỀN */}
-      {activeTab === 'permissions' && (
-        <SectionWrapper
-          title="Phân quyền Hệ thống"
-          description="Chi tiết vai trò, giấy phép điều tra và các đặc quyền truy cập tính năng"
-          icon={ShieldCheck}
-        >
-          <div className="flex items-center justify-between rounded-xl bg-primary/10 border border-primary/20 p-4">
-            <div>
-              <p className="font-bold text-sm text-primary">
-                Vai trò: {isAdmin(user?.role) ? 'Quản trị viên (Admin)' : 'Học viên Điều tra viên'}
-              </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Mã định danh ID: {user?.id || 'learner-local'}
-              </p>
-            </div>
-            <span className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 font-mono text-xs font-black text-emerald-500">
-              ĐÃ XÁC THỰC
-            </span>
-          </div>
-
-          <div className="space-y-2 pt-2">
-            <p className="text-xs font-bold text-foreground">Bảng ma trận phân quyền chi tiết:</p>
-            <div className="divide-y divide-border/50 border border-border rounded-xl overflow-hidden bg-card/50">
-              {[
-                { name: '1. Hồ sơ vụ án & Hiện trường', desc: 'Đọc và tương tác với các hồ sơ vụ án mở', status: 'Đã cấp (Toàn quyền)' },
-                { name: '2. Trình thực thi SQL Sandbox', desc: 'Thực thi câu lệnh SQL trong môi trường cô lập an toàn', status: 'Đã cấp (Sandbox)' },
-                { name: '3. Bộ xử lý dữ liệu Excel', desc: 'Xem và phân tích các bảng tính chứng cứ', status: 'Đã cấp (Cho phép)' },
-                { name: '4. Sổ tay ghi chép & Manh mối', desc: 'Tự do lưu trữ phát hiện và giả thuyết', status: 'Đã cấp (Read/Write)' },
-                { name: '5. Bảng xếp hạng & Thành tích', desc: 'Hiển thị XP và tiến trình lên bảng vàng', status: 'Đã cấp (Public)' },
-                {
-                  name: '6. Bảng điều khiển Admin Console',
-                  desc: 'Quản lý khóa học, vụ án và cấu hình người dùng',
-                  status: isAdmin(user?.role) ? 'Đã cấp (Toàn quyền)' : 'Từ chối (Yêu cầu quyền Admin)',
-                  isAdminItem: true,
-                },
-              ].map((p) => (
-                <div key={p.name} className="flex items-center justify-between p-3">
-                  <div>
-                    <p className="text-xs font-semibold text-foreground">{p.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{p.desc}</p>
-                  </div>
-                  <span
-                    className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                      p.isAdminItem && !isAdmin(user?.role)
-                        ? 'bg-muted text-muted-foreground'
-                        : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                    }`}
-                  >
-                    {p.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
         </SectionWrapper>
       )}
 

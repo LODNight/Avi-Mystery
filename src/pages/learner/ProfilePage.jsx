@@ -243,14 +243,14 @@ export function ProfilePage() {
             <div className="grid size-16 sm:size-18 shrink-0 place-items-center rounded-2xl bg-primary shadow-md shadow-primary/20 ring-3 ring-background">
               <span className="text-xl sm:text-2xl font-extrabold text-primary-foreground tracking-wider">{initials}</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full bg-amber-500 text-amber-950 shadow-xs ring-2 ring-background">
+            <div className="absolute -bottom-1 -right-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground shadow-xs ring-2 ring-background">
               <Shield className="size-3.5 fill-current" />
             </div>
           </div>
           
           {/* User Meta Info */}
           <div className="text-center sm:text-left flex-1">
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-600/30 bg-amber-600/10 dark:bg-amber-500/10 px-2.5 py-0.5 font-mono text-[10px] font-black uppercase tracking-widest text-amber-700 dark:text-amber-400 mb-1.5">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 font-mono text-[10px] font-black uppercase tracking-widest text-primary mb-1.5">
               <Award className="size-3" /> {currentRank}
             </div>
             <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
@@ -259,7 +259,7 @@ export function ProfilePage() {
             <div className="text-xs text-muted-foreground mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-3">
               <span className="flex items-center gap-1"><User className="size-3.5" /> {user?.email || 'email@example.com'}</span>
               <span className="h-3 w-px bg-border hidden sm:inline-block" />
-              <span className="flex items-center gap-1 text-amber-700 dark:text-amber-400 font-bold"><Flame className="size-3.5" /> {t('profile:streakDays', 'Chuỗi {{count}} ngày 🔥', { count: stats.streak })}</span>
+              <span className="flex items-center gap-1 text-amber-500 font-bold"><Flame className="size-3.5" /> {t('profile:streakDays', 'Chuỗi {{count}} ngày 🔥', { count: stats.streak })}</span>
             </div>
           </div>
           
@@ -267,16 +267,16 @@ export function ProfilePage() {
           <div className="flex items-center gap-3 shrink-0">
             <div className="flex sm:flex-col items-center justify-center gap-2 sm:gap-0.5 rounded-2xl bg-muted/60 dark:bg-muted/30 border border-border px-5 py-3 min-w-[130px] shrink-0">
               <span className="text-[10px] font-extrabold text-muted-foreground uppercase tracking-widest">{t('profile:totalXp', 'Tổng XP')}</span>
-              <span className="text-2xl font-black text-amber-700 dark:text-amber-400 font-mono tracking-tight">{formatXP(stats.xp)}</span>
+              <span className="text-2xl font-black text-primary font-mono tracking-tight">{formatXP(stats.xp)}</span>
             </div>
 
             <button
               type="button"
               onClick={() => navigate('/settings')}
-              className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted hover:border-amber-500/40 transition-colors shadow-xs cursor-pointer shrink-0"
+              className="flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-semibold text-foreground hover:bg-muted hover:border-primary/40 transition-colors shadow-xs cursor-pointer shrink-0"
               title={t('common:userSettings', 'Cài đặt người dùng')}
             >
-              <Settings className="size-4 text-amber-500" />
+              <Settings className="size-4 text-primary" />
               <span className="hidden sm:inline">{t('common:userSettings', 'Cài đặt')}</span>
             </button>
           </div>
@@ -566,7 +566,7 @@ export function ProfilePage() {
           <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 shadow-2xs h-full flex flex-col justify-between">
             <div>
               <div className="flex items-center gap-2 mb-6">
-                <div className="grid size-8 place-items-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                <div className="grid size-8 place-items-center rounded-xl bg-primary/10 text-primary">
                   <Clock className="size-4" />
                 </div>
                 <h2 className="text-base font-bold text-foreground">{t('profile:recentActivity', 'Hoạt động gần đây')}</h2>

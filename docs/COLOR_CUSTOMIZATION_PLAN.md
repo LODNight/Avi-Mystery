@@ -94,10 +94,14 @@ Khu vực **Giao diện: Màu sắc** trên màn hình chính sẽ gồm 4 khố
 
 ## 5. Lộ Trình Triển Khai (Roadmap)
 
-### 📌 Bước 1: Hoàn thiện Engine Màu Sắc & Độ Tương Phản (Ngay bây giờ)
-- [ ] Bổ sung hàm tính độ tương phản `getContrastForeground(hexColor)` trong `ThemeProvider.jsx`.
-- [ ] Mở rộng bảng màu Preset thám tử (7 preset như mục 2).
-- [ ] Nâng cấp thẻ xem trước (Live Preview) trong `SettingsPage.jsx`.
+### 📌 Bước 1: Hoàn thiện Engine Màu Sắc & Độ Tương Phản *(ĐÃ HOÀN THÀNH 100%)*
+- [x] Tạo module tính toán màu độc lập `src/utils/colorEngine.js` với thuật toán Relative Luminance & Contrast Ratio theo chuẩn WCAG 2.1.
+- [x] Bổ sung hàm tính độ tương phản `analyzeContrast(hexColor)` và `getContrastForeground(hexColor)` trong `ThemeProvider.jsx`.
+- [x] Cập nhật các biến CSS động: `--primary`, `--primary-hover`, `--primary-glow`, `--primary-foreground`, `--sidebar-primary`, `--ring`.
+- [x] Mở rộng bảng màu Preset thám tử (7 preset Detective Persona với tên gọi, tagline, và mô tả chi tiết).
+- [x] Nâng cấp Thao trường xem trước (Live Interactive Playground) trong `SettingsPage.jsx` với Nút Primary, Nút Outline, Badge Nổi Bật, Thước đo tương phản trực tiếp, và Thẻ Hồ Sơ Vật Chứng Mini (Mini Evidence Card) có hiệu ứng viền phát sáng.
+- [x] Xử lý toàn diện lỗi kỹ thuật: Nhập mã HEX an toàn không vỡ layout, fallback theme light/dark, bổ sung biến hover/glow mặc định trong `index.css`, chuẩn hóa 100% các trang Admin và Learner sang CSS token.
+- [x] Viết bộ kiểm thử unit test `src/utils/colorEngine.test.js` (11/11 tests PASS); toàn dự án đạt 81/81 test suites (632/632 tests PASS 100%) và đóng gói `vite build` thành công xuất sắc.
 
 ### 📌 Bước 2: Lưu trữ & Đồng bộ Firebase
 - [ ] Lưu cấu hình màu vào `localStorage` key `avi_custom_theme`.

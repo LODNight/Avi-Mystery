@@ -498,14 +498,14 @@ export function PracticeSandboxPage() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-amber-500" />
+              <Sparkles className="size-4 text-primary" />
               <h1 className="text-sm font-bold text-foreground tracking-tight flex items-center gap-2">
                 <span>Practice Sandbox</span>
-                <span className="hidden xl:inline-block text-[10px] font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 uppercase">
+                <span className="hidden xl:inline-block text-[10px] font-mono text-primary font-bold bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20 uppercase">
                   PHÒNG THỰC NGHIỆM PHÁP CHỨNG
                 </span>
               </h1>
-              <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 uppercase tracking-wider">
+              <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold rounded-full bg-primary/10 text-primary border border-primary/20 uppercase tracking-wider">
                 Try it Yourself
               </span>
             </div>
@@ -567,12 +567,12 @@ export function PracticeSandboxPage() {
             onClick={() => setLeftPaneTab((prev) => (prev === 'notebook' ? 'theory' : 'notebook'))}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
               leftPaneTab === 'notebook'
-                ? 'border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold'
+                ? 'border-primary bg-primary/15 text-primary font-bold'
                 : 'border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground'
             }`}
             title="Chuyển đổi Sổ tay điều tra"
           >
-            <Bookmark className="size-3.5 text-amber-500" />
+            <Bookmark className="size-3.5 text-primary" />
             <span className="hidden md:inline">{leftPaneTab === 'notebook' ? 'Đóng sổ tay' : 'Sổ tay điều tra'}</span>
           </button>
 
@@ -642,7 +642,7 @@ export function PracticeSandboxPage() {
                   {activeTopic ? (
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                        <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
                           {activeTopic.tool}
                         </span>
                         <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">

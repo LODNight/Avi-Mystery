@@ -115,11 +115,11 @@ export function LearningMapPage() {
     <div className="mx-auto flex max-w-5xl flex-col gap-8 animate-fade-in">
       {/* ── Section 1: Journey Progression Header ── */}
       <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <div className="absolute -right-10 -top-10 size-48 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 size-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
 
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-600 dark:text-amber-400 mb-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
               <Compass className="size-3.5" /> {t('map:investigationJourney', 'Lộ Trình Hành Trình Điều Tra')}
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -130,8 +130,8 @@ export function LearningMapPage() {
             </p>
           </div>
 
-          <div className="shrink-0 flex items-center gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4">
-            <Sparkles className="size-6 text-amber-500" />
+          <div className="shrink-0 flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-2xl p-4">
+            <Sparkles className="size-6 text-primary" />
             <div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:overallProgressTitle', 'Tổng tiến độ')}</p>
               <p className="text-lg font-bold text-foreground">{t('map:overallProgress', '{{percent}}% Hoàn thành', { percent: summary.overallProgress })}</p>
@@ -289,7 +289,7 @@ export function LearningMapPage() {
             <div className="rounded-3xl border border-border bg-card p-5 shadow-sm flex items-center justify-between">
               <div>
                 <div className="mb-1">
-                  <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                  <span className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest">
                     {t('map:currentPhase', 'Giai đoạn hiện tại')}
                   </span>
                 </div>
@@ -306,7 +306,7 @@ export function LearningMapPage() {
             </div>
 
             {/* Connecting Line */}
-            <div className="absolute left-6 top-[135px] bottom-10 w-1 bg-gradient-to-b from-amber-500/80 via-primary/40 to-muted rounded-full hidden sm:block" />
+            <div className="absolute left-6 top-[135px] bottom-10 w-1 bg-gradient-to-b from-primary/80 via-primary/40 to-muted rounded-full hidden sm:block" />
 
             {activePhase.chapters.map((chapter, chIdx) => {
               const investigations = chapter.investigations || [];
@@ -316,11 +316,11 @@ export function LearningMapPage() {
                 <div key={chapter.id} className="relative flex flex-col gap-4">
                   {/* Chapter Milestone Banner Header */}
                   <div className="flex items-center gap-4 z-10">
-                    <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500 font-bold text-amber-950 shadow-lg shadow-amber-500/20">
+                    <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary font-bold text-primary-foreground shadow-lg shadow-primary/20">
                       <MapPin className="size-6" />
                     </div>
-                    <div className="rounded-2xl border border-amber-500/30 bg-card p-4 shadow-sm flex-1">
-                      <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-widest">
+                    <div className="rounded-2xl border border-primary/30 bg-card p-4 shadow-sm flex-1">
+                      <span className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest">
                         {t('map:chapter', 'Chương {{index}}', { index: chIdx + 1 })}
                       </span>
                       <h3 className="text-base font-bold text-foreground">{cleanTitle || chapter.title}</h3>
@@ -382,7 +382,7 @@ function MissionNodeCard({
               ? 'bg-primary text-primary-foreground animate-pulse'
               : isLocked
               ? 'bg-muted text-muted-foreground'
-              : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+              : 'bg-primary/15 text-primary'
           }`}
         >
           {isCompleted ? (

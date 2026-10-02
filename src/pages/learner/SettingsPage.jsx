@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,10 +25,12 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react';
-import { useTheme } from '../../app/providers/ThemeProvider.jsx';
+import { useTheme, getContrastForeground } from '../../app/providers/ThemeProvider.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
 import { formatXP } from '../../utils/format.js';
 import { isAdmin } from '../../constants/roles.js';
+import { DETECTIVE_PERSONA_PRESETS, analyzeContrast, parseHex } from '../../utils/colorEngine.js';
+import InvestigationStamp from '../../components/investigation/InvestigationStamp.jsx';
 
 /* ─── Constants ─────────────────────────────────────────────── */
 
@@ -41,14 +43,7 @@ const AVATAR_PRESETS = [
   { id: 'field',    emoji: '🎯', label: 'Hiện trường' },
 ];
 
-const ACCENT_PRESETS = [
-  { id: 'amber',   css: '#f59e0b', label: 'Amber' },
-  { id: 'indigo',  css: '#6366f1', label: 'Indigo' },
-  { id: 'emerald', css: '#10b981', label: 'Emerald' },
-  { id: 'rose',    css: '#f43f5e', label: 'Crimson' },
-  { id: 'cyan',    css: '#06b6d4', label: 'Cyan' },
-  { id: 'purple',  css: '#a855f7', label: 'Purple' },
-];
+const ACCENT_PRESETS = DETECTIVE_PERSONA_PRESETS;
 
 function getPasswordStrength(pwd) {
   if (!pwd) return 0;
@@ -183,7 +178,43 @@ export function SettingsPage() {
     ? user.name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2)
     : 'US';
 
-  const activeColor = primaryColor || '#d97706';
+  const defaultThemeColor = theme === 'dark' ? '#f59e0b' : '#d97706';
+  const activeColor = primaryColor || defaultThemeColor;
+  const safePickerColor = parseHex(activeColor)?.hex.toLowerCase() || (theme === 'dark' ? '#f59e0b' : '#d97706');
+  const [hexInput, setHexInput] = useState(activeColor);
+
+  useEffect(() => {
+    setHexInput(activeColor);
+  }, [activeColor]);
+
+  const handleHexInputChange = (e) => {
+    const val = e.target.value;
+    setHexInput(val);
+    const parsed = parseHex(val);
+    if (parsed) {
+      setPrimaryColor(parsed.hex);
+    }
+  };
+
+  const handleHexInputBlur = () => {
+    const parsed = parseHex(hexInput);
+    if (parsed) {
+      setHexInput(parsed.hex);
+    } else {
+      setHexInput(activeColor);
+    }
+  };
+
+  const handleColorPickerChange = (e) => {
+    const val = e.target.value;
+    setHexInput(val.toUpperCase());
+    setPrimaryColor(val);
+  };
+
+  const contrastAnalysis = analyzeContrast(activeColor);
+  const activePresetInfo = DETECTIVE_PERSONA_PRESETS.find(
+    (p) => p.css.toLowerCase() === activeColor.toLowerCase()
+  );
   const pwdStrength = getPasswordStrength(newPwd);
 
   /* ── Profile handlers ── */
@@ -382,13 +413,14 @@ export function SettingsPage() {
             label="Thanh nhập bảng màu tùy ý"
             description="Tự do kéo chọn màu hoặc nhập trực tiếp mã màu HEX yêu thích cho toàn bộ giao diện"
           >
-            <div className="flex flex-col gap-3 min-w-[240px]">
+            <div className="flex flex-col gap-4 min-w-[260px] sm:min-w-[320px]">
+              {/* Color input row */}
               <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/30 p-2.5">
                 <div className="relative size-10 shrink-0 overflow-hidden rounded-xl border-2 border-border shadow-xs cursor-pointer group">
                   <input
                     type="color"
-                    value={activeColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    value={safePickerColor}
+                    onChange={handleColorPickerChange}
                     className="absolute -top-3 -left-3 size-16 cursor-pointer"
                     title="Bấm để chọn màu tự do"
                   />
@@ -397,15 +429,20 @@ export function SettingsPage() {
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase">Mã màu HEX</p>
                   <input
                     type="text"
-                    value={activeColor}
-                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    value={hexInput}
+                    onChange={handleHexInputChange}
+                    onBlur={handleHexInputBlur}
+                    placeholder="#D97706"
                     className="w-full bg-transparent text-sm font-mono uppercase text-foreground font-bold focus:outline-none"
                   />
                 </div>
                 {primaryColor && (
                   <button
                     type="button"
-                    onClick={() => setPrimaryColor(null)}
+                    onClick={() => {
+                      setPrimaryColor(null);
+                      setHexInput(defaultThemeColor);
+                    }}
                     className="text-xs text-muted-foreground hover:text-foreground p-1 cursor-pointer transition-colors"
                     title="Khôi phục mặc định"
                   >
@@ -414,58 +451,136 @@ export function SettingsPage() {
                 )}
               </div>
 
+              {/* Contrast Meter / Thước đo tương phản tự động */}
+              <div className="flex items-center justify-between rounded-xl border border-border/80 bg-muted/20 px-3 py-2 text-xs">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-3.5 rounded-full border border-black/20 shrink-0 shadow-2xs"
+                    style={{ backgroundColor: activeColor }}
+                  />
+                  <span className="font-mono font-semibold text-muted-foreground text-[11px]">
+                    Tương phản {contrastAnalysis.score}
+                  </span>
+                </div>
+                <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                  contrastAnalysis.isAccessible
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                }`}>
+                  <CheckCircle className="size-2.5" /> Chuẩn {contrastAnalysis.wcagLevel}
+                </span>
+              </div>
+
               {/* Presets Swatches */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Bảng màu gợi ý
+                  Bộ sưu tập bảng màu thám tử
                 </p>
-                <div className="flex items-center gap-2.5">
-                  {ACCENT_PRESETS.map((preset) => (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      title={preset.label}
-                      onClick={() => setPrimaryColor(preset.css)}
-                      className={`relative size-8 rounded-full border-2 transition-all cursor-pointer shadow-xs ${
-                        activeColor.toLowerCase() === preset.css.toLowerCase()
-                          ? 'border-foreground scale-110 shadow-md ring-2 ring-primary/30 ring-offset-2 ring-offset-card'
-                          : 'border-transparent hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: preset.css }}
-                    >
-                      {activeColor.toLowerCase() === preset.css.toLowerCase() && (
-                        <span className="absolute inset-0 flex items-center justify-center">
-                          <Check className="size-3.5 text-white drop-shadow-xs" strokeWidth={3} />
-                        </span>
-                      )}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-7 gap-2">
+                  {DETECTIVE_PERSONA_PRESETS.map((preset) => {
+                    const isSelected = activeColor.toLowerCase() === preset.css.toLowerCase();
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        title={`${preset.name}: ${preset.tagline}`}
+                        onClick={() => setPrimaryColor(preset.css)}
+                        className={`group relative size-9 rounded-xl border-2 transition-all cursor-pointer shadow-xs flex items-center justify-center ${
+                          isSelected
+                            ? 'border-foreground scale-110 shadow-md ring-2 ring-primary/40 ring-offset-2 ring-offset-card'
+                            : 'border-transparent hover:scale-105 hover:shadow-xs'
+                        }`}
+                        style={{ backgroundColor: preset.css }}
+                      >
+                        {isSelected && (
+                          <Check className="size-4 text-white drop-shadow-sm" strokeWidth={3} />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
+
+                {/* Active Persona Tagline description */}
+                {activePresetInfo && (
+                  <div className="mt-3 rounded-xl border border-primary/25 bg-primary/5 p-3 text-xs animate-fade-in">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-primary text-xs">{activePresetInfo.name}</span>
+                      <span className="font-mono text-[9px] text-muted-foreground uppercase">{activePresetInfo.tagline}</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{activePresetInfo.description}</p>
+                  </div>
+                )}
               </div>
             </div>
           </SettingRow>
 
           {/* Interactive Live Preview */}
-          <div className="mt-4 rounded-xl border border-border/70 bg-muted/20 p-4 space-y-3">
-            <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
-              Xem trước màu sắc tương tác
-            </p>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-90 cursor-pointer"
-              >
-                Nút Primary
-              </button>
-              <button
-                type="button"
-                className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold text-primary hover:bg-primary/20 cursor-pointer"
-              >
-                Nút Outline
-              </button>
-              <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary">
-                <Sparkles className="size-3" /> Badge Nổi Bật
+          <div className="mt-4 rounded-2xl border border-border/80 bg-muted/20 p-5 space-y-4">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div>
+                <p className="text-xs font-bold text-foreground uppercase tracking-wider">
+                  Thao trường xem trước tương tác
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Mô phỏng tức thì các thành phần giao diện thực tế khi áp dụng bảng màu
+                </p>
+              </div>
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                <CheckCircle className="size-3" /> Đạt chuẩn tương phản ({contrastAnalysis.score})
               </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              {/* Left Column: Buttons & Badges */}
+              <div className="flex flex-col gap-3 justify-center">
+                <div className="flex items-center gap-2.5 flex-wrap">
+                  <button
+                    type="button"
+                    className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-90 active:scale-98 transition-all cursor-pointer"
+                  >
+                    Nút Primary
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold text-primary hover:bg-primary/20 active:scale-98 transition-all cursor-pointer"
+                  >
+                    Nút Outline
+                  </button>
+                  <span className="inline-flex items-center gap-1 rounded-lg bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary border border-primary/25">
+                    <Sparkles className="size-3" /> Badge Nổi Bật
+                  </span>
+                </div>
+              </div>
+
+              {/* Right Column: Mini Evidence Dossier Card */}
+              <div
+                className="relative rounded-xl border border-primary/30 bg-card p-3.5 shadow-sm transition-all duration-300"
+                style={{
+                  boxShadow: '0 0 16px var(--primary-glow)',
+                }}
+              >
+                <div className="flex items-center justify-between pb-2 border-b border-border/60">
+                  <div className="flex items-center gap-2">
+                    <span className="size-2 rounded-full bg-primary animate-pulse" />
+                    <span className="font-mono text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
+                      VẬT CHỨNG #EVD-049
+                    </span>
+                  </div>
+                  <InvestigationStamp
+                    variant="classified"
+                    label="HỒ SƠ MẬT"
+                    size="sm"
+                    animated={false}
+                    rotate="-rotate-2"
+                  />
+                </div>
+                <div className="mt-2">
+                  <p className="text-xs font-bold text-foreground">Trích xuất cơ sở dữ liệu nghi can</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    Độ tương phản tự động bảo đảm văn bản luôn sắc nét và dễ đọc.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </SectionWrapper>

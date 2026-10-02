@@ -57,7 +57,7 @@ export const Input = forwardRef(function Input(
           className={[
             'block bg-white border rounded-lg text-sm text-slate-900 placeholder:text-slate-400',
             'transition-colors duration-150',
-            'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500',
+            'focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary',
             icon ? 'pl-9' : 'pl-3',
             'pr-3 py-2 h-9',
             error

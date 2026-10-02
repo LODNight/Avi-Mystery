@@ -90,7 +90,7 @@ export function AdminKnowledgePage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <BookOpen className="size-6 text-amber-500" />
+            <BookOpen className="size-6 text-primary" />
             Knowledge Studio
           </h1>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -100,7 +100,7 @@ export function AdminKnowledgePage() {
         <div className="flex gap-3">
           <Link
             to="/admin/knowledge/new"
-            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 shadow-sm"
+            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 shadow-sm"
           >
             <Plus className="size-4" />
             Tạo Bài Học Mới
@@ -117,7 +117,7 @@ export function AdminKnowledgePage() {
             placeholder="Tìm theo tên bài học, ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+            className="w-full h-10 pl-9 pr-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
           />
         </div>
         
@@ -129,7 +129,7 @@ export function AdminKnowledgePage() {
         <select
           value={toolFilter}
           onChange={(e) => setToolFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
         >
           <option value="all">Tất cả Công cụ</option>
           <option value="excel">Excel</option>
@@ -139,7 +139,7 @@ export function AdminKnowledgePage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
         >
           <option value="all">Tất cả Trạng thái</option>
           <option value="published">Đã Xuất bản</option>
@@ -205,7 +205,7 @@ export function AdminKnowledgePage() {
                         onClick={() => toggleStatus(topic)}
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-colors ${
                           topic.status === 'published'
-                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'
+                            ? 'bg-primary/10 text-primary hover:bg-primary/20'
                             : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                       >
@@ -216,7 +216,7 @@ export function AdminKnowledgePage() {
                       <div className="flex items-center justify-end gap-2">
                         <Link
                           to={`/admin/knowledge/${topic.id}/edit`}
-                          className="p-1.5 text-muted-foreground hover:text-amber-600 transition-colors rounded-md hover:bg-amber-500/10"
+                          className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-primary/10"
                           title="Chỉnh sửa"
                         >
                           <Edit3 className="size-4" />

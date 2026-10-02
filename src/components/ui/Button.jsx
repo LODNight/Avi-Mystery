@@ -27,11 +27,11 @@ export function Button({
   ...props
 }) {
   const base =
-    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
 
   const variants = {
     primary:
-      'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm',
+      'bg-primary text-primary-foreground hover:opacity-90 active:opacity-95 shadow-sm',
     secondary:
       'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800 shadow-sm',
     outline:

@@ -252,12 +252,12 @@ export function LearnerSidebar({
                       collapsed && !mobileOpen ? 'justify-center p-3 mt-1' : 'px-3.5 py-2.5 text-sm'
                     } ${
                       isPathActive
-                        ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold border-l-4 border-primary dark:border-amber-400 shadow-xs'
+                        ? 'bg-primary/15 text-primary font-bold border-l-4 border-primary shadow-xs'
                         : 'text-sidebar-foreground/75 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary dark:text-amber-400' : ''}`} />
+                      <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary' : ''}`} />
                       {(!collapsed || mobileOpen) && <span className="truncate">{itemLabel}</span>}
                     </div>
 
@@ -287,12 +287,12 @@ export function LearnerSidebar({
           )}
           <Link
             to="/admin"
-            className={`flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all shadow-xs ${
+            className={`flex items-center gap-3 rounded-xl border border-sidebar-border hover:border-primary/40 bg-sidebar-accent/50 text-sidebar-foreground hover:bg-sidebar-accent transition-all shadow-xs ${
               collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-xs font-bold'
             }`}
             title="Admin Console"
           >
-            <PanelLeft className="size-[16px] text-amber-500 shrink-0" />
+            <PanelLeft className="size-[16px] text-primary shrink-0" />
             {(!collapsed || mobileOpen) && <span className="truncate">Admin Console</span>}
           </Link>
         </div>
@@ -317,14 +317,14 @@ export function LearnerSidebar({
       {(!collapsed || mobileOpen) ? (
         <div
           onClick={() => setShowStreakModal(true)}
-          className="mt-2 rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-amber-500/25 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all cursor-pointer hover:border-amber-500/50 mx-2 mb-2"
+          className="mt-2 rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-stone-800 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all cursor-pointer hover:border-amber-500/40 mx-2 mb-2"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="size-4 text-amber-500 fill-amber-500/20" />
               <span className="text-xs font-bold text-stone-800 dark:text-stone-100">{t('nav:streak', 'Chuỗi')} 🔥</span>
             </div>
-            <span className="rounded-full border border-stone-200 dark:border-amber-500/30 bg-stone-100 dark:bg-amber-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-300">
+            <span className="rounded-full border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-400">
               {formatXP(liveStats.xp)}
             </span>
           </div>
@@ -333,10 +333,10 @@ export function LearnerSidebar({
         <div className="mt-2 flex justify-center pb-2">
           <button
             onClick={() => setShowStreakModal(true)}
-            className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-amber-500/30 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500 hover:text-amber-400 transition-all cursor-pointer"
+            className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500/50 hover:text-amber-400 transition-all cursor-pointer"
             title={`XP: ${formatXP(liveStats.xp)}`}
           >
-            <Sparkles className="size-4" />
+            <Sparkles className="size-4 text-amber-500" />
           </button>
         </div>
       )}

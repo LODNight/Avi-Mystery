@@ -172,10 +172,10 @@ export function DashboardPage() {
             {t('dashboard:welcomeSubtitle', 'Bàn làm việc điều tra dữ liệu. Mỗi truy vấn và bảng tính là một manh mối đưa bạn tới sự thật vụ án.')}
           </p>
           {onboardingStatus === ONBOARDING_STATUS.COMPLETED && (
-            <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-700 dark:text-amber-300">
-              <CheckCircle2 className="size-4 text-amber-500 shrink-0" />
+            <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg bg-primary/10 border border-primary/20 px-3 py-1.5 text-xs font-medium text-primary">
+              <CheckCircle2 className="size-4 text-primary shrink-0" />
               <span>{t('dashboard:onboardingCompleted', 'Đã hoàn thành Huấn luyện nhập môn (Case #00) · +50 XP')}</span>
-              <Link to="/onboarding/case-0" className="ml-1 text-amber-600 dark:text-amber-400 font-semibold hover:underline">
+              <Link to="/onboarding/case-0" className="ml-1 text-primary font-semibold hover:underline">
                 {t('dashboard:review', 'Xem lại')}
               </Link>
             </div>
@@ -185,7 +185,7 @@ export function DashboardPage() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={handleStartTour}
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted hover:border-amber-500/40 transition-colors"
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-3.5 py-2.5 text-xs font-semibold text-foreground shadow-sm hover:bg-muted hover:border-primary/40 transition-colors"
             title={t('dashboard:dashboardTour', 'Xem hướng dẫn giao diện Dashboard')}
           >
             <HelpCircle className="size-4 text-primary" />
@@ -206,7 +206,7 @@ export function DashboardPage() {
             </div>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-md bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                <span className="rounded-md bg-primary/15 border border-primary/30 px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider text-primary">
                   SPRINT 1 PROTOTYPE · CASE #001
                 </span>
                 <span className="text-xs text-muted-foreground font-medium">

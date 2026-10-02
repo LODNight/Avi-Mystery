@@ -17,11 +17,11 @@ export function Badge({
 
   const variants = {
     default:    'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200',
-    primary:    'bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300',
+    primary:    'bg-primary/15 text-primary border border-primary/25',
     secondary:  'bg-secondary-100 text-secondary-700 dark:bg-secondary-950 dark:text-secondary-300',
-    success:    'bg-success-50 text-success-700 dark:bg-success-950 dark:text-success-300',
-    warning:    'bg-warning-50 text-warning-600 dark:bg-warning-950 dark:text-warning-300',
-    danger:     'bg-danger-50 text-danger-600 dark:bg-danger-950 dark:text-danger-300',
+    success:    'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300',
+    warning:    'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300',
+    danger:     'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300',
     outline:    'border border-slate-300 text-slate-700 dark:border-slate-700 dark:text-slate-200 bg-transparent',
   };
 
@@ -54,7 +54,7 @@ export function Badge({
 export function StatusBadge({ status, className = '' }) {
   const config = {
     locked:      { label: 'Khóa',        variant: 'default',   dot: 'bg-slate-400 dark:bg-slate-500'   },
-    available:   { label: 'Có thể làm',  variant: 'primary',   dot: 'bg-primary-500' },
+    available:   { label: 'Có thể làm',  variant: 'primary',   dot: 'bg-primary' },
     in_progress: { label: 'Đang làm',    variant: 'warning',   dot: 'bg-warning-500' },
     completed:   { label: 'Hoàn thành',  variant: 'success',   dot: 'bg-success-500' },
     draft:       { label: 'Nháp',        variant: 'default',   dot: 'bg-slate-400'   },

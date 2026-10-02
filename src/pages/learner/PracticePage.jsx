@@ -313,7 +313,7 @@ export function PracticePage() {
                 }}
                 className={`h-9 px-3.5 rounded-full border flex items-center gap-1.5 text-xs font-semibold transition-all shadow-xs ${
                   sortKey !== 'default'
-                    ? 'border-amber-500/60 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                    ? 'border-primary/60 bg-primary/10 text-primary font-bold'
                     : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-muted-foreground'
                 }`}
                 title={t('practice:sortList', 'Sắp xếp danh sách')}
@@ -321,9 +321,9 @@ export function PracticePage() {
                 {sortKey === 'default' ? (
                   <ArrowUpDown className="size-3.5" />
                 ) : sortOrder === 'desc' ? (
-                  <ArrowDownWideNarrow className="size-3.5 text-amber-500" />
+                  <ArrowDownWideNarrow className="size-3.5 text-primary" />
                 ) : (
-                  <ArrowUpNarrowWide className="size-3.5 text-amber-500" />
+                  <ArrowUpNarrowWide className="size-3.5 text-primary" />
                 )}
                 <span>{getSortButtonLabel()}</span>
               </button>
@@ -343,7 +343,7 @@ export function PracticePage() {
                           onClick={() => handleSortSelect(field.id)}
                           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                             isActive
-                              ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold'
+                              ? 'bg-primary/10 text-primary font-bold'
                               : 'text-foreground hover:bg-muted'
                           }`}
                         >
@@ -356,7 +356,7 @@ export function PracticePage() {
                             )}
                           </div>
                           {isActive && (
-                            <div className="flex items-center gap-1 text-amber-500">
+                            <div className="flex items-center gap-1 text-primary">
                               {field.id === 'default' ? (
                                 <Check className="size-3.5" />
                               ) : sortOrder === 'desc' ? (

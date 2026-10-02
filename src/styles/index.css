@@ -23,6 +23,8 @@
     --popover-foreground: #18181B;
     
     --primary: #d97706;             /* Warm detective amber */
+    --primary-hover: #b45309;
+    --primary-glow: rgba(217, 119, 6, 0.25);
     --primary-foreground: #ffffff;
     
     --secondary: #F4F4F5;
@@ -81,6 +83,8 @@
     --popover-foreground: #F5F5F5;
 
     --primary: #f59e0b;             /* Glowing amber gold */
+    --primary-hover: #d97706;
+    --primary-glow: rgba(245, 158, 11, 0.25);
     --primary-foreground: #0F0F0F;
 
     --secondary: #202020;

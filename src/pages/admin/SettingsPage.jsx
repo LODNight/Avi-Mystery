@@ -154,10 +154,10 @@ export function AdminSettingsPage() {
           <form onSubmit={handleSaveBrand} className="rounded-3xl border border-border bg-card p-6 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Sparkles className="size-4 text-amber-500" />
+                <Sparkles className="size-4 text-primary" />
                 Cấu hình Logo & Thương hiệu Trang (Dynamic Favicon)
               </h3>
-              <span className="rounded-lg bg-amber-500/10 px-2.5 py-1 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
+              <span className="rounded-lg bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold text-primary">
                 Tự động đồng bộ Tab & App Logo
               </span>
             </div>
@@ -215,11 +215,11 @@ export function AdminSettingsPage() {
                       onClick={() => setBrandForm({ ...brandForm, brandLogo: item.id })}
                       className={`flex flex-col items-center justify-center gap-2 rounded-2xl border p-3.5 transition-all cursor-pointer ${
                         isSelected
-                          ? 'border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 shadow-sm ring-2 ring-amber-500/30'
+                          ? 'border-primary bg-primary/10 text-primary shadow-sm ring-2 ring-primary/30'
                           : 'border-border bg-muted/20 text-muted-foreground hover:bg-muted hover:text-foreground'
                       }`}
                     >
-                      <div className="grid size-9 place-items-center rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+                      <div className="grid size-9 place-items-center rounded-xl bg-primary/20 text-primary">
                         <Icon className="size-5" />
                       </div>
                       <span className="text-[11px] font-bold text-center leading-tight">
@@ -252,13 +252,13 @@ export function AdminSettingsPage() {
             </div>
 
             {/* Live Preview Box */}
-            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-primary/10 border border-primary/30">
               <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-xl bg-amber-500 text-amber-950 shadow-md">
+                <div className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-md">
                   <BrandLogoIcon logoKey={brandForm.brandLogo} className="size-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  <p className="text-xs font-mono font-bold text-primary uppercase tracking-wider">
                     Xem trước Logo & Favicon
                   </p>
                   <p className="text-sm font-bold text-foreground">
@@ -316,7 +316,7 @@ export function AdminSettingsPage() {
                   showToast(adminBypass ? 'Đã tắt chế độ xem trước Admin' : 'Đã bật chế độ xem trước Admin');
                 }}
                 className={`relative inline-flex h-7 w-13 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  adminBypass ? 'bg-amber-500' : 'bg-muted-foreground/30'
+                  adminBypass ? 'bg-primary' : 'bg-muted-foreground/30'
                 }`}
               >
                 <span
@@ -331,11 +331,11 @@ export function AdminSettingsPage() {
             <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-muted/40 border border-border">
               <div className="space-y-1">
                 <p className="text-sm font-bold text-foreground flex items-center gap-2">
-                  {theme === 'dark' ? <Moon className="size-4 text-amber-400" /> : <Sun className="size-4 text-amber-500" />}
+                  {theme === 'dark' ? <Moon className="size-4 text-primary" /> : <Sun className="size-4 text-primary" />}
                   Giao diện Ứng dụng ({theme === 'dark' ? 'Chế độ Tối' : 'Chế độ Sáng'})
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Đổi tông màu chủ đạo Detective Amber (Gỗ tối / Cuộn giấy sáng).
+                  Đổi tông màu chủ đạo thám tử (Chế độ Tối / Chế độ Sáng).
                 </p>
               </div>
 
@@ -353,13 +353,13 @@ export function AdminSettingsPage() {
           </div>
 
           {/* ── Dev Onboarding Testing Card ── */}
-          <div className="rounded-3xl border border-amber-500/40 bg-amber-500/5 p-6 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-amber-500/20 pb-3">
+          <div className="rounded-3xl border border-primary/40 bg-primary/5 p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between border-b border-primary/20 pb-3">
               <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Sparkles className="size-4 text-amber-500" />
+                <Sparkles className="size-4 text-primary" />
                 Công cụ Dev: Test Chế độ Hướng dẫn Onboarding
               </h3>
-              <span className="rounded-md bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] font-extrabold uppercase text-amber-600 dark:text-amber-400">
+              <span className="rounded-md bg-primary/20 px-2 py-0.5 font-mono text-[10px] font-extrabold uppercase text-primary">
                 DEV TESTING
               </span>
             </div>
@@ -376,7 +376,7 @@ export function AdminSettingsPage() {
                   showToast('🧪 Đã reset trạng thái Onboarding! Đang chuyển sang trang Welcome Gate...');
                   setTimeout(() => navigate('/onboarding'), 800);
                 }}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-amber-500 hover:bg-amber-600 text-amber-950 px-4 py-3 text-xs font-bold shadow-md transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-2xl bg-primary hover:opacity-90 text-primary-foreground px-4 py-3 text-xs font-bold shadow-md transition-all cursor-pointer"
               >
                 <Play className="size-4 fill-current" />
                 <span>🧪 Test Luồng Welcome Gate & Case 0</span>
@@ -390,9 +390,9 @@ export function AdminSettingsPage() {
                   showToast('🔄 Đã reset Tour Dashboard! Đang chuyển hướng tới Dashboard...');
                   setTimeout(() => navigate('/dashboard'), 800);
                 }}
-                className="flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-card hover:bg-amber-500/10 text-foreground px-4 py-3 text-xs font-bold shadow-sm transition-all cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card hover:bg-primary/10 text-foreground px-4 py-3 text-xs font-bold shadow-sm transition-all cursor-pointer"
               >
-                <RotateCcw className="size-4 text-amber-500" />
+                <RotateCcw className="size-4 text-primary" />
                 <span>🔄 Test Tour Dashboard (5 bước)</span>
               </button>
             </div>
@@ -439,7 +439,7 @@ export function AdminSettingsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-2xl border border-border bg-muted/40 p-4 space-y-2">
-                <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                <span className="rounded-full bg-primary/20 px-2.5 py-0.5 font-mono text-[10px] font-bold text-primary">
                   Vai trò: Admin
                 </span>
                 <h4 className="text-sm font-bold text-foreground">Quản trị viên Hệ thống</h4>

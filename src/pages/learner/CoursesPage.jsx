@@ -50,9 +50,9 @@ export function CoursesPage() {
     <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in pb-12">
       {/* ── Section 1: Hero Header (Investigation Methodology Archives) ── */}
       <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <div className="absolute -right-10 -top-10 size-48 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -right-10 -top-10 size-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 mb-3 border border-amber-500/20 uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 font-mono text-[11px] font-bold text-primary mb-3 border border-primary/20 uppercase tracking-wider">
             <Sparkles className="size-3.5" /> Trung Tâm Đào Tạo Nghiệp Vụ Điều Tra
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -185,7 +185,7 @@ function CourseCardItem({ course }) {
       <div>
         {/* Card Top Meta */}
         <div className="flex items-center justify-between">
-          <div className="grid size-12 place-items-center rounded-2xl bg-amber-500/15 font-mono text-2xl text-amber-600 dark:text-amber-400">
+          <div className="grid size-12 place-items-center rounded-2xl bg-primary/15 font-mono text-2xl text-primary">
             {toolIcon}
           </div>
           <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ function CourseCardItem({ course }) {
       <div className="mt-6 pt-4 border-t border-border/80 flex flex-col gap-4">
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <Layers className="size-3.5 text-amber-500" />
+            <Layers className="size-3.5 text-primary" />
             {course.totalChapters || 3} Chương · {course.totalMissions || 9} Vụ án
           </span>
           <span className="flex items-center gap-1.5">

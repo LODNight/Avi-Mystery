@@ -181,7 +181,7 @@ export function CourseDetailPage() {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex flex-col gap-4 max-w-3xl">
             <div className="flex items-center gap-3 flex-wrap">
-              <div className="grid size-12 place-items-center rounded-2xl bg-amber-500/15 font-mono text-2xl text-amber-600 dark:text-amber-400">
+              <div className="grid size-12 place-items-center rounded-2xl bg-primary/15 font-mono text-2xl text-primary">
                 {toolIcon}
               </div>
               <Badge variant={badgeVariant} size="md">
@@ -190,7 +190,7 @@ export function CourseDetailPage() {
               <span className="rounded-full bg-muted px-3 py-1 font-mono text-xs font-bold text-muted-foreground uppercase">
                 {toolLabel(course.tool)}
               </span>
-              <span className="rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase">
+              <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-[11px] font-bold text-primary uppercase">
                 Hồ Sơ Nghiệp Vụ
               </span>
             </div>

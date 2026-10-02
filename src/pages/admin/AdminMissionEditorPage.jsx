@@ -330,7 +330,7 @@ export function AdminMissionEditorPage() {
           <button
             onClick={() => setShowTestRunner(true)}
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer shadow-xs"
+            className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-xs"
           >
             <Sparkles className="size-4" /> Chạy thử Sandbox
           </button>

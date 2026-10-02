@@ -175,7 +175,7 @@ export function AdminKnowledgeEditorPage() {
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 transition-colors disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-colors disabled:opacity-50"
           >
             <Save className="size-4" />
             {isSaving ? 'Đang lưu...' : 'Lưu Thay Đổi'}
@@ -196,7 +196,7 @@ export function AdminKnowledgeEditorPage() {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/20"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 placeholder="Ví dụ: Hàm SUM, Lệnh SELECT..."
               />
             </div>
@@ -208,7 +208,7 @@ export function AdminKnowledgeEditorPage() {
                   name="tool"
                   value={formData.tool}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/20"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="excel">Excel</option>
                   <option value="sql">SQL</option>
@@ -220,7 +220,7 @@ export function AdminKnowledgeEditorPage() {
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/20"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="basic">Cơ bản (Basic)</option>
                   <option value="intermediate">Trung bình (Inter)</option>
@@ -236,7 +236,7 @@ export function AdminKnowledgeEditorPage() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/20"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="draft">Bản nháp (Draft)</option>
                   <option value="published">Xuất bản (Publish)</option>
@@ -249,7 +249,7 @@ export function AdminKnowledgeEditorPage() {
                   name="orderIndex"
                   value={formData.orderIndex}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500/20"
+                  className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
             </div>
@@ -259,7 +259,7 @@ export function AdminKnowledgeEditorPage() {
                 <label className="text-sm font-medium text-foreground">
                   Nhiệm vụ liên quan
                   {formData.relatedMissions?.length > 0 && (
-                    <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold">
+                    <span className="ml-2 px-1.5 py-0.5 rounded text-xs bg-primary/10 text-primary font-semibold">
                       {formData.relatedMissions.length}
                     </span>
                   )}
@@ -276,7 +276,7 @@ export function AdminKnowledgeEditorPage() {
                         key={mId}
                         className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-background border border-border text-foreground shadow-xs"
                       >
-                        <span className="font-mono text-amber-600 dark:text-amber-400 text-[11px]">{mId}</span>
+                        <span className="font-mono text-primary text-[11px]">{mId}</span>
                         {found && <span className="truncate max-w-[120px] text-muted-foreground">{found.title}</span>}
                         <button
                           type="button"
@@ -302,7 +302,7 @@ export function AdminKnowledgeEditorPage() {
                     placeholder="Tìm nhiệm vụ theo tên hoặc ID..."
                     value={missionSearch}
                     onChange={(e) => setMissionSearch(e.target.value)}
-                    className="w-full rounded-lg border border-input bg-background pl-8 pr-3 py-1.5 text-xs focus:ring-2 focus:ring-amber-500/20"
+                    className="w-full rounded-lg border border-input bg-background pl-8 pr-3 py-1.5 text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                   {missionSearch && (
                     <button
@@ -323,7 +323,7 @@ export function AdminKnowledgeEditorPage() {
                       onClick={() => setMissionFilterTool(t)}
                       className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
                         missionFilterTool === t
-                          ? 'bg-amber-600 text-white'
+                          ? 'bg-primary text-primary-foreground'
                           : 'bg-muted text-muted-foreground hover:text-foreground'
                       }`}
                     >
@@ -348,14 +348,14 @@ export function AdminKnowledgeEditorPage() {
                           key={m.id}
                           onClick={() => toggleMission(m.id)}
                           className={`flex items-center gap-2 px-3 py-2 text-xs cursor-pointer select-none transition-colors ${
-                            isChecked ? 'bg-amber-500/10 font-medium' : 'hover:bg-muted/50'
+                            isChecked ? 'bg-primary/10 font-medium' : 'hover:bg-muted/50'
                           }`}
                         >
                           <input
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => {}} // Handled by div onClick
-                            className="size-3.5 rounded text-amber-600 focus:ring-amber-500 border-input"
+                            className="size-3.5 rounded text-primary focus:ring-primary border-input"
                           />
                           <div className="flex items-center gap-1.5 min-w-0 flex-1">
                             <span className="font-mono text-[11px] text-muted-foreground">{m.id}</span>

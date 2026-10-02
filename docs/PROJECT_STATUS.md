@@ -8,9 +8,9 @@
 
 | Chỉ số | Trạng thái | Ghi chú |
 |---|---|---|
-| **Sprint hiện tại** | 🟢 **Sprint 11 (Xong 100%)** ➔ 🟡 **Sprint 12 (Đang hoàn thiện lõi Data Processing)** | Đã hoàn thành Bàn làm việc thám tử, Đồng bộ i18n, Tái cấu trúc Cài đặt, và Lõi Bàn Xử Lý Dữ Liệu (Data Processing Workspace). |
-| **Kiểm thử tự động** | 🟢 **80/80 test suites PASS (619/619 tests — 100%)** | Toàn bộ các luồng nghiệp vụ, giao diện, localization, settings, SQL engine scoping và DataProcessingWorkspace đều có test bảo vệ. |
-| **Production Build** | 🟢 **Vite Build SUCCESS** | Không có lỗi biên dịch; bundle và WASM tối ưu (8.55s). |
+| **Sprint hiện tại** | 🟢 **Sprint 11 (Xong 100%)** ➔ 🟡 **Sprint 12 (Đang hoàn thiện lõi Data Processing & Color Engine)** | Đã hoàn thành Bàn làm việc thám tử, Đồng bộ i18n, Tái cấu trúc Cài đặt, Hệ thống Color Engine (WCAG 2.1), và Lõi Bàn Xử Lý Dữ Liệu (Data Processing Workspace). |
+| **Kiểm thử tự động** | 🟢 **81/81 test suites PASS (632/632 tests — 100%)** | Toàn bộ các luồng nghiệp vụ, giao diện, localization, settings, SQL engine scoping, DataProcessingWorkspace và ColorEngine đều có test bảo vệ. |
+| **Production Build** | 🟢 **Vite Build SUCCESS** | Không có lỗi biên dịch; bundle và WASM tối ưu (12.92s). |
 | **Bản chạy thử (Demo)** | 🌐 [avi-mystery.vercel.app](https://avi-mystery.vercel.app/dashboard) | Chạy song song nhánh `dev` và `main`. |
 | **Backend API** | ⏸️ **Tạm hoãn (Deferred)** | Tập trung 100% tài nguyên hoàn thiện trải nghiệm phá án phía Client trước. |
 

@@ -138,11 +138,11 @@ export function KnowledgeHubPage() {
         <div className="p-4 border-b border-border flex items-center justify-between">
           <div>
             <h2 className="font-bold text-foreground flex items-center gap-2">
-              <BookOpen className="size-5 text-amber-500" />
+              <BookOpen className="size-5 text-primary" />
               Thư Viện Kiến Thức
             </h2>
             <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[10px] font-mono tracking-wider uppercase text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+              <span className="text-[10px] font-mono tracking-wider uppercase text-primary font-bold bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">
                 TƯ LIỆU NGHIỆP VỤ
               </span>
               <span className="text-[10px] font-mono text-muted-foreground">ARC-01</span>
@@ -209,7 +209,7 @@ export function KnowledgeHubPage() {
                         onClick={() => handleSelectTopic(topic.id)}
                         className={`w-full flex items-center justify-between px-4 py-2 text-sm text-left transition-colors ${
                           isActive 
-                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium border-r-2 border-amber-500' 
+                            ? 'bg-primary/10 text-primary font-medium border-r-2 border-primary' 
                             : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
                         }`}
                       >
@@ -290,7 +290,7 @@ export function KnowledgeHubPage() {
             <div className="max-w-4xl mx-auto p-6 md:p-8 pb-24">
               <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 text-[11px] md:text-xs font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-3 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20 inline-flex">
+                  <div className="flex items-center gap-2 text-[11px] md:text-xs font-mono font-bold uppercase tracking-wider text-primary mb-3 bg-primary/10 px-2.5 py-1 rounded-md border border-primary/20 inline-flex">
                     <span className="opacity-80">Hồ sơ nghiệp vụ</span>
                     <span className="opacity-50">/</span>
                     <span>{activeTopic.tool}</span>
@@ -376,17 +376,17 @@ export function KnowledgeHubPage() {
                       <div className="flex-1 flex flex-col sm:flex-row gap-3">
                         <Link
                           to={`/sandbox?tool=${activeTopic.tool}&topicId=${activeTopic.id}`}
-                          className="flex-1 rounded-2xl bg-amber-500/10 hover:bg-amber-500/15 border border-amber-500/25 p-3.5 flex items-center justify-between gap-3 transition-colors group"
+                          className="flex-1 rounded-2xl bg-primary/10 hover:bg-primary/15 border border-primary/25 p-3.5 flex items-center justify-between gap-3 transition-colors group"
                         >
                           <div>
-                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
                               Mô hình W3Schools
                             </span>
                             <p className="text-xs sm:text-sm font-bold text-foreground mt-0.5">
                               Mở Sandbox thực hành ngay
                             </p>
                           </div>
-                          <Sparkles className="size-4 text-amber-500 shrink-0" />
+                          <Sparkles className="size-4 text-primary shrink-0" />
                         </Link>
 
                         {activeTopic.relatedMissions?.length > 0 && (

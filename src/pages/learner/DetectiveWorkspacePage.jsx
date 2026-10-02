@@ -386,7 +386,7 @@ export function DetectiveWorkspacePage() {
               onClick={() => setCenterMode('dossier')}
               className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${
                 centerMode === 'dossier'
-                  ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-background/60'
+                  ? 'border-primary text-primary bg-background/60'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -420,27 +420,27 @@ export function DetectiveWorkspacePage() {
               }}
               className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${
                 centerMode === 'workbench'
-                  ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-background/60'
+                  ? 'border-primary text-primary bg-background/60'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               <FlaskConical className="size-3" />
               {t('investigationWorkbench')}
-              {workbenchContext && <span className="size-1.5 rounded-full bg-amber-500 ml-0.5" />}
+              {workbenchContext && <span className="size-1.5 rounded-full bg-primary ml-0.5" />}
             </button>
             <button
               type="button"
               onClick={() => setCenterMode('processing')}
               className={`flex items-center gap-1.5 px-3 py-2 text-[11px] font-semibold border-b-2 transition-colors cursor-pointer shrink-0 ${
                 centerMode === 'processing'
-                  ? 'border-amber-500 text-amber-600 dark:text-amber-400 bg-background/60'
+                  ? 'border-primary text-primary bg-background/60'
                   : 'border-transparent text-muted-foreground hover:text-foreground'
               }`}
             >
               <Database className="size-3" />
               <span>{t('dataProcessing.title', 'Xử Lý Dữ Liệu')}</span>
               {stepSources.length > 0 && (
-                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/25">
+                <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-primary/15 text-primary border border-primary/25">
                   {stepSources.length}
                 </span>
               )}
@@ -532,13 +532,13 @@ export function DetectiveWorkspacePage() {
                         key={s.id}
                         type="button"
                         onClick={() => handleInvestigateInSpreadsheet(s.id, ds)}
-                        className="flex items-center justify-between p-3 rounded-xl border border-border bg-card hover:border-amber-500/50 hover:bg-muted/40 transition-all text-left cursor-pointer group"
+                        className="flex items-center justify-between p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-muted/40 transition-all text-left cursor-pointer group"
                       >
                         <div className="min-w-0 pr-2">
-                          <p className="text-xs font-bold text-foreground truncate group-hover:text-amber-500">{s.title}</p>
+                          <p className="text-xs font-bold text-foreground truncate group-hover:text-primary">{s.title}</p>
                           <p className="text-[10px] text-muted-foreground truncate">{s.description}</p>
                         </div>
-                        <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded shrink-0">
+                        <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded shrink-0">
                           {t('loadEvidenceToSpreadsheet', 'Nạp bảng')}
                         </span>
                       </button>

@@ -41,9 +41,9 @@ Toàn bộ hệ thống hiện tại được xây dựng qua các trụ cột c
 - **Kiến trúc thông tin (IA) dạng Section chuẩn HQ**:
   - Tách biệt khỏi mô hình các card nhỏ lẻ, chuyển sang 4 khối ngữ nghĩa lớn:
     1. **Hồ sơ Điều tra viên (Detective Profile)**: Thay đổi Avatar, Tên hiển thị, Mật danh điều tra viên; hỗ trợ Autosave trên click/blur kèm badge trạng thái đã lưu.
-    2. **Giao diện & Trải nghiệm (Appearance & Experience)**: Chủ đề (Dark/Light/System), Màu chủ đạo (Amber, Cyan, Emerald, Rose), Ngôn ngữ (VI/EN), Mật độ hiển thị (Tiêu chuẩn/Gọn gàng), Cỡ chữ, Giảm chuyển động.
-    3. **Tuỳ chọn Điều tra (Investigation Preferences)**: Mức độ gợi ý manh mối (Tối thiểu/Tiêu chuẩn/Chi tiết), Kiểu hiển thị chứng cứ (Lưới/Danh sách), Tự động mở chứng cứ mới.
-    4. **Tài khoản & Dữ liệu (Account & Data)**: Email tài khoản (read-only), Đổi mật khẩu tách riêng thành Modal độc lập (`PasswordModal`) bảo mật, tùy chọn sao lưu và khôi phục dữ liệu.
+    2. **Giao diện & Trải nghiệm (Appearance & Experience)**: Chủ đề (Dark/Light), Màu chủ đạo tuỳ chỉnh (Color Picker & HEX), 7 Presets Thám tử, Thước đo tương phản tự động (WCAG AA/AAA) và Thao trường xem trước tương tác (Interactive Live Playground).
+    3. **Ngôn ngữ hiển thị (Language)**: Tách biệt phân cụm độc lập để tinh giản giao diện, chuyển đổi tức thì giữa Tiếng Việt (`vi`) và English (`en`) trên toàn bộ ứng dụng.
+    4. **Bảo mật & Mật khẩu (Security & Password)**: Đổi mật khẩu tài khoản bảo mật, kiểm tra độ mạnh mật khẩu và thông báo xác thực.
 - **Tích hợp Tầng Dịch Vụ**: Mở rộng `mockAuthService` và `AuthProvider` với `updateProfile` và `changePassword`.
 - **Tối ưu Điều Hướng**: Nhúng liên kết Cài đặt trực tiếp vào nhóm Hồ sơ ở `LearnerSidebar` và `FocusLayout`.
 
@@ -100,7 +100,8 @@ Lõi Workspace mới        Tích hợp Excel/SQL      Thêm 2 vụ án mới   
 - [x] **Đồng bộ hóa Đa ngôn ngữ**: Chuyển ngữ Dashboard, Learning Map, Practice, Achievements, Profile theo hạ tầng i18n.
 - [x] **Tái cấu trúc Cài đặt & Hồ sơ**: Giao diện dạng Section "Hồ sơ điều tra viên", tích hợp đổi mật khẩu modal và tùy chọn điều tra.
 - [x] **Hệ thống Secondary Sidebar Song Song & Giao diện Cài đặt Tập trung**:
-  - Xây dựng thanh điều hướng phụ (`SettingsSecondarySidebar`) hiển thị danh mục phân cấp: Hồ sơ, Giao diện (Màu sắc, Ngôn ngữ & cỡ chữ), Điều tra, Tài khoản (Mật khẩu, Data), Quyền.
+  - Xây dựng thanh điều hướng phụ (`SettingsSecondarySidebar`) hiển thị danh mục phân cấp: Hồ sơ (Nhân dạng & cấp bậc), Giao diện (Màu sắc & cá nhân hoá), Ngôn ngữ (Ngôn ngữ hiển thị), Mật khẩu (Bảo mật tài khoản).
+  - Tách biệt cài đặt Ngôn ngữ thành tab độc lập, giúp tab Giao diện tập trung tối đa vào bộ màu, độ tương phản và preview tương tác.
   - Cơ chế đệm lề tự động (`lg:pl-[608px]` khi mở rộng, `lg:pl-[400px]` khi thu gọn), **100% không đè chồng** lên nội dung chính.
   - Tinh giản TopBar Header: Loại bỏ các nút icon dư thừa, giữ không gian thoáng đãng.
   - Thẩm mỹ Stone-50 dịu mắt, độ tương phản hài hòa, chấm hiển thị màu sắc trực tiếp.

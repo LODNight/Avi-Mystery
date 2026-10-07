@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Loader2,
   Sparkles,
+  Globe,
 } from 'lucide-react';
 import { useTheme, getContrastForeground } from '../../app/providers/ThemeProvider.jsx';
 import { useAuth } from '../../hooks/useAuth.js';
@@ -137,7 +138,7 @@ export function SettingsPage() {
     ? 'appearance'
     : (rawTab === 'account')
     ? 'account-password'
-    : (['profile', 'appearance', 'account-password'].includes(rawTab) ? rawTab : 'profile');
+    : (['profile', 'appearance', 'language', 'account-password'].includes(rawTab) ? rawTab : 'profile');
 
   const { theme, toggleTheme, primaryColor, setPrimaryColor } = useTheme();
   const { user, updateProfile, changePassword } = useAuth();
@@ -364,7 +365,7 @@ export function SettingsPage() {
       {activeTab === 'appearance' && (
         <SectionWrapper
           title="Giao diện & Trải nghiệm"
-          description="Tuỳ chỉnh chế độ hiển thị Sáng/Tối, bảng màu chủ đạo (Primary Color) và ngôn ngữ hệ thống"
+          description="Tuỳ chỉnh chế độ hiển thị Sáng/Tối và bảng màu chủ đạo (Primary Color)"
           icon={Palette}
         >
           {/* Display Mode (Light / Dark) */}
@@ -502,21 +503,6 @@ export function SettingsPage() {
             </div>
           </SettingRow>
 
-          {/* Ngôn ngữ hiển thị */}
-          <SettingRow label="Ngôn ngữ hiển thị" description="Ngôn ngữ áp dụng trên toàn bộ ứng dụng">
-            <SegmentedControl
-              value={currentLang}
-              onChange={(code) => {
-                i18n.changeLanguage(code);
-                try { localStorage.setItem('i18nextLng', code); } catch { /* noop */ }
-              }}
-              options={[
-                { value: 'vi', label: '🇻🇳 Tiếng Việt' },
-                { value: 'en', label: '🇬🇧 English' },
-              ]}
-            />
-          </SettingRow>
-
           {/* Interactive Live Preview */}
           <div className="mt-4 rounded-2xl border border-border/80 bg-muted/20 p-5 space-y-4">
             <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -589,7 +575,30 @@ export function SettingsPage() {
         </SectionWrapper>
       )}
 
-      {/* 3. BẢO MẬT & MẬT KHẨU */}
+      {/* 3. NGÔN NGỮ */}
+      {activeTab === 'language' && (
+        <SectionWrapper
+          title="Ngôn ngữ hiển thị"
+          description="Tùy chỉnh ngôn ngữ áp dụng trên toàn bộ ứng dụng"
+          icon={Globe}
+        >
+          <SettingRow label="Ngôn ngữ hệ thống" description="Ngôn ngữ được ưu tiên hiển thị">
+            <SegmentedControl
+              value={currentLang}
+              onChange={(code) => {
+                i18n.changeLanguage(code);
+                try { localStorage.setItem('i18nextLng', code); } catch { /* noop */ }
+              }}
+              options={[
+                { value: 'vi', label: '🇻🇳 Tiếng Việt' },
+                { value: 'en', label: '🇬🇧 English' },
+              ]}
+            />
+          </SettingRow>
+        </SectionWrapper>
+      )}
+
+      {/* 4. BẢO MẬT & MẬT KHẨU */}
       {activeTab === 'account-password' && (
         <SectionWrapper
           title="Bảo mật & Mật khẩu"

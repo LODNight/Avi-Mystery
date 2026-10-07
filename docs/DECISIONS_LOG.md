@@ -324,7 +324,7 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Decision:
   1. Triển khai Secondary Sidebar (`SettingsSecondarySidebar.jsx`) cố định sát lề phải của Primary Sidebar (`lg:left-72` khi mở rộng, `lg:left-20` khi thu gọn).
   2. Bố cục đệm lề động (`mainContentPadding`): Tự động tính toán `lg:pl-[608px]` hoặc `lg:pl-[400px]` khi thanh phụ mở, bảo đảm **100% không đè chồng** lên nội dung chính.
-  3. Bóc tách vai trò: Thanh phụ chỉ hiển thị danh mục menu phân cấp (Hồ sơ, Giao diện [Màu sắc, Ngôn ngữ & cỡ chữ], Điều tra, Tài khoản [Mật khẩu, Data], Quyền). Toàn bộ nội dung biểu mẫu chuyển về `SettingsPage.jsx`.
+  3. Bóc tách vai trò: Thanh phụ chỉ hiển thị danh mục menu phân cấp: Hồ sơ (Nhân dạng & cấp bậc), Giao diện (Màu sắc & cá nhân hoá), Ngôn ngữ (Ngôn ngữ hiển thị), Mật khẩu (Bảo mật tài khoản). Toàn bộ nội dung biểu mẫu chuyển về `SettingsPage.jsx`.
   4. Nâng cấp thẩm mỹ Stone-50 (`bg-stone-50/95 dark:bg-stone-900/95`) dịu mắt, active pill rõ nét, và tinh giản TopBar Header (bỏ icon Settings/Palette dư thừa).
 - Consequences: Trải nghiệm mượt mà, chuyên nghiệp chuẩn SaaS; dễ mở rộng thêm các mục cài đặt mới trong tương lai.
 - Related modules: LRN-SETTINGS, SHR-SHELL, LRN-LAYOUT
@@ -341,11 +341,23 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 - Consequences: Cho phép học viên tự do chọn mọi mã màu HEX yêu thích mà giao diện luôn giữ được độ sắc nét và tính thẩm mỹ cao cấp.
 - Related modules: SHR-THEME, LRN-SETTINGS, LRN-DETECTIVE
 
+## ADR-AGT-018 — Tách Biệt Phân Cụm Cài Đặt Ngôn Ngữ Khỏi Giao Diện Màu Sắc (Settings Language & Appearance Decoupling)
+
+- Status: Accepted
+- Date: 2026-10-07
+- Context: Cấu hình ngôn ngữ hiển thị trước đây được đặt chung ở cuối phân vùng "Giao diện & Trải nghiệm". Do giao diện tập trung trọng tâm vào thiết kế màu sắc, bảng màu thám tử, độ tương phản và playground tương tác, việc đặt ngôn ngữ ở dưới cùng gây bất hợp lý về mặt phân nhóm tính năng và làm loãng trải nghiệm cá nhân hoá màu sắc.
+- Decision:
+  1. Tách cấu hình Ngôn ngữ thành một phân vùng (Section) độc lập mang tên "Ngôn ngữ hiển thị" trên `SettingsPage.jsx` (`/settings?tab=language`).
+  2. Bổ sung mục điều hướng "Ngôn ngữ" với icon Globe trên `SettingsSecondarySidebar.jsx`.
+  3. Cập nhật nhãn phụ của "Giao diện" thành "Màu sắc & cá nhân hoá" để phản ánh chính xác mục tiêu trải nghiệm.
+- Consequences: Trải nghiệm người dùng mạch lạc, rành mạch giữa tuỳ chỉnh giao diện hình ảnh và ngôn ngữ ứng dụng; tuân thủ nguyên tắc Single Responsibility trong Information Architecture.
+- Related modules: LRN-SETTINGS, SHR-SHELL, SHR-I18N
+
 --- Content of docs/agent/UI_CHANGE_INVENTORY.md ---
 
 # UI Change Inventory & Architecture Alignment
 
-> **Cập nhật lần cuối:** 30/09/2026
+> **Cập nhật lần cuối:** 07/10/2026
 > **Mục tiêu:** Quản lý danh mục thay đổi giao diện UI, trạng thái verified và phân tầng theo các Sprint.
 > **Trạng thái phân loại:** `CURRENT` (Đã có trong codebase), `PLANNED` (Kế hoạch sắp tới), `PROPOSED` (Định hướng tương lai).
 
@@ -389,7 +401,8 @@ Lịch sử kiến trúc trước hệ thống này nằm tại [docs/DECISIONS.
 | `UI-032` | Secondary Sidebar Điều Hướng Song Song Không Đè Chồng (`SettingsSecondarySidebar`) | Learner App Shell | `SHR-SHELL` | `CURRENT` | Tested | `src/components/learner/navigation/SettingsSecondarySidebar.jsx` |
 | `UI-033` | Giao Diện Cài Đặt Tập Trung & Đổi Mật Khẩu (`SettingsPage`) | `/settings` | `LRN-SETTINGS` | `CURRENT` | Tested | `src/pages/learner/SettingsPage.jsx` |
 | `UI-034` | Tinh Giản TopBar Header & Thẩm Mỹ Stone-50 Chống Chìm | Learner Layout | `SHR-SHELL` | `CURRENT` | Tested | `src/components/learner/navigation/LearnerTopBar.jsx` |
-| `UI-035` | Hệ Thống Bảng Màu Thám Tử & Engine Cân Bằng Tương Phản | Theme Provider & Settings | `SHR-THEME` | `PLANNED` | Planned | `docs/COLOR_CUSTOMIZATION_PLAN.md` |
+| `UI-035` | Hệ Thống Bảng Màu Thám Tử & Engine Cân Bằng Tương Phản | Theme Provider & Settings | `SHR-THEME` | `CURRENT` | Tested | `src/utils/colorEngine.js` |
+| `UI-036` | Phân Tách Tab Cài Đặt Ngôn Ngữ Riêng Biệt (`/settings?tab=language`) | Settings & Secondary Sidebar | `LRN-SETTINGS` | `CURRENT` | Tested | `src/pages/learner/SettingsPage.jsx` |
 
 ---
 

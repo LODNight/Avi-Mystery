@@ -14,6 +14,7 @@ import {
   SlidersHorizontal,
   X,
   Sparkles,
+  Globe,
 } from 'lucide-react';
 import { useTheme } from '../../../app/providers/ThemeProvider.jsx';
 
@@ -27,8 +28,14 @@ export const SETTINGS_NAV_ITEMS = [
   {
     id: 'appearance',
     label: 'Giao diện',
-    subtitle: 'Màu sắc & ngôn ngữ',
+    subtitle: 'Màu sắc & cá nhân hoá',
     icon: Palette,
+  },
+  {
+    id: 'language',
+    label: 'Ngôn ngữ',
+    subtitle: 'Ngôn ngữ hiển thị',
+    icon: Globe,
   },
   {
     id: 'account-password',

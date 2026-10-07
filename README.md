@@ -87,8 +87,8 @@
 - **Bảng Danh Hiệu Thám Tử (`/achievements`)**: Xem danh sách huân chương và điều kiện mở khóa.
 - **Lịch Sử Hoạt Động (`/profile/history`)**: Dải timeline ghi nhận từng mốc phá án, thăng cấp với bộ lọc thời gian thực.
 - **Cài Đặt & Tuỳ Chỉnh Hệ Thống (`/settings`)**:
-  - Kiến trúc **Secondary Sidebar song song không đè chồng**: Menu phân cấp gồm Hồ sơ, Giao diện (Màu sắc, Ngôn ngữ & cỡ chữ), Điều tra, Tài khoản (Mật khẩu, Data), Quyền.
-  - Giao diện điều chỉnh trung tâm hỗ trợ đổi màu chủ đạo (Color Picker & HEX), đổi mật khẩu an toàn và tuỳ biến môi trường điều tra.
+  - Kiến trúc **Secondary Sidebar song song không đè chồng**: Menu phân cấp gồm Hồ sơ (Nhân dạng & cấp bậc), Giao diện (Màu sắc & cá nhân hoá), Ngôn ngữ (Ngôn ngữ hiển thị), Mật khẩu (Bảo mật tài khoản).
+  - Tách biệt tab Ngôn ngữ độc lập; khu vực Giao diện tập trung tối đa vào bộ màu, độ tương phản tự động và thao trường xem trước tương tác.
 - **Cơ Chế Gamification**: Modal mừng thăng cấp (`LevelUpModal`) kèm hiệu ứng confetti và popup theo dõi chuỗi ngày học 7 ngày (`StreakDetailModal`).
 
 ---

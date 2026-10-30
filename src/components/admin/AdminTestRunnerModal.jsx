@@ -6,10 +6,7 @@ import {
   AlertCircle,
   FileSpreadsheet,
   Database,
-  Sparkles,
-  Info,
-  RotateCcw,
-  Check,
+  Terminal,
 } from 'lucide-react';
 import { checkExcelAnswer } from '../../utils/excelChecker.js';
 import { createSqlEngine } from '../../utils/sql/index.js';
@@ -74,20 +71,17 @@ export function AdminTestRunnerModal({ mission, onClose }) {
     setIsRunningSql(true);
     setSqlResult(null);
 
-    // Dispose any previous lingering engine
     if (activeEngineRef.current) {
       await activeEngineRef.current.dispose().catch(() => {});
       activeEngineRef.current = null;
     }
 
     try {
-      // 1. Get dataset definition
       const dsRes = await datasetService.getDataset(mission.datasetId || 'sql-sales-v1');
       const dataset = dsRes.data;
 
       if (!isMountedRef.current) return;
 
-      // 2. Execute SQL query on SQLite WASM via engine
       const engine = createSqlEngine();
       activeEngineRef.current = engine;
       await engine.initialize();
@@ -107,7 +101,6 @@ export function AdminTestRunnerModal({ mission, onClose }) {
         return;
       }
 
-      // 3. Evaluate with expected checker config
       const expectedColumns = mission.checkerConfig?.expectedColumns || [];
       const expectedRows = mission.checkerConfig?.expectedRows || [];
 
@@ -143,18 +136,18 @@ export function AdminTestRunnerModal({ mission, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
-      <div className="relative w-full max-w-2xl rounded-3xl border border-border bg-card shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="dossier-card corner-brackets relative w-full max-w-2xl rounded-md border border-border bg-card shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted/40">
-          <div className="flex items-center gap-2.5">
-            <div className="grid size-9 place-items-center rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400">
-              <Sparkles className="size-5" />
+          <div className="flex items-center gap-3">
+            <div className="grid size-9 place-items-center rounded-sm border border-primary/40 bg-primary/15 text-primary">
+              <Terminal className="size-4.5" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-foreground flex items-center gap-2">
+              <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
                 Sandbox Test Runner
-                <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/15 px-2 py-0.5 rounded">
+                <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-xs">
                   ISOLATED
                 </span>
               </h3>
@@ -165,20 +158,20 @@ export function AdminTestRunnerModal({ mission, onClose }) {
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="p-1.5 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="size-5" />
           </button>
         </div>
 
         {/* Modal Content */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        <div className="p-6 overflow-y-auto space-y-5">
           {/* Mission Context Summary */}
-          <div className="rounded-2xl border border-border bg-muted/20 p-4 space-y-2">
+          <div className="rounded-sm border border-dashed border-border bg-muted/20 p-4 space-y-1.5">
             <div className="flex items-center justify-between text-xs">
               <span className="font-bold text-foreground">{mission.title || 'Vụ án chưa đặt tên'}</span>
               <span className="font-mono uppercase font-bold text-muted-foreground flex items-center gap-1">
-                {isExcel ? <FileSpreadsheet className="size-3 text-emerald-500" /> : <Database className="size-3 text-blue-500" />}
+                {isExcel ? <FileSpreadsheet className="size-3.5 text-emerald-500" /> : <Database className="size-3.5 text-sky-500" />}
                 {mission.tool?.toUpperCase()}
               </span>
             </div>
@@ -189,7 +182,7 @@ export function AdminTestRunnerModal({ mission, onClose }) {
           {isExcel ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                   Nhập công thức thử nghiệm:
                 </label>
                 <div className="flex gap-2">
@@ -202,20 +195,20 @@ export function AdminTestRunnerModal({ mission, onClose }) {
                       value={userFormula}
                       onChange={(e) => setUserFormula(e.target.value)}
                       placeholder="Ví dụ: =SUM(C2:D2)"
-                      className="w-full rounded-xl border border-border bg-background pl-9 pr-3 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      className="w-full rounded-sm border border-border bg-background pl-9 pr-3 py-2 font-mono text-sm text-foreground outline-none focus:border-primary"
                     />
                   </div>
                   <button
                     onClick={handleTestExcel}
-                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2.5 font-bold text-sm text-white shadow-md hover:bg-emerald-500 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-sm bg-emerald-600 px-4 py-2 font-mono font-bold text-xs uppercase tracking-wider text-white shadow-sm hover:bg-emerald-500 transition-colors cursor-pointer"
                   >
-                    <Play className="size-4" /> Kiểm tra
+                    <Play className="size-3.5" /> Kiểm tra
                   </button>
                 </div>
               </div>
 
               {/* Expected Values Info */}
-              <div className="text-xs space-y-1 text-muted-foreground bg-muted/40 p-3 rounded-xl">
+              <div className="text-xs space-y-1 text-muted-foreground bg-muted/40 p-3 rounded-sm border border-border">
                 <p>
                   <strong>Công thức kỳ vọng:</strong>{' '}
                   <span className="font-mono text-foreground">
@@ -235,14 +228,14 @@ export function AdminTestRunnerModal({ mission, onClose }) {
               {/* Excel Evaluation Result */}
               {excelResult && (
                 <div
-                  className={`p-4 rounded-2xl border ${
+                  className={`p-4 rounded-sm border ${
                     excelResult.correct
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-400'
+                      : 'bg-rose-500/10 border-rose-500/40 text-rose-700 dark:text-rose-400'
                   }`}
                 >
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    {excelResult.correct ? <CheckCircle2 className="size-5 text-emerald-500" /> : <AlertCircle className="size-5 text-rose-500" />}
+                  <div className="flex items-center gap-2 font-mono font-bold text-xs uppercase tracking-wider">
+                    {excelResult.correct ? <CheckCircle2 className="size-4 text-emerald-500" /> : <AlertCircle className="size-4 text-rose-500" />}
                     <span>{excelResult.correct ? 'Kết quả: CHÍNH XÁC (PASS)' : 'Kết quả: CHƯA ĐẠT (FAIL)'}</span>
                   </div>
                   <p className="mt-1 text-xs opacity-90">{excelResult.feedbackMessage}</p>
@@ -252,23 +245,23 @@ export function AdminTestRunnerModal({ mission, onClose }) {
           ) : (
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                   Nhập câu lệnh SQL thử nghiệm:
                 </label>
                 <textarea
                   value={userSql}
                   onChange={(e) => setUserSql(e.target.value)}
                   rows={4}
-                  className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
+                  className="w-full rounded-sm border border-border bg-background p-3 font-mono text-xs text-foreground outline-none focus:border-primary resize-none"
                   placeholder="SELECT * FROM sales WHERE ..."
                 />
                 <div className="mt-2 flex justify-end">
                   <button
                     onClick={handleTestSql}
                     disabled={isRunningSql}
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 font-bold text-sm text-white shadow-md hover:bg-blue-500 disabled:opacity-50 transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-2 rounded-sm bg-sky-600 px-4 py-2 font-mono font-bold text-xs uppercase tracking-wider text-white shadow-sm hover:bg-sky-500 disabled:opacity-50 transition-colors cursor-pointer"
                   >
-                    <Play className="size-4" /> {isRunningSql ? 'Đang thực thi...' : 'Chạy truy vấn & Chấm điểm'}
+                    <Play className="size-3.5" /> {isRunningSql ? 'Đang thực thi...' : 'Chạy truy vấn & Chấm điểm'}
                   </button>
                 </div>
               </div>
@@ -276,14 +269,14 @@ export function AdminTestRunnerModal({ mission, onClose }) {
               {/* SQL Result */}
               {sqlResult && (
                 <div
-                  className={`p-4 rounded-2xl border ${
+                  className={`p-4 rounded-sm border ${
                     sqlResult.passed
-                      ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400'
-                      : 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-400'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-700 dark:text-emerald-400'
+                      : 'bg-rose-500/10 border-rose-500/40 text-rose-700 dark:text-rose-400'
                   }`}
                 >
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    {sqlResult.passed ? <CheckCircle2 className="size-5 text-emerald-500" /> : <AlertCircle className="size-5 text-rose-500" />}
+                  <div className="flex items-center gap-2 font-mono font-bold text-xs uppercase tracking-wider">
+                    {sqlResult.passed ? <CheckCircle2 className="size-4 text-emerald-500" /> : <AlertCircle className="size-4 text-rose-500" />}
                     <span>{sqlResult.passed ? 'Kết quả: CHÍNH XÁC (PASS)' : 'Kết quả: THẤT BẠI (FAIL)'}</span>
                   </div>
                   <p className="mt-1 text-xs opacity-90">{sqlResult.error || sqlResult.message}</p>
@@ -302,7 +295,7 @@ export function AdminTestRunnerModal({ mission, onClose }) {
         <div className="border-t border-border px-6 py-3.5 bg-muted/40 flex justify-end">
           <button
             onClick={handleClose}
-            className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="rounded-sm border border-border px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             Đóng Sandbox
           </button>

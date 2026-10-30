@@ -212,13 +212,13 @@ export function AppRouter() {
 function PlaceholderPage({ title }) {
   return (
     <div className="mx-auto max-w-7xl flex flex-col gap-6 animate-fade-in">
-      <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card/60 p-8 text-center shadow-sm">
-        <div className="grid size-14 place-items-center rounded-2xl bg-amber-500/15 font-mono text-2xl text-amber-600 dark:text-amber-400 mb-3">
-          🚧
-        </div>
-        <h2 className="text-xl font-bold text-foreground">{title}</h2>
-        <p className="mt-1 text-sm text-muted-foreground max-w-md">
-          Tính năng này đang được phát triển trong Sprint tiếp theo. Dưới đây là mô phỏng bố cục dự kiến của trang.
+      <div className="dossier-card corner-brackets flex flex-col items-center justify-center rounded-md border border-dashed border-border bg-card/80 p-8 text-center shadow-xs">
+        <span className="detective-stamp text-amber-500 border-amber-500/40 bg-amber-500/10 mb-3">
+          RESTRICTED ARCHIVE // IN DEVELOPMENT
+        </span>
+        <h2 className="font-display text-2xl font-bold text-foreground">{title}</h2>
+        <p className="mt-1.5 text-sm text-muted-foreground max-w-md">
+          Phân khu hồ sơ này đang được Cục Điều Tra mã hóa và chuẩn bị nghiệm thu trong đợt phát hành tiếp theo.
         </p>
       </div>
 

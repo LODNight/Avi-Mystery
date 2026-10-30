@@ -2,18 +2,15 @@ import React, { useState, useEffect } from 'react';
 import {
   Database,
   FileSpreadsheet,
-  Plus,
   Upload,
   Eye,
   Trash2,
   CheckCircle2,
   AlertCircle,
-  FileText,
   Code,
   Table,
   Check,
   X,
-  Sparkles,
 } from 'lucide-react';
 import { adminContentService } from '../../services/index.js';
 
@@ -116,7 +113,6 @@ export function AdminDatasetsPage() {
       return;
     }
 
-    // Infer column types based on first few rows
     const columnTypes = headers.map((col, colIdx) => {
       for (let r = 0; r < Math.min(rows.length, 10); r++) {
         const val = rows[r][colIdx];
@@ -158,7 +154,6 @@ export function AdminDatasetsPage() {
 
     const { headers, rows, columnTypes } = parsedPreview;
 
-    // Build SQLite DDL if SQL type
     const safeTable = tableName.trim() || 'table_1';
     const createTableSql = `CREATE TABLE ${safeTable} (\n  ${headers
       .map((h, i) => `${h} ${columnTypes[i]}`)
@@ -218,14 +213,14 @@ export function AdminDatasetsPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in pb-16">
+    <div className="mx-auto flex max-w-7xl flex-col gap-7 animate-fade-in pb-16">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-xl border ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-sm px-4 py-3 font-mono text-xs font-bold shadow-xl border ${
             toast.type === 'error'
-              ? 'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400'
-              : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400'
+              : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
           }`}
         >
           {toast.type === 'error' ? <AlertCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
@@ -233,22 +228,22 @@ export function AdminDatasetsPage() {
         </div>
       )}
 
-      {/* Header */}
-      <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Archival Masthead */}
+      <section className="flex flex-col justify-between gap-4 border-b-2 border-border pb-5 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded">
+            <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+              EVIDENCE DATA VAULT // SCHEMA LAB
+            </span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Kho Dữ Liệu
             </span>
-            <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
-              Step 8.2
-            </span>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
-            <Database className="size-8 text-primary" />
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
+            <Database className="size-7 text-primary" />
             Quản lý Dataset & Schema Generator
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Quản lý kho dữ liệu điều tra, xem cấu trúc Schema và tự động tạo bảng SQLite từ file CSV.
           </p>
         </div>
@@ -260,60 +255,64 @@ export function AdminDatasetsPage() {
             setDatasetDescription('');
             setImportModalOpen(true);
           }}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-md shadow-primary/25 hover:opacity-90 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-all cursor-pointer shrink-0"
         >
           <Upload className="size-4" /> Nhập Dataset Từ CSV
         </button>
       </section>
 
-      {/* Datasets Grid */}
+      {/* Evidence Data Vault Canisters Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          <p className="col-span-full py-12 text-center text-muted-foreground">Đang tải danh sách dataset...</p>
+          <p className="col-span-full py-12 text-center font-mono text-xs text-muted-foreground">
+            Đang tải danh sách dataset...
+          </p>
         ) : datasets.length === 0 ? (
-          <p className="col-span-full py-12 text-center text-muted-foreground">Chưa có dataset nào trong kho.</p>
+          <p className="col-span-full py-12 text-center font-mono text-xs text-muted-foreground">
+            Chưa có dataset nào trong kho.
+          </p>
         ) : (
           datasets.map((ds) => {
             const isExcel = ds.type === 'excel';
             return (
               <div
                 key={ds.id}
-                className="flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs hover:border-primary/40 transition-all group"
+                className="dossier-card corner-brackets flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-2xs hover:border-primary/50 transition-all group"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-border/80">
                     <span
-                      className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                      className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded-xs border ${
                         isExcel
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          : 'border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400'
                       }`}
                     >
                       {isExcel ? <FileSpreadsheet className="size-3" /> : <Database className="size-3" />}
                       {ds.type?.toUpperCase()}
                     </span>
 
-                    <span className="font-mono text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                    <span className="font-mono text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-xs border border-border">
                       {ds.id}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {ds.name || ds.id}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2">
+                  <p className="text-xs text-muted-foreground mt-1.5 line-clamp-2 leading-relaxed">
                     {ds.description || 'Tập dữ liệu bảng phục vụ các vụ án điều tra.'}
                   </p>
 
-                  <div className="mt-4 rounded-2xl border border-border/80 bg-muted/20 p-3 text-xs space-y-1">
+                  <div className="mt-4 rounded-sm border border-dashed border-border bg-muted/20 p-3 font-mono text-xs space-y-1.5">
                     <div className="flex justify-between text-muted-foreground">
-                      <span>Phiên bản:</span>
-                      <span className="font-mono font-bold text-foreground">v{ds.version || 1}</span>
+                      <span>VERSION:</span>
+                      <span className="font-bold text-foreground tabular-nums">v{ds.version || 1}</span>
                     </div>
                     {ds.schema?.tables && (
                       <div className="flex justify-between text-muted-foreground">
-                        <span>Bảng dữ liệu:</span>
-                        <span className="font-mono font-bold text-foreground">
+                        <span>TABLES:</span>
+                        <span className="font-bold text-primary truncate max-w-[160px]">
                           {ds.schema.tables.map((t) => t.name).join(', ')}
                         </span>
                       </div>
@@ -321,16 +320,16 @@ export function AdminDatasetsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-end gap-2 pt-4 border-t border-border">
+                <div className="mt-5 flex items-center justify-end gap-2 pt-3.5 border-t border-border">
                   <button
                     onClick={() => setViewingDataset(ds)}
-                    className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/40 hover:bg-muted transition-colors cursor-pointer"
                   >
                     <Eye className="size-3.5" /> Xem Schema
                   </button>
                   <button
                     onClick={() => handleDelete(ds)}
-                    className="p-1.5 rounded-xl text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                    className="p-1.5 rounded-sm border border-border text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                     title="Xóa dataset"
                   >
                     <Trash2 className="size-4" />
@@ -344,18 +343,21 @@ export function AdminDatasetsPage() {
 
       {/* View Schema Modal */}
       {viewingDataset && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-2xl rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="dossier-card corner-brackets w-full max-w-2xl rounded-md border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <h3 className="text-lg font-extrabold text-foreground flex items-center gap-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                  [EVIDENCE SCHEMA INSPECTOR]
+                </span>
+                <h3 className="font-display text-xl font-bold text-foreground flex items-center gap-2 mt-0.5">
                   <Database className="size-5 text-primary" /> {viewingDataset.name || viewingDataset.id}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">{viewingDataset.description}</p>
               </div>
               <button
                 onClick={() => setViewingDataset(null)}
-                className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="p-1.5 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <X className="size-5" />
               </button>
@@ -365,14 +367,14 @@ export function AdminDatasetsPage() {
             {viewingDataset.schema?.tables ? (
               <div className="space-y-4">
                 {viewingDataset.schema.tables.map((table) => (
-                  <div key={table.name} className="rounded-2xl border border-border bg-muted/20 p-4">
+                  <div key={table.name} className="rounded-sm border border-border bg-muted/20 p-4">
                     <h4 className="font-mono text-sm font-bold text-foreground flex items-center gap-2 mb-3">
-                      <Table className="size-4 text-blue-500" /> Bảng: {table.name}
+                      <Table className="size-4 text-sky-500" /> Bảng: {table.name}
                     </h4>
                     <div className="overflow-x-auto">
                       <table className="w-full text-xs text-left">
                         <thead>
-                          <tr className="border-b border-border text-muted-foreground font-bold">
+                          <tr className="border-b border-border font-mono uppercase text-muted-foreground font-bold">
                             <th className="py-2 pr-4">Tên cột</th>
                             <th className="py-2 px-4">Kiểu dữ liệu</th>
                           </tr>
@@ -381,7 +383,7 @@ export function AdminDatasetsPage() {
                           {table.columns?.map((col) => (
                             <tr key={col.name}>
                               <td className="py-2 pr-4 font-mono font-bold text-foreground">{col.name}</td>
-                              <td className="py-2 px-4 font-mono text-muted-foreground">{col.type}</td>
+                              <td className="py-2 px-4 font-mono text-primary">{col.type}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -391,8 +393,8 @@ export function AdminDatasetsPage() {
                 ))}
               </div>
             ) : (
-              <div className="rounded-2xl border border-border bg-muted/20 p-4">
-                <p className="text-xs text-muted-foreground">
+              <div className="rounded-sm border border-dashed border-border bg-muted/20 p-4">
+                <p className="font-mono text-xs text-muted-foreground">
                   Dataset dạng Excel table hoặc chưa có schema chi tiết lưu trữ.
                 </p>
               </div>
@@ -401,7 +403,7 @@ export function AdminDatasetsPage() {
             <div className="flex justify-end pt-3 border-t border-border">
               <button
                 onClick={() => setViewingDataset(null)}
-                className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="rounded-sm border border-border px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 Đóng
               </button>
@@ -412,12 +414,15 @@ export function AdminDatasetsPage() {
 
       {/* CSV Importer & Schema Generator Modal */}
       {importModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-3xl rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="dossier-card corner-brackets w-full max-w-3xl rounded-md border border-border bg-card p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <h3 className="text-lg font-extrabold text-foreground flex items-center gap-2">
-                  <Sparkles className="size-5 text-amber-500" /> Nhập CSV & Tự Động Tạo SQLite Schema
+                <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                  [FORENSIC CSV INGESTION // DDL GENERATOR]
+                </span>
+                <h3 className="font-display text-xl font-bold text-foreground flex items-center gap-2 mt-0.5">
+                  <Code className="size-5 text-primary" /> Nhập CSV & Tự Động Tạo SQLite Schema
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Tải lên tệp CSV hoặc dán nội dung bảng để hệ thống tự động nhận diện kiểu dữ liệu và tạo bảng SQL.
@@ -425,7 +430,7 @@ export function AdminDatasetsPage() {
               </div>
               <button
                 onClick={() => setImportModalOpen(false)}
-                className="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="p-1.5 rounded-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <X className="size-5" />
               </button>
@@ -433,10 +438,10 @@ export function AdminDatasetsPage() {
 
             <div className="space-y-4">
               {/* File Upload Box */}
-              <div className="rounded-2xl border-2 border-dashed border-border p-6 text-center hover:border-primary/50 transition-colors">
-                <Upload className="size-8 mx-auto text-muted-foreground mb-2" />
+              <div className="rounded-sm border-2 border-dashed border-border bg-muted/20 p-5 text-center hover:border-primary/50 transition-colors">
+                <Upload className="size-7 mx-auto text-primary mb-2" />
                 <label className="cursor-pointer">
-                  <span className="text-sm font-bold text-primary hover:underline">
+                  <span className="font-mono text-xs font-bold uppercase tracking-wider text-primary hover:underline">
                     Chọn tệp .csv từ máy tính
                   </span>
                   <input type="file" accept=".csv,text/csv" onChange={handleFileUpload} className="hidden" />
@@ -447,33 +452,39 @@ export function AdminDatasetsPage() {
               {/* Dataset Info Inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">Tên Dataset *</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1">
+                    Tên Dataset *
+                  </label>
                   <input
                     type="text"
                     value={datasetName}
                     onChange={(e) => setDatasetName(e.target.value)}
                     placeholder="Ví dụ: sales_q2_2026.csv"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">Tên bảng SQL (Table) *</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1">
+                    Tên bảng SQL (Table) *
+                  </label>
                   <input
                     type="text"
                     value={tableName}
                     onChange={(e) => setTableName(e.target.value)}
                     placeholder="Ví dụ: sales"
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs font-mono text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2 text-xs font-mono text-foreground outline-none focus:border-primary"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">Loại công cụ</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1">
+                    Loại công cụ
+                  </label>
                   <select
                     value={importType}
                     onChange={(e) => setImportType(e.target.value)}
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary cursor-pointer"
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2 text-xs text-foreground outline-none focus:border-primary cursor-pointer"
                   >
                     <option value="sql">SQL (SQLite Table)</option>
                     <option value="excel">Excel Table</option>
@@ -483,39 +494,39 @@ export function AdminDatasetsPage() {
 
               {/* Raw CSV Textarea */}
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1">
                   Nội dung CSV (dòng 1 là tên cột):
                 </label>
                 <textarea
                   rows={4}
                   value={rawCsv}
                   onChange={(e) => setRawCsv(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y focus:border-primary"
+                  className="w-full rounded-sm border border-border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y focus:border-primary"
                   placeholder="id,name,amount,date..."
                 />
               </div>
 
               {/* Schema & Data Preview */}
               {parsedPreview && parsedPreview.headers.length > 0 && (
-                <div className="rounded-2xl border border-border bg-muted/20 p-4 space-y-3">
+                <div className="rounded-sm border border-border bg-muted/20 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                    <h4 className="font-mono text-xs font-bold text-foreground flex items-center gap-1.5">
                       <Table className="size-4 text-emerald-500" /> Tự động nhận diện Schema & Dữ liệu mẫu (
                       {parsedPreview.rows.length} hàng)
                     </h4>
-                    <span className="font-mono text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                    <span className="font-mono text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-xs border border-border">
                       {parsedPreview.headers.length} Cột
                     </span>
                   </div>
 
-                  <div className="overflow-x-auto max-h-48 border border-border rounded-xl">
+                  <div className="overflow-x-auto max-h-48 border border-border rounded-sm">
                     <table className="w-full text-left text-xs border-collapse">
                       <thead>
                         <tr className="bg-muted border-b border-border">
                           {parsedPreview.headers.map((h, idx) => (
                             <th key={idx} className="p-2 font-mono font-bold text-foreground whitespace-nowrap">
                               {h}
-                              <span className="block font-normal text-[10px] text-amber-600 dark:text-amber-400 font-sans">
+                              <span className="block font-mono font-normal text-[10px] text-amber-600 dark:text-amber-400">
                                 {parsedPreview.columnTypes[idx]}
                               </span>
                             </th>
@@ -543,14 +554,14 @@ export function AdminDatasetsPage() {
               <button
                 type="button"
                 onClick={() => setImportModalOpen(false)}
-                className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="rounded-sm border border-border px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 Hủy
               </button>
               <button
                 type="button"
                 onClick={handleSaveImport}
-                className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5"
+                className="rounded-sm bg-primary px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-1.5"
               >
                 <Check className="size-4" /> Lưu & Tạo Dataset
               </button>

@@ -11,14 +11,15 @@ import {
   Clock,
   Plus,
   ChevronRight,
-  TrendingUp,
-  Sparkles,
+  Terminal,
+  FileSpreadsheet,
+  Database,
 } from 'lucide-react';
 import { useAsync } from '../../hooks/useAsync.js';
 import { courseService } from '../../services/index.js';
 import { AdminCourseCardSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
-import { formatDate, difficultyLabel, toolLabel } from '../../utils/format.js';
+import { formatDate, difficultyLabel } from '../../utils/format.js';
 
 const MOCK_ANALYTICS = {
   totalLearners: 128,
@@ -28,9 +29,9 @@ const MOCK_ANALYTICS = {
 };
 
 const MOCK_RECENT_CHANGES = [
-  { id: 1, type: 'mission', label: 'Vì sao doanh thu tháng 3 giảm?', action: 'cập nhật', at: '2026-08-17T09:00:00Z' },
-  { id: 2, type: 'course',  label: 'SQL Investigation',               action: 'xuất bản', at: '2026-08-16T15:00:00Z' },
-  { id: 3, type: 'dataset', label: 'sales_q1_2026.csv',               action: 'tải lên',  at: '2026-08-15T11:00:00Z' },
+  { id: 1, code: 'LOG-891', type: 'mission', label: 'Vì sao doanh thu tháng 3 giảm?', action: 'cập nhật', at: '2026-08-17T09:00:00Z' },
+  { id: 2, code: 'LOG-890', type: 'course',  label: 'SQL Investigation',               action: 'xuất bản', at: '2026-08-16T15:00:00Z' },
+  { id: 3, code: 'LOG-889', type: 'dataset', label: 'sales_q1_2026.csv',               action: 'tải lên',  at: '2026-08-15T11:00:00Z' },
 ];
 
 const MOCK_HIGH_FAIL = [
@@ -47,82 +48,104 @@ export function AdminOverviewPage() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in">
-      {/* Header */}
-      <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+    <div className="mx-auto flex max-w-7xl flex-col gap-7 animate-fade-in">
+      {/* Archival Masthead */}
+      <section className="flex flex-col justify-between gap-5 border-b-2 border-border pb-5 sm:flex-row sm:items-end">
         <div>
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-            Bảng điều khiển quản trị
-          </p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+          <div className="flex items-center gap-2.5">
+            <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+              HQ COMMAND // OVERSEER DESK
+            </span>
+            <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              Bảng điều khiển quản trị
+            </span>
+          </div>
+          <h2 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             Tổng quan nền tảng
           </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Theo dõi tiến trình học viên, chất lượng bài học và sức khỏe nội dung điều tra.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3 shrink-0">
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           <Link
             to="/admin/settings?tab=system"
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-sm"
+            className="inline-flex items-center gap-2 rounded-sm border border-primary/40 bg-primary/10 px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all cursor-pointer"
           >
-            <Sparkles className="size-4 text-primary" /> 🧪 Test Onboarding Mode
+            <Terminal className="size-3.5 text-primary" /> Test Onboarding Mode
           </Link>
           <Link
             to="/admin/datasets"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:border-primary/40 hover:bg-muted transition-colors cursor-pointer"
           >
-            <Upload className="size-4" /> Upload Dataset
+            <Upload className="size-3.5" /> Upload Dataset
           </Link>
           <Link
             to="/admin/missions/new"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
           >
-            <Plus className="size-4" /> Tạo Mission
+            <Plus className="size-3.5" /> Tạo Mission
           </Link>
         </div>
       </section>
 
-      {/* 4 Stat Cards */}
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          icon={Users}
-          label="Tổng học viên"
-          value={MOCK_ANALYTICS.totalLearners}
-          detail={`${MOCK_ANALYTICS.activeLearners} đang hoạt động`}
-          accent="text-violet-500"
-        />
-        <StatCard
-          icon={CheckCircle2}
-          label="Tỷ lệ hoàn thành"
-          value={`${MOCK_ANALYTICS.avgCompletionRate}%`}
-          detail="Trung bình toàn bộ khóa"
-          accent="text-emerald-500"
-        />
-        <StatCard
-          icon={Target}
-          label="Nhiệm vụ đã xuất bản"
-          value={MOCK_ANALYTICS.publishedMissions}
-          detail="Trong 2 khóa học chính"
-          accent="text-amber-500"
-        />
-        <StatCard
-          icon={AlertTriangle}
-          label="Nhiệm vụ tỉ lệ sai cao"
-          value={MOCK_HIGH_FAIL.length}
-          detail="Cần kiểm tra lại dữ liệu"
-          accent="text-rose-500"
-        />
+      {/* Open Bureau Telemetry Ledger Strip (Replaces 4-Card SaaS Wall) */}
+      <section className="rounded-md border border-border bg-card/70 bg-ruled-ledger px-5 py-4 shadow-2xs">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-border">
+          <TelemetryMetric
+            code="TEL-01"
+            icon={Users}
+            label="Tổng học viên"
+            value={MOCK_ANALYTICS.totalLearners}
+            detail={`${MOCK_ANALYTICS.activeLearners} đang hoạt động`}
+            tone="text-foreground"
+          />
+          <TelemetryMetric
+            code="TEL-02"
+            icon={CheckCircle2}
+            label="Tỷ lệ hoàn thành"
+            value={`${MOCK_ANALYTICS.avgCompletionRate}%`}
+            detail="Trung bình toàn bộ khóa"
+            tone="text-emerald-500"
+            className="lg:pl-6"
+          />
+          <TelemetryMetric
+            code="TEL-03"
+            icon={Target}
+            label="Nhiệm vụ đã xuất bản"
+            value={MOCK_ANALYTICS.publishedMissions}
+            detail="Trong 2 khóa học chính"
+            tone="text-primary"
+            className="lg:pl-6"
+          />
+          <TelemetryMetric
+            code="TEL-04"
+            icon={AlertTriangle}
+            label="Nhiệm vụ tỉ lệ sai cao"
+            value={MOCK_HIGH_FAIL.length}
+            detail="Cần kiểm tra lại dữ liệu"
+            tone="text-rose-500"
+            className="lg:pl-6"
+          />
+        </div>
       </section>
 
       {/* Main Grid */}
       <section className="grid gap-6 lg:grid-cols-3">
         {/* Course List (2 Cols) */}
         <div className="lg:col-span-2 space-y-4" aria-busy={courses.loading ? "true" : undefined}>
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-foreground">Khóa học hiện có</h3>
-            <Link to="/admin/courses" className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
-              Xem tất cả <ArrowRight className="size-4" />
+          <div className="flex items-center justify-between border-b border-border pb-2.5">
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                [ARCHIVE // BINDERS]
+              </span>
+              <h3 className="font-display text-xl font-bold text-foreground">Khóa học hiện có</h3>
+            </div>
+            <Link
+              to="/admin/courses"
+              className="flex items-center gap-1 font-mono text-xs font-bold uppercase tracking-wider text-primary hover:underline"
+            >
+              Xem tất cả <ArrowRight className="size-3.5" />
             </Link>
           </div>
 
@@ -135,8 +158,8 @@ export function AdminOverviewPage() {
             <ErrorState message={courses.error} onRetry={() => courses.execute(() => courseService.getCourses())} />
           ) : (
             <div className="space-y-3">
-              {(courses.data || []).map((course) => (
-                <AdminCourseCard key={course.id} course={course} />
+              {(courses.data || []).map((course, idx) => (
+                <AdminCourseCard key={course.id} course={course} index={idx} />
               ))}
             </div>
           )}
@@ -144,22 +167,35 @@ export function AdminOverviewPage() {
 
         {/* Right Sidebar (1 Col) */}
         <div className="space-y-6">
-          {/* High Fail Rate Missions */}
-          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4">
-              <AlertTriangle className="size-4 text-rose-500" />
-              Nhiệm vụ có tỷ lệ sai cao
-            </h3>
-            <div className="space-y-3">
+          {/* High Fail Rate Missions: Anomaly Dispatch */}
+          <div className="dossier-card corner-brackets rounded-md border border-rose-500/30 bg-card p-5 shadow-2xs">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                <AlertTriangle className="size-4 text-rose-500" />
+                Nhiệm vụ có tỷ lệ sai cao
+              </h3>
+              <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-rose-500 bg-rose-500/10 px-1.5 py-0.5 rounded-xs border border-rose-500/30">
+                ANOMALY
+              </span>
+            </div>
+            <div className="space-y-2.5">
               {MOCK_HIGH_FAIL.map((m) => (
-                <div key={m.id} className="rounded-2xl border border-border bg-muted/40 p-3.5 flex items-center justify-between">
+                <div
+                  key={m.id}
+                  className="rounded-sm border border-dashed border-border bg-muted/30 p-3 flex items-center justify-between gap-2"
+                >
                   <div className="min-w-0 pr-2">
-                    <p className="text-xs font-semibold text-foreground truncate">{m.title}</p>
-                    <span className="font-mono text-[10px] text-muted-foreground uppercase mt-0.5 inline-block">
-                      {m.tool}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono text-[10px] font-bold uppercase text-muted-foreground">
+                        [{m.id.toUpperCase()}]
+                      </span>
+                      <span className="font-mono text-[9px] uppercase px-1.5 py-0.2 rounded-xs bg-muted text-foreground font-bold">
+                        {m.tool}
+                      </span>
+                    </div>
+                    <p className="text-xs font-semibold text-foreground truncate mt-1">{m.title}</p>
                   </div>
-                  <span className="font-mono text-xs font-bold text-rose-500 shrink-0">
+                  <span className="font-mono text-xs font-bold tabular-nums text-rose-500 shrink-0 border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 rounded-xs">
                     {m.failRate}% sai
                   </span>
                 </div>
@@ -167,22 +203,33 @@ export function AdminOverviewPage() {
             </div>
           </div>
 
-          {/* Recent Changes */}
-          <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
-            <h3 className="text-sm font-bold text-foreground flex items-center gap-2 mb-4">
-              <Clock className="size-4 text-muted-foreground" />
-              Thay đổi gần đây
-            </h3>
-            <div className="space-y-3">
+          {/* Recent Changes: Chain-of-Custody Audit Log */}
+          <div className="dossier-card rounded-md border border-border bg-card p-5 shadow-2xs">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-border">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
+                <Clock className="size-4 text-primary" />
+                Thay đổi gần đây
+              </h3>
+              <span className="font-mono text-[9px] text-muted-foreground uppercase tracking-widest">
+                AUDIT LOG
+              </span>
+            </div>
+            <div className="relative ml-2 border-l border-dashed border-border pl-4 space-y-3.5 py-1">
               {MOCK_RECENT_CHANGES.map((item) => (
-                <div key={item.id} className="flex items-start gap-3 py-2 border-b border-border/50 last:border-0">
-                  <div className="size-2 rounded-full bg-primary mt-1.5 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-foreground truncate">{item.label}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {item.action} · {formatDate(item.at)}
-                    </p>
+                <div key={item.id} className="relative">
+                  <span className="absolute -left-[21px] top-1.5 size-2 rounded-xs bg-primary ring-2 ring-card" />
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-primary">
+                      {item.code} // {item.type.toUpperCase()}
+                    </span>
+                    <span className="font-mono text-[10px] text-muted-foreground tabular-nums">
+                      {formatDate(item.at)}
+                    </span>
                   </div>
+                  <p className="text-xs font-bold text-foreground truncate mt-0.5">{item.label}</p>
+                  <p className="font-mono text-[10px] text-muted-foreground uppercase mt-0.5">
+                    Thao tác: {item.action}
+                  </p>
                 </div>
               ))}
             </div>
@@ -193,42 +240,62 @@ export function AdminOverviewPage() {
   );
 }
 
-function StatCard({ icon: Icon, label, value, detail, accent }) {
+function TelemetryMetric({ code, icon: Icon, label, value, detail, tone, className = '' }) {
   return (
-    <div className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/40">
-      <div className="flex items-center justify-between">
-        <p className="text-xs text-muted-foreground font-medium">{label}</p>
-        <Icon className={`size-4 ${accent}`} />
+    <div className={`flex flex-col justify-between ${className}`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5">
+          <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+            [{code}]
+          </span>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p>
+        </div>
+        <Icon className={`size-4 ${tone}`} />
       </div>
-      <p className="mt-4 text-2xl font-bold tracking-tight text-foreground">{value}</p>
-      <p className="mt-1 text-xs text-muted-foreground">{detail}</p>
+      <div className="mt-2.5 flex items-baseline justify-between gap-2">
+        <p className={`font-mono text-2xl font-bold tracking-tight tabular-nums ${tone}`}>{value}</p>
+        <p className="font-mono text-[10px] text-muted-foreground truncate">{detail}</p>
+      </div>
     </div>
   );
 }
 
-function AdminCourseCard({ course }) {
-  const icon = course.tool === 'excel' ? '📊' : '🔍';
+function AdminCourseCard({ course, index }) {
+  const isExcel = course.tool === 'excel';
+  const ToolIcon = isExcel ? FileSpreadsheet : Database;
   return (
-    <div className="group rounded-2xl border border-border bg-card p-4 transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md flex items-center justify-between cursor-pointer">
+    <Link
+      to={`/admin/chapters?courseId=${course.id}`}
+      className="dossier-card group rounded-md border border-border bg-card p-4 transition-all hover:border-primary/50 flex items-center justify-between cursor-pointer"
+    >
       <div className="flex items-center gap-4 min-w-0">
-        <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-amber-500/15 font-mono text-xl text-amber-600 dark:text-amber-400">
-          {icon}
+        <div
+          className={`grid size-11 shrink-0 place-items-center rounded-sm border font-mono text-sm ${
+            isExcel
+              ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-500'
+              : 'border-sky-500/40 bg-sky-500/10 text-sky-500'
+          }`}
+        >
+          <ToolIcon className="size-5" />
         </div>
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              [BINDER-0{index + 1}]
+            </span>
+            <h4 className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors truncate">
               {course.title}
             </h4>
-            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="rounded-xs border border-emerald-500/40 bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
               {course.status}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="font-mono text-xs text-muted-foreground mt-1 tabular-nums">
             {course.totalChapters} chương · {course.totalMissions} nhiệm vụ · {difficultyLabel(course.difficulty)}
           </p>
         </div>
       </div>
-      <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-0.5 transition-transform shrink-0" />
-    </div>
+      <ChevronRight className="size-4 text-muted-foreground group-hover:translate-x-0.5 group-hover:text-primary transition-all shrink-0" />
+    </Link>
   );
 }

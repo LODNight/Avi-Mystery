@@ -4,16 +4,13 @@ import {
   ArrowLeft,
   Save,
   Send,
-  Sparkles,
-  FileSpreadsheet,
-  Database,
+  Terminal,
   Plus,
   Trash2,
   AlertCircle,
   CheckCircle2,
   HelpCircle,
   Layers,
-  Clock,
   Award,
   BookOpen,
 } from 'lucide-react';
@@ -171,25 +168,21 @@ export function AdminMissionEditorPage() {
 
   // Prepare mission payload
   const preparePayload = (statusOverride) => {
-    // Parse Excel formulas
     const expectedFormula = formData.checkerConfig.expectedFormulaText
       .split(',')
       .map((f) => f.trim())
       .filter(Boolean);
 
-    // Parse Expected Value (number if numeric string)
     let expectedValue = formData.checkerConfig.expectedValue.trim();
     if (expectedValue !== '' && !isNaN(Number(expectedValue))) {
       expectedValue = Number(expectedValue);
     }
 
-    // Parse SQL columns
     const expectedColumns = formData.checkerConfig.expectedColumnsText
       .split(',')
       .map((c) => c.trim())
       .filter(Boolean);
 
-    // Parse SQL rows
     let expectedRows = [];
     if (formData.checkerConfig.expectedRowsText.trim()) {
       try {
@@ -273,21 +266,21 @@ export function AdminMissionEditorPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex max-w-5xl items-center justify-center py-20 text-muted-foreground font-medium">
+      <div className="mx-auto flex max-w-5xl items-center justify-center py-20 font-mono text-xs text-muted-foreground">
         Đang tải thông tin vụ án...
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-8 animate-fade-in pb-16">
+    <div className="mx-auto flex max-w-5xl flex-col gap-7 animate-fade-in pb-16">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-xl border ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-sm px-4 py-3 font-mono text-xs font-bold shadow-xl border ${
             toast.type === 'error'
-              ? 'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400'
-              : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400'
+              : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
           }`}
         >
           {toast.type === 'error' ? <AlertCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
@@ -296,63 +289,66 @@ export function AdminMissionEditorPage() {
       )}
 
       {/* Top Bar Navigation */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b-2 border-border pb-5">
+        <div className="flex items-center gap-3.5">
           <Link
             to="/admin/missions"
-            className="p-2 rounded-xl border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="p-2 rounded-sm border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             <ArrowLeft className="size-5" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded">
+              <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+                CASE AUTHORING STUDIO
+              </span>
+              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-xs border border-border">
                 {isNew ? 'Tạo mới' : formData.id}
               </span>
               <span
-                className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded ${
+                className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-xs border ${
                   formData.status === 'published'
-                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                    ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
                 }`}
               >
                 {formData.status === 'published' ? 'ĐÃ XUẤT BẢN' : 'BẢN NHÁP'}
               </span>
             </div>
-            <h1 className="text-2xl font-extrabold text-foreground sm:text-3xl mt-1">
+            <h1 className="font-display text-2xl font-bold text-foreground sm:text-3xl mt-1.5">
               {isNew ? 'Soạn thảo Vụ án mới' : formData.title || 'Chỉnh sửa vụ án'}
             </h1>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setShowTestRunner(true)}
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/20 transition-all cursor-pointer shadow-xs"
+            className="inline-flex items-center gap-2 rounded-sm border border-primary/40 bg-primary/10 px-3.5 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 transition-all cursor-pointer"
           >
-            <Sparkles className="size-4" /> Chạy thử Sandbox
+            <Terminal className="size-3.5" /> Chạy thử Sandbox
           </button>
           <button
             onClick={() => handleSave('draft')}
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-xs font-bold text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-sm border border-border bg-card px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
-            <Save className="size-4" /> Lưu bản nháp
+            <Save className="size-3.5" /> Lưu bản nháp
           </button>
           <button
             onClick={() => handleSave('published')}
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90 transition-opacity cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
           >
-            <Send className="size-4" /> Xuất bản ngay
+            <Send className="size-3.5" /> Xuất bản ngay
           </button>
         </div>
       </div>
 
-      {/* Tabs Header */}
-      <div className="flex border-b border-border gap-2 overflow-x-auto pb-px">
+      {/* File Cabinet Index Tabs */}
+      <div className="flex border-b-2 border-border gap-1.5 overflow-x-auto">
         {[
           { key: 'narrative', label: '1. Hồ sơ & Bối cảnh', icon: BookOpen },
           { key: 'workspace', label: '2. Cấu hình Workspace', icon: Layers },
@@ -365,13 +361,13 @@ export function AdminMissionEditorPage() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+              className={`flex items-center gap-2 px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer whitespace-nowrap ${
                 isActive
-                  ? 'border-primary text-primary bg-primary/5 rounded-t-xl'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                  ? 'rounded-t-sm border-t-2 border-x border-primary bg-card text-primary -mb-[2px]'
+                  : 'border-t-2 border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/40'
               }`}
             >
-              <Icon className="size-4" />
+              <Icon className="size-3.5" />
               {tab.label}
             </button>
           );
@@ -381,13 +377,13 @@ export function AdminMissionEditorPage() {
       {/* Tab 1: Narrative & Briefing */}
       {activeTab === 'narrative' && (
         <div className="space-y-6 animate-fade-in">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-5">
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+          <div className="dossier-card corner-brackets rounded-md border border-border bg-card p-6 shadow-2xs space-y-5">
+            <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
               <BookOpen className="size-4 text-primary" /> Thông tin cơ bản & Bối cảnh trinh thám
             </h3>
 
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                 Tiêu đề vụ án <span className="text-rose-500">*</span>
               </label>
               <input
@@ -395,20 +391,22 @@ export function AdminMissionEditorPage() {
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 placeholder="Ví dụ: Vì sao doanh thu tháng 3 giảm?"
-                className={`w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-all ${
+                className={`w-full rounded-sm border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-all ${
                   errors.title ? 'border-rose-500' : 'border-border focus:border-primary'
                 }`}
               />
-              {errors.title && <p className="mt-1 text-xs text-rose-500">{errors.title}</p>}
+              {errors.title && <p className="mt-1 font-mono text-xs text-rose-500">{errors.title}</p>}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Khóa học</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Khóa học
+                </label>
                 <select
                   value={formData.courseId}
                   onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                  className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                 >
                   {courses.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -419,11 +417,13 @@ export function AdminMissionEditorPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Chương học</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Chương học
+                </label>
                 <select
                   value={formData.chapterId}
                   onChange={(e) => setFormData({ ...formData, chapterId: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                  className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                 >
                   {availableChapters.map((ch) => (
                     <option key={ch.id} value={ch.id}>
@@ -436,7 +436,9 @@ export function AdminMissionEditorPage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Công cụ thực hành</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Công cụ thực hành
+                </label>
                 <select
                   value={formData.tool}
                   onChange={(e) =>
@@ -446,19 +448,21 @@ export function AdminMissionEditorPage() {
                       datasetId: e.target.value === 'excel' ? 'ds-001' : 'sql-sales-v1',
                     })
                   }
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                  className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                 >
-                  <option value="excel">📊 Excel</option>
-                  <option value="sql">🔍 SQL</option>
+                  <option value="excel">[EXCEL] Spreadsheet</option>
+                  <option value="sql">[SQL] Database</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Độ khó</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Độ khó
+                </label>
                 <select
                   value={formData.difficulty}
                   onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                  className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                 >
                   <option value="easy">Dễ (Easy)</option>
                   <option value="medium">Trung bình (Medium)</option>
@@ -467,32 +471,38 @@ export function AdminMissionEditorPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Thời lượng (phút)</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Thời lượng (phút)
+                </label>
                 <input
                   type="number"
                   value={formData.estimatedDuration}
                   onChange={(e) => setFormData({ ...formData, estimatedDuration: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                  className="w-full rounded-sm border border-border bg-background px-3 py-2 font-mono text-sm text-foreground outline-none focus:border-primary tabular-nums"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1.5">Phần thưởng XP</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Phần thưởng XP
+                </label>
                 <input
                   type="number"
                   value={formData.rewardXp}
                   onChange={(e) => setFormData({ ...formData, rewardXp: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary font-mono font-bold"
+                  className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary font-mono font-bold tabular-nums"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">Dataset liên kết</label>
+              <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                Dataset liên kết
+              </label>
               <select
                 value={formData.datasetId}
                 onChange={(e) => setFormData({ ...formData, datasetId: e.target.value })}
-                className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
               >
                 {datasets.map((d) => (
                   <option key={d.id} value={d.id}>
@@ -503,7 +513,7 @@ export function AdminMissionEditorPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                 Cốt truyện trinh thám (Story Narrative) <span className="text-rose-500">*</span>
               </label>
               <textarea
@@ -511,15 +521,15 @@ export function AdminMissionEditorPage() {
                 value={formData.story}
                 onChange={(e) => setFormData({ ...formData, story: e.target.value })}
                 placeholder="Ví dụ: Giám đốc tài chính gọi điện lúc 8 giờ sáng báo cáo doanh thu tháng 3 giảm sút nghiêm trọng. Hãy vào vai thám tử dữ liệu mở file..."
-                className={`w-full rounded-xl border bg-background p-3 text-sm text-foreground outline-none transition-all resize-y ${
+                className={`w-full rounded-sm border bg-background p-3 text-sm text-foreground outline-none transition-all resize-y ${
                   errors.story ? 'border-rose-500' : 'border-border focus:border-primary'
                 }`}
               />
-              {errors.story && <p className="mt-1 text-xs text-rose-500">{errors.story}</p>}
+              {errors.story && <p className="mt-1 font-mono text-xs text-rose-500">{errors.story}</p>}
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-foreground mb-1.5">
+              <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                 Mục tiêu phá án (Objective) <span className="text-rose-500">*</span>
               </label>
               <input
@@ -527,11 +537,11 @@ export function AdminMissionEditorPage() {
                 value={formData.objective}
                 onChange={(e) => setFormData({ ...formData, objective: e.target.value })}
                 placeholder="Ví dụ: Tính tổng doanh thu tháng 3 và so sánh với tháng 2 bằng công thức SUM."
-                className={`w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-all ${
+                className={`w-full rounded-sm border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none transition-all ${
                   errors.objective ? 'border-rose-500' : 'border-border focus:border-primary'
                 }`}
               />
-              {errors.objective && <p className="mt-1 text-xs text-rose-500">{errors.objective}</p>}
+              {errors.objective && <p className="mt-1 font-mono text-xs text-rose-500">{errors.objective}</p>}
             </div>
           </div>
         </div>
@@ -540,8 +550,8 @@ export function AdminMissionEditorPage() {
       {/* Tab 2: Workspace Setup */}
       {activeTab === 'workspace' && (
         <div className="space-y-6 animate-fade-in">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-5">
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+          <div className="dossier-card corner-brackets rounded-md border border-border bg-card p-6 shadow-2xs space-y-5">
+            <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
               <Layers className="size-4 text-primary" /> Thiết lập Không gian làm việc ({formData.tool?.toUpperCase()})
             </h3>
 
@@ -549,7 +559,9 @@ export function AdminMissionEditorPage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-1.5">Sheet mục tiêu</label>
+                    <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                      Sheet mục tiêu
+                    </label>
                     <input
                       type="text"
                       value={formData.starterContent.targetSheet}
@@ -560,12 +572,12 @@ export function AdminMissionEditorPage() {
                         })
                       }
                       placeholder="Ví dụ: Sales"
-                      className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                      className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-foreground mb-1.5">
+                    <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                       Ô mục tiêu cần giải (Target Cell) <span className="text-rose-500">*</span>
                     </label>
                     <input
@@ -578,16 +590,18 @@ export function AdminMissionEditorPage() {
                         })
                       }
                       placeholder="Ví dụ: E2"
-                      className={`w-full rounded-xl border bg-background px-3.5 py-2.5 text-sm font-mono text-foreground outline-none ${
+                      className={`w-full rounded-sm border bg-background px-3.5 py-2.5 text-sm font-mono text-foreground outline-none ${
                         errors.targetCell ? 'border-rose-500' : 'border-border focus:border-primary'
                       }`}
                     />
-                    {errors.targetCell && <p className="mt-1 text-xs text-rose-500">{errors.targetCell}</p>}
+                    {errors.targetCell && <p className="mt-1 font-mono text-xs text-rose-500">{errors.targetCell}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">Gợi ý ban đầu trong Formula Bar</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                    Gợi ý ban đầu trong Formula Bar
+                  </label>
                   <input
                     type="text"
                     value={formData.starterContent.hint}
@@ -598,14 +612,14 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="Ví dụ: Gõ công thức =C2*D2 để tính Thành tiền"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
                   />
                 </div>
               </>
             ) : (
               <>
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                     Câu lệnh SQL khởi tạo (Starter SQL) <span className="text-rose-500">*</span>
                   </label>
                   <textarea
@@ -618,15 +632,17 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="-- Viết câu lệnh SQL mẫu cho học viên bắt đầu&#10;SELECT * FROM sales;"
-                    className={`w-full rounded-xl border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y ${
+                    className={`w-full rounded-sm border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y ${
                       errors.starterSql ? 'border-rose-500' : 'border-border focus:border-primary'
                     }`}
                   />
-                  {errors.starterSql && <p className="mt-1 text-xs text-rose-500">{errors.starterSql}</p>}
+                  {errors.starterSql && <p className="mt-1 font-mono text-xs text-rose-500">{errors.starterSql}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">Gợi ý ban đầu</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                    Gợi ý ban đầu
+                  </label>
                   <input
                     type="text"
                     value={formData.starterContent.hint}
@@ -637,7 +653,7 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="Ví dụ: Gõ SELECT * FROM sales; để xem toàn bộ bảng sales."
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-primary"
                   />
                 </div>
               </>
@@ -649,15 +665,15 @@ export function AdminMissionEditorPage() {
       {/* Tab 3: Checker Configuration */}
       {activeTab === 'checker' && (
         <div className="space-y-6 animate-fade-in">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-5">
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+          <div className="dossier-card corner-brackets rounded-md border border-border bg-card p-6 shadow-2xs space-y-5">
+            <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2 border-b border-border pb-3">
               <Award className="size-4 text-primary" /> Cấu hình Bộ Chấm Điểm (Answer Keys & Rules)
             </h3>
 
             {formData.tool === 'excel' ? (
               <>
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                     Các công thức hợp lệ được chấp nhận (phân cách bằng dấu phẩy)
                   </label>
                   <input
@@ -670,7 +686,7 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="Ví dụ: =C2*D2, =D2*C2, =PRODUCT(C2,D2)"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
                     Có thể nhập nhiều biến thể công thức tương đương để người học giải theo nhiều cách.
@@ -678,7 +694,7 @@ export function AdminMissionEditorPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                     Giá trị kết quả kỳ vọng (Expected Value)
                   </label>
                   <input
@@ -691,7 +707,7 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="Ví dụ: 450000 hoặc VIP hoặc true"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
                     Bộ chấm sẽ đánh giá cả công thức và giá trị ô tính toán.
@@ -699,13 +715,13 @@ export function AdminMissionEditorPage() {
                 </div>
 
                 {errors.checkerConfig && (
-                  <p className="text-xs text-rose-500 font-semibold">{errors.checkerConfig}</p>
+                  <p className="font-mono text-xs text-rose-500 font-bold">{errors.checkerConfig}</p>
                 )}
               </>
             ) : (
               <>
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                     Danh sách tên cột kỳ vọng (Expected Columns)
                   </label>
                   <input
@@ -718,7 +734,7 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder="Ví dụ: id, order_id, product_name, branch, revenue"
-                    className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
+                    className="w-full rounded-sm border border-border bg-background px-3.5 py-2.5 font-mono text-sm text-foreground outline-none focus:border-primary"
                   />
                   <p className="mt-1 text-xs text-muted-foreground">
                     Các cột bắt buộc phải có trong kết quả trả về của câu lệnh SQL.
@@ -726,7 +742,7 @@ export function AdminMissionEditorPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1.5">
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
                     Dữ liệu các hàng kỳ vọng (JSON Array of Arrays) - Tùy chọn
                   </label>
                   <textarea
@@ -739,7 +755,7 @@ export function AdminMissionEditorPage() {
                       })
                     }
                     placeholder='[[1, "ORD-1001", "Laptop", 12500000], [2, "ORD-1002", "Chuột", 850000]]'
-                    className="w-full rounded-xl border border-border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y"
+                    className="w-full rounded-sm border border-border bg-background p-3 font-mono text-xs text-foreground outline-none resize-y"
                   />
                 </div>
               </>
@@ -751,10 +767,10 @@ export function AdminMissionEditorPage() {
       {/* Tab 4: Step-by-step Hints */}
       {activeTab === 'hints' && (
         <div className="space-y-6 animate-fade-in">
-          <div className="rounded-3xl border border-border bg-card p-6 shadow-xs space-y-5">
-            <div className="flex items-center justify-between">
+          <div className="dossier-card corner-brackets rounded-md border border-border bg-card p-6 shadow-2xs space-y-5">
+            <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
-                <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <h3 className="font-display text-lg font-bold text-foreground flex items-center gap-2">
                   <HelpCircle className="size-4 text-primary" /> Hệ thống gợi ý nhiều cấp độ
                 </h3>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -764,7 +780,7 @@ export function AdminMissionEditorPage() {
               <button
                 onClick={addHintRow}
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-xs font-bold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-border px-3 py-1.5 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 <Plus className="size-3.5" /> Thêm gợi ý
               </button>
@@ -772,8 +788,8 @@ export function AdminMissionEditorPage() {
 
             <div className="space-y-3">
               {formData.hints.map((hint, idx) => (
-                <div key={hint.id || idx} className="flex items-start gap-3 rounded-2xl border border-border bg-muted/30 p-3">
-                  <span className="grid size-7 shrink-0 place-items-center rounded-xl bg-muted font-mono text-xs font-bold text-muted-foreground mt-0.5">
+                <div key={hint.id || idx} className="flex items-start gap-3 rounded-sm border border-dashed border-border bg-muted/20 p-3.5">
+                  <span className="grid size-7 shrink-0 place-items-center rounded-xs border border-primary/40 bg-primary/10 font-mono text-xs font-bold text-primary mt-0.5 tabular-nums">
                     {idx + 1}
                   </span>
                   <div className="flex-1 space-y-2">
@@ -786,9 +802,9 @@ export function AdminMissionEditorPage() {
                         setFormData({ ...formData, hints: updated });
                       }}
                       placeholder={`Nội dung gợi ý bước ${idx + 1}...`}
-                      className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
+                      className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary"
                     />
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 font-mono text-xs">
                       <span className="text-muted-foreground">Giảm XP dự kiến:</span>
                       <input
                         type="number"
@@ -798,7 +814,7 @@ export function AdminMissionEditorPage() {
                           updated[idx].penaltyXp = Number(e.target.value) || 0;
                           setFormData({ ...formData, hints: updated });
                         }}
-                        className="w-20 rounded-lg border border-border bg-background px-2 py-1 font-mono text-xs text-foreground outline-none"
+                        className="w-20 rounded-sm border border-border bg-background px-2 py-1 font-mono text-xs text-foreground outline-none tabular-nums"
                       />
                       <span className="text-muted-foreground">XP</span>
                     </div>

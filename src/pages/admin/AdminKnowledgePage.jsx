@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { BookOpen, Plus, Search, Filter, Edit3, Trash2, CheckCircle2, FileSpreadsheet, Database, Book } from 'lucide-react';
 import { knowledgeService } from '../../services/index.js';
 
 export function AdminKnowledgePage() {
-  const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -45,7 +44,7 @@ export function AdminKnowledgePage() {
       } else {
         showToast('Lỗi khi xóa: ' + res.error.message, 'error');
       }
-    } catch (err) {
+    } catch {
       showToast('Lỗi không xác định', 'error');
     }
   };
@@ -58,7 +57,7 @@ export function AdminKnowledgePage() {
         showToast(`Đã chuyển sang ${newStatus === 'published' ? 'Publish' : 'Draft'}`);
         loadData();
       }
-    } catch (err) {
+    } catch {
       showToast('Lỗi cập nhật trạng thái', 'error');
     }
   };
@@ -75,32 +74,40 @@ export function AdminKnowledgePage() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl animate-fade-in space-y-6">
+    <div className="mx-auto max-w-7xl animate-fade-in space-y-7 pb-12">
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg shadow-lg border ${
-          toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-600 dark:text-red-400' :
-          'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-        } backdrop-blur-md flex items-center gap-2 animate-in slide-in-from-right-4`}>
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2.5 rounded-sm shadow-lg border font-mono text-xs font-bold ${
+          toast.type === 'error' ? 'bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400' :
+          'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
+        } backdrop-blur-md flex items-center gap-2`}>
           <CheckCircle2 className="size-4" />
-          <p className="text-sm font-medium">{toast.message}</p>
+          <p>{toast.message}</p>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      {/* Archival Masthead */}
+      <div className="flex flex-col gap-4 border-b-2 border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <BookOpen className="size-6 text-primary" />
+          <div className="flex items-center gap-2">
+            <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+              FIELD MANUAL ARCHIVE // CODEX
+            </span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Sổ tay nghiệp vụ
+            </span>
+          </div>
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
+            <BookOpen className="size-7 text-primary" />
             Knowledge Studio
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Quản lý các bài học lý thuyết, cú pháp và hướng dẫn công cụ
+          <p className="text-muted-foreground mt-1.5 text-sm">
+            Quản lý các bài học lý thuyết, cú pháp và hướng dẫn công cụ điều tra dữ liệu.
           </p>
         </div>
         <div className="flex gap-3">
           <Link
             to="/admin/knowledge/new"
-            className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:opacity-90 shadow-sm"
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm bg-primary px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground transition-colors hover:opacity-90 shadow-sm"
           >
             <Plus className="size-4" />
             Tạo Bài Học Mới
@@ -109,7 +116,7 @@ export function AdminKnowledgePage() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-wrap gap-4 items-center">
+      <div className="rounded-md border border-border bg-card/80 p-3.5 shadow-2xs flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
@@ -117,19 +124,19 @@ export function AdminKnowledgePage() {
             placeholder="Tìm theo tên bài học, ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            className="w-full pl-9 pr-4 py-2 rounded-sm border border-border bg-background text-sm focus:outline-none focus:border-primary"
           />
         </div>
         
-        <div className="flex items-center gap-2">
-          <Filter className="size-4 text-muted-foreground" />
-          <span className="text-sm font-medium text-foreground">Bộ lọc:</span>
+        <div className="flex items-center gap-1.5">
+          <Filter className="size-3.5 text-primary" />
+          <span className="font-mono text-xs font-bold uppercase tracking-wider text-muted-foreground">Bộ lọc:</span>
         </div>
 
         <select
           value={toolFilter}
           onChange={(e) => setToolFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="px-3 py-2 rounded-sm border border-border bg-background font-mono text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Công cụ</option>
           <option value="excel">Excel</option>
@@ -139,7 +146,7 @@ export function AdminKnowledgePage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="h-10 px-3 rounded-lg border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="px-3 py-2 rounded-sm border border-border bg-background font-mono text-xs font-bold text-foreground focus:outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Trạng thái</option>
           <option value="published">Đã Xuất bản</option>
@@ -147,83 +154,85 @@ export function AdminKnowledgePage() {
         </select>
       </div>
 
-      {/* List */}
-      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+      {/* Field Manual Ledger Table */}
+      <div className="dossier-card rounded-md border border-border bg-card shadow-2xs overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-muted-foreground animate-pulse">Đang tải dữ liệu...</div>
+          <div className="p-8 text-center font-mono text-xs text-muted-foreground animate-pulse">
+            Đang tải dữ liệu...
+          </div>
         ) : filteredTopics.length === 0 ? (
           <div className="p-12 flex flex-col items-center text-center">
-            <div className="grid size-12 place-items-center rounded-full bg-muted mb-4">
+            <div className="grid size-12 place-items-center rounded-sm border border-border bg-muted mb-4">
               <Book className="size-6 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-foreground">Không tìm thấy bài học nào</h3>
+            <h3 className="font-display text-lg font-bold text-foreground">Không tìm thấy bài học nào</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-sm">
               Chưa có bài học nào khớp với bộ lọc hoặc hệ thống chưa có dữ liệu.
             </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="text-xs text-muted-foreground uppercase bg-muted/50 border-b border-border">
+            <table className="w-full text-sm text-left border-collapse">
+              <thead className="font-mono text-[11px] font-bold text-muted-foreground uppercase tracking-wider bg-muted/50 border-b-2 border-border">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Thứ tự</th>
-                  <th className="px-4 py-3 font-medium">Bài học</th>
-                  <th className="px-4 py-3 font-medium">Công cụ</th>
-                  <th className="px-4 py-3 font-medium">Phân loại</th>
-                  <th className="px-4 py-3 font-medium text-center">Trạng thái</th>
-                  <th className="px-4 py-3 font-medium text-right">Thao tác</th>
+                  <th className="px-4 py-3.5">Thứ tự</th>
+                  <th className="px-4 py-3.5">Bài học</th>
+                  <th className="px-4 py-3.5">Công cụ</th>
+                  <th className="px-4 py-3.5">Phân loại</th>
+                  <th className="px-4 py-3.5 text-center">Trạng thái</th>
+                  <th className="px-4 py-3.5 text-right">Thao tác</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredTopics.map((topic) => (
-                  <tr key={topic.id} className="hover:bg-muted/50 transition-colors">
-                    <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
-                      {topic.orderIndex || 0}
+                {filteredTopics.map((topic, idx) => (
+                  <tr key={topic.id} className="hover:bg-muted/30 transition-colors">
+                    <td className="px-4 py-3.5 whitespace-nowrap font-mono text-xs font-bold text-muted-foreground tabular-nums">
+                      #{String(topic.orderIndex ?? idx + 1).padStart(2, '0')}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium text-foreground">{topic.title}</div>
-                      <div className="text-xs text-muted-foreground mt-0.5">{topic.id}</div>
+                    <td className="px-4 py-3.5">
+                      <div className="font-display font-bold text-base text-foreground">{topic.title}</div>
+                      <div className="font-mono text-[11px] text-primary mt-0.5">{topic.id}</div>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap">
+                    <td className="px-4 py-3.5 whitespace-nowrap">
                       {topic.tool === 'excel' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium">
-                          <FileSpreadsheet className="size-3.5" />
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xs border border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold uppercase">
+                          <FileSpreadsheet className="size-3" />
                           Excel
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-medium">
-                          <Database className="size-3.5" />
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-xs border border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400 font-mono text-[10px] font-bold uppercase">
+                          <Database className="size-3" />
                           SQL
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap capitalize text-muted-foreground">
+                    <td className="px-4 py-3.5 whitespace-nowrap font-mono text-xs uppercase text-muted-foreground">
                       {topic.category || 'Basic'}
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-center">
+                    <td className="px-4 py-3.5 whitespace-nowrap text-center">
                       <button
                         onClick={() => toggleStatus(topic)}
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition-colors ${
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-xs border font-mono text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer ${
                           topic.status === 'published'
-                            ? 'bg-primary/10 text-primary hover:bg-primary/20'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                            ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+                            : 'border-border bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                       >
                         {topic.status === 'published' ? 'Published' : 'Draft'}
                       </button>
                     </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-4 py-3.5 whitespace-nowrap text-right">
+                      <div className="flex items-center justify-end gap-1.5">
                         <Link
                           to={`/admin/knowledge/${topic.id}/edit`}
-                          className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-primary/10"
+                          className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-sm border border-transparent hover:border-border hover:bg-muted"
                           title="Chỉnh sửa"
                         >
                           <Edit3 className="size-4" />
                         </Link>
                         <button
                           onClick={() => handleDelete(topic.id)}
-                          className="p-1.5 text-muted-foreground hover:text-red-600 transition-colors rounded-md hover:bg-red-500/10"
+                          className="p-1.5 text-muted-foreground hover:text-rose-500 transition-colors rounded-sm border border-transparent hover:border-rose-500/40 hover:bg-rose-500/10 cursor-pointer"
                           title="Xóa"
                         >
                           <Trash2 className="size-4" />

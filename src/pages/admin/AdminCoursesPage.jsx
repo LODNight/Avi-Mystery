@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   FileSpreadsheet,
   Database,
@@ -8,9 +8,6 @@ import {
   Trash2,
   CheckCircle2,
   AlertCircle,
-  Sparkles,
-  Layers,
-  Send,
   BookOpen,
   ArrowRight,
   RefreshCw,
@@ -18,7 +15,6 @@ import {
 import { adminContentService } from '../../services/index.js';
 
 export function AdminCoursesPage() {
-  const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState(null);
@@ -130,14 +126,14 @@ export function AdminCoursesPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in pb-16">
+    <div className="mx-auto flex max-w-7xl flex-col gap-7 animate-fade-in pb-16">
       {/* Toast */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-xl border ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-sm px-4 py-3 font-mono text-xs font-bold shadow-xl border ${
             toast.type === 'error'
-              ? 'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400'
-              : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400'
+              : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
           }`}
         >
           {toast.type === 'error' ? <AlertCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
@@ -145,52 +141,59 @@ export function AdminCoursesPage() {
         </div>
       )}
 
-      {/* Header */}
-      <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Archival Masthead */}
+      <section className="flex flex-col justify-between gap-4 border-b-2 border-border pb-5 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded">
+            <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+              CURRICULUM ARCHIVE // BINDERS
+            </span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Lộ trình học tập
             </span>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
-            <BookOpen className="size-8 text-primary" />
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
+            <BookOpen className="size-7 text-primary" />
             Quản lý Khóa học
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Quản lý các khóa học điều tra dữ liệu, thiết lập cấu trúc và đồng bộ tự động lên Bản đồ Học tập.
           </p>
         </div>
 
         <button
           onClick={openCreateModal}
-          className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-md shadow-primary/25 hover:opacity-90 transition-all cursor-pointer shrink-0"
+          className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-all cursor-pointer shrink-0"
         >
           <Plus className="size-4" /> Tạo Khóa Học Mới
         </button>
       </section>
 
-      {/* Courses Grid */}
+      {/* Master Case Binders Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {isLoading ? (
-          <p className="col-span-full py-12 text-center text-muted-foreground">Đang tải danh sách khóa học...</p>
+          <p className="col-span-full py-12 text-center font-mono text-xs text-muted-foreground">
+            Đang tải danh sách khóa học...
+          </p>
         ) : courses.length === 0 ? (
-          <p className="col-span-full py-12 text-center text-muted-foreground">Chưa có khóa học nào.</p>
+          <p className="col-span-full py-12 text-center font-mono text-xs text-muted-foreground">
+            Chưa có khóa học nào.
+          </p>
         ) : (
-          courses.map((course) => {
+          courses.map((course, idx) => {
             const isExcel = course.tool === 'excel';
             return (
               <div
                 key={course.id}
-                className="flex flex-col justify-between rounded-3xl border border-border bg-card p-6 shadow-xs hover:shadow-md transition-all hover:border-primary/40 group"
+                className="dossier-card corner-brackets flex flex-col justify-between rounded-md border border-border bg-card p-6 shadow-2xs hover:border-primary/50 transition-all group"
               >
                 <div>
-                  <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="flex items-center justify-between gap-2 mb-4 pb-2.5 border-b border-border/80">
                     <span
-                      className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                      className={`inline-flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs border ${
                         isExcel
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          : 'border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400'
                       }`}
                     >
                       {isExcel ? <FileSpreadsheet className="size-3" /> : <Database className="size-3" />}
@@ -198,58 +201,61 @@ export function AdminCoursesPage() {
                     </span>
 
                     <span
-                      className={`font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                      className={`font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs border ${
                         course.status === 'published'
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                          : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                          : 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
                       }`}
                     >
                       {course.status === 'published' ? 'ĐÃ XUẤT BẢN' : 'BẢN NHÁP'}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-extrabold text-foreground group-hover:text-primary transition-colors">
+                  <div className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest mb-1">
+                    DOSSIER BINDER // {course.id || `CRS-0${idx + 1}`}
+                  </div>
+                  <h3 className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors">
                     {course.title}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                  <p className="text-xs text-muted-foreground mt-2 line-clamp-2 leading-relaxed">
                     {course.description || 'Chưa có mô tả cho khóa học này.'}
                   </p>
 
-                  <div className="mt-5 grid grid-cols-2 gap-2 text-xs border-t border-border pt-4 text-muted-foreground">
+                  <div className="mt-5 grid grid-cols-2 gap-3 text-xs border-y border-dashed border-border py-3 text-muted-foreground bg-muted/20 px-3 rounded-xs">
                     <div>
-                      <span className="block font-bold text-foreground text-sm">
+                      <span className="block font-mono font-bold text-foreground text-base tabular-nums">
                         {course.totalChapters || 0}
                       </span>
-                      Chương học
+                      <span className="font-mono text-[10px] uppercase tracking-wider">Chương học</span>
                     </div>
-                    <div>
-                      <span className="block font-bold text-foreground text-sm">
+                    <div className="border-l border-dashed border-border pl-3">
+                      <span className="block font-mono font-bold text-foreground text-base tabular-nums">
                         {course.totalMissions || 0}
                       </span>
-                      Vụ án thực hành
+                      <span className="font-mono text-[10px] uppercase tracking-wider">Vụ án thực hành</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-2 pt-4 border-t border-border">
+                <div className="mt-5 flex flex-col gap-2.5">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handlePublishSync(course)}
                       title="Tạo lại Learning Map View cho học viên"
-                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-bold text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors cursor-pointer"
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-sm border border-amber-500/40 bg-amber-500/10 px-3 py-2 font-mono text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-colors cursor-pointer"
                     >
-                      <Sparkles className="size-3.5" /> Xuất bản & Sync Map
+                      <RefreshCw className="size-3.5" /> Xuất bản & Sync Map
                     </button>
                     <button
                       onClick={() => openEditModal(course)}
-                      className="p-2 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                      className="p-2 rounded-sm border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                       title="Chỉnh sửa khóa học"
                     >
                       <Edit3 className="size-4" />
                     </button>
                     <button
                       onClick={() => handleDelete(course)}
-                      className="p-2 rounded-xl border border-border text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                      className="p-2 rounded-sm border border-border text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                       title="Xóa khóa học"
                     >
                       <Trash2 className="size-4" />
@@ -258,9 +264,9 @@ export function AdminCoursesPage() {
 
                   <Link
                     to={`/admin/chapters?courseId=${course.id}`}
-                    className="inline-flex items-center justify-center gap-1 text-xs font-bold text-primary hover:underline mt-1"
+                    className="inline-flex items-center justify-center gap-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-primary hover:underline pt-1"
                   >
-                    Xem danh sách các chương <ArrowRight className="size-3" />
+                    Xem danh sách các chương <ArrowRight className="size-3.5" />
                   </Link>
                 </div>
               </div>
@@ -269,45 +275,56 @@ export function AdminCoursesPage() {
         )}
       </div>
 
-      {/* Course Edit/Create Modal */}
+      {/* Course Edit/Create Dossier Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="w-full max-w-lg rounded-3xl border border-border bg-card p-6 shadow-2xl space-y-5">
-            <h3 className="text-lg font-extrabold text-foreground">
-              {editingCourse ? 'Chỉnh sửa Khóa học' : 'Tạo Khóa học mới'}
-            </h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="dossier-card corner-brackets w-full max-w-lg rounded-md border border-border bg-card p-6 shadow-2xl space-y-5">
+            <div className="border-b border-border pb-3">
+              <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                [ARCHIVE FORM // COURSE BINDER]
+              </span>
+              <h3 className="font-display text-xl font-bold text-foreground mt-0.5">
+                {editingCourse ? 'Chỉnh sửa Khóa học' : 'Tạo Khóa học mới'}
+              </h3>
+            </div>
 
             <form onSubmit={handleSave} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Tên khóa học *</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Tên khóa học *
+                </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   placeholder="Ví dụ: Phân Tích Dữ Liệu Với SQL"
-                  className="w-full rounded-xl border border-border bg-background px-3.5 py-2 text-sm text-foreground outline-none focus:border-primary"
+                  className="w-full rounded-sm border border-border bg-background px-3.5 py-2 text-sm text-foreground outline-none focus:border-primary"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">Công cụ</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                    Công cụ
+                  </label>
                   <select
                     value={formData.tool}
                     onChange={(e) => setFormData({ ...formData, tool: e.target.value })}
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                   >
                     <option value="excel">Excel</option>
                     <option value="sql">SQL</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-foreground mb-1">Độ khó</label>
+                  <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                    Độ khó
+                  </label>
                   <select
                     value={formData.difficulty}
                     onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                    className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+                    className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
                   >
                     <option value="beginner">Cơ bản</option>
                     <option value="intermediate">Trung cấp</option>
@@ -317,27 +334,29 @@ export function AdminCoursesPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-foreground mb-1">Mô tả khóa học</label>
+                <label className="block font-mono text-[11px] font-bold uppercase tracking-wider text-foreground mb-1.5">
+                  Mô tả khóa học
+                </label>
                 <textarea
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Tóm tắt nội dung và kỹ năng đạt được..."
-                  className="w-full rounded-xl border border-border bg-background p-3 text-sm text-foreground outline-none resize-none focus:border-primary"
+                  className="w-full rounded-sm border border-border bg-background p-3 text-sm text-foreground outline-none resize-none focus:border-primary"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t border-border">
+              <div className="flex justify-end gap-2 pt-3 border-t border-border">
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-xl border border-border px-4 py-2 text-xs font-semibold text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  className="rounded-sm border border-border px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-foreground hover:bg-muted transition-colors cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90 transition-opacity cursor-pointer"
+                  className="rounded-sm bg-primary px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
                 >
                   Lưu Khóa Học
                 </button>

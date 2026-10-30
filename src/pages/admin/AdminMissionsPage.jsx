@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Target,
   Plus,
   Search,
-  Filter,
   Edit3,
   Copy,
   Trash2,
@@ -12,10 +11,6 @@ import {
   AlertCircle,
   FileSpreadsheet,
   Database,
-  Eye,
-  ArrowUpDown,
-  Sparkles,
-  Layers,
   Check,
   X,
 } from 'lucide-react';
@@ -143,14 +138,14 @@ export function AdminMissionsPage() {
   };
 
   return (
-    <div className="mx-auto flex max-w-7xl flex-col gap-8 animate-fade-in pb-12">
+    <div className="mx-auto flex max-w-7xl flex-col gap-7 animate-fade-in pb-12">
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-xl transition-all border ${
+          className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-sm px-4 py-3 font-mono text-xs font-bold shadow-xl transition-all border ${
             toast.type === 'error'
-              ? 'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-400'
-              : 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+              ? 'bg-rose-500/15 border-rose-500/40 text-rose-600 dark:text-rose-400'
+              : 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400'
           }`}
         >
           {toast.type === 'error' ? <AlertCircle className="size-4" /> : <CheckCircle2 className="size-4" />}
@@ -158,22 +153,22 @@ export function AdminMissionsPage() {
         </div>
       )}
 
-      {/* Header */}
-      <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      {/* Archival Masthead */}
+      <section className="flex flex-col justify-between gap-4 border-b-2 border-border pb-5 sm:flex-row sm:items-end">
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground bg-muted px-2 py-0.5 rounded-md">
+            <span className="detective-stamp text-primary border-primary/40 bg-primary/10">
+              CASE REGISTRY // DOSSIER STUDIO
+            </span>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Admin Content Studio
             </span>
-            <span className="font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md">
-              Sprint 8
-            </span>
           </div>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
-            <Target className="size-8 text-primary" />
+          <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-foreground sm:text-4xl flex items-center gap-3">
+            <Target className="size-7 text-primary" />
             Quản lý Vụ án & Nhiệm vụ
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1.5 text-sm text-muted-foreground">
             Soạn thảo bối cảnh trinh thám, cấu hình câu hỏi thực hành Excel & SQL, bộ chấm điểm và đồng bộ bản đồ học tập.
           </p>
         </div>
@@ -181,43 +176,59 @@ export function AdminMissionsPage() {
         <div className="flex items-center gap-3 shrink-0">
           <button
             onClick={() => navigate('/admin/missions/new')}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/25 hover:opacity-90 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-sm bg-primary px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-sm hover:opacity-90 transition-all cursor-pointer"
           >
             <Plus className="size-4" /> Tạo Vụ Án Mới
           </button>
         </div>
       </section>
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
-          <p className="text-xs text-muted-foreground font-medium">Tổng vụ án</p>
-          <p className="mt-1 text-2xl font-black text-foreground">{stats.total}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
-          <p className="text-xs text-muted-foreground font-medium">Đã xuất bản</p>
-          <p className="mt-1 text-2xl font-black text-emerald-600 dark:text-emerald-400">{stats.published}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
-          <p className="text-xs text-muted-foreground font-medium">Bản nháp</p>
-          <p className="mt-1 text-2xl font-black text-amber-600 dark:text-amber-400">{stats.draft}</p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
-          <p className="text-xs text-muted-foreground font-medium">Excel Missions</p>
-          <p className="mt-1 text-2xl font-black text-emerald-500 flex items-center gap-1.5">
-            <FileSpreadsheet className="size-4" /> {stats.excelCount}
-          </p>
-        </div>
-        <div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
-          <p className="text-xs text-muted-foreground font-medium">SQL Missions</p>
-          <p className="mt-1 text-2xl font-black text-blue-500 flex items-center gap-1.5">
-            <Database className="size-4" /> {stats.sqlCount}
-          </p>
+      {/* Forensic Mission Telemetry Bar (Replaces 5 Boxed Stat Cards) */}
+      <div className="rounded-md border border-border bg-card/70 bg-ruled-ledger px-5 py-3.5 shadow-2xs">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 sm:divide-x sm:divide-border">
+          <div>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Tổng vụ án
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-foreground tabular-nums">{stats.total}</p>
+          </div>
+          <div className="sm:pl-4">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Đã xuất bản
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
+              {stats.published}
+            </p>
+          </div>
+          <div className="sm:pl-4">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Bản nháp
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-amber-600 dark:text-amber-400 tabular-nums">
+              {stats.draft}
+            </p>
+          </div>
+          <div className="sm:pl-4">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Excel Missions
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-emerald-500 flex items-center gap-1.5 tabular-nums">
+              <FileSpreadsheet className="size-4" /> {stats.excelCount}
+            </p>
+          </div>
+          <div className="sm:pl-4">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              SQL Missions
+            </p>
+            <p className="mt-1 font-mono text-2xl font-bold text-sky-500 flex items-center gap-1.5 tabular-nums">
+              <Database className="size-4" /> {stats.sqlCount}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-xs">
+      <div className="flex flex-wrap items-center gap-2.5 rounded-md border border-border bg-card/80 p-3 shadow-2xs">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -225,14 +236,14 @@ export function AdminMissionsPage() {
             placeholder="Tìm kiếm vụ án theo tiêu đề, ID, mục tiêu..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl bg-muted/60 pl-9 pr-4 py-2 text-sm text-foreground outline-none border border-transparent focus:border-primary/50 focus:bg-background transition-all"
+            className="w-full rounded-sm bg-background pl-9 pr-4 py-2 text-sm text-foreground outline-none border border-border focus:border-primary transition-all"
           />
         </div>
 
         <select
           value={courseFilter}
           onChange={(e) => setCourseFilter(e.target.value)}
-          className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+          className="rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs font-bold text-foreground outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Khóa học</option>
           {courses.map((c) => (
@@ -245,7 +256,7 @@ export function AdminMissionsPage() {
         <select
           value={toolFilter}
           onChange={(e) => setToolFilter(e.target.value)}
-          className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+          className="rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs font-bold text-foreground outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Công cụ</option>
           <option value="excel">Excel</option>
@@ -255,7 +266,7 @@ export function AdminMissionsPage() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+          className="rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs font-bold text-foreground outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Trạng thái</option>
           <option value="published">Đã xuất bản</option>
@@ -265,7 +276,7 @@ export function AdminMissionsPage() {
         <select
           value={difficultyFilter}
           onChange={(e) => setDifficultyFilter(e.target.value)}
-          className="rounded-xl border border-border bg-muted/40 px-3 py-2 text-xs font-semibold text-foreground outline-none focus:ring-2 focus:ring-primary/40 cursor-pointer"
+          className="rounded-sm border border-border bg-background px-3 py-2 font-mono text-xs font-bold text-foreground outline-none focus:border-primary cursor-pointer"
         >
           <option value="all">Tất cả Độ khó</option>
           <option value="easy">Dễ (Easy)</option>
@@ -282,19 +293,19 @@ export function AdminMissionsPage() {
               setStatusFilter('all');
               setDifficultyFilter('all');
             }}
-            className="rounded-xl border border-border px-3 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="rounded-sm border border-border px-3 py-2 font-mono text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             Đặt lại bộ lọc
           </button>
         )}
       </div>
 
-      {/* Missions Table */}
-      <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-sm">
+      {/* Official Case Registry Ledger Table */}
+      <div className="dossier-card overflow-hidden rounded-md border border-border bg-card shadow-2xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="border-b border-border bg-muted/40 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b-2 border-border bg-muted/50 font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                 <th className="py-3.5 pl-6 pr-3">Mã & Tiêu đề vụ án</th>
                 <th className="px-3 py-3.5">Khóa học / Chương</th>
                 <th className="px-3 py-3.5 text-center">Công cụ</th>
@@ -307,13 +318,13 @@ export function AdminMissionsPage() {
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-muted-foreground font-medium">
+                  <td colSpan={7} className="py-12 text-center font-mono text-xs text-muted-foreground">
                     Đang tải danh sách vụ án...
                   </td>
                 </tr>
               ) : filteredMissions.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-muted-foreground">
+                  <td colSpan={7} className="py-12 text-center font-mono text-xs text-muted-foreground">
                     Không tìm thấy vụ án nào phù hợp với bộ lọc.
                   </td>
                 </tr>
@@ -322,10 +333,10 @@ export function AdminMissionsPage() {
                   <tr key={m.id} className="hover:bg-muted/30 transition-colors group">
                     <td className="py-4 pl-6 pr-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-[10px] font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                        <span className="font-mono text-[10px] font-bold text-primary bg-primary/10 border border-primary/30 px-2 py-0.5 rounded-xs">
                           {m.id}
                         </span>
-                        <span className="font-bold text-foreground group-hover:text-primary transition-colors">
+                        <span className="font-display font-bold text-base text-foreground group-hover:text-primary transition-colors">
                           {m.title}
                         </span>
                       </div>
@@ -335,16 +346,16 @@ export function AdminMissionsPage() {
                     </td>
 
                     <td className="px-3 py-4">
-                      <p className="text-xs font-semibold text-foreground">{getCourseTitle(m.courseId)}</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">{getChapterTitle(m.chapterId)}</p>
+                      <p className="text-xs font-bold text-foreground">{getCourseTitle(m.courseId)}</p>
+                      <p className="font-mono text-[10px] text-muted-foreground mt-0.5">{getChapterTitle(m.chapterId)}</p>
                     </td>
 
                     <td className="px-3 py-4 text-center">
                       <span
-                        className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded-xs border ${
                           m.tool === 'excel'
-                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                            : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
+                            ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                            : 'border-sky-500/40 bg-sky-500/10 text-sky-600 dark:text-sky-400'
                         }`}
                       >
                         {m.tool === 'excel' ? <FileSpreadsheet className="size-3" /> : <Database className="size-3" />}
@@ -359,7 +370,7 @@ export function AdminMissionsPage() {
                     </td>
 
                     <td className="px-3 py-4 text-center">
-                      <span className="font-mono text-xs font-black text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md">
+                      <span className="font-mono text-xs font-bold tabular-nums text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-xs">
                         +{m.rewardXp} XP
                       </span>
                     </td>
@@ -368,10 +379,10 @@ export function AdminMissionsPage() {
                       <button
                         onClick={() => handleToggleStatus(m)}
                         title="Bấm để đổi trạng thái Xuất bản / Bản nháp"
-                        className={`inline-flex items-center gap-1 font-mono text-[11px] font-bold px-2.5 py-1 rounded-full cursor-pointer transition-all hover:scale-105 ${
+                        className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs border cursor-pointer transition-all ${
                           m.status === 'published'
-                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/25'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                            ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'
+                            : 'border-border bg-muted text-muted-foreground hover:bg-muted/80'
                         }`}
                       >
                         {m.status === 'published' ? (
@@ -390,21 +401,21 @@ export function AdminMissionsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => navigate(`/admin/missions/${m.id}/edit`)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted transition-colors cursor-pointer"
+                          className="p-1.5 rounded-sm border border-transparent text-muted-foreground hover:border-border hover:text-primary hover:bg-muted transition-colors cursor-pointer"
                           title="Chỉnh sửa vụ án"
                         >
                           <Edit3 className="size-4" />
                         </button>
                         <button
                           onClick={() => handleDuplicate(m)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                          className="p-1.5 rounded-sm border border-transparent text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                           title="Nhân bản vụ án"
                         >
                           <Copy className="size-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(m)}
-                          className="p-1.5 rounded-lg text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                          className="p-1.5 rounded-sm border border-transparent text-muted-foreground hover:border-rose-500/40 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
                           title="Xóa vụ án"
                         >
                           <Trash2 className="size-4" />

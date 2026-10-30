@@ -31,6 +31,7 @@ import { FEATURE_FLAGS } from '../../config/envConfig.js';
 
 const adminNavGroups = [
   {
+    code: 'OVR-01',
     category: 'Tổng quan',
     items: [
       { label: 'Tổng quan Admin', to: '/admin', icon: LayoutDashboard },
@@ -38,6 +39,7 @@ const adminNavGroups = [
     ],
   },
   {
+    code: 'OVR-02',
     category: 'Quản trị nội dung',
     items: [
       {
@@ -57,6 +59,7 @@ const adminNavGroups = [
     ],
   },
   {
+    code: 'OVR-03',
     category: 'Hệ thống',
     items: [
       {
@@ -165,33 +168,41 @@ export function AdminLayout({ children }) {
         />
       )}
 
-      {/* ── Sidebar ── */}
+      {/* ── Sidebar: Bureau HQ Overseer Cabinet ── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar py-5 transition-all duration-300 ease-in-out lg:translate-x-0 ${
-          collapsed ? 'w-20 px-3.5' : 'w-72 px-4'
+        className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar/95 backdrop-blur-md py-4 transition-all duration-300 ease-in-out lg:translate-x-0 ${
+          collapsed ? 'w-20 px-3' : 'w-72 px-4'
         } ${mobileOpen ? 'translate-x-0 w-72 px-4' : '-translate-x-full'}`}
       >
         {/* Brand Header */}
-        <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'justify-between px-1'}`}>
+        <div className={`flex items-center border-b border-sidebar-border pb-3.5 ${collapsed && !mobileOpen ? 'justify-center' : 'justify-between px-1'}`}>
           <Link
             to="/admin"
             className="flex items-center gap-3 min-w-0"
             onClick={() => setMobileOpen(false)}
             title={`${brand.brandName} Admin`}
           >
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <BrandLogoIcon className="size-5" />
+            <span className="grid size-9 shrink-0 place-items-center rounded-sm border border-primary/50 bg-primary/15 text-primary shadow-xs">
+              <BrandLogoIcon className="size-4.5" />
             </span>
             {(!collapsed || mobileOpen) && (
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
-                  {brand.brandName} <span className="text-xs text-primary font-semibold">Admin</span>
-                </span>
-                {FEATURE_FLAGS.showDevBadge && (
-                  <span className="rounded-md bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
-                    DEV
+              <div className="flex flex-col min-w-0 animate-fade-in">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-display text-base font-bold tracking-tight text-sidebar-foreground truncate">
+                    {brand.brandName}
                   </span>
-                )}
+                  <span className="rounded-xs border border-primary/40 bg-primary/10 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase tracking-widest text-primary shrink-0">
+                    HQ OVERSEER
+                  </span>
+                  {FEATURE_FLAGS.showDevBadge && (
+                    <span className="rounded-xs bg-amber-500/15 px-1 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                      DEV
+                    </span>
+                  )}
+                </div>
+                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                  ARCHIVE & CASE COMMAND
+                </span>
               </div>
             )}
           </Link>
@@ -200,7 +211,7 @@ export function AdminLayout({ children }) {
           {(!collapsed || mobileOpen) && (
             <button
               onClick={() => setCollapsed(true)}
-              className="hidden lg:flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0"
+              className="hidden lg:flex items-center justify-center size-7 rounded-sm border border-transparent text-muted-foreground hover:border-sidebar-border hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0 cursor-pointer"
               title="Thu gọn sidebar"
               aria-label="Thu gọn sidebar"
             >
@@ -210,7 +221,7 @@ export function AdminLayout({ children }) {
 
           {/* Mobile Close Button */}
           <button
-            className="rounded-lg p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden"
+            className="rounded-sm p-1.5 text-muted-foreground hover:bg-sidebar-accent lg:hidden"
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           >
@@ -218,34 +229,45 @@ export function AdminLayout({ children }) {
           </button>
         </div>
 
-        {/* User Card Badge */}
-        <div className="mt-6 rounded-2xl border border-sidebar-border bg-sidebar-accent/50 p-2.5 transition-all">
+        {/* Chief Overseer Credential Badge */}
+        <div className="mt-4 dossier-card rounded-md border border-sidebar-border bg-sidebar-accent/40 p-2.5 transition-all">
           <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'gap-3'}`}>
             <span
-              className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-500/20 font-mono text-sm font-bold text-amber-500"
+              className="grid size-9 shrink-0 place-items-center rounded-sm border border-amber-500/40 bg-amber-500/15 font-mono text-xs font-bold text-amber-500"
               title={user?.name || 'Quản trị viên'}
             >
               {initials}
             </span>
             {(!collapsed || mobileOpen) && (
               <div className="min-w-0 flex-1 animate-fade-in">
-                <p className="truncate text-sm font-semibold text-sidebar-foreground">
+                <div className="flex items-center justify-between gap-1">
+                  <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-primary">
+                    ID // HQ-OVERSEER
+                  </span>
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                </div>
+                <p className="truncate text-xs font-bold text-sidebar-foreground mt-0.5">
                   {user?.name || 'Quản trị viên'}
                 </p>
-                <p className="truncate text-xs text-muted-foreground">Admin Workspace</p>
+                <p className="truncate font-mono text-[10px] text-muted-foreground">
+                  CLEARANCE: LEVEL 5
+                </p>
               </div>
             )}
           </div>
         </div>
 
         {/* Navigation items */}
-        <nav className="mt-6 flex flex-col gap-4 overflow-y-auto flex-1" aria-label="Menu Admin">
+        <nav className="mt-5 flex flex-col gap-4 overflow-y-auto flex-1 pr-0.5" aria-label="Menu Admin">
           {adminNavGroups.map((group) => (
             <div key={group.category} className="flex flex-col gap-1">
               {(!collapsed || mobileOpen) && (
-                <p className="px-3 pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground animate-fade-in">
-                  {group.category}
-                </p>
+                <div className="flex items-center justify-between px-2.5 pb-1 animate-fade-in">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                    {group.category}
+                  </p>
+                  <span className="font-mono text-[9px] text-muted-foreground/60">[{group.code}]</span>
+                </div>
               )}
               {group.items.map((item) => {
                 const Icon = item.icon;
@@ -268,21 +290,21 @@ export function AdminLayout({ children }) {
                         type="button"
                         onClick={() => toggleGroup(groupId)}
                         title={collapsed && !mobileOpen ? item.label : undefined}
-                        className={`w-full flex items-center justify-between gap-3 rounded-xl transition-all ${
-                          collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-sm font-medium'
+                        className={`w-full flex items-center justify-between gap-3 rounded-sm transition-all cursor-pointer ${
+                          collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2 text-xs font-bold'
                         } ${
                           isGroupActive
-                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 font-semibold border-l-2 border-amber-500'
-                            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                            ? 'bg-primary/10 text-primary border-l-[3px] border-primary'
+                            : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-[3px] border-transparent'
                         }`}
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Icon className={`size-[18px] shrink-0 ${isGroupActive ? 'text-amber-500' : ''}`} />
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <Icon className={`size-4 shrink-0 ${isGroupActive ? 'text-primary' : ''}`} />
                           {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
                         </div>
                         {(!collapsed || mobileOpen) && (
                           <ChevronDown
-                            className={`size-4 text-muted-foreground transition-transform duration-200 ${
+                            className={`size-3.5 text-muted-foreground transition-transform duration-200 ${
                               isOpen ? 'rotate-180' : ''
                             }`}
                           />
@@ -291,7 +313,7 @@ export function AdminLayout({ children }) {
 
                       {/* Dropdown Sub-menu Items */}
                       {isOpen && (!collapsed || mobileOpen) && (
-                        <div className="ml-4 pl-3 border-l border-sidebar-border flex flex-col gap-1 my-1 animate-fade-in">
+                        <div className="ml-3.5 pl-2.5 border-l border-dashed border-sidebar-border flex flex-col gap-0.5 my-0.5 animate-fade-in">
                           {item.children.map((child) => {
                             const ChildIcon = child.icon;
                             const isChildActive = child.to.includes('?')
@@ -303,10 +325,10 @@ export function AdminLayout({ children }) {
                                 key={child.to}
                                 to={child.to}
                                 onClick={() => setMobileOpen(false)}
-                                className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all ${
+                                className={`flex items-center gap-2 rounded-sm px-2.5 py-1.5 text-xs transition-all ${
                                   isChildActive
-                                    ? 'bg-primary/15 text-primary dark:bg-amber-500/15 dark:text-amber-400 font-bold'
-                                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                                    ? 'bg-primary/15 text-primary font-bold border-l-2 border-primary'
+                                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground font-medium'
                                 }`}
                               >
                                 <ChildIcon className="size-3.5 shrink-0" />
@@ -328,16 +350,16 @@ export function AdminLayout({ children }) {
                     onClick={() => setMobileOpen(false)}
                     title={collapsed && !mobileOpen ? item.label : undefined}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 rounded-xl transition-all ${
-                        collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-sm font-medium'
+                      `flex items-center gap-2.5 rounded-sm transition-all ${
+                        collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2 text-xs font-bold'
                       } ${
                         isActive
-                          ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-sm'
-                          : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                          ? 'bg-primary/15 text-primary border-l-[3px] border-primary shadow-2xs'
+                          : 'text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground border-l-[3px] border-transparent'
                       }`
                     }
                   >
-                    <Icon className="size-[18px] shrink-0" />
+                    <Icon className="size-4 shrink-0" />
                     {(!collapsed || mobileOpen) && <span className="truncate">{item.label}</span>}
                   </NavLink>
                 );
@@ -345,15 +367,15 @@ export function AdminLayout({ children }) {
             </div>
           ))}
 
-          <div className="my-2 h-px bg-sidebar-border" />
+          <div className="my-1.5 h-px bg-sidebar-border" />
           <button
             onClick={handleLogout}
             title={collapsed && !mobileOpen ? 'Đăng xuất' : undefined}
-            className={`flex items-center gap-3 rounded-xl text-destructive hover:bg-sidebar-accent transition-all ${
-              collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-left text-sm font-medium'
+            className={`flex items-center gap-2.5 rounded-sm text-destructive hover:bg-destructive/10 transition-all cursor-pointer ${
+              collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2.5 text-left text-xs font-bold'
             }`}
           >
-            <LogOut className="size-[18px] shrink-0" />
+            <LogOut className="size-4 shrink-0" />
             {(!collapsed || mobileOpen) && <span>Đăng xuất</span>}
           </button>
         </nav>
@@ -366,41 +388,56 @@ export function AdminLayout({ children }) {
           collapsed ? 'lg:pl-20' : 'lg:pl-72'
         }`}
       >
-        {/* Sticky Header */}
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-border bg-background/80 px-5 backdrop-blur-md sm:px-8">
+        {/* Sticky Header (64px per anti-bloat guardrail) */}
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-background/90 px-5 backdrop-blur-md sm:px-8">
           <div className="flex items-center gap-3">
             {/* Mobile Menu Button */}
             <button
-              className="rounded-xl border border-border p-2.5 lg:hidden text-foreground hover:bg-muted"
+              className="rounded-sm border border-border p-2 lg:hidden text-foreground hover:bg-muted"
               aria-label="Mở menu"
               onClick={() => setMobileOpen(true)}
             >
-              <Menu className="size-5" />
+              <Menu className="size-4.5" />
             </button>
 
             {/* Desktop Sidebar Toggle Button */}
             <button
               onClick={() => setCollapsed((v) => !v)}
-              className="hidden lg:flex items-center justify-center rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              className="hidden lg:flex items-center justify-center rounded-sm border border-border p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               title={collapsed ? 'Mở rộng sidebar' : 'Thu gọn sidebar'}
               aria-label="Toggle sidebar collapse"
             >
-              <PanelLeft className="size-5" />
+              <PanelLeft className="size-4" />
             </button>
 
-            <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                Quản trị nội dung
-              </p>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">{pageTitle}</h1>
+            <div className="flex items-center gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                    HQ ARCHIVE COMMAND
+                  </p>
+                  <span className="hidden sm:inline-block font-mono text-[9px] text-muted-foreground">
+                    // SECURE TERMINAL
+                  </span>
+                </div>
+                <h1 className="font-display text-lg font-bold tracking-tight text-foreground leading-tight">
+                  {pageTitle}
+                </h1>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Telemetry Status Pill */}
+            <div className="hidden xl:flex items-center gap-2 rounded-sm border border-border bg-card/70 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>OVERSEER LINK // ACTIVE</span>
+            </div>
+
             {/* Dark/Light mode toggle */}
             <button
               onClick={toggleTheme}
-              className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              className="rounded-sm border border-border p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               title={theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối'}
               aria-label="Toggle theme"
             >
@@ -410,15 +447,15 @@ export function AdminLayout({ children }) {
             {/* Back to Learner View */}
             <Link
               to="/dashboard"
-              className="hidden items-center gap-2 rounded-xl border border-border px-3 py-2 text-xs font-semibold hover:bg-muted lg:flex"
+              className="hidden items-center gap-2 rounded-sm border border-border bg-card px-3 py-1.5 font-mono text-[11px] font-bold uppercase tracking-wider text-foreground hover:border-primary/40 hover:bg-muted lg:flex transition-colors"
             >
-              <PanelLeft className="size-4 text-primary" />
+              <PanelLeft className="size-3.5 text-primary" />
               Xem giao diện Learner
             </Link>
 
             {/* User Avatar Initials */}
             <div
-              className="grid size-9 place-items-center rounded-xl bg-amber-500 text-slate-950 font-mono text-xs font-bold"
+              className="grid size-8 place-items-center rounded-sm border border-amber-500/40 bg-amber-500/15 text-amber-500 font-mono text-xs font-bold"
               title={user?.name}
             >
               {initials}

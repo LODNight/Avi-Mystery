@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Navigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import {
   Mail,
   Lock,
@@ -10,14 +10,14 @@ import {
   Sun,
   Moon,
   User,
-  CheckCircle2,
-  Sparkles,
   Flame,
   Search,
   ShieldCheck,
   Award,
-  ArrowRight,
   Play,
+  AlertTriangle,
+  FileText,
+  FolderLock,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
@@ -37,12 +37,10 @@ export function AuthPage({ initialMode = 'login' }) {
   const { login, register, isAuthenticated, isLoading, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Mode: 'login' | 'register'
   const [mode, setMode] = useState(initialMode);
 
-  // Sync mode với initialMode prop khi route thay đổi
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
@@ -56,19 +54,16 @@ export function AuthPage({ initialMode = 'login' }) {
   const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Nếu đã login → redirect ngay
   if (!isLoading && isAuthenticated) {
     return <Navigate to={isAdmin(user?.role) ? '/admin' : '/dashboard'} replace />;
   }
 
-  // Chuyển Tab
   function handleTabSwitch(targetMode) {
     setMode(targetMode);
     setErrors({});
     setAuthError('');
   }
 
-  // --- Validate Login ---
   function validateLogin() {
     const errs = {};
     if (!loginForm.email.trim()) errs.email = 'Vui lòng nhập email.';
@@ -77,7 +72,6 @@ export function AuthPage({ initialMode = 'login' }) {
     return errs;
   }
 
-  // --- Validate Register ---
   function validateRegister() {
     const errs = {};
     if (!registerForm.name.trim()) errs.name = 'Vui lòng nhập họ và tên.';
@@ -91,7 +85,6 @@ export function AuthPage({ initialMode = 'login' }) {
     return errs;
   }
 
-  // --- Handle Login Submit ---
   async function handleLoginSubmit(e) {
     e.preventDefault();
     const errs = validateLogin();
@@ -111,7 +104,6 @@ export function AuthPage({ initialMode = 'login' }) {
     }
   }
 
-  // --- Handle Register Submit ---
   async function handleRegisterSubmit(e) {
     e.preventDefault();
     const errs = validateRegister();
@@ -131,12 +123,10 @@ export function AuthPage({ initialMode = 'login' }) {
     if (result.error) {
       setAuthError(result.error);
     } else {
-      // Người dùng mới → Welcome Gate (onboardingService kiểm tra eligibility)
       navigate('/onboarding', { replace: true });
     }
   }
 
-  // Điền nhanh tài khoản demo
   function fillDemo(account) {
     setMode('login');
     setLoginForm({ email: account.email, password: account.password });
@@ -144,11 +134,10 @@ export function AuthPage({ initialMode = 'login' }) {
     setAuthError('');
   }
 
-  // Đăng nhập nhanh và reset state để test Onboarding Mode
   async function handleTestOnboardingDemo() {
     setSubmitting(true);
     setAuthError('');
-    const demoLearner = DEMO_ACCOUNTS[0]; // Learner account
+    const demoLearner = DEMO_ACCOUNTS[0];
     const result = await login({ email: demoLearner.email, password: demoLearner.password });
     setSubmitting(false);
     if (result.error) {
@@ -159,7 +148,6 @@ export function AuthPage({ initialMode = 'login' }) {
     }
   }
 
-  // Độ mạnh mật khẩu (dành cho form Đăng ký)
   const passwordLength = registerForm.password.length;
   const hasNumber = /\d/.test(registerForm.password);
   const hasSpecial = /[^A-Za-z0-9]/.test(registerForm.password);
@@ -170,29 +158,28 @@ export function AuthPage({ initialMode = 'login' }) {
   if (hasSpecial || passwordLength >= 10) passwordStrength += 1;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col justify-between transition-colors duration-200 selection:bg-primary/20">
-      {/* ── Top Bar / Header ── */}
-      <header className="w-full border-b border-border/60 bg-background/80 backdrop-blur-md px-6 py-4 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="min-h-[100dvh] bg-background text-foreground flex flex-col justify-between transition-colors duration-200 selection:bg-primary/20">
+      {/* ── Top Bar / Bureau Header ── */}
+      <header className="w-full border-b border-border bg-card/90 backdrop-blur-md px-6 h-16 flex items-center sticky top-0 z-30">
+        <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 group">
-            <span className="grid size-10 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:scale-105">
-              <Zap className="size-5 fill-current" />
+            <span className="grid size-9 place-items-center rounded-md border border-primary/40 bg-primary text-primary-foreground shadow-2xs">
+              <Zap className="size-4 fill-current" />
             </span>
             <div>
-              <p className="font-mono text-lg font-bold tracking-tight text-foreground">
+              <p className="font-mono text-base font-bold tracking-tight text-foreground leading-none">
                 avi<span className="text-primary">mystery</span>
               </p>
-              <p className="text-[10px] font-mono tracking-widest text-muted-foreground uppercase">
-                Avi-Mystery Platform
+              <p className="mt-0.5 text-[10px] font-mono tracking-widest text-muted-foreground uppercase">
+                BUREAU OF DATA INVESTIGATION
               </p>
             </div>
           </Link>
 
           <div className="flex items-center gap-3">
-            {/* Dark / Light Mode Switcher */}
             <button
               onClick={toggleTheme}
-              className="rounded-xl border border-border p-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all flex items-center gap-2 text-xs font-semibold"
+              className="rounded-md border border-border bg-background px-3 py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-all flex items-center gap-2 text-xs font-semibold cursor-pointer"
               title={theme === 'dark' ? 'Chuyển sang chế độ Sáng' : 'Chuyển sang chế độ Tối'}
               aria-label="Toggle theme"
             >
@@ -214,93 +201,107 @@ export function AuthPage({ initialMode = 'login' }) {
 
       {/* ── Main Layout Body ── */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 lg:p-10 flex items-center justify-center">
-        <div className="w-full grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
-          {/* ── LEFT PANEL: Hero Detective Showcase (Desktop Only) ── */}
-          <div className="lg:col-span-6 hidden lg:flex flex-col justify-between h-full min-h-[580px] rounded-3xl border border-border/80 bg-card/60 p-8 xl:p-10 relative overflow-hidden backdrop-blur-xl shadow-xl">
-            {/* Ambient Background Glow */}
-            <div className="absolute -top-24 -left-24 size-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -right-24 size-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
+        <div className="w-full grid lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
 
-            {/* Top Badge */}
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 font-mono text-xs font-semibold text-primary">
-                <Sparkles className="size-3.5" />
-                <span>Nền tảng Học Phân Tích Dữ Liệu qua Vụ Án</span>
+          {/* ── LEFT PANEL: Classified Case #001 Archival Dossier (Desktop Only) ── */}
+          <div className="lg:col-span-7 hidden lg:flex flex-col justify-between dossier-card corner-brackets rounded-md border border-border bg-card p-8 xl:p-10 relative overflow-hidden shadow-sm">
+            {/* Top Classification Header */}
+            <div className="relative z-10 flex items-start justify-between gap-4 border-b border-border pb-5">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-sm border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+                  <FolderLock className="size-3.5" />
+                  <span>CỤC ĐIỀU TRA DỮ LIỆU // HỒ SƠ MẬT</span>
+                </div>
+
+                <h1 className="mt-4 font-display text-3xl xl:text-4xl font-bold tracking-tight text-foreground leading-tight">
+                  Giải mã bí ẩn kinh doanh bằng nghiệp vụ Excel & SQL
+                </h1>
               </div>
 
-              <h1 className="mt-6 text-3xl xl:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
-                Giải mã bí ẩn kinh doanh bằng{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-primary to-amber-600">
-                  Excel & SQL
-                </span>
-              </h1>
-              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                Hóa thân thành Nhà điều tra dữ liệu. Truy vấn bảng dữ liệu, tìm ra nguyên nhân gốc rễ của các vụ án kinh doanh thực tế và thăng cấp danh hiệu của bạn.
-              </p>
+              <span className="detective-stamp text-primary border-primary/70 shrink-0 mt-1">
+                CASE #001
+              </span>
             </div>
 
-            {/* Live Card Preview Component */}
-            <div className="my-6 relative z-10 rounded-2xl border border-border bg-background/80 p-5 shadow-lg space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="grid size-10 place-items-center rounded-xl bg-amber-500/15 font-mono text-lg text-amber-600 dark:text-amber-400">
-                    🕵️‍♂️
-                  </div>
-                  <div>
-                    <p className="text-xs font-mono font-bold text-muted-foreground uppercase">Hồ sơ nhà điều tra</p>
-                    <p className="text-sm font-bold text-foreground">Cấp 1 · Investigator</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-xs font-bold text-amber-600 dark:text-amber-400">
-                  <Flame className="size-3.5 fill-current" />
-                  <span>Streak 1 Ngày</span>
+            {/* Crime-Scene Evidence Photo & Redacted Transcript */}
+            <div className="my-6 relative z-10 grid grid-cols-12 gap-4 items-stretch">
+              <div className="col-span-5 rounded-sm border border-border bg-muted overflow-hidden relative min-h-[160px]">
+                <img
+                  src="https://picsum.photos/seed/noir-detective-desk/640/420"
+                  alt="Bàn làm việc lưu trữ hồ sơ điều tra"
+                  className="h-full w-full object-cover grayscale contrast-125 opacity-90"
+                />
+                <div className="absolute bottom-0 inset-x-0 bg-background/90 border-t border-border px-2.5 py-1 font-mono text-[10px] text-foreground flex items-center justify-between">
+                  <span>FIG. 01 // KHO CẢNG</span>
+                  <span className="text-primary font-bold">EVID-A4</span>
                 </div>
               </div>
 
-              <div className="rounded-xl bg-muted/60 p-3.5 border border-border/50">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="font-semibold text-foreground">Vụ án #01: Doanh thu tháng 3 giảm sụt</span>
-                  <span className="font-mono font-bold text-primary">+100 XP</span>
+              <div className="col-span-7 rounded-sm border border-border bg-background/90 p-4 flex flex-col justify-between bg-ruled-ledger">
+                <div>
+                  <div className="flex items-center justify-between border-b border-border/80 pb-2">
+                    <div className="flex items-center gap-2">
+                      <FileText className="size-4 text-primary" />
+                      <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        BIÊN BẢN HIỆN TRƯỜNG
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1 font-mono text-[10px] font-bold text-primary">
+                      <Flame className="size-3 fill-current" />
+                      <span>CẤP 1 · INVESTIGATOR</span>
+                    </div>
+                  </div>
+
+                  <p className="mt-2.5 text-xs font-bold text-foreground">
+                    Vụ án #01: Doanh thu tháng 3 sụt giảm bất thường (-32%)
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                    Đối chiếu sổ cái xuất nhập kho và truy vấn nhật ký giao dịch để truy tìm mắt xích thất thoát trước giờ họp Hội đồng.
+                  </p>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-background">
-                  <div className="h-full w-3/4 rounded-full bg-primary" />
-                </div>
-                <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
-                  <span>Công cụ: Excel & SQL</span>
-                  <span className="font-mono">75% Hoàn thành</span>
+
+                <div className="mt-3 pt-2 border-t border-border/70 flex items-center justify-between font-mono text-[10px]">
+                  <span className="text-muted-foreground">CÔNG CỤ: EXCEL & SQL</span>
+                  <span className="font-bold text-primary">THƯỞNG: +100 XP</span>
                 </div>
               </div>
             </div>
 
-            {/* Feature Highlights Grid */}
-            <div className="grid sm:grid-cols-3 gap-3 relative z-10">
+            {/* Forensic Protocols Ledger Strip */}
+            <div className="grid sm:grid-cols-3 gap-3 relative z-10 border-t border-border pt-5">
               {[
-                { icon: Search, title: 'Vụ án thực tế', desc: 'Case study kinh doanh' },
-                { icon: ShieldCheck, title: 'Excel & SQL', desc: 'Luyện tập tương tác' },
-                { icon: Award, title: 'Hệ thống XP', desc: 'Thăng cấp & danh hiệu' },
-              ].map(({ icon: Icon, title, desc }) => (
-                <div key={title} className="rounded-xl border border-border/60 bg-muted/40 p-3 text-left">
-                  <Icon className="size-4 text-primary mb-1.5" />
-                  <p className="text-xs font-semibold text-foreground">{title}</p>
+                { icon: Search, code: 'PR-01', title: 'Vụ án thực tế', desc: 'Hồ sơ doanh nghiệp' },
+                { icon: ShieldCheck, code: 'PR-02', title: 'Excel & SQL', desc: 'Truy vấn & đối khớp' },
+                { icon: Award, code: 'PR-03', title: 'Hệ thống cấp bậc', desc: 'Huân chương phá án' },
+              ].map(({ icon: Icon, code, title, desc }) => (
+                <div key={title} className="rounded-sm border border-border bg-background/60 p-3 text-left">
+                  <div className="flex items-center justify-between mb-1">
+                    <Icon className="size-4 text-primary" />
+                    <span className="font-mono text-[10px] font-bold text-muted-foreground">{code}</span>
+                  </div>
+                  <p className="text-xs font-bold text-foreground">{title}</p>
                   <p className="text-[11px] text-muted-foreground mt-0.5">{desc}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* ── RIGHT PANEL: Form Container (Login / Register) ── */}
-          <div className="lg:col-span-6 w-full flex flex-col justify-center max-w-md mx-auto">
-            <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xl relative overflow-hidden transition-all duration-300">
-              
+          {/* ── RIGHT PANEL: Security Clearance Terminal (Login / Register) ── */}
+          <div className="lg:col-span-5 w-full flex flex-col justify-center max-w-md mx-auto">
+            <div className="rounded-md border border-border bg-card p-6 sm:p-8 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-border pb-3 mb-5 font-mono text-[10px] text-muted-foreground">
+                <span>SECURITY TERMINAL // AUTH-01</span>
+                <span className="text-primary font-bold">CLEARANCE REQUIRED</span>
+              </div>
+
               {/* Mode Switcher Tabs */}
-              <div className="grid grid-cols-2 p-1 bg-muted rounded-2xl mb-6">
+              <div className="grid grid-cols-2 p-1 bg-muted rounded-md border border-border mb-6">
                 <button
                   type="button"
                   onClick={() => handleTabSwitch('login')}
-                  className={`py-2.5 text-xs font-semibold rounded-xl transition-all ${
+                  className={`py-2 text-xs font-bold rounded-sm transition-all cursor-pointer ${
                     mode === 'login'
-                      ? 'bg-card text-foreground shadow-sm'
+                      ? 'bg-card text-foreground shadow-2xs border border-border'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -309,9 +310,9 @@ export function AuthPage({ initialMode = 'login' }) {
                 <button
                   type="button"
                   onClick={() => handleTabSwitch('register')}
-                  className={`py-2.5 text-xs font-semibold rounded-xl transition-all ${
+                  className={`py-2 text-xs font-bold rounded-sm transition-all cursor-pointer ${
                     mode === 'register'
-                      ? 'bg-card text-foreground shadow-sm'
+                      ? 'bg-card text-foreground shadow-2xs border border-border'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -320,25 +321,25 @@ export function AuthPage({ initialMode = 'login' }) {
               </div>
 
               {/* Title & Description */}
-              <div className="mb-6">
-                <h2 className="text-2xl font-bold text-foreground tracking-tight">
-                  {mode === 'login' ? 'Chào mừng trở lại 👋' : 'Bắt đầu cuộc điều tra 🔍'}
+              <div className="mb-5">
+                <h2 className="font-display text-2xl font-bold text-foreground tracking-tight">
+                  {mode === 'login' ? 'Xác thực thẻ điều tra viên' : 'Đăng ký hồ sơ điều tra viên'}
                 </h2>
                 <p className="text-xs text-muted-foreground mt-1">
                   {mode === 'login'
-                    ? 'Nhập tài khoản để tiếp tục các nhiệm vụ phân tích dữ liệu.'
-                    : 'Tạo tài khoản nhà điều tra mới để tham gia thử thách cùng AviMystery.'}
+                    ? 'Nhập thông tin định danh để tiếp tục thụ lý các hồ sơ dữ liệu.'
+                    : 'Khởi tạo hồ sơ đặc vụ mới để tham gia giải mã các chuyên án cùng AviMystery.'}
                 </p>
               </div>
 
-              {/* Demo Account Pills (Chỉ hiện khi ở tab Đăng nhập và trên môi trường DEV) */}
+              {/* Demo Account Pills */}
               {mode === 'login' && FEATURE_FLAGS.enableDevShortcuts && (
-                <div className="mb-6 rounded-2xl border border-border/80 bg-muted/40 p-3.5 animate-fade-in">
+                <div className="mb-5 rounded-md border border-border bg-muted/40 p-3.5 animate-fade-in">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[11px] font-mono uppercase tracking-wider font-bold text-muted-foreground">
+                    <p className="text-[10px] font-mono uppercase tracking-wider font-bold text-muted-foreground">
                       Tài khoản Demo thử nhanh:
                     </p>
-                    <span className="rounded-md bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase text-amber-600 dark:text-amber-400">
+                    <span className="rounded-sm bg-primary/15 border border-primary/30 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase text-primary">
                       DEV ONLY
                     </span>
                   </div>
@@ -348,7 +349,7 @@ export function AuthPage({ initialMode = 'login' }) {
                         key={acc.email}
                         type="button"
                         onClick={() => fillDemo(acc)}
-                        className="flex-1 flex items-center justify-between gap-1 text-xs bg-card hover:border-primary/50 text-foreground border border-border rounded-xl px-3 py-2 transition-all shadow-sm cursor-pointer"
+                        className="flex-1 flex items-center justify-between gap-1 text-xs bg-card hover:border-primary/50 text-foreground border border-border rounded-sm px-2.5 py-2 transition-all shadow-2xs cursor-pointer"
                       >
                         <span className="font-medium truncate">{acc.label}</span>
                         <ChevronRight className="size-3 text-primary shrink-0" />
@@ -356,15 +357,14 @@ export function AuthPage({ initialMode = 'login' }) {
                     ))}
                   </div>
 
-                  {/* Dev Testing shortcut for Onboarding */}
-                  <div className="mt-2.5 pt-2.5 border-t border-border/50">
+                  <div className="mt-2.5 pt-2.5 border-t border-border/60">
                     <button
                       type="button"
                       onClick={handleTestOnboardingDemo}
-                      className="w-full flex items-center justify-center gap-1.5 text-xs bg-amber-500/15 hover:bg-amber-500/25 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/30 rounded-xl px-3 py-2 transition-all shadow-sm cursor-pointer"
+                      className="w-full flex items-center justify-center gap-1.5 text-xs bg-primary/15 hover:bg-primary/25 text-primary font-bold border border-primary/30 rounded-sm px-3 py-2 transition-all cursor-pointer"
                     >
                       <Play className="size-3.5 fill-current" />
-                      <span>🧪 Test Luồng Hướng Dẫn (Welcome Gate)</span>
+                      <span>Test Luồng Hướng Dẫn (Welcome Gate)</span>
                     </button>
                   </div>
                 </div>
@@ -374,9 +374,9 @@ export function AuthPage({ initialMode = 'login' }) {
               {authError && (
                 <div
                   role="alert"
-                  className="mb-5 flex items-center gap-2 rounded-xl bg-destructive/10 border border-destructive/30 p-3 text-xs font-medium text-destructive animate-fade-in"
+                  className="mb-5 flex items-center gap-2 rounded-sm bg-destructive/10 border border-destructive/30 p-3 text-xs font-medium text-destructive animate-fade-in"
                 >
-                  <span className="text-sm">⚠️</span>
+                  <AlertTriangle className="size-4 shrink-0" />
                   <span>{authError}</span>
                 </div>
               )}
@@ -431,7 +431,7 @@ export function AuthPage({ initialMode = 'login' }) {
                     fullWidth
                     size="lg"
                     loading={submitting}
-                    className="mt-4 shadow-lg shadow-primary/20"
+                    className="mt-4"
                   >
                     {submitting ? 'Đang xác thực...' : 'Đăng nhập'}
                   </Button>
@@ -497,22 +497,21 @@ export function AuthPage({ initialMode = 'login' }) {
                     </button>
                   </div>
 
-                  {/* Password Strength Indicator */}
                   {registerForm.password.length > 0 && (
                     <div className="space-y-1">
                       <div className="flex gap-1.5 h-1">
                         <div
-                          className={`flex-1 rounded-full transition-all ${
+                          className={`flex-1 rounded-sm transition-all ${
                             passwordStrength >= 1 ? 'bg-amber-500' : 'bg-muted'
                           }`}
                         />
                         <div
-                          className={`flex-1 rounded-full transition-all ${
+                          className={`flex-1 rounded-sm transition-all ${
                             passwordStrength >= 2 ? 'bg-amber-500' : 'bg-muted'
                           }`}
                         />
                         <div
-                          className={`flex-1 rounded-full transition-all ${
+                          className={`flex-1 rounded-sm transition-all ${
                             passwordStrength >= 3 ? 'bg-emerald-500' : 'bg-muted'
                           }`}
                         />
@@ -546,7 +545,7 @@ export function AuthPage({ initialMode = 'login' }) {
                     fullWidth
                     size="lg"
                     loading={submitting}
-                    className="mt-4 shadow-lg shadow-primary/20"
+                    className="mt-4"
                   >
                     {submitting ? 'Đang tạo tài khoản...' : 'Đăng ký ngay'}
                   </Button>
@@ -554,13 +553,13 @@ export function AuthPage({ initialMode = 'login' }) {
               )}
 
               {/* Bottom footer text */}
-              <div className="mt-6 border-t border-border/60 pt-4 text-center">
+              <div className="mt-6 border-t border-border pt-4 text-center">
                 <p className="text-xs text-muted-foreground">
                   {mode === 'login' ? 'Chưa có tài khoản?' : 'Đã có tài khoản?'}{' '}
                   <button
                     type="button"
                     onClick={() => handleTabSwitch(mode === 'login' ? 'register' : 'login')}
-                    className="font-bold text-primary hover:underline ml-1"
+                    className="font-bold text-primary hover:underline ml-1 cursor-pointer"
                   >
                     {mode === 'login' ? 'Đăng ký ngay' : 'Đăng nhập'}
                   </button>
@@ -574,9 +573,9 @@ export function AuthPage({ initialMode = 'login' }) {
       </main>
 
       {/* ── Footer ── */}
-      <footer className="w-full border-t border-border/60 py-4 px-6 text-center text-xs text-muted-foreground">
+      <footer className="w-full border-t border-border py-4 px-6 text-center text-xs text-muted-foreground">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p>© 2026 Avi-Mystery. Nền tảng học phân tích dữ liệu ứng dụng thực tế.</p>
+          <p className="font-mono text-[11px]">© 2026 AVI-MYSTERY // CỤC ĐIỀU TRA PHÂN TÍCH DỮ LIỆU</p>
           <div className="flex items-center gap-4">
             <span className="hover:underline cursor-pointer">Bảo mật</span>
             <span className="hover:underline cursor-pointer">Điều khoản</span>

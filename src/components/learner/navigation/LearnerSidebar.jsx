@@ -11,11 +11,12 @@ import {
   ChevronLeft,
   ChevronDown,
   GraduationCap,
-  Sparkles,
   Dumbbell,
   PanelLeft,
   Settings,
-  Briefcase
+  Briefcase,
+  Shield,
+  FileCheck2
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../../hooks/useAuth.js';
@@ -31,29 +32,32 @@ export const learnerNavItems = [
     id: 'case',
     label: 'Vụ án',
     labelKey: 'sectionCase',
+    serial: 'SEC-01',
     children: [
-      { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home },
-      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases/case-001/investigate', icon: Briefcase },
-      { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map },
+      { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home, code: '01' },
+      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases/case-001/investigate', icon: Briefcase, code: '02' },
+      { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map, code: '03' },
     ]
   },
   {
     id: 'academy',
     label: 'Đào tạo',
     labelKey: 'sectionAcademy',
+    serial: 'SEC-02',
     children: [
-      { id: 'academy', label: 'Học viện Academy', labelKey: 'academy', to: '/academy', icon: GraduationCap },
-      { id: 'practice', label: 'Phòng luyện tập', labelKey: 'practiceLab', to: '/practice', icon: Dumbbell },
+      { id: 'academy', label: 'Học viện Academy', labelKey: 'academy', to: '/academy', icon: GraduationCap, code: '04' },
+      { id: 'practice', label: 'Phòng luyện tập', labelKey: 'practiceLab', to: '/practice', icon: Dumbbell, code: '05' },
     ],
   },
   {
     id: 'profile',
     label: 'Cá nhân',
     labelKey: 'sectionProfile',
+    serial: 'SEC-03',
     children: [
-      { id: 'achievements', label: 'Thành tựu', labelKey: 'achievements', to: '/achievements', icon: Trophy },
-      { id: 'profile', label: 'Hồ sơ', labelKey: 'profile', to: '/profile', icon: User },
-      { id: 'settings', label: 'Cài đặt', labelKey: 'settings', to: '/settings', icon: Settings },
+      { id: 'achievements', label: 'Thành tựu', labelKey: 'achievements', to: '/achievements', icon: Trophy, code: '06' },
+      { id: 'profile', label: 'Hồ sơ', labelKey: 'profile', to: '/profile', icon: User, code: '07' },
+      { id: 'settings', label: 'Cài đặt', labelKey: 'settings', to: '/settings', icon: Settings, code: '08' },
     ],
   },
 ];
@@ -125,31 +129,36 @@ export function LearnerSidebar({
   return (
     <aside
       id="app-sidebar"
-      className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-stone-200 dark:border-stone-800 bg-sidebar py-5 shadow-sm sm:shadow-md transition-all duration-300 ease-in-out lg:translate-x-0 ${
-        collapsed ? 'w-20 px-3.5' : 'w-72 px-4'
+      className={`fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar py-4 transition-all duration-300 ease-in-out lg:translate-x-0 ${
+        collapsed ? 'w-20 px-3' : 'w-72 px-4'
       } ${mobileOpen ? 'translate-x-0 w-72 px-4' : '-translate-x-full'}`}
     >
-      {/* Brand Header */}
-      <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'justify-between px-1'}`}>
+      {/* Bureau Masthead Header */}
+      <div className={`flex items-center border-b border-sidebar-border pb-3.5 ${collapsed && !mobileOpen ? 'justify-center' : 'justify-between px-1'}`}>
         <Link
           to="/dashboard"
           className="flex items-center gap-3 min-w-0"
           onClick={() => setMobileOpen(false)}
           title={brand.brandName}
         >
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-            <BrandLogoIcon className="size-5" />
+          <span className="grid size-9 shrink-0 place-items-center rounded-md border border-primary/40 bg-primary text-primary-foreground shadow-xs">
+            <BrandLogoIcon className="size-4" />
           </span>
           {(!collapsed || mobileOpen) && (
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-mono text-lg font-bold tracking-tight text-sidebar-foreground truncate animate-fade-in">
-                {brand.brandName}
-              </span>
-              {FEATURE_FLAGS.showDevBadge && (
-                <span className="rounded-md bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
-                  DEV
+            <div className="min-w-0 animate-fade-in">
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-base font-bold tracking-tight text-sidebar-foreground truncate">
+                  {brand.brandName}
                 </span>
-              )}
+                {FEATURE_FLAGS.showDevBadge && (
+                  <span className="rounded-sm bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 border border-amber-500/30 shrink-0">
+                    DEV
+                  </span>
+                )}
+              </div>
+              <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+                BUREAU ARCHIVE // V2.4
+              </p>
             </div>
           )}
         </Link>
@@ -157,7 +166,7 @@ export function LearnerSidebar({
         {(!collapsed || mobileOpen) && (
           <button
             onClick={() => setCollapsed(true)}
-            className="hidden lg:flex items-center justify-center size-8 rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0 cursor-pointer"
+            className="hidden lg:flex items-center justify-center size-7 rounded-md border border-transparent hover:border-sidebar-border text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors shrink-0 cursor-pointer"
             title={t('nav:collapseSidebar', 'Thu gọn sidebar')}
             aria-label={t('nav:collapseSidebar', 'Thu gọn sidebar')}
           >
@@ -166,7 +175,7 @@ export function LearnerSidebar({
         )}
 
         <button
-          className="rounded-lg p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden cursor-pointer"
+          className="rounded-md p-2 text-muted-foreground hover:bg-sidebar-accent lg:hidden cursor-pointer"
           onClick={() => setMobileOpen(false)}
           aria-label={t('common:closeMenu', 'Close menu')}
         >
@@ -174,36 +183,40 @@ export function LearnerSidebar({
         </button>
       </div>
 
-      {/* User Card Badge */}
-      <div className="mt-6 rounded-2xl border border-sidebar-border bg-sidebar-accent/50 p-2.5 transition-all">
-        <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'gap-3'}`}>
+      {/* Investigator Credentials Dossier Card */}
+      <div className="mt-4 rounded-md border border-sidebar-border bg-card/70 p-2.5 shadow-2xs transition-all relative overflow-hidden">
+        <div className="absolute inset-y-0 left-0 w-1 bg-primary/70" aria-hidden="true" />
+        <div className={`flex items-center ${collapsed && !mobileOpen ? 'justify-center' : 'gap-2.5 pl-1.5'}`}>
           <span
-            className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/20 font-mono text-sm font-bold text-primary"
+            className="grid size-9 shrink-0 place-items-center rounded-sm border border-primary/40 bg-primary/15 font-mono text-xs font-bold text-primary"
             title={user?.name || 'Học viên'}
           >
             {initials}
           </span>
           {(!collapsed || mobileOpen) && (
             <div className="min-w-0 flex-1 animate-fade-in">
-              <p className="truncate text-sm font-semibold text-sidebar-foreground">
+              <div className="flex items-center justify-between gap-1">
+                <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-primary">
+                  ID // AGT-0{liveStats.level}
+                </span>
+                <div className="flex items-center gap-1 text-amber-600 dark:text-amber-400 shrink-0">
+                  <Flame className="size-3.5 fill-current" />
+                  <span className="font-mono text-[11px] font-bold">{liveStats.streak} {t('nav:streak', 'ngày')}</span>
+                </div>
+              </div>
+              <p className="truncate text-sm font-bold text-sidebar-foreground mt-0.5">
                 {user?.name || 'Học viên'}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
+              <p className="truncate font-mono text-[10px] text-muted-foreground">
                 {t('nav:level', 'Cấp')} {liveStats.level} · {t('nav:investigator', 'Nhà Điều Tra')}
               </p>
-            </div>
-          )}
-          {(!collapsed || mobileOpen) && (
-            <div className="flex items-center gap-1 text-amber-500 shrink-0">
-              <Flame className="size-4 fill-amber-500" />
-              <span className="text-xs font-bold">{liveStats.streak} {t('nav:streak', 'ngày')}</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Navigation items */}
-      <nav className="mt-6 flex flex-col gap-4 overflow-y-auto flex-1" aria-label="Menu chính">
+      {/* Bureau File Cabinet Drawers */}
+      <nav className="mt-5 flex flex-col gap-3.5 overflow-y-auto flex-1" aria-label="Menu chính">
         {learnerNavItems.map((group) => {
           const groupId = group.id;
           const isOpen = openGroups[groupId];
@@ -214,14 +227,19 @@ export function LearnerSidebar({
                 type="button"
                 onClick={() => toggleGroup(groupId)}
                 title={collapsed && !mobileOpen ? groupLabel : undefined}
-                className={`w-full flex items-center justify-between gap-3 rounded-xl transition-all ${
-                  collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3.5 py-1 text-sm font-medium'
-                } hover:text-sidebar-foreground text-muted-foreground cursor-pointer`}
+                className={`w-full flex items-center justify-between gap-2 rounded-sm transition-all ${
+                  collapsed && !mobileOpen ? 'justify-center py-2' : 'px-2.5 py-1 text-xs'
+                } hover:text-sidebar-foreground text-muted-foreground cursor-pointer border-b border-sidebar-border/60`}
               >
                 {(!collapsed || mobileOpen) && (
-                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] animate-fade-in">
-                    {groupLabel}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[9px] font-semibold text-primary/80">
+                      [{group.serial}]
+                    </span>
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] animate-fade-in">
+                      {groupLabel}
+                    </span>
+                  </div>
                 )}
                 {(!collapsed || mobileOpen) && (
                   <ChevronDown
@@ -235,7 +253,7 @@ export function LearnerSidebar({
                 )}
               </button>
 
-              {isOpen && group.children.map(({ label, labelKey, to, icon: Icon }) => {
+              {isOpen && group.children.map(({ label, labelKey, to, icon: Icon, code }) => {
                 const navStatus = getPageStatus(to);
                 const isItemMaintenance = navStatus?.status === 'maintenance';
                 const isItemNotice = navStatus?.status === 'notice';
@@ -248,21 +266,27 @@ export function LearnerSidebar({
                     to={to}
                     onClick={() => setMobileOpen(false)}
                     title={collapsed && !mobileOpen ? `${itemLabel}${isItemMaintenance ? ' (Đang bảo trì)' : ''}` : undefined}
-                    className={`relative flex items-center justify-between gap-2 rounded-xl transition-all ${
-                      collapsed && !mobileOpen ? 'justify-center p-3 mt-1' : 'px-3.5 py-2.5 text-sm'
+                    className={`relative flex items-center justify-between gap-2 rounded-md transition-all ${
+                      collapsed && !mobileOpen ? 'justify-center p-2.5 mt-0.5' : 'px-3 py-2 text-sm'
                     } ${
                       isPathActive
-                        ? 'bg-primary/15 text-primary font-bold border-l-4 border-primary shadow-xs'
-                        : 'text-sidebar-foreground/75 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
+                        ? 'bg-primary/15 text-primary font-bold border-l-[3px] border-primary shadow-2xs'
+                        : 'text-sidebar-foreground/80 font-medium hover:bg-sidebar-accent hover:text-sidebar-foreground'
                     }`}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <Icon className={`size-[18px] shrink-0 ${isPathActive ? 'text-primary' : ''}`} />
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <Icon className={`size-4 shrink-0 ${isPathActive ? 'text-primary' : 'text-muted-foreground'}`} />
                       {(!collapsed || mobileOpen) && <span className="truncate">{itemLabel}</span>}
                     </div>
 
+                    {(!collapsed || mobileOpen) && !isItemMaintenance && !isItemNotice && code && (
+                      <span className={`font-mono text-[10px] shrink-0 ${isPathActive ? 'text-primary font-bold' : 'text-muted-foreground/60'}`}>
+                        #{code}
+                      </span>
+                    )}
+
                     {(!collapsed || mobileOpen) && isItemMaintenance && (
-                      <span className="rounded-full bg-amber-500/20 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
+                      <span className="rounded-sm bg-amber-500/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-amber-600 dark:text-amber-400 shrink-0">
                         Bảo trì
                       </span>
                     )}
@@ -279,64 +303,65 @@ export function LearnerSidebar({
 
       {/* Admin Switcher */}
       {isAdminUser && (
-        <div className="mt-4 mb-2 flex flex-col gap-1 px-3 border-t border-sidebar-border pt-4">
+        <div className="mt-3 mb-1 flex flex-col gap-1 px-1 border-t border-sidebar-border pt-3">
           {(!collapsed || mobileOpen) && (
             <p className="pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              Developer
+              HQ Overseer
             </p>
           )}
           <Link
             to="/admin"
-            className={`flex items-center gap-3 rounded-xl border border-sidebar-border hover:border-primary/40 bg-sidebar-accent/50 text-sidebar-foreground hover:bg-sidebar-accent transition-all shadow-xs ${
-              collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-2 text-xs font-bold'
+            className={`flex items-center gap-2.5 rounded-md border border-sidebar-border hover:border-primary/40 bg-card/60 text-sidebar-foreground hover:bg-sidebar-accent transition-all ${
+              collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2 text-xs font-bold'
             }`}
             title="Admin Console"
           >
-            <PanelLeft className="size-[16px] text-primary shrink-0" />
+            <PanelLeft className="size-4 text-primary shrink-0" />
             {(!collapsed || mobileOpen) && <span className="truncate">Admin Console</span>}
           </Link>
         </div>
       )}
-
 
       {/* Logout */}
       <div className="mt-1 flex flex-col gap-1 border-t border-sidebar-border pt-2">
         <button
           onClick={handleLogout}
           title={collapsed && !mobileOpen ? t('nav:logout', 'Đăng xuất') : undefined}
-          className={`flex items-center gap-3 rounded-xl text-destructive hover:bg-sidebar-accent transition-all cursor-pointer ${
-            collapsed && !mobileOpen ? 'justify-center p-3' : 'px-3 py-3 text-left text-sm font-medium'
+          className={`flex items-center gap-2.5 rounded-md text-destructive hover:bg-sidebar-accent transition-all cursor-pointer ${
+            collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2.5 text-left text-sm font-medium'
           }`}
         >
-          <LogOut className="size-[18px] shrink-0" />
+          <LogOut className="size-4 shrink-0" />
           {(!collapsed || mobileOpen) && <span>{t('nav:logout', 'Đăng xuất')}</span>}
         </button>
       </div>
 
-      {/* Streak Promo Card */}
+      {/* Field Service Record / Streak Log Footer */}
       {(!collapsed || mobileOpen) ? (
         <div
           onClick={() => setShowStreakModal(true)}
-          className="mt-2 rounded-2xl border border-stone-200 bg-stone-50/90 dark:border-stone-800 dark:bg-stone-900/95 p-3.5 text-stone-800 dark:text-stone-100 shadow-2xs dark:shadow-md animate-fade-in transition-all cursor-pointer hover:border-amber-500/40 mx-2 mb-2"
+          className="mt-2 rounded-md border border-sidebar-border bg-card/90 p-2.5 text-sidebar-foreground shadow-2xs animate-fade-in transition-all cursor-pointer hover:border-primary/50"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="size-4 text-amber-500 fill-amber-500/20" />
-              <span className="text-xs font-bold text-stone-800 dark:text-stone-100">{t('nav:streak', 'Chuỗi')} 🔥</span>
+              <FileCheck2 className="size-3.5 text-primary" />
+              <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-sidebar-foreground">
+                {t('nav:streak', 'Chuỗi')} công tác
+              </span>
             </div>
-            <span className="rounded-full border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 px-2 py-0.5 font-mono text-[10px] font-bold text-stone-700 dark:text-amber-400">
+            <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">
               {formatXP(liveStats.xp)}
             </span>
           </div>
         </div>
       ) : (
-        <div className="mt-2 flex justify-center pb-2">
+        <div className="mt-2 flex justify-center pb-1">
           <button
             onClick={() => setShowStreakModal(true)}
-            className="grid size-10 place-items-center rounded-2xl border border-stone-200 bg-stone-50 text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-amber-400 shadow-2xs hover:border-amber-500/50 hover:text-amber-400 transition-all cursor-pointer"
+            className="grid size-9 place-items-center rounded-md border border-sidebar-border bg-card text-primary shadow-2xs hover:border-primary/50 transition-all cursor-pointer"
             title={`XP: ${formatXP(liveStats.xp)}`}
           >
-            <Sparkles className="size-4 text-amber-500" />
+            <Shield className="size-4 text-primary" />
           </button>
         </div>
       )}

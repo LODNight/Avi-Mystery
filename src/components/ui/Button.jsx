@@ -2,7 +2,7 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 
 /**
- * Button — component button cơ bản.
+ * Button — component button cơ bản với phản hồi xúc giác (tactile feedback).
  *
  * Props:
  *  - variant: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'
@@ -27,19 +27,19 @@ export function Button({
   ...props
 }) {
   const base =
-    'inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+    'inline-flex items-center justify-center gap-2 font-medium rounded-md transition-all duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
 
   const variants = {
     primary:
       'bg-primary text-primary-foreground hover:opacity-90 active:opacity-95 shadow-sm',
     secondary:
-      'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800 shadow-sm',
+      'bg-secondary text-secondary-foreground hover:bg-secondary/80 active:bg-secondary/90 border border-border shadow-sm',
     outline:
-      'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 active:bg-slate-100',
+      'border border-border bg-card text-foreground hover:bg-muted active:bg-muted/80',
     ghost:
-      'text-slate-600 hover:bg-slate-100 active:bg-slate-200',
+      'text-muted-foreground hover:text-foreground hover:bg-muted active:bg-muted/80',
     danger:
-      'bg-danger-600 text-white hover:bg-danger-700 active:bg-danger-800 shadow-sm',
+      'bg-destructive text-destructive-foreground hover:opacity-90 active:opacity-95 shadow-sm',
   };
 
   const sizes = {

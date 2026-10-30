@@ -5,7 +5,6 @@ import {
   Database,
   Search,
   Award,
-  Sparkles,
   AlertCircle,
   Clock,
   ArrowUpDown,
@@ -17,11 +16,12 @@ import {
   X,
   Layers,
   Shuffle,
+  Terminal,
 } from 'lucide-react';
 import { contentService } from '../../services/index.js';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useProgress } from '../../hooks/useProgress.js';
-import { Skeleton, PracticePageSkeleton } from '../../components/ui/Skeleton.jsx';
+import { PracticePageSkeleton } from '../../components/ui/Skeleton.jsx';
 import { ErrorState } from '../../components/ui/EmptyState.jsx';
 import { useTranslation } from 'react-i18next';
 
@@ -32,17 +32,14 @@ export function PracticePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Filters state (LeetCode style)
   const [filterTool, setFilterTool] = useState('all'); // all, excel, sql
   const [filterStatus, setFilterStatus] = useState('all'); // all, uncompleted, completed
   const [filterDifficulty, setFilterDifficulty] = useState('all'); // all, easy, medium, hard
   const [searchQuery, setSearchQuery] = useState('');
 
-  // LeetCode style sort state: sortKey + sortOrder
   const [sortKey, setSortKey] = useState('default'); // 'default' | 'xp' | 'difficulty'
   const [sortOrder, setSortOrder] = useState('desc'); // 'desc' | 'asc'
 
-  // Popovers open states
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -60,7 +57,6 @@ export function PracticePage() {
         if (res.error) {
           setError(res.error);
         } else {
-          // Adjust gamification logic (Difficulty -> XP & Time mapping)
           const adjustedQuestions = (res.data || []).map((q) => {
             const diff = q.difficulty || 'easy';
             let xp = 100;
@@ -91,7 +87,6 @@ export function PracticePage() {
     loadPracticeData();
   }, []);
 
-  // Handle click outside popovers
   useEffect(() => {
     function handleClickOutside(event) {
       if (sortRef.current && !sortRef.current.contains(event.target)) {
@@ -138,14 +133,12 @@ export function PracticePage() {
     handleStartPractice(randomQ);
   };
 
-  // Toggle sort key and order (LeetCode style)
   const handleSortSelect = (key) => {
     if (key === 'default') {
       setSortKey('default');
       setSortOrder('desc');
       setIsSortOpen(false);
     } else if (sortKey === key) {
-      // Toggle direction when clicking active key
       setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'));
     } else {
       setSortKey(key);
@@ -153,24 +146,19 @@ export function PracticePage() {
     }
   };
 
-  // LeetCode Filter & Sort Logic
   const filteredQuestions = useMemo(() => {
     return questions
       .filter((q) => {
-        // Tool filter
         if (filterTool !== 'all' && q.tool !== filterTool) return false;
 
-        // Status filter
         if (filterStatus !== 'all') {
           const completed = isQuestionCompleted(q);
           if (filterStatus === 'completed' && !completed) return false;
           if (filterStatus === 'uncompleted' && completed) return false;
         }
 
-        // Difficulty filter
         if (filterDifficulty !== 'all' && q.difficulty !== filterDifficulty) return false;
 
-        // Search query
         if (searchQuery.trim() !== '') {
           const query = searchQuery.toLowerCase();
           const matchPrompt = q.prompt?.toLowerCase().includes(query);
@@ -228,15 +216,15 @@ export function PracticePage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in pb-12">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between gap-6 md:items-end">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-primary">
-            <Sparkles className="size-4" />
-            Workspace
+    <div className="space-y-7 animate-fade-in pb-12">
+      {/* Header Section: Forensic Decryption Lab */}
+      <div className="flex flex-col md:flex-row justify-between gap-4 md:items-end border-b-2 border-border pb-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-2 rounded-sm border border-primary/35 bg-primary/10 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest text-primary">
+            <Terminal className="size-3.5" />
+            FORENSIC LAB // WORKSPACE
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {t('practice:title', 'Luyện tập kỹ năng')}
           </h1>
           <p className="text-sm text-muted-foreground max-w-2xl">
@@ -245,46 +233,44 @@ export function PracticePage() {
         </div>
       </div>
 
-      {/* LeetCode Style Toolbar */}
+      {/* Forensic Filter & Calibration Toolbar */}
       <div className="space-y-4">
-        {/* Top Row: Prominent Category / Skill Pills */}
-        <div className="flex items-center gap-2.5 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => setFilterTool('all')}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-sm font-mono text-xs font-bold transition-all whitespace-nowrap border cursor-pointer ${
               filterTool === 'all'
-                ? 'bg-foreground text-background border-foreground shadow-md'
-                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground hover:bg-accent'
+                ? 'bg-primary text-primary-foreground border-primary shadow-2xs'
+                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40'
             }`}
           >
             <Layers className="size-3.5" /> {t('practice:allSkills', 'Tất cả kỹ năng')}
           </button>
           <button
             onClick={() => setFilterTool('excel')}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-sm font-mono text-xs font-bold transition-all whitespace-nowrap border cursor-pointer ${
               filterTool === 'excel'
-                ? 'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-500/20'
-                : 'bg-card border-border text-muted-foreground hover:text-emerald-500 hover:border-emerald-500/50 hover:bg-emerald-500/10'
+                ? 'bg-primary text-primary-foreground border-primary shadow-2xs'
+                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40'
             }`}
           >
-            <FileSpreadsheet className={`size-3.5 ${filterTool === 'excel' ? 'text-white' : 'text-emerald-500'}`} /> Excel Spreadsheet
+            <FileSpreadsheet className={`size-3.5 ${filterTool === 'excel' ? 'text-primary-foreground' : 'text-primary'}`} /> Excel Spreadsheet
           </button>
           <button
             onClick={() => setFilterTool('sql')}
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
+            className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-sm font-mono text-xs font-bold transition-all whitespace-nowrap border cursor-pointer ${
               filterTool === 'sql'
-                ? 'bg-blue-500 text-white border-blue-500 shadow-md shadow-blue-500/20'
-                : 'bg-card border-border text-muted-foreground hover:text-blue-500 hover:border-blue-500/50 hover:bg-blue-500/10'
+                ? 'bg-primary text-primary-foreground border-primary shadow-2xs'
+                : 'bg-card border-border text-muted-foreground hover:text-foreground hover:border-primary/40'
             }`}
           >
-            <Database className={`size-3.5 ${filterTool === 'sql' ? 'text-white' : 'text-blue-500'}`} /> SQL Database
+            <Database className={`size-3.5 ${filterTool === 'sql' ? 'text-primary-foreground' : 'text-primary'}`} /> SQL Database
           </button>
         </div>
 
         {/* Bottom Row: Compact Search + Sort + Filter + Solved Stats + Shuffle */}
-        <div className="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-border/40">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
           <div className="flex items-center gap-2.5 flex-1 min-w-[280px]">
-            {/* Compact Search Box */}
             <div className="relative w-48 sm:w-60 md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
               <input
@@ -292,7 +278,7 @@ export function PracticePage() {
                 placeholder={t('practice:searchPlaceholder', 'Tìm kiếm câu hỏi...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-full rounded-full border border-border bg-card pl-8 pr-8 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-xs"
+                className="h-9 w-full rounded-sm border border-border bg-card pl-8 pr-8 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all shadow-2xs"
               />
               {searchQuery && (
                 <button
@@ -304,17 +290,17 @@ export function PracticePage() {
               )}
             </div>
 
-            {/* LeetCode Style Sort Icon Button */}
+            {/* Sort Button */}
             <div className="relative" ref={sortRef}>
               <button
                 onClick={() => {
                   setIsSortOpen(!isSortOpen);
                   setIsFilterOpen(false);
                 }}
-                className={`h-9 px-3.5 rounded-full border flex items-center gap-1.5 text-xs font-semibold transition-all shadow-xs ${
+                className={`h-9 px-3 rounded-sm border flex items-center gap-1.5 font-mono text-xs font-semibold transition-all shadow-2xs cursor-pointer ${
                   sortKey !== 'default'
                     ? 'border-primary/60 bg-primary/10 text-primary font-bold'
-                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/40'
                 }`}
                 title={t('practice:sortList', 'Sắp xếp danh sách')}
               >
@@ -328,10 +314,9 @@ export function PracticePage() {
                 <span>{getSortButtonLabel()}</span>
               </button>
 
-              {/* Sort Popover Menu (LeetCode Exact Pattern) */}
               {isSortOpen && (
-                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-64 rounded-2xl border border-border bg-card p-2 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-                  <div className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-64 rounded-md border border-border bg-card p-2 shadow-xl animate-in fade-in zoom-in-95 duration-150">
+                  <div className="font-mono text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-3 py-1.5">
                     {t('practice:sortList', 'Sắp xếp danh sách')}
                   </div>
                   <div className="space-y-0.5">
@@ -341,7 +326,7 @@ export function PracticePage() {
                         <button
                           key={field.id}
                           onClick={() => handleSortSelect(field.id)}
-                          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-sm text-xs font-semibold transition-all cursor-pointer ${
                             isActive
                               ? 'bg-primary/10 text-primary font-bold'
                               : 'text-foreground hover:bg-muted'
@@ -374,29 +359,28 @@ export function PracticePage() {
               )}
             </div>
 
-            {/* LeetCode Style Filter Popover Button */}
+            {/* Filter Popover Button */}
             <div className="relative" ref={filterRef}>
               <button
                 onClick={() => {
                   setIsFilterOpen(!isFilterOpen);
                   setIsSortOpen(false);
                 }}
-                className={`h-9 px-2.5 rounded-full border flex items-center justify-center text-xs font-semibold transition-all shadow-xs ${
+                className={`h-9 px-2.5 rounded-sm border flex items-center justify-center text-xs font-semibold transition-all shadow-2xs cursor-pointer ${
                   hasActiveFilters
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                    : 'border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary/40'
                 }`}
                 title={t('practice:filterTitle', 'Bộ lọc nâng cao')}
               >
                 <SlidersHorizontal className="size-3.5" />
-                {hasActiveFilters && <span className="size-1.5 rounded-full bg-primary" />}
+                {hasActiveFilters && <span className="size-1.5 rounded-full bg-primary ml-1" />}
               </button>
 
-              {/* Filter Popover Menu */}
               {isFilterOpen && (
-                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-72 sm:w-80 rounded-2xl border border-border bg-card p-4 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute left-0 sm:right-0 sm:left-auto top-11 z-50 w-72 sm:w-80 rounded-md border border-border bg-card p-4 shadow-xl animate-in fade-in zoom-in-95 duration-150">
                   <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
-                    <h4 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                    <h4 className="font-mono text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                       <SlidersHorizontal className="size-3.5 text-primary" /> {t('practice:filterTitle', 'Bộ lọc nâng cao')}
                     </h4>
                     {hasActiveFilters && (
@@ -405,7 +389,7 @@ export function PracticePage() {
                           setFilterStatus('all');
                           setFilterDifficulty('all');
                         }}
-                        className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors"
+                        className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1 transition-colors cursor-pointer"
                       >
                         <RotateCcw className="size-3" /> {t('practice:reset', 'Đặt lại')}
                       </button>
@@ -417,7 +401,7 @@ export function PracticePage() {
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block">
                       Trạng thái
                     </label>
-                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted rounded-xl">
+                    <div className="grid grid-cols-3 gap-1.5 p-1 bg-muted rounded-sm">
                       {[
                         { id: 'all', label: t('practice:statusAll', 'Tất cả') },
                         { id: 'uncompleted', label: t('practice:statusUncompleted', 'Chưa làm') },
@@ -426,9 +410,9 @@ export function PracticePage() {
                         <button
                           key={item.id}
                           onClick={() => setFilterStatus(item.id)}
-                          className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                          className={`py-1.5 text-xs font-semibold rounded-sm transition-all cursor-pointer ${
                             filterStatus === item.id
-                              ? 'bg-background text-foreground shadow-xs'
+                              ? 'bg-background text-foreground shadow-2xs'
                               : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -443,7 +427,7 @@ export function PracticePage() {
                     <label className="text-xs font-semibold text-muted-foreground mb-2 block">
                       Độ khó
                     </label>
-                    <div className="grid grid-cols-4 gap-1.5 p-1 bg-muted rounded-xl">
+                    <div className="grid grid-cols-4 gap-1.5 p-1 bg-muted rounded-sm">
                       {[
                         { id: 'all', label: t('practice:diffAll', 'Tất cả') },
                         { id: 'easy', label: t('practice:diffEasy', 'Dễ') },
@@ -453,9 +437,9 @@ export function PracticePage() {
                         <button
                           key={item.id}
                           onClick={() => setFilterDifficulty(item.id)}
-                          className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                          className={`py-1.5 text-xs font-semibold rounded-sm transition-all cursor-pointer ${
                             filterDifficulty === item.id
-                              ? 'bg-background text-foreground shadow-xs'
+                              ? 'bg-background text-foreground shadow-2xs'
                               : 'text-muted-foreground hover:text-foreground'
                           }`}
                         >
@@ -469,9 +453,9 @@ export function PracticePage() {
             </div>
           </div>
 
-          {/* Right side stats & Shuffle button (LeetCode Style) */}
+          {/* Right side stats & Shuffle button */}
           <div className="flex items-center gap-3 shrink-0 ml-auto sm:ml-0">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+            <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-muted-foreground">
               <span className="inline-block size-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>
                 <strong className="text-foreground">{completedCount}</strong>/{questions.length} {t('practice:solved', 'Đã giải')}
@@ -480,7 +464,7 @@ export function PracticePage() {
 
             <button
               onClick={handleRandomPick}
-              className="h-9 px-3 rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary hover:bg-primary/10 transition-all flex items-center gap-1.5 text-xs font-semibold shadow-xs"
+              className="h-9 px-3 rounded-sm border border-border bg-card text-muted-foreground hover:text-foreground hover:border-primary hover:bg-primary/10 transition-all flex items-center gap-1.5 font-mono text-xs font-semibold shadow-2xs cursor-pointer"
               title={t('practice:randomTitle', 'Thử thách ngẫu nhiên một bài tập')}
             >
               <Shuffle className="size-3.5 text-primary" />
@@ -490,80 +474,89 @@ export function PracticePage() {
         </div>
       </div>
 
-      {/* Questions Grid */}
+      {/* Evidence Envelope Questions Grid */}
       {filteredQuestions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredQuestions.map((q) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          {filteredQuestions.map((q, idx) => {
             const completed = isQuestionCompleted(q);
             return (
-            <div
-              key={q.id}
-              className={`group relative flex flex-col rounded-3xl border ${completed ? 'border-border/50 bg-muted/40 opacity-70 hover:opacity-100' : 'border-border bg-card'} p-6 shadow-xs hover:border-primary/50 hover:shadow-md transition-all cursor-pointer`}
-              onClick={() => handleStartPractice(q)}
-            >
-              {completed && (
-                <div className="absolute -top-3 -right-3 size-7 bg-emerald-500 rounded-full border-[3px] border-background flex items-center justify-center shadow-sm z-10" title={t('practice:completed', 'Đã hoàn thành')}>
-                  <Check className="size-3.5 text-white" strokeWidth={3} />
-                </div>
-              )}
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className={`grid size-12 place-items-center rounded-2xl ${
-                    q.tool === 'sql'
-                      ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                  }`}
-                >
-                  {q.tool === 'sql' ? (
-                    <Database className="size-6" />
-                  ) : (
-                    <FileSpreadsheet className="size-6" />
-                  )}
-                </div>
-                <div
-                  className={`rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-                    q.difficulty === 'hard'
-                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+              <div
+                key={q.id}
+                className={`dossier-card group relative flex flex-col rounded-md border ${
+                  completed
+                    ? 'border-border/60 bg-muted/40 opacity-75 hover:opacity-100'
+                    : 'border-border bg-card'
+                } p-5 pl-6 shadow-2xs hover:border-primary/60 hover:shadow-md transition-all cursor-pointer`}
+                onClick={() => handleStartPractice(q)}
+              >
+                {completed && (
+                  <div
+                    className="absolute -top-2.5 -right-2.5 size-6 bg-emerald-600 rounded-sm border-2 border-background flex items-center justify-center shadow-xs z-10"
+                    title={t('practice:completed', 'Đã hoàn thành')}
+                  >
+                    <Check className="size-3.5 text-white" strokeWidth={3} />
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-3.5">
+                  <div className="flex items-center gap-2">
+                    <div className="grid size-8 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary">
+                      {q.tool === 'sql' ? (
+                        <Database className="size-4" />
+                      ) : (
+                        <FileSpreadsheet className="size-4" />
+                      )}
+                    </div>
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      LAB-{String(idx + 1).padStart(2, '0')} // {q.tool?.toUpperCase()}
+                    </span>
+                  </div>
+
+                  <div
+                    className={`rounded-sm border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${
+                      q.difficulty === 'hard'
+                        ? 'border-rose-500/30 bg-rose-500/15 text-rose-600 dark:text-rose-400'
+                        : q.difficulty === 'medium'
+                        ? 'border-amber-500/30 bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                        : 'border-emerald-500/30 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                    }`}
+                  >
+                    {q.difficulty === 'hard'
+                      ? t('practice:diffHard', 'Khó')
                       : q.difficulty === 'medium'
-                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                      : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                  }`}
-                >
-                  {q.difficulty === 'hard'
-                    ? t('practice:diffHard', 'Khó')
-                    : q.difficulty === 'medium'
-                    ? t('practice:diffMedium', 'Trung bình')
-                    : t('practice:diffEasy', 'Dễ')}
+                      ? t('practice:diffMedium', 'Trung bình')
+                      : t('practice:diffEasy', 'Dễ')}
+                  </div>
+                </div>
+
+                <h3 className="text-base font-bold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                  {q.prompt}
+                </h3>
+
+                <div className="mt-auto pt-4 flex items-center justify-between border-t border-border/80">
+                  <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+                    <Clock className="size-3.5 text-primary" /> {q.timeEstimate || '15-20p'}
+                  </div>
+                  <div className="flex items-center gap-1 rounded-sm border border-primary/35 bg-primary/10 px-2 py-0.5 font-mono text-xs font-bold text-primary">
+                    <Award className="size-3.5" /> +{q.rewards.baseXp} XP
+                  </div>
                 </div>
               </div>
-
-              <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2">
-                {q.prompt}
-              </h3>
-
-              <div className="mt-auto pt-6 flex items-center justify-between border-t border-border">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-                  <Clock className="size-4" /> {q.timeEstimate || '15-20p'}
-                </div>
-                <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-1 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-                  <Award className="size-3.5" /> +{q.rewards.baseXp} XP
-                </div>
-              </div>
-            </div>
-          )})}
+            );
+          })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center h-64 rounded-3xl border border-dashed border-border bg-card p-6 text-center">
+        <div className="flex flex-col items-center justify-center h-64 rounded-md border border-dashed border-border bg-card p-6 text-center">
           <div className="relative mb-4">
-            <div className="size-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <Search className="size-8 text-primary/60" />
+            <div className="size-14 bg-primary/10 rounded-sm border border-primary/30 flex items-center justify-center">
+              <Search className="size-6 text-primary" />
             </div>
-            <div className="absolute -bottom-1 -right-1 size-6 bg-background rounded-full flex items-center justify-center">
-              <AlertCircle className="size-4 text-muted-foreground" />
+            <div className="absolute -bottom-1 -right-1 size-5 bg-background rounded-sm flex items-center justify-center">
+              <AlertCircle className="size-3.5 text-muted-foreground" />
             </div>
           </div>
-          <h3 className="text-lg font-bold text-foreground">{t('practice:emptyTitle', 'Không tìm thấy bài tập')}</h3>
-          <p className="text-sm text-muted-foreground mt-1 max-w-sm">
+          <h3 className="text-base font-bold text-foreground">{t('practice:emptyTitle', 'Không tìm thấy bài tập')}</h3>
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
             {t('practice:emptyDesc', 'Không tìm thấy hồ sơ luyện tập nào khớp với từ khóa. Hãy thử lại nhé!')}
           </p>
         </div>

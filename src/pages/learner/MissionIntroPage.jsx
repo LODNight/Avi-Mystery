@@ -10,8 +10,8 @@ import {
   Play,
   Award,
   ArrowUpRight,
-  FileText,
   HelpCircle,
+  Paperclip,
 } from 'lucide-react';
 import { missionService, courseService, knowledgeService } from '../../services/index.js';
 import { AuthContext } from '../../hooks/useAuth.js';
@@ -57,7 +57,6 @@ export function MissionIntroPage() {
         const missionData = res.data;
         if (isMounted) setMission(missionData);
 
-        // Fetch related topics and read progress
         if (user && isMounted && knowledgeService?.getTopicsByMission) {
           try {
             const [topicsRes, readRes] = await Promise.all([
@@ -71,7 +70,6 @@ export function MissionIntroPage() {
           }
         }
 
-        // Fetch associated course info
         if (missionData.courseId) {
           const courseRes = await courseService.getCourse(missionData.courseId);
           if (courseRes.data && isMounted) {
@@ -92,7 +90,6 @@ export function MissionIntroPage() {
     };
   }, [missionId]);
 
-  // Phím tắt Enter để tiến thẳng vào bàn làm việc (Speed & Affordance)
   useEffect(() => {
     if (!mission) return;
     const handleKeyDown = (e) => {
@@ -139,70 +136,85 @@ export function MissionIntroPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6 animate-fade-in pb-12">
       {/* ── Top Navigation & Case Context ── */}
-      <div className="flex items-center justify-between text-xs">
+      <div className="flex items-center justify-between text-xs border-b border-border pb-3">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-1.5 font-semibold text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 font-mono font-bold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
         >
           <ArrowLeft className="size-3.5" /> Quay lại danh sách vụ án
         </button>
 
         {course && (
-          <span className="font-medium text-muted-foreground">
+          <span className="font-mono text-muted-foreground">
             Chuyên án: <strong className="text-foreground">{course.title}</strong>
           </span>
         )}
       </div>
 
-      {/* ── SECTION 1: Case Dossier Briefing (P0 & P1: Why it matters) ── */}
-      <section className="relative overflow-hidden rounded-2xl border-2 border-primary/30 bg-card p-6 sm:p-7 shadow-sm">
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-primary/10 border border-primary/25 px-2.5 py-0.5 font-mono text-[11px] font-bold text-primary uppercase">
-              <Briefcase className="size-3.5" /> Hồ sơ vụ án #{mission.id}
-            </span>
-            <span className="font-mono text-[11px] text-muted-foreground font-semibold">
-              · {isExcel ? 'Bảng tính Excel' : 'Truy vấn SQL'}
-            </span>
-          </div>
+      {/* ── SECTION 1: Confidential Case Dossier Briefing ── */}
+      <section className="relative pt-3">
+        <div className="inline-flex items-center gap-1.5 rounded-t-md border-t border-x border-primary/50 bg-card px-3.5 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-primary -mb-px relative z-10 ml-3">
+          <Paperclip className="size-3" />
+          <span>HỒ SƠ VỤ ÁN #{mission.id}</span>
+        </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
-            {mission.title}
-          </h1>
+        <div className="dossier-card corner-brackets rounded-md border border-primary/45 bg-card p-6 sm:p-7 shadow-sm">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex items-center gap-1.5 rounded-sm bg-primary/10 border border-primary/30 px-2 py-0.5 font-mono text-[10px] font-bold text-primary uppercase">
+                    <Briefcase className="size-3" /> {isExcel ? 'Bảng tính Excel' : 'Truy vấn SQL'}
+                  </span>
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    // MÃ LƯU TRỮ: {mission.id.toUpperCase()}
+                  </span>
+                </div>
 
-          {/* Incident Call / Narrative Context */}
-          <div className="rounded-xl border-l-4 border-primary bg-muted/30 p-4 text-sm leading-relaxed text-foreground">
-            <p className="font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1">
-              Bối cảnh vụ án
-            </p>
-            <p className="italic">
-              "{mission.story}"
-            </p>
+                <h1 className="mt-2 font-display text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                  {mission.title}
+                </h1>
+              </div>
+
+              <span className="detective-stamp text-primary border-primary/70 hidden sm:inline-block shrink-0">
+                MẬT // HỒ SƠ
+              </span>
+            </div>
+
+            {/* Witness Statement / Incident Call Transcript */}
+            <div className="rounded-sm border-l-[3px] border-primary bg-background/85 p-4 text-sm leading-relaxed text-foreground bg-ruled-ledger border border-border">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-primary mb-1.5">
+                BIÊN BẢN BỐI CẢNH VỤ ÁN
+              </p>
+              <p className="italic">
+                "{mission.story}"
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── Prerequisite Knowledge Check (Contextual, non-blocking) ── */}
+      {/* ── Prerequisite Knowledge Check ── */}
       {topics.length > 0 && (
         <PrerequisiteAlert topics={topics} readTopics={readTopics} />
       )}
 
-      {/* ── SECTION 2: Investigation Objective & Evidence Artifact ── */}
+      {/* ── SECTION 2: Investigation Objective & Chain-of-Custody Evidence ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Investigation Objective (What to solve) */}
-        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm flex flex-col justify-between">
+        {/* Investigation Objective */}
+        <section className="rounded-md border border-border bg-card p-5 shadow-2xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="flex items-center gap-2.5 border-b border-border pb-3 mb-3.5">
+              <span className="grid size-8 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary">
                 <Target className="size-4" />
               </span>
               <div>
                 <h2 className="text-sm font-bold text-foreground">Mục tiêu điều tra</h2>
-                <p className="text-[11px] text-muted-foreground">Kết quả cần chứng minh bằng số liệu</p>
+                <p className="font-mono text-[10px] text-muted-foreground uppercase">Yêu cầu chứng minh số liệu</p>
               </div>
             </div>
 
-            <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm font-semibold leading-relaxed text-foreground">
+            <div className="rounded-sm border border-primary/30 bg-primary/5 p-4 text-sm font-semibold leading-relaxed text-foreground">
               {mission.objective}
             </div>
           </div>
@@ -213,27 +225,27 @@ export function MissionIntroPage() {
           </div>
         </section>
 
-        {/* Evidence Artifact (Data to examine) */}
-        <section className="rounded-2xl border border-border bg-card p-5 shadow-sm flex flex-col justify-between">
+        {/* Chain of Custody Evidence Artifact */}
+        <section className="rounded-md border border-border bg-card p-5 shadow-2xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2.5 mb-3">
-              <span className="grid size-8 place-items-center rounded-lg bg-primary/10 text-primary">
+            <div className="flex items-center gap-2.5 border-b border-border pb-3 mb-3.5">
+              <span className="grid size-8 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary">
                 {isExcel ? <FileSpreadsheet className="size-4" /> : <Database className="size-4" />}
               </span>
               <div>
                 <h2 className="text-sm font-bold text-foreground">Bằng chứng & Hồ sơ dữ liệu</h2>
-                <p className="text-[11px] text-muted-foreground">Hiện trường số liệu được bàn giao</p>
+                <p className="font-mono text-[10px] text-muted-foreground uppercase">Chuỗi lưu ký vật chứng (Chain of Custody)</p>
               </div>
             </div>
 
-            <div className="flex flex-col gap-2 text-xs">
-              <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+            <div className="divide-y divide-border border border-border rounded-sm bg-background/60 text-xs">
+              <div className="flex items-center justify-between px-3 py-2">
                 <span className="text-muted-foreground">Tập dữ liệu bàn giao:</span>
                 <span className="font-mono font-bold text-foreground">{mission.datasetId || 'ds-001'}</span>
               </div>
 
               {mission.starterContent?.targetSheet && (
-                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                <div className="flex items-center justify-between px-3 py-2">
                   <span className="text-muted-foreground">Bảng tính cần giám định:</span>
                   <span className="font-mono font-bold text-primary">
                     {mission.starterContent.targetSheet}
@@ -242,7 +254,7 @@ export function MissionIntroPage() {
               )}
 
               {mission.starterContent?.targetCell && (
-                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                <div className="flex items-center justify-between px-3 py-2">
                   <span className="text-muted-foreground">Vị trí tính toán (Ô đích):</span>
                   <span className="font-mono font-bold text-primary">
                     {mission.starterContent.targetCell}
@@ -251,7 +263,7 @@ export function MissionIntroPage() {
               )}
 
               {mission.starterContent?.starterSql && (
-                <div className="flex items-center justify-between rounded-lg bg-muted/60 px-3 py-2">
+                <div className="flex items-center justify-between px-3 py-2">
                   <span className="text-muted-foreground">Mẫu câu truy vấn:</span>
                   <span className="font-mono font-bold text-primary">Có sẵn mã khởi động</span>
                 </div>
@@ -266,8 +278,8 @@ export function MissionIntroPage() {
         </section>
       </div>
 
-      {/* ── SECTION 3: Action Launch Bar (Clarity > Role-play, Single Primary CTA) ── */}
-      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border-2 border-primary/40 bg-card p-5 sm:p-6 shadow-sm">
+      {/* ── SECTION 3: Tactical Dispatch Launch Bar ── */}
+      <section className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-md border-2 border-primary/50 bg-card p-5 sm:p-6 shadow-sm">
         <div>
           <h3 className="font-bold text-base text-foreground">
             Bắt đầu phân tích số liệu
@@ -280,23 +292,23 @@ export function MissionIntroPage() {
         <Link
           to={targetPath}
           aria-label="Tiến vào Bàn làm việc"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground shadow-md shadow-primary/20 hover:opacity-95 hover:scale-[1.01] active:scale-[0.98] transition-all shrink-0"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-sm bg-primary px-6 py-3 text-sm font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.98] transition-all shrink-0"
           title="Tiến vào bàn làm việc (Phím tắt: Enter)"
         >
           <Play className="size-4 fill-current" />
           <span>Tiến vào Bàn làm việc</span>
-          <span className="hidden md:inline-flex rounded-md bg-black/15 dark:bg-white/20 px-1.5 py-0.2 font-mono text-[10px] font-bold uppercase">
+          <span className="hidden md:inline-flex rounded-sm bg-black/20 dark:bg-white/20 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase">
             Enter ↵
           </span>
           <ArrowUpRight className="size-4" />
         </Link>
       </section>
 
-      {/* ── SECTION 4: Demoted Supporting Metadata Strip (P4: Retained, not deleted) ── */}
-      <div className="flex items-center justify-between flex-wrap gap-3 pt-2 text-xs text-muted-foreground border-t border-border">
-        <div className="flex items-center gap-4">
+      {/* ── SECTION 4: Supporting Metadata Ledger Strip ── */}
+      <div className="flex items-center justify-between flex-wrap gap-3 pt-2 font-mono text-xs text-muted-foreground border-t border-border">
+        <div className="flex items-center gap-4 flex-wrap">
           <span className="flex items-center gap-1.5">
-            <Clock className="size-3.5 text-muted-foreground" />
+            <Clock className="size-3.5 text-primary" />
             Thời gian ước tính: <strong className="text-foreground">{formatDuration(mission.estimatedDuration)}</strong>
           </span>
           <span className="flex items-center gap-1.5">

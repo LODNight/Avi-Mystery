@@ -3,126 +3,128 @@
 @tailwind utilities;
 
 /* ============================================================
-   Detective Theme & Avi-Mystery Design System
+   Noir Archival Dossier & Forensic Terminal Design System
    ============================================================ */
 @layer base {
   :root {
     color-scheme: light;
-    
-    --background: #F5F6F8;          /* Light mode clean background */
-    --foreground: #18181B;          /* Primary text */
-    
-    --surface: #FFFFFF;
-    --workspace: #FFFFFF;
-    --surface-elevated: #FFFFFF;
-    
-    --card: #FFFFFF;
+
+    /* Archival Manila & Forensic Ink (No pure #FFFFFF) */
+    --background: #F2EFE9;
+    --foreground: #18181B;
+
+    --surface: #FAF8F4;
+    --workspace: #FAF8F4;
+    --surface-elevated: #F5F2EC;
+
+    --card: #FAF8F4;
     --card-foreground: #18181B;
-    
-    --popover: #FFFFFF;
+
+    --popover: #FAF8F4;
     --popover-foreground: #18181B;
-    
-    --primary: #d97706;             /* Warm detective amber */
-    --primary-hover: #b45309;
-    --primary-glow: rgba(217, 119, 6, 0.25);
-    --primary-foreground: #ffffff;
-    
-    --secondary: #F4F4F5;
+
+    --primary: #B45309;             /* Deep brass / detective amber */
+    --primary-hover: #92400E;
+    --primary-glow: rgba(180, 83, 9, 0.18);
+    --primary-foreground: #FAF8F4;
+
+    --secondary: #E8E3D9;
     --secondary-foreground: #18181B;
-    
-    --muted: #F4F4F5;
-    --muted-foreground: #71717A;    /* Muted text */
-    
-    --accent: #fef3c7;
-    --accent-foreground: #78350f;
-    
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    
-    --border: #E5E7EB;              /* Clean border */
-    --input: #E5E7EB;
-    --ring: #d97706;
-    --radius: 0.75rem;
+
+    --muted: #EAE5DC;
+    --muted-foreground: #57534E;
+
+    --accent: #FDE68A;
+    --accent-foreground: #78350F;
+
+    --destructive: #DC2626;
+    --destructive-foreground: #FAF8F4;
+
+    --border: #D6CFC2;              /* Manila folder hairline */
+    --input: #D6CFC2;
+    --ring: #B45309;
+    --radius: 0.5rem;               /* Crisp dossier corner radius scale */
 
     /* Semantic text tokens */
     --color-text-primary: #18181B;
-    --color-text-secondary: #52525B;
-    --color-text-muted: #71717A;
+    --color-text-secondary: #44403C;
+    --color-text-muted: #57534E;
 
     /* Semantic status tokens */
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-info: #3b82f6;
+    --color-success: #059669;
+    --color-warning: #D97706;
+    --color-error: #DC2626;
+    --color-info: #2563EB;
 
-    /* Sidebar theme tokens (Light mode) */
-    --sidebar: #ffffff;
+    /* Sidebar theme tokens (Archival Index Cabinet) */
+    --sidebar: #EAE5DC;
     --sidebar-foreground: #18181B;
-    --sidebar-primary: #d97706;
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: #F4F4F5;
+    --sidebar-primary: #B45309;
+    --sidebar-primary-foreground: #FAF8F4;
+    --sidebar-accent: #DFD9CE;
     --sidebar-accent-foreground: #18181B;
-    --sidebar-border: #E5E7EB;
-    --sidebar-ring: #d97706;
+    --sidebar-border: #CFC7B8;
+    --sidebar-ring: #B45309;
   }
 
   .dark {
     color-scheme: dark;
 
-    --background: #0F0F0F;          /* Dark mode deep background */
-    --foreground: #F5F5F5;          /* Primary text */
+    /* Noir Command & Microfiche Slate (No pure #000000) */
+    --background: #0B0C0E;
+    --foreground: #ECEAE5;
 
-    --surface: #151515;
-    --workspace: #181818;
-    --surface-elevated: #202020;
+    --surface: #121417;
+    --workspace: #14171A;
+    --surface-elevated: #1A1D22;
 
-    --card: #151515;
-    --card-foreground: #F5F5F5;
+    --card: #121417;
+    --card-foreground: #ECEAE5;
 
-    --popover: #151515;
-    --popover-foreground: #F5F5F5;
+    --popover: #14171A;
+    --popover-foreground: #ECEAE5;
 
-    --primary: #f59e0b;             /* Glowing amber gold */
-    --primary-hover: #d97706;
-    --primary-glow: rgba(245, 158, 11, 0.25);
-    --primary-foreground: #0F0F0F;
+    --primary: #F59E0B;             /* Tungsten desk-lamp amber */
+    --primary-hover: #D97706;
+    --primary-glow: rgba(245, 158, 11, 0.2);
+    --primary-foreground: #0B0C0E;
 
-    --secondary: #202020;
-    --secondary-foreground: #F5F5F5;
+    --secondary: #1A1D22;
+    --secondary-foreground: #ECEAE5;
 
-    --muted: #202020;
-    --muted-foreground: #A1A1AA;    /* Secondary/muted text */
+    --muted: #1A1D22;
+    --muted-foreground: #9CA3AF;
 
-    --accent: #451a03;
-    --accent-foreground: #fde68a;
+    --accent: #451A03;
+    --accent-foreground: #FDE68A;
 
-    --destructive: #f87171;
-    --destructive-foreground: #0F0F0F;
+    --destructive: #F87171;
+    --destructive-foreground: #0B0C0E;
 
-    --border: #303030;              /* Layered dark border */
-    --input: #303030;
-    --ring: #f59e0b;
+    --border: #262A30;              /* Layered dark microfiche border */
+    --input: #262A30;
+    --ring: #F59E0B;
 
     /* Semantic text tokens */
-    --color-text-primary: #F5F5F5;
-    --color-text-secondary: #A1A1AA;
-    --color-text-muted: #71717A;
+    --color-text-primary: #ECEAE5;
+    --color-text-secondary: #9CA3AF;
+    --color-text-muted: #6B7280;
 
     /* Semantic status tokens */
-    --color-success: #10b981;
-    --color-warning: #f59e0b;
-    --color-error: #ef4444;
-    --color-info: #3b82f6;
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-error: #EF4444;
+    --color-info: #3B82F6;
 
-    /* Sidebar dark */
-    --sidebar: #12100e;
-    --sidebar-foreground: #F5F5F5;
-    --sidebar-primary: #f59e0b;
-    --sidebar-primary-foreground: #0F0F0F;
-    --sidebar-accent: #151515;
-    --sidebar-accent-foreground: #F5F5F5;
-    --sidebar-border: #303030;
-    --sidebar-ring: #f59e0b;
+    /* Sidebar dark (Command Ledger) */
+    --sidebar: #0E1013;
+    --sidebar-foreground: #ECEAE5;
+    --sidebar-primary: #F59E0B;
+    --sidebar-primary-foreground: #0B0C0E;
+    --sidebar-accent: #16191E;
+    --sidebar-accent-foreground: #ECEAE5;
+    --sidebar-border: #22262C;
+    --sidebar-ring: #F59E0B;
   }
 
   * {
@@ -138,7 +140,7 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Outfit', system-ui, sans-serif;
     font-size: 14px;
     line-height: 1.5;
   }
@@ -146,6 +148,80 @@
   :focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--ring);
+  }
+}
+
+/* ============================================================
+   Detective & Forensic Structural Motifs
+   ============================================================ */
+@layer components {
+  /* Subtle forensic coordinate grid for investigation boards */
+  .bg-forensic-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--border) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--border) 45%, transparent) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Lined witness statement / field notebook paper */
+  .bg-ruled-ledger {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 27px,
+      color-mix(in srgb, var(--border) 55%, transparent) 28px
+    );
+  }
+
+  /* Official ink rubber stamp */
+  .detective-stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.15rem 0.55rem;
+    border: 1.5px solid currentColor;
+    border-radius: 0.25rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transform: rotate(-1.5deg);
+  }
+
+  /* Physical case folder with left spine binding */
+  .dossier-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--primary);
+    border-radius: 0.5rem;
+  }
+
+  /* Corner L-bracket target markers */
+  .corner-brackets {
+    position: relative;
+  }
+  .corner-brackets::before,
+  .corner-brackets::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: var(--primary);
+    pointer-events: none;
+    opacity: 0.65;
+  }
+  .corner-brackets::before {
+    top: -1px;
+    left: -1px;
+    border-top: 2px solid var(--primary);
+    border-left: 2px solid var(--primary);
+  }
+  .corner-brackets::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 2px solid var(--primary);
+    border-right: 2px solid var(--primary);
   }
 }
 
@@ -182,4 +258,16 @@
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Accessibility: Reduced Motion Guardrail (Section 6.B) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

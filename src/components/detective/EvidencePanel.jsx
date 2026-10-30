@@ -1,12 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileText, MessageSquare, Archive, X, FlaskConical } from 'lucide-react';
-import { SpreadsheetGrid } from '../excel/SpreadsheetGrid.jsx';
 
 /**
  * EvidencePanel
  * Displays the content of the currently selected source.
- * Rendering mode is determined by source.type — not hardcoded to Excel or SQL.
+ * Rendering mode is determined by source.type - not hardcoded to Excel or SQL.
  */
 export function EvidencePanel({
   source,
@@ -24,7 +23,7 @@ export function EvidencePanel({
   if (!source) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center px-6">
-        <div className="size-12 rounded-2xl bg-muted/50 flex items-center justify-center mb-3">
+        <div className="size-12 rounded-md border border-border bg-muted/50 flex items-center justify-center mb-3">
           <Archive className="size-5 text-muted-foreground/40" />
         </div>
         <p className="text-sm font-semibold text-foreground/60">{t('noEvidenceSelected')}</p>
@@ -52,7 +51,7 @@ export function EvidencePanel({
                 className={`
                   flex items-center gap-2 px-3 py-2.5 text-xs font-medium transition-colors shrink-0 border-b-2
                   ${isActive
-                    ? 'border-amber-500 text-foreground bg-background'
+                    ? 'border-primary text-foreground bg-background'
                     : 'border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30'
                   }
                 `}
@@ -69,7 +68,7 @@ export function EvidencePanel({
         <div className="flex items-start justify-between gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-bold tracking-widest uppercase text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded">
+              <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-primary bg-primary/10 border border-primary/25 px-1.5 py-0.5 rounded-sm">
                 {source.type.replace(/_/g, ' ')}
               </span>
             </div>
@@ -84,21 +83,21 @@ export function EvidencePanel({
             <button
               type="button"
               onClick={onClose}
-              className="size-6 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 cursor-pointer"
+              className="size-6 rounded-sm flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shrink-0 cursor-pointer"
             >
               <X className="size-3.5" />
             </button>
           )}
         </div>
-        {/* Investigate in Spreadsheet CTA — only on table sources */}
+        {/* Investigate in Spreadsheet CTA - only on table sources */}
         {(source.type === 'table' || source.type === 'sql_table') && onInvestigateInSpreadsheet && (
           <button
             type="button"
             onClick={() => onInvestigateInSpreadsheet(source.id, dataset)}
-            className="mt-2 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-500/35 hover:bg-amber-500/25 text-xs font-bold text-amber-700 dark:text-amber-300 transition-all cursor-pointer w-full shadow-xs"
+            className="mt-2 flex items-center justify-center gap-2 px-3 py-2 rounded-sm bg-primary/15 border border-primary/35 hover:bg-primary/25 text-xs font-bold text-primary transition-all cursor-pointer w-full shadow-2xs"
             title={t('investigateInSpreadsheetTooltip')}
           >
-            <FlaskConical className="size-4 text-amber-500" />
+            <FlaskConical className="size-4 text-primary" />
             <span>{t('investigateInSpreadsheet')}</span>
           </button>
         )}
@@ -106,7 +105,7 @@ export function EvidencePanel({
 
       {/* ── Source Content ── */}
       <div className="flex-1 overflow-auto min-h-0">
-        {/* Table source — renders as data grid */}
+        {/* Table source */}
         {(source.type === 'table' || source.type === 'sql_table') && dataset && (
           <EvidenceTable
             dataset={dataset}
@@ -116,7 +115,7 @@ export function EvidencePanel({
           />
         )}
 
-        {/* Document source — renders as formatted text */}
+        {/* Document source */}
         {source.type === 'document' && source.content && (
           <EvidenceDocument
             content={source.content}
@@ -124,7 +123,7 @@ export function EvidencePanel({
           />
         )}
 
-        {/* Witness statement — renders as formal statement */}
+        {/* Witness statement */}
         {source.type === 'witness' && source.content && (
           <WitnessStatement
             content={source.content}
@@ -136,7 +135,7 @@ export function EvidencePanel({
   );
 }
 
-function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigateInSpreadsheet }) {
+function EvidenceTable({ dataset, onSelectDataValue, onInvestigateInSpreadsheet }) {
   const { t } = useTranslation('investigation');
 
   if (!dataset?.rows || !dataset?.schema) {
@@ -152,7 +151,7 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
       {/* Dataset title & Action banner */}
       <div className="mb-2.5 flex items-center justify-between flex-wrap gap-2">
         <div>
-          <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+          <p className="font-mono text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
             {dataset.title}
           </p>
           {dataset.description && (
@@ -164,15 +163,15 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
             <button
               type="button"
               onClick={onInvestigateInSpreadsheet}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-[11px] font-bold text-amber-700 dark:text-amber-300 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-primary/15 border border-primary/30 hover:bg-primary/25 text-[11px] font-bold text-primary transition-colors cursor-pointer"
               title={t('investigateInSpreadsheetTooltip')}
             >
-              <FlaskConical className="size-3 text-amber-500" />
+              <FlaskConical className="size-3 text-primary" />
               <span>{t('loadEvidenceToSpreadsheet', 'Nạp vào Bàn Điều Tra')}</span>
             </button>
           )}
           {onSelectDataValue && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/40 border border-border/70 rounded-lg text-[10px] text-muted-foreground font-medium">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-muted/40 border border-border/70 rounded-sm text-[10px] text-muted-foreground font-medium">
               <span className="font-semibold text-foreground">{t('clickToFillTitle')}</span>
               <span className="hidden sm:inline text-muted-foreground">{t('clickToFillDesc')}</span>
             </div>
@@ -181,14 +180,14 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
       </div>
 
       {/* Data table */}
-      <div className="overflow-auto rounded-xl border border-border/60">
+      <div className="overflow-auto rounded-sm border border-border">
         <table className="w-full text-xs">
           <thead>
-            <tr className="border-b border-border/60 bg-muted/40">
+            <tr className="border-b border-border bg-muted/50">
               {dataset.schema.map(col => (
                 <th
                   key={col.name}
-                  className="px-3 py-2 text-left font-semibold text-muted-foreground whitespace-nowrap"
+                  className="px-3 py-2 text-left font-mono text-[11px] font-bold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
                 >
                   {col.label}
                 </th>
@@ -199,14 +198,13 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
             {dataset.rows.map((row, rIdx) => (
               <tr
                 key={rIdx}
-                className={`border-b border-border/40 transition-colors hover:bg-muted/20 ${
-                  rIdx % 2 === 0 ? 'bg-background' : 'bg-muted/10'
+                className={`border-b border-border/50 transition-colors hover:bg-muted/30 ${
+                  rIdx % 2 === 0 ? 'bg-background' : 'bg-muted/15'
                 }`}
               >
                 {dataset.schema.map(col => {
                   const value = row[col.name];
-                  // Highlight cells with suspicious/missing data
-                  const isEmpty = value === null || value === undefined || value === '' || value === '—';
+                  const isEmpty = value === null || value === undefined || value === '' || value === '-';
                   return (
                     <td
                       key={col.name}
@@ -218,11 +216,11 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
                       title={!isEmpty && onSelectDataValue ? t('clickToFillAction', { value }) : undefined}
                       className={`px-3 py-2 whitespace-nowrap transition-colors ${
                         isEmpty
-                          ? 'text-rose-500 dark:text-rose-400 font-medium italic'
-                          : 'text-foreground hover:bg-amber-500/20 hover:text-amber-700 dark:hover:text-amber-300 cursor-pointer active:scale-95'
-                      } ${col.type === 'number' ? 'text-right tabular-nums' : ''}`}
+                          ? 'text-rose-500 dark:text-rose-400 font-mono font-medium italic'
+                          : 'text-foreground hover:bg-primary/15 hover:text-primary cursor-pointer active:scale-95'
+                      } ${col.type === 'number' ? 'text-right font-mono tabular-nums' : ''}`}
                     >
-                      {isEmpty ? '—' : String(value)}
+                      {isEmpty ? '[TRỐNG]' : String(value)}
                     </td>
                   );
                 })}
@@ -232,7 +230,7 @@ function EvidenceTable({ dataset, onSelectDataValue, activeFieldId, onInvestigat
         </table>
       </div>
 
-      <p className="text-[10px] text-muted-foreground mt-2 text-right">
+      <p className="font-mono text-[10px] text-muted-foreground mt-2 text-right">
         {dataset.rows.length} {t('records')}
       </p>
     </div>
@@ -251,23 +249,23 @@ function EvidenceDocument({ content, onSelectDataValue }) {
 
   return (
     <div className="p-4 max-w-prose mx-auto">
-      <div className="rounded-xl border border-border/60 bg-card/60 p-4">
-        <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border/40">
+      <div className="dossier-card rounded-sm border border-border bg-card p-4 bg-ruled-ledger">
+        <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-border">
           <div className="flex items-center gap-2">
-            <FileText className="size-3.5 text-muted-foreground" />
-            <span className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+            <FileText className="size-3.5 text-primary" />
+            <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
               {t('officialDocument')}
             </span>
           </div>
           {onSelectDataValue && (
-            <span className="text-[10px] text-amber-600 dark:text-amber-400">
+            <span className="font-mono text-[10px] text-primary">
               {t('highlightToFill')}
             </span>
           )}
         </div>
         <pre
           onDoubleClick={handleDoubleClick}
-          className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap font-sans selection:bg-amber-500/30 cursor-text"
+          className="text-xs text-foreground/90 leading-relaxed whitespace-pre-wrap font-sans selection:bg-primary/25 cursor-text"
         >
           {content}
         </pre>
@@ -288,16 +286,16 @@ function WitnessStatement({ content, onSelectDataValue }) {
 
   return (
     <div className="p-4 max-w-prose mx-auto">
-      <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4">
+      <div className="rounded-sm border border-emerald-500/35 bg-emerald-500/5 p-4 bg-ruled-ledger">
         <div className="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-emerald-500/20">
           <div className="flex items-center gap-2">
             <MessageSquare className="size-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-[10px] font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400">
+            <span className="font-mono text-[10px] font-bold tracking-widest uppercase text-emerald-600 dark:text-emerald-400">
               {t('witnessStatement')}
             </span>
           </div>
           {onSelectDataValue && (
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
+            <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400">
               {t('highlightToFill')}
             </span>
           )}

@@ -6,12 +6,14 @@ import {
   CheckCircle2,
   Lock,
   Play,
-  Sparkles,
   Zap,
   BookOpen,
   Layers,
   Compass,
   ShieldCheck,
+  Database,
+  FileSpreadsheet,
+  FolderKanban,
 } from 'lucide-react';
 import {
   learningMapService,
@@ -43,7 +45,6 @@ export function LearningMapPage() {
       setLoading(true);
       setError(null);
       try {
-        // Fetch the materialized Read Model
         const res = await learningMapService.getLearningMapTree();
         if (res?.error || !res?.data || res.data.length === 0) {
           if (isMounted) {
@@ -72,7 +73,6 @@ export function LearningMapPage() {
     };
   }, []);
 
-  // Synchronously calculate journeyMap from raw map data and dynamic progressList
   const journeyMap = useMemo(() => {
     if (!mapRawData) return null;
     return learningMapAdapter.buildJourneyMapFromReadModel({
@@ -81,7 +81,6 @@ export function LearningMapPage() {
     });
   }, [mapRawData, progressList]);
 
-  // Set initial active phase if not set
   useEffect(() => {
     if (journeyMap?.phases && journeyMap.phases.length > 0 && !activePhaseId) {
       const activeP = journeyMap.phases.find((p) => p.status === 'in_progress') || journeyMap.phases[0];
@@ -112,91 +111,94 @@ export function LearningMapPage() {
   if (isInitialLoading) return <LearningMapSkeleton />;
 
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-8 animate-fade-in">
-      {/* ── Section 1: Journey Progression Header ── */}
-      <section className="relative overflow-hidden rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
-        <div className="absolute -right-10 -top-10 size-48 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto flex max-w-5xl flex-col gap-7 animate-fade-in pb-12">
+      {/* ── Section 1: Bureau Investigation Master Board Header ── */}
+      <section className="dossier-card corner-brackets rounded-md border border-border bg-card p-6 shadow-sm sm:p-7 bg-forensic-grid">
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between border-b border-border pb-5">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary mb-3">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-primary/35 bg-primary/10 px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest text-primary mb-2.5">
               <Compass className="size-3.5" /> {t('map:investigationJourney', 'Lộ Trình Hành Trình Điều Tra')}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
               {t('map:title', 'Bản Đồ Học Tập')}
             </h1>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               {t('map:subtitle', 'Theo dõi tiến trình thám tử dữ liệu của bạn trên toàn bộ các Giai đoạn (Phase) học tập.')}
             </p>
           </div>
 
-          <div className="shrink-0 flex items-center gap-3 bg-primary/10 border border-primary/20 rounded-2xl p-4">
-            <Sparkles className="size-6 text-primary" />
+          <div className="shrink-0 flex items-center gap-3 rounded-sm border border-primary/40 bg-background/90 px-4 py-3">
+            <FolderKanban className="size-5 text-primary" />
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:overallProgressTitle', 'Tổng tiến độ')}</p>
-              <p className="text-lg font-bold text-foreground">{t('map:overallProgress', '{{percent}}% Hoàn thành', { percent: summary.overallProgress })}</p>
+              <p className="font-mono text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                {t('map:overallProgressTitle', 'Tổng tiến độ')}
+              </p>
+              <p className="font-mono text-base font-bold text-primary">
+                {t('map:overallProgress', '{{percent}}% Hoàn thành', { percent: summary.overallProgress })}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Gamification Journey Stats Strip */}
-        <div className="mt-6 pt-6 border-t border-border/80 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        {/* Bureau Telemetry Ledger Strip */}
+        <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-4 sm:divide-x sm:divide-border">
           <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl bg-amber-500/10 text-amber-500">
-              <Compass className="size-5" />
+            <div className="grid size-9 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary shrink-0">
+              <Compass className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:phaseTitle', 'Giai đoạn (Phase)')}</p>
-              <p className="text-sm font-bold text-foreground">{t('map:phases', '{{count}} Phase', { count: summary.totalPhases })}</p>
+              <p className="font-mono text-[10px] font-bold text-muted-foreground uppercase">{t('map:phaseTitle', 'Giai đoạn (Phase)')}</p>
+              <p className="font-mono text-sm font-bold text-foreground">{t('map:phases', '{{count}} Phase', { count: summary.totalPhases })}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl bg-indigo-500/10 text-indigo-500">
-              <Layers className="size-5" />
+          <div className="flex items-center gap-3 sm:pl-4">
+            <div className="grid size-9 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary shrink-0">
+              <Layers className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:chapterTitle', 'Số chương')}</p>
-              <p className="text-sm font-bold text-foreground">{t('map:chapters', '{{count}} Chương', { count: summary.totalChapters })}</p>
+              <p className="font-mono text-[10px] font-bold text-muted-foreground uppercase">{t('map:chapterTitle', 'Số chương')}</p>
+              <p className="font-mono text-sm font-bold text-foreground">{t('map:chapters', '{{count}} Chương', { count: summary.totalChapters })}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl bg-emerald-500/10 text-emerald-500">
-              <BookOpen className="size-5" />
+          <div className="flex items-center gap-3 sm:pl-4">
+            <div className="grid size-9 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary shrink-0">
+              <BookOpen className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:investigationTitle', 'Tổng vụ án')}</p>
-              <p className="text-sm font-bold text-foreground">{t('map:investigations', '{{count}} Vụ án', { count: summary.totalInvestigations })}</p>
+              <p className="font-mono text-[10px] font-bold text-muted-foreground uppercase">{t('map:investigationTitle', 'Tổng vụ án')}</p>
+              <p className="font-mono text-sm font-bold text-foreground">{t('map:investigations', '{{count}} Vụ án', { count: summary.totalInvestigations })}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="grid size-10 place-items-center rounded-2xl bg-cyan-500/10 text-cyan-500">
-              <Zap className="size-5" />
+          <div className="flex items-center gap-3 sm:pl-4">
+            <div className="grid size-9 place-items-center rounded-sm border border-primary/30 bg-primary/10 text-primary shrink-0">
+              <Zap className="size-4" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase">{t('map:xpTitle', 'Tổng XP')}</p>
-              <p className="text-sm font-bold text-foreground">{t('map:xp', '+{{amount}} XP', { amount: summary.totalXp })}</p>
+              <p className="font-mono text-[10px] font-bold text-muted-foreground uppercase">{t('map:xpTitle', 'Tổng XP')}</p>
+              <p className="font-mono text-sm font-bold text-primary">{t('map:xp', '+{{amount}} XP', { amount: summary.totalXp })}</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── Section 2: Skill Mastery Summary Panel ── */}
+      {/* ── Section 2: Forensic Skill Mastery Calibration Panel ── */}
       {masteryList.length > 0 && (
-        <section className="rounded-3xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
+        <section className="rounded-md border border-border bg-card p-5 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-border pb-3 mb-4">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="size-5 text-amber-500" />
-              <h3 className="font-bold text-base text-foreground">{t('map:skillMastery', 'Độ Thành Thạo Kỹ Năng (Skill Mastery)')}</h3>
+              <ShieldCheck className="size-4 text-primary" />
+              <h3 className="font-bold text-sm text-foreground tracking-tight">
+                {t('map:skillMastery', 'Độ Thành Thạo Kỹ Năng (Skill Mastery)')}
+              </h3>
             </div>
             <Badge
-              variant="outline"
+              variant="primary"
               size="sm"
-              className={`font-semibold ${overallMastery.overallLevel.border || 'border-amber-500/30'} ${overallMastery.overallLevel.bg || 'bg-amber-500/10'} ${overallMastery.overallLevel.color || 'text-amber-600 dark:text-amber-400'}`}
             >
-              {t('map:level', 'Cấp độ:')} {overallMastery.overallLevel.badge} {overallMastery.overallLevel.name}
+              {t('map:level', 'Cấp độ:')} {overallMastery.overallLevel.name}
             </Badge>
           </div>
 
@@ -211,21 +213,21 @@ export function LearningMapPage() {
               const skillLevel = getSkillMasteryLevel(skill.masteryScore);
 
               return (
-                <div key={skill.skillId} className="rounded-2xl border border-border/80 bg-muted/20 p-4">
+                <div key={skill.skillId} className="rounded-sm border border-border bg-background/70 p-3.5">
                   <div className="flex items-center justify-between text-xs font-bold mb-1.5">
                     <span className="text-foreground">{title}</span>
-                    <span className="text-amber-600 dark:text-amber-400">{skill.masteryScore}%</span>
+                    <span className="font-mono text-primary">{skill.masteryScore}%</span>
                   </div>
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div className="h-1.5 w-full overflow-hidden rounded-sm bg-muted">
                     <div
-                      className="h-full bg-gradient-to-r from-amber-500 to-amber-600 transition-all duration-300"
+                      className="h-full bg-primary transition-all duration-300"
                       style={{ width: `${Math.min(100, skill.masteryScore)}%` }}
                     />
                   </div>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
+                  <div className="mt-2 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
                     <span>{t('map:correctAttempts', '{{success}}/{{total}} lượt đúng', { success: skill.successfulAttempts, total: skill.totalAttempts })}</span>
-                    <span className={`font-semibold ${skillLevel.color}`}>
-                      {t('map:rank', 'Cấp:')} {skillLevel.badge} {skillLevel.name}
+                    <span className="font-bold text-foreground">
+                      {t('map:rank', 'Cấp:')} {skillLevel.name}
                     </span>
                   </div>
                 </div>
@@ -235,29 +237,32 @@ export function LearningMapPage() {
         </section>
       )}
 
-      {/* ── Section 3: Phase Navigation Tabs ── */}
+      {/* ── Section 3: File Cabinet Folder Index Tabs ── */}
       {phases.length > 0 && (
-        <nav aria-label="Danh sách giai đoạn học tập" className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+        <nav
+          aria-label="Danh sách giai đoạn học tập"
+          className="flex items-end gap-2 overflow-x-auto border-b-2 border-border pt-1 scrollbar-none"
+        >
           {phases.map((phase, pIdx) => {
             const isActive = phase.id === activePhaseId;
             return (
               <button
                 key={phase.id}
                 onClick={() => setActivePhaseId(phase.id)}
-                className={`flex items-center gap-3 rounded-2xl border px-5 py-3 text-xs font-bold transition-all shrink-0 ${
+                className={`flex items-center gap-2.5 rounded-t-md border-t-2 border-x-2 px-4 py-2.5 text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   isActive
-                    ? 'border-primary bg-primary text-primary-foreground shadow-md shadow-primary/20'
-                    : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                    ? 'border-primary bg-card text-foreground -mb-[2px] shadow-2xs'
+                    : 'border-border/70 bg-muted/50 text-muted-foreground hover:bg-card/70 hover:text-foreground'
                 }`}
               >
-                <span className={`grid size-6 place-items-center rounded-full font-mono text-[10px] font-bold ${
-                  isActive ? 'bg-primary-foreground text-primary' : 'bg-muted text-muted-foreground'
+                <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-sm ${
+                  isActive ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground'
                 }`}>
-                  {pIdx + 1}
+                  0{pIdx + 1}
                 </span>
                 <span className="truncate max-w-[180px]">{phase.title}</span>
                 {phase.completionPercentage > 0 && (
-                  <Badge variant={isActive ? 'outline' : 'success'} size="sm">
+                  <Badge variant={isActive ? 'primary' : 'success'} size="sm">
                     {phase.completionPercentage}%
                   </Badge>
                 )}
@@ -267,13 +272,13 @@ export function LearningMapPage() {
         </nav>
       )}
 
-      {/* ── Section 4: Gamified Node Tree Map per Phase ── */}
-      <section className="flex flex-col gap-8" aria-busy={isInitialLoading ? 'true' : undefined}>
+      {/* ── Section 4: Pinboard Evidence Chain per Phase ── */}
+      <section className="flex flex-col gap-6" aria-busy={isInitialLoading ? 'true' : undefined}>
         {isInitialLoading ? (
           <div className="flex flex-col gap-6">
-            <Skeleton className="h-20 rounded-2xl" />
-            <Skeleton className="h-32 rounded-2xl" />
-            <Skeleton className="h-32 rounded-2xl" />
+            <Skeleton className="h-20 rounded-md" />
+            <Skeleton className="h-32 rounded-md" />
+            <Skeleton className="h-32 rounded-md" />
           </div>
         ) : error ? (
           <ErrorState message={error} onRetry={() => window.location.reload()} />
@@ -284,52 +289,65 @@ export function LearningMapPage() {
             description={t('map:noDataDesc', 'Giai đoạn này đang được cập nhật thêm các chương vụ án mới.')}
           />
         ) : (
-          <div className="relative flex flex-col gap-10">
-            {/* Phase Banner Header */}
-            <div className="rounded-3xl border border-border bg-card p-5 shadow-sm flex items-center justify-between">
+          <div className="relative flex flex-col gap-8">
+            {/* Phase Dossier Banner Header */}
+            <div className="dossier-card rounded-md border border-border bg-card p-5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <div className="mb-1">
+                <div className="mb-1 flex items-center gap-2">
                   <span className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest">
-                    {t('map:currentPhase', 'Giai đoạn hiện tại')}
+                    {t('map:currentPhase', 'Giai đoạn hiện tại')} // ARCHIVE
                   </span>
                 </div>
                 <Link to={`/courses/${activePhase.courseId || activePhase.id.replace('phase-', '')}`} className="block">
-                  <h2 className="text-xl font-bold text-foreground hover:text-primary transition-colors">{activePhase.title}</h2>
+                  <h2 className="font-display text-xl font-bold text-foreground hover:text-primary transition-colors">{activePhase.title}</h2>
                 </Link>
-                <p className="text-xs text-muted-foreground mt-0.5">{activePhase.description}</p>
+                <p className="text-xs text-muted-foreground mt-1">{activePhase.description}</p>
               </div>
-              <div className="text-right">
-                <Badge variant={activePhase.tool === 'sql' ? 'warning' : 'primary'} size="default">
-                  {activePhase.tool === 'sql' ? '🔍 SQL Engine' : '📊 Excel Worksheet'}
+              <div className="shrink-0">
+                <Badge variant={activePhase.tool === 'sql' ? 'warning' : 'primary'} size="md">
+                  {activePhase.tool === 'sql' ? (
+                    <>
+                      <Database className="size-3" /> SQL Engine
+                    </>
+                  ) : (
+                    <>
+                      <FileSpreadsheet className="size-3" /> Excel Worksheet
+                    </>
+                  )}
                 </Badge>
               </div>
             </div>
 
-            {/* Connecting Line */}
-            <div className="absolute left-6 top-[135px] bottom-10 w-1 bg-gradient-to-b from-primary/80 via-primary/40 to-muted rounded-full hidden sm:block" />
+            {/* Dashed Investigation Thread Line */}
+            <div className="absolute left-5 top-[120px] bottom-8 border-l-2 border-dashed border-primary/50 hidden sm:block" />
 
             {activePhase.chapters.map((chapter, chIdx) => {
               const investigations = chapter.investigations || [];
               const cleanTitle = chapter.title ? chapter.title.replace(/^Chương \d+:\s*/i, '') : '';
 
               return (
-                <div key={chapter.id} className="relative flex flex-col gap-4">
-                  {/* Chapter Milestone Banner Header */}
-                  <div className="flex items-center gap-4 z-10">
-                    <div className="grid size-12 shrink-0 place-items-center rounded-2xl bg-primary font-bold text-primary-foreground shadow-lg shadow-primary/20">
-                      <MapPin className="size-6" />
+                <div key={chapter.id} className="relative flex flex-col gap-3.5">
+                  {/* Chapter Milestone Pin Header */}
+                  <div className="flex items-start gap-3.5 z-10">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-sm border border-primary bg-primary font-mono text-xs font-bold text-primary-foreground shadow-2xs mt-1">
+                      <MapPin className="size-4" />
                     </div>
-                    <div className="rounded-2xl border border-primary/30 bg-card p-4 shadow-sm flex-1">
-                      <span className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest">
-                        {t('map:chapter', 'Chương {{index}}', { index: chIdx + 1 })}
-                      </span>
-                      <h3 className="text-base font-bold text-foreground">{cleanTitle || chapter.title}</h3>
+                    <div className="rounded-md border border-border bg-card p-4 shadow-2xs flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-[10px] font-bold text-primary uppercase tracking-widest">
+                          {t('map:chapter', 'Chương {{index}}', { index: chIdx + 1 })}
+                        </span>
+                        <span className="font-mono text-[10px] text-muted-foreground">
+                          {investigations.length} HỒ SƠ
+                        </span>
+                      </div>
+                      <h3 className="text-base font-bold text-foreground mt-0.5">{cleanTitle || chapter.title}</h3>
                       <p className="text-xs text-muted-foreground mt-0.5">{chapter.description}</p>
                     </div>
                   </div>
 
-                  {/* Investigation Node List */}
-                  <div className="pl-4 sm:pl-16 flex flex-col gap-4">
+                  {/* Investigation Evidence Node List */}
+                  <div className="pl-3 sm:pl-14 flex flex-col gap-3">
                     {investigations.map((node, mIdx) => (
                       <MissionNodeCard
                         key={node.id}
@@ -353,7 +371,7 @@ export function LearningMapPage() {
   );
 }
 
-/* ── Node Card Sub-component ── */
+/* ── Evidence Node Card Sub-component ── */
 function MissionNodeCard({
   mission,
   chapterIndex,
@@ -365,44 +383,49 @@ function MissionNodeCard({
 }) {
   return (
     <div
-      className={`group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border p-4 transition-all duration-200 ${
+      className={`group relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-md border p-4 transition-all duration-200 ${
         isCurrent
-          ? 'border-primary bg-primary/5 shadow-md shadow-primary/10 ring-1 ring-primary'
+          ? 'dossier-card border-primary bg-card shadow-sm'
           : isLocked
-          ? 'border-border bg-muted/40 opacity-70'
-          : 'border-border bg-card hover:border-primary/40 hover:shadow-md'
+          ? 'border-border bg-muted/40 opacity-75'
+          : 'border-border bg-card hover:border-primary/50 hover:shadow-2xs'
       }`}
     >
-      <div className="flex items-center gap-4 min-w-0">
+      <div className="flex items-center gap-3.5 min-w-0">
         <div
-          className={`grid size-10 shrink-0 place-items-center rounded-xl font-mono text-xs font-bold transition-all ${
+          className={`grid size-9 shrink-0 place-items-center rounded-sm border font-mono text-xs font-bold transition-all ${
             isCompleted
-              ? 'bg-emerald-500 text-white'
+              ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
               : isCurrent
-              ? 'bg-primary text-primary-foreground animate-pulse'
+              ? 'border-primary bg-primary text-primary-foreground'
               : isLocked
-              ? 'bg-muted text-muted-foreground'
-              : 'bg-primary/15 text-primary'
+              ? 'border-border bg-muted text-muted-foreground'
+              : 'border-primary/30 bg-primary/10 text-primary'
           }`}
         >
           {isCompleted ? (
-            <CheckCircle2 className="size-5" />
+            <CheckCircle2 className="size-4" />
           ) : isLocked ? (
-            <Lock className="size-4" />
+            <Lock className="size-3.5" />
           ) : (
             `${chapterIndex}.${missionIndex}`
           )}
         </div>
 
         <div className="min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="font-mono text-[10px] font-bold text-muted-foreground uppercase">
-              {t('map:case', 'Vụ án {{index}}', { index: missionIndex })}
+              EVID-{chapterIndex}.{missionIndex} // {t('map:case', 'Vụ án {{index}}', { index: missionIndex })}
             </span>
             {isCurrent && (
               <Badge variant="warning" size="sm">
                 {t('map:nextLesson', 'Bài tiếp theo')}
               </Badge>
+            )}
+            {isCompleted && (
+              <span className="font-mono text-[9px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                [ĐÃ XÁC MINH]
+              </span>
             )}
           </div>
           <Link to={mission.targetUrl || `/missions/${mission.id}`} className="block mt-1">
@@ -416,28 +439,28 @@ function MissionNodeCard({
         </div>
       </div>
 
-      <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-border/60">
-        <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+      <div className="flex items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-border/60 shrink-0">
+        <span className="font-mono text-xs font-bold text-primary">
           +{mission.rewardXp} XP
         </span>
 
         {isLocked ? (
           <button
             disabled
-            className="inline-flex items-center gap-1.5 rounded-xl bg-muted px-3.5 py-2 text-xs font-bold text-muted-foreground cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 rounded-sm border border-border bg-muted px-3 py-1.5 font-mono text-[11px] font-bold text-muted-foreground cursor-not-allowed"
           >
-            <Lock className="size-3.5" /> {t('map:locked', 'Chưa mở khóa')}
+            <Lock className="size-3" /> {t('map:locked', 'Chưa mở khóa')}
           </button>
         ) : (
           <Link
             to={mission.targetUrl || `/missions/${mission.id}`}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-1.5 rounded-sm px-3.5 py-1.5 font-mono text-xs font-bold transition-all ${
               isCurrent
-                ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:opacity-90'
-                : 'bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'
+                ? 'bg-primary text-primary-foreground shadow-2xs hover:opacity-90'
+                : 'border border-primary/35 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground'
             }`}
           >
-            <Play className="size-3.5 fill-current" /> {isCurrent ? t('map:startNow', 'Làm bài ngay') : t('map:practice', 'Luyện tập')}
+            <Play className="size-3 fill-current" /> {isCurrent ? t('map:startNow', 'Làm bài ngay') : t('map:practice', 'Luyện tập')}
           </Link>
         )}
       </div>

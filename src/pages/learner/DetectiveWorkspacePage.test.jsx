@@ -27,8 +27,8 @@ describe('DetectiveWorkspacePage Component & Layout Tests', () => {
     localStorage.clear();
   });
 
-  it('hiển thị bố cục 3 cột đồng thời: Hồ sơ (Trái) | Bằng chứng (Giữa) | HQ Terminal (Phải) mà không có modal backdrop che khuất', async () => {
-    const { container } = renderWithRouter('/cases/case-001/investigate');
+  it('hiển thị bố cục 2 cột rộng rãi: Hồ sơ (Trái) | Bàn khám nghiệm toàn màn hình (Phải) và mở HQ Terminal dưới dạng Dialog', async () => {
+    renderWithRouter('/cases/case-001/investigate');
 
     // Chờ case load xong
     await waitFor(() => {
@@ -40,70 +40,77 @@ describe('DetectiveWorkspacePage Component & Layout Tests', () => {
     expect(screen.getByText(/Mục tiêu|Objective/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Nguồn|Sources/i).length).toBeGreaterThan(0);
 
-    // 2. Cột giữa (Evidence Region) - tự động nạp nguồn đầu tiên
+    // 2. Vùng chính (Evidence Region) - tự động nạp nguồn đầu tiên
     await waitFor(() => {
       expect(screen.getAllByText(/Báo Cáo Xuất Kho|Warehouse Shipping Records/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/ORD-1842/i).length).toBeGreaterThan(0);
     });
 
-    // 3. Cột phải (HQ Terminal) mở cố định bên phải
-    expect(screen.getByText(/HQ Terminal/i)).toBeInTheDocument();
-    expect(screen.getByText(/GỬI BÁO CÁO LÊN HQ|Send Report to HQ/i)).toBeInTheDocument();
+    // 3. Mặc định HQ Dialog đóng để nhường toàn bộ không gian cho bàn khám nghiệm
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-    // Xác nhận KHÔNG có backdrop làm mờ nền (không overlay che khuất)
-    const backdrops = document.querySelectorAll('.bg-black\\/40');
-    expect(backdrops.length).toBe(0);
+    // 4. Bấm nút mở HQ Dialog
+    const triggerBtn = screen.getByText(/Mở Báo Cáo HQ/i);
+    fireEvent.click(triggerBtn);
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByText(/HQ Terminal/i)).toBeInTheDocument();
+      expect(screen.getByText(/GỬI BÁO CÁO LÊN HQ|Send Report to HQ/i)).toBeInTheDocument();
+    });
   });
 
-  it('tính năng Click-to-Fill: Click vào ô dữ liệu trên bảng tự động điền giá trị vào trường báo cáo đang chọn', async () => {
+  it('tính năng Click-to-Fill: Chọn mục trong Báo Cáo HQ rồi click vào ô dữ liệu trên bảng tự động điền giá trị', async () => {
     renderWithRouter('/cases/case-001/investigate');
 
     await waitFor(() => {
       expect(screen.getAllByText(/ORD-1842/i).length).toBeGreaterThan(0);
     });
 
-    // Tìm input người quản lý trong báo cáo
-    const managerInput = screen.getByPlaceholderText(/Họ tên quản lý|Full name of the manager/i);
-    expect(managerInput).toBeInTheDocument();
-    expect(managerInput.value).toBe('');
-
-    // Focus / chọn trường này
+    // Mở HQ Dialog và chọn trường quản lý
+    fireEvent.click(screen.getByText(/Mở Báo Cáo HQ/i));
+    const managerInput = await screen.findByPlaceholderText(/Họ tên quản lý|Full name of the manager/i);
     fireEvent.click(managerInput);
+
+    // Đóng dialog để chấm chọn trên bảng (hoặc bấm trực tiếp ô dữ liệu)
+    fireEvent.click(screen.getByTitle(/Thu gọn panel này/i));
 
     // Click vào ô "Nguyễn Văn Tâm" trong bảng dữ liệu
     const managerCells = screen.getAllByText('Nguyễn Văn Tâm');
     fireEvent.click(managerCells[0]);
 
-    // Giá trị Nguyễn Văn Tâm lập tức được điền vào ô manager
+    // Mở lại HQ Dialog để kiểm tra giá trị đã được điền vào input quản lý
+    fireEvent.click(screen.getByText(/Mở Báo Cáo HQ/i));
+
     await waitFor(() => {
-      expect(managerInput.value).toBe('Nguyễn Văn Tâm');
+      const updatedManagerInput = screen.getByPlaceholderText(/Họ tên quản lý|Full name of the manager/i);
+      expect(updatedManagerInput.value).toBe('Nguyễn Văn Tâm');
     });
   });
 
-  it('hỗ trợ thu gọn cột HQ Terminal và mở lại bằng nút nổi', async () => {
+  it('hỗ trợ mở và đóng HQ Terminal Dialog bằng nút đóng hoặc phím tắt', async () => {
     renderWithRouter('/cases/case-001/investigate');
 
     await waitFor(() => {
-      expect(screen.getByText(/HQ Terminal/i)).toBeInTheDocument();
-    });
-
-    // Bấm nút thu gọn panel HQ
-    const closeBtn = screen.getByTitle(/Thu gọn panel này/i);
-    fireEvent.click(closeBtn);
-
-    // HQ Terminal bị ẩn đi, xuất hiện nút nổi "Mở Báo Cáo HQ"
-    await waitFor(() => {
-      expect(screen.queryByText(/GỬI BÁO CÁO LÊN HQ/i)).not.toBeInTheDocument();
       expect(screen.getByText(/Mở Báo Cáo HQ/i)).toBeInTheDocument();
     });
 
-    // Bấm nút nổi để mở lại
-    const triggerBtn = screen.getByText(/Mở Báo Cáo HQ/i);
-    fireEvent.click(triggerBtn);
+    // Bấm nút nổi để mở HQ Dialog
+    fireEvent.click(screen.getByText(/Mở Báo Cáo HQ/i));
 
-    // HQ Terminal xuất hiện trở lại
     await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
       expect(screen.getByText(/GỬI BÁO CÁO LÊN HQ/i)).toBeInTheDocument();
+    });
+
+    // Bấm nút đóng Dialog
+    const closeBtn = screen.getByTitle(/Thu gọn panel này/i);
+    fireEvent.click(closeBtn);
+
+    // HQ Dialog đóng lại
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.getByText(/Mở Báo Cáo HQ/i)).toBeInTheDocument();
     });
   });
 

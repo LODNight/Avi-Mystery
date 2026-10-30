@@ -35,7 +35,7 @@ export const learnerNavItems = [
     serial: 'SEC-01',
     children: [
       { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home, code: '01' },
-      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases/case-001/investigate', icon: Briefcase, code: '02' },
+      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases', icon: Briefcase, code: '02' },
       { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map, code: '03' },
     ]
   },
@@ -67,7 +67,7 @@ export const learnerNav = learnerNavItems.flatMap((item) => item.children || [it
 export function isLearnerNavPathActive(pathname, navPath) {
   if (pathname === navPath) return true;
   if (navPath === '/dashboard') return false; // Strict match for dashboard
-  if (navPath === '/cases/case-001/investigate' && /^\/cases(?:\/|$)/.test(pathname)) return true;
+  if ((navPath === '/cases' || navPath === '/cases/case-001/investigate') && /^\/cases(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/map' && /^\/missions(?:\/|$)/.test(pathname)) return true; // Missions belong to Case Files (map)
   if (navPath === '/academy' && /^\/academy(?:\/|$)/.test(pathname)) return true;
   if (navPath === '/practice' && /^\/practice(?:\/|$)/.test(pathname)) return true;

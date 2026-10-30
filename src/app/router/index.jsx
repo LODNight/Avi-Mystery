@@ -31,6 +31,7 @@ import { AcademyCoursePage } from '../../pages/learner/AcademyCoursePage.jsx';
 import { AcademyExamPage } from '../../pages/learner/AcademyExamPage.jsx';
 import { PracticeSandboxPage } from '../../pages/learner/PracticeSandboxPage.jsx';
 import { DetectiveWorkspacePage } from '../../pages/learner/DetectiveWorkspacePage.jsx';
+import { CaseInvestigationHubPage } from '../../pages/learner/CaseInvestigationHubPage.jsx';
 import { AdminOverviewPage } from '../../pages/admin/OverviewPage.jsx';
 import { AdminPageStatusPage } from '../../pages/admin/PageStatusPage.jsx';
 import { AdminSettingsPage } from '../../pages/admin/SettingsPage.jsx';
@@ -128,6 +129,8 @@ export function AppRouter() {
           }
         >
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/cases" element={<CaseInvestigationHubPage />} />
+          <Route path="/cases/:caseId" element={<CaseInvestigationHubPage />} />
           <Route path="/map" element={<LearningMapPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:slug" element={<CourseDetailPage />} />
@@ -158,9 +161,7 @@ export function AppRouter() {
           <Route path="/sandbox" element={<PracticeSandboxPage />} />
           <Route path="/sandbox/:tool" element={<PracticeSandboxPage />} />
           <Route path="/sandbox/topic/:topicId" element={<PracticeSandboxPage />} />
-          {/* Detective Workspace — new case-based investigation system */}
-          <Route path="/cases" element={<Navigate to="/cases/case-001/investigate" replace />} />
-          <Route path="/cases/:caseId" element={<Navigate to="/cases/case-001/investigate" replace />} />
+          {/* Detective Workspace — active field investigation desk */}
           <Route path="/cases/:caseId/investigate" element={<DetectiveWorkspacePage />} />
         </Route>
 

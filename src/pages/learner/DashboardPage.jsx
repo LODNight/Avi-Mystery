@@ -284,13 +284,13 @@ export function DashboardPage() {
               </div>
 
               <Link
-                to="/cases/case-001/investigate"
+                to="/cases/case-001"
                 className="inline-flex w-full items-center justify-between gap-2.5 rounded-md bg-primary px-4 py-3 text-sm font-bold text-primary-foreground shadow-sm hover:opacity-95 active:scale-[0.98] transition-all"
-                title="Launch Prototype Workspace"
+                title="Xem Hồ Sơ Vụ Án & Giao Nhiệm Vụ"
               >
                 <div className="flex flex-col text-left">
-                  <span className="leading-tight text-sm font-bold">Launch Prototype</span>
-                  <span className="font-mono text-[10px] opacity-85">Detective Workspace</span>
+                  <span className="leading-tight text-sm font-bold">Mở Hồ Sơ Vụ Án</span>
+                  <span className="font-mono text-[10px] opacity-85">Phòng Tiếp Nhận Điều Tra</span>
                 </div>
                 <ArrowUpRight className="size-5 shrink-0" />
               </Link>

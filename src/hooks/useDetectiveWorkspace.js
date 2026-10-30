@@ -35,7 +35,7 @@ export function useDetectiveWorkspace({ caseId, userId = 'user-001' }) {
 
   // ── Domain 4: UI State ──────────────────────────────────────────────────────
   const [uiState, setUIState] = useState({
-    hq: { isOpen: true, activeSection: 'report' },
+    hq: { isOpen: false, activeSection: 'report' },
     workspace: {
       activeSourceId: null,
       openSourceIds: [],

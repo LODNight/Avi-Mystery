@@ -30,33 +30,33 @@ import { isAdmin } from '../../../constants/roles.js';
 export const learnerNavItems = [
   {
     id: 'case',
-    label: 'Vụ án',
+    label: 'Bàn làm việc',
     labelKey: 'sectionCase',
     serial: 'SEC-01',
     children: [
-      { id: 'dashboard', label: 'Nhiệm vụ hiện tại', labelKey: 'currentMission', to: '/dashboard', icon: Home, code: '01' },
-      { id: 'investigation', label: 'Điều tra vụ án', labelKey: 'investigationWorkspace', to: '/cases', icon: Briefcase, code: '02' },
-      { id: 'map', label: 'Hồ sơ vụ án', labelKey: 'caseFiles', to: '/map', icon: Map, code: '03' },
+      { id: 'dashboard', label: 'Bàn chỉ huy', labelKey: 'currentMission', hint: 'Tổng quan & Định hướng', hintKey: 'dashboardHint', to: '/dashboard', icon: Home, code: '01' },
+      { id: 'investigation', label: 'Chuyên án điều tra', labelKey: 'investigationWorkspace', hint: 'Phá đại án nhiều giai đoạn', hintKey: 'investigationHint', to: '/cases', icon: Briefcase, code: '02' },
+      { id: 'map', label: 'Bản đồ nhiệm vụ', labelKey: 'caseFiles', hint: 'Thử thách ngắn theo chương', hintKey: 'mapHint', to: '/map', icon: Map, code: '03' },
     ]
   },
   {
     id: 'academy',
-    label: 'Đào tạo',
+    label: 'Đào tạo & Rèn luyện',
     labelKey: 'sectionAcademy',
     serial: 'SEC-02',
     children: [
-      { id: 'academy', label: 'Học viện Academy', labelKey: 'academy', to: '/academy', icon: GraduationCap, code: '04' },
-      { id: 'practice', label: 'Phòng luyện tập', labelKey: 'practiceLab', to: '/practice', icon: Dumbbell, code: '05' },
+      { id: 'academy', label: 'Học viện nghiệp vụ', labelKey: 'academy', hint: 'Học lý thuyết từ con số 0', hintKey: 'academyHint', to: '/academy', icon: GraduationCap, code: '04' },
+      { id: 'practice', label: 'Phòng luyện tập', labelKey: 'practiceLab', hint: 'Sandbox Excel & SQL tự do', hintKey: 'practiceHint', to: '/practice', icon: Dumbbell, code: '05' },
     ],
   },
   {
     id: 'profile',
-    label: 'Cá nhân',
+    label: 'Hồ sơ cá nhân',
     labelKey: 'sectionProfile',
     serial: 'SEC-03',
     children: [
       { id: 'achievements', label: 'Thành tựu', labelKey: 'achievements', to: '/achievements', icon: Trophy, code: '06' },
-      { id: 'profile', label: 'Hồ sơ', labelKey: 'profile', to: '/profile', icon: User, code: '07' },
+      { id: 'profile', label: 'Hồ sơ ngành', labelKey: 'profile', to: '/profile', icon: User, code: '07' },
       { id: 'settings', label: 'Cài đặt', labelKey: 'settings', to: '/settings', icon: Settings, code: '08' },
     ],
   },
@@ -157,7 +157,7 @@ export function LearnerSidebar({
                 )}
               </div>
               <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
-                BUREAU ARCHIVE // V2.4
+                {t('nav:bureauArchive', 'BUREAU ARCHIVE')} // V2.4
               </p>
             </div>
           )}
@@ -253,12 +253,13 @@ export function LearnerSidebar({
                 )}
               </button>
 
-              {isOpen && group.children.map(({ label, labelKey, to, icon: Icon, code }) => {
+              {isOpen && group.children.map(({ label, labelKey, hint, hintKey, to, icon: Icon, code }) => {
                 const navStatus = getPageStatus(to);
                 const isItemMaintenance = navStatus?.status === 'maintenance';
                 const isItemNotice = navStatus?.status === 'notice';
                 const isPathActive = isLearnerNavPathActive(location.pathname, to);
                 const itemLabel = labelKey ? t(`nav:${labelKey}`, label) : label;
+                const itemHint = hintKey ? t(`nav:${hintKey}`, hint) : hint;
 
                 return (
                   <NavLink
@@ -276,7 +277,16 @@ export function LearnerSidebar({
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <Icon className={`size-4 shrink-0 ${isPathActive ? 'text-primary' : 'text-muted-foreground'}`} />
-                      {(!collapsed || mobileOpen) && <span className="truncate">{itemLabel}</span>}
+                      {(!collapsed || mobileOpen) && (
+                        <div className="min-w-0 flex flex-col">
+                          <span className="truncate leading-tight">{itemLabel}</span>
+                          {itemHint && (
+                            <span className="truncate text-[10px] font-normal text-muted-foreground/80 leading-tight mt-0.5">
+                              {itemHint}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     {(!collapsed || mobileOpen) && !isItemMaintenance && !isItemNotice && code && (
@@ -306,7 +316,7 @@ export function LearnerSidebar({
         <div className="mt-3 mb-1 flex flex-col gap-1 px-1 border-t border-sidebar-border pt-3">
           {(!collapsed || mobileOpen) && (
             <p className="pb-1 font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              HQ Overseer
+              {t('nav:hqOverseer', 'HQ Overseer')}
             </p>
           )}
           <Link
@@ -314,10 +324,10 @@ export function LearnerSidebar({
             className={`flex items-center gap-2.5 rounded-md border border-sidebar-border hover:border-primary/40 bg-card/60 text-sidebar-foreground hover:bg-sidebar-accent transition-all ${
               collapsed && !mobileOpen ? 'justify-center p-2.5' : 'px-3 py-2 text-xs font-bold'
             }`}
-            title="Admin Console"
+            title={t('nav:adminConsole', 'Admin Console')}
           >
             <PanelLeft className="size-4 text-primary shrink-0" />
-            {(!collapsed || mobileOpen) && <span className="truncate">Admin Console</span>}
+            {(!collapsed || mobileOpen) && <span className="truncate">{t('nav:adminConsole', 'Admin Console')}</span>}
           </Link>
         </div>
       )}
@@ -346,7 +356,7 @@ export function LearnerSidebar({
             <div className="flex items-center gap-2">
               <FileCheck2 className="size-3.5 text-primary" />
               <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-sidebar-foreground">
-                {t('nav:streak', 'Chuỗi')} công tác
+                {t('nav:fieldDutyStreak', 'Chuỗi công tác')}
               </span>
             </div>
             <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">

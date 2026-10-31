@@ -27,15 +27,13 @@ import InvestigationStamp from '../../components/investigation/InvestigationStam
 /* ─── Constants ─────────────────────────────────────────────── */
 
 const AVATAR_PRESETS = [
-  { id: 'classic',  emoji: '🕵️', label: 'Cổ điển' },
-  { id: 'cyber',    emoji: '💻', label: 'Điều tra Số' },
-  { id: 'forensic', emoji: '🔬', label: 'Pháp y' },
-  { id: 'shadow',   emoji: '🕶️', label: 'Điệp viên' },
-  { id: 'analyst',  emoji: '📊', label: 'Phân tích' },
-  { id: 'field',    emoji: '🎯', label: 'Hiện trường' },
+  { id: 'classic',  emoji: '🕵️', fallbackLabel: 'Cổ điển' },
+  { id: 'cyber',    emoji: '💻', fallbackLabel: 'Điều tra Số' },
+  { id: 'forensic', emoji: '🔬', fallbackLabel: 'Pháp y' },
+  { id: 'shadow',   emoji: '🕶️', fallbackLabel: 'Điệp viên' },
+  { id: 'analyst',  emoji: '📊', fallbackLabel: 'Phân tích' },
+  { id: 'field',    emoji: '🎯', fallbackLabel: 'Hiện trường' },
 ];
-
-const ACCENT_PRESETS = DETECTIVE_PERSONA_PRESETS;
 
 function getPasswordStrength(pwd) {
   if (!pwd) return 0;
@@ -47,7 +45,6 @@ function getPasswordStrength(pwd) {
   if (/[^A-Za-z0-9]/.test(pwd)) s++;
   return s;
 }
-const STR_LABEL = ['', 'Rất yếu', 'Yếu', 'Trung bình', 'Mạnh', 'Rất mạnh'];
 const STR_COLOR = ['', 'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-emerald-500'];
 
 /* ─── Shared UI Primitives ──────────────────────────────────── */
@@ -110,26 +107,6 @@ function SegmentedControl({ options, value, onChange }) {
   );
 }
 
-function ToggleSwitch({ value, onChange }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={value}
-      onClick={() => onChange(!value)}
-      className={`relative inline-flex h-6 w-11 cursor-pointer rounded-full border-2 transition-colors ${
-        value ? 'border-primary bg-primary' : 'border-border bg-muted'
-      }`}
-    >
-      <span
-        className={`inline-block size-4 rounded-full bg-white shadow-sm transition-transform ${
-          value ? 'translate-x-5' : 'translate-x-0.5'
-        } mt-[1px]`}
-      />
-    </button>
-  );
-}
-
 /* ══════════════════════════════════════════════════════════════ */
 export function SettingsPage() {
   const [searchParams] = useSearchParams();
@@ -142,7 +119,7 @@ export function SettingsPage() {
 
   const { theme, toggleTheme, primaryColor, setPrimaryColor } = useTheme();
   const { user, updateProfile, changePassword } = useAuth();
-  const { i18n } = useTranslation(['settings', 'common']);
+  const { t, i18n } = useTranslation(['settings', 'common', 'nav']);
 
   /* ── Profile state ── */
   const [name, setName] = useState(user?.name || '');
@@ -205,6 +182,14 @@ export function SettingsPage() {
     (p) => p.css.toLowerCase() === activeColor.toLowerCase()
   );
   const pwdStrength = getPasswordStrength(newPwd);
+  const strengthLabels = [
+    '',
+    t('settings:strengthVeryWeak', 'Rất yếu'),
+    t('settings:strengthWeak', 'Yếu'),
+    t('settings:strengthMedium', 'Trung bình'),
+    t('settings:strengthStrong', 'Mạnh'),
+    t('settings:strengthVeryStrong', 'Rất mạnh'),
+  ];
 
   /* ── Profile handlers ── */
   const triggerSaveProfile = useCallback(async (updates) => {
@@ -230,13 +215,13 @@ export function SettingsPage() {
     e.preventDefault();
     setPwdError('');
     if (!curPwd || !newPwd || !conPwd) {
-      return setPwdError('Vui lòng điền đầy đủ tất cả các trường.');
+      return setPwdError(t('settings:pwdFillAll', 'Vui lòng điền đầy đủ tất cả các trường.'));
     }
     if (newPwd !== conPwd) {
-      return setPwdError('Mật khẩu mới và mật khẩu xác nhận không khớp.');
+      return setPwdError(t('settings:pwdMismatch', 'Mật khẩu mới và mật khẩu xác nhận không khớp.'));
     }
     if (newPwd.length < 8) {
-      return setPwdError('Mật khẩu mới phải có tối thiểu 8 ký tự.');
+      return setPwdError(t('settings:pwdMinLength', 'Mật khẩu mới phải có tối thiểu 8 ký tự.'));
     }
 
     setPwdSaveState('saving');
@@ -271,21 +256,23 @@ export function SettingsPage() {
             </div>
             <div>
               <p className="font-mono text-[9px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                INVESTIGATOR PROFILE · CONFIDENTIAL
+                {t('settings:investigatorProfile', 'INVESTIGATOR PROFILE · CONFIDENTIAL')}
               </p>
               <h1 className="text-lg font-black tracking-tight text-foreground">
-                {user?.name || 'Học viên Điều tra'}
+                {user?.name || t('settings:cadetInvestigator', 'Học viên Điều tra')}
               </h1>
               <p className="text-xs text-muted-foreground flex items-center gap-2 mt-0.5">
                 <span>{user?.email}</span>
                 <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-500">
-                  <span className="size-1 rounded-full bg-emerald-500" /> Đã xác thực
+                  <span className="size-1 rounded-full bg-emerald-500" /> {t('settings:verified', 'Đã xác thực')}
                 </span>
               </p>
             </div>
           </div>
           <div className="text-right shrink-0 hidden sm:block">
-            <p className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">Điểm tích lũy XP</p>
+            <p className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">
+              {t('settings:accumulatedXp', 'Điểm tích lũy XP')}
+            </p>
             <p className="text-lg font-black text-primary">{formatXP(user?.xp || 0)}</p>
           </div>
         </div>
@@ -296,64 +283,77 @@ export function SettingsPage() {
       {/* 1. HỒ SƠ */}
       {activeTab === 'profile' && (
         <SectionWrapper
-          title="Hồ sơ Điều tra viên"
-          description="Thiết lập nhân dạng, tên hiển thị và bí danh của bạn trong hệ thống"
+          title={t('settings:profileSectionTitle', 'Hồ sơ Điều tra viên')}
+          description={t('settings:profileSectionDesc', 'Thiết lập nhân dạng, tên hiển thị và bí danh của bạn trong hệ thống')}
           icon={User}
         >
           {/* Avatar selector */}
-          <SettingRow topAligned label="Biểu tượng Avatar" description="Chọn biểu tượng đại diện trong sổ tay vụ án và xếp hạng">
+          <SettingRow
+            topAligned
+            label={t('settings:avatarLabel', 'Biểu tượng Avatar')}
+            description={t('settings:avatarDesc', 'Chọn biểu tượng đại diện trong sổ tay vụ án và xếp hạng')}
+          >
             <div className="flex flex-col items-end gap-2">
               <div className="grid grid-cols-6 gap-2">
-                {AVATAR_PRESETS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    title={p.label}
-                    onClick={() => handleAvatarChange(p.id)}
-                    className={`relative grid size-10 place-items-center rounded-xl border text-lg transition-all cursor-pointer ${
-                      avatarId === p.id
-                        ? 'border-primary bg-primary/15 shadow-sm scale-105'
-                        : 'border-border/60 bg-muted/40 hover:bg-muted'
-                    }`}
-                  >
-                    <span>{p.emoji}</span>
-                    {avatarId === p.id && (
-                      <span className="absolute -top-1 -right-1 grid size-3.5 place-items-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold">
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                ))}
+                {AVATAR_PRESETS.map((p) => {
+                  const avatarTitle = t(`settings:avatar_${p.id}`, p.fallbackLabel);
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      title={avatarTitle}
+                      onClick={() => handleAvatarChange(p.id)}
+                      className={`relative grid size-10 place-items-center rounded-xl border text-lg transition-all cursor-pointer ${
+                        avatarId === p.id
+                          ? 'border-primary bg-primary/15 shadow-sm scale-105'
+                          : 'border-border/60 bg-muted/40 hover:bg-muted'
+                      }`}
+                    >
+                      <span>{p.emoji}</span>
+                      {avatarId === p.id && (
+                        <span className="absolute -top-1 -right-1 grid size-3.5 place-items-center rounded-full bg-primary text-primary-foreground text-[9px] font-bold">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
               {profileSaveState === 'saving' && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Loader2 className="size-3 animate-spin" /> Đang lưu...
+                  <Loader2 className="size-3 animate-spin" /> {t('settings:saving', 'Đang lưu...')}
                 </span>
               )}
               {profileSaveState === 'saved' && (
                 <span className="text-xs text-emerald-500 font-bold flex items-center gap-1">
-                  <CheckCircle className="size-3.5" /> Đã cập nhật
+                  <CheckCircle className="size-3.5" /> {t('settings:saved', 'Đã cập nhật')}
                 </span>
               )}
             </div>
           </SettingRow>
 
           {/* Display Name */}
-          <SettingRow label="Tên hiển thị" description="Hiển thị trên lời chào, dashboard và báo cáo điều tra">
+          <SettingRow
+            label={t('settings:displayNameLabel', 'Tên hiển thị')}
+            description={t('settings:displayNameDesc', 'Hiển thị trên lời chào, dashboard và báo cáo điều tra')}
+          >
             <div className="flex items-center gap-2">
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onBlur={handleNameBlur}
-                placeholder="Tên điều tra viên"
+                placeholder={t('settings:namePlaceholder', 'Tên điều tra viên')}
                 className="w-56 rounded-xl border border-border bg-muted/40 px-3.5 py-2 text-sm font-semibold text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-right"
               />
             </div>
           </SettingRow>
 
           {/* Codename */}
-          <SettingRow label="Mã danh điều tra" description="Mã hiệu bảo mật gán cho hồ sơ tác nghiệp">
+          <SettingRow
+            label={t('settings:codenameLabel', 'Mã danh điều tra')}
+            description={t('settings:codenameDesc', 'Mã hiệu bảo mật gán cho hồ sơ tác nghiệp')}
+          >
             <span className="rounded-lg bg-primary/10 border border-primary/20 px-3 py-1 font-mono text-xs font-bold text-primary">
               AGENT-{(user?.id || '001').slice(0, 6).toUpperCase()}
             </span>
@@ -364,12 +364,15 @@ export function SettingsPage() {
       {/* 2. GIAO DIỆN & TRẢI NGHIỆM */}
       {activeTab === 'appearance' && (
         <SectionWrapper
-          title="Giao diện & Trải nghiệm"
-          description="Tuỳ chỉnh chế độ hiển thị Sáng/Tối và bảng màu chủ đạo (Primary Color)"
+          title={t('settings:appearanceSectionTitle', 'Giao diện & Trải nghiệm')}
+          description={t('settings:appearanceSectionDesc', 'Tùy chỉnh chế độ hiển thị Sáng/Tối và bảng màu chủ đạo (Primary Color)')}
           icon={Palette}
         >
           {/* Display Mode (Light / Dark) */}
-          <SettingRow label="Chế độ hiển thị" description="Chọn tông màu tối ưu cho môi trường làm việc của bạn">
+          <SettingRow
+            label={t('settings:themeModeLabel', 'Chế độ hiển thị')}
+            description={t('settings:themeModeDesc', 'Chọn tông màu tối ưu cho môi trường làm việc của bạn')}
+          >
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -380,7 +383,7 @@ export function SettingsPage() {
                     : 'border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted'
                 }`}
               >
-                <Sun className="size-4" /> Sáng (Light)
+                <Sun className="size-4" /> {t('settings:lightMode', 'Sáng (Light)')}
               </button>
               <button
                 type="button"
@@ -391,7 +394,7 @@ export function SettingsPage() {
                     : 'border-border/60 bg-muted/40 text-muted-foreground hover:bg-muted'
                 }`}
               >
-                <Moon className="size-4" /> Tối (Dark)
+                <Moon className="size-4" /> {t('settings:darkMode', 'Tối (Dark)')}
               </button>
             </div>
           </SettingRow>
@@ -399,8 +402,8 @@ export function SettingsPage() {
           {/* Color Picker & Custom HEX Bar */}
           <SettingRow
             topAligned
-            label="Thanh nhập bảng màu tùy ý"
-            description="Tự do kéo chọn màu hoặc nhập trực tiếp mã màu HEX yêu thích cho toàn bộ giao diện"
+            label={t('settings:customColorLabel', 'Thanh nhập bảng màu tùy ý')}
+            description={t('settings:customColorDesc', 'Tự do kéo chọn màu hoặc nhập trực tiếp mã màu HEX yêu thích cho toàn bộ giao diện')}
           >
             <div className="flex flex-col gap-4 min-w-[260px] sm:min-w-[320px]">
               {/* Color input row */}
@@ -411,11 +414,13 @@ export function SettingsPage() {
                     value={safePickerColor}
                     onChange={handleColorPickerChange}
                     className="absolute -top-3 -left-3 size-16 cursor-pointer"
-                    title="Bấm để chọn màu tự do"
+                    title={t('settings:customColorPickerTitle', 'Bấm để chọn màu tự do')}
                   />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase">Mã màu HEX</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase">
+                    {t('settings:hexCodeLabel', 'Mã màu HEX')}
+                  </p>
                   <input
                     type="text"
                     value={hexInput}
@@ -433,14 +438,14 @@ export function SettingsPage() {
                       setHexInput(defaultThemeColor);
                     }}
                     className="text-xs text-muted-foreground hover:text-foreground p-1 cursor-pointer transition-colors"
-                    title="Khôi phục mặc định"
+                    title={t('settings:resetDefault', 'Khôi phục mặc định')}
                   >
                     <RotateCcw className="size-3.5" />
                   </button>
                 )}
               </div>
 
-              {/* Contrast Meter / Thước đo tương phản tự động */}
+              {/* Contrast Meter */}
               <div className="flex items-center justify-between rounded-xl border border-border/80 bg-muted/20 px-3 py-2 text-xs">
                 <div className="flex items-center gap-2">
                   <span
@@ -448,7 +453,7 @@ export function SettingsPage() {
                     style={{ backgroundColor: activeColor }}
                   />
                   <span className="font-mono font-semibold text-muted-foreground text-[11px]">
-                    Tương phản {contrastAnalysis.score}
+                    {t('settings:contrastScore', 'Tương phản {{score}}', { score: contrastAnalysis.score })}
                   </span>
                 </div>
                 <span className={`inline-flex items-center gap-1 font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -456,14 +461,14 @@ export function SettingsPage() {
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                     : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                 }`}>
-                  <CheckCircle className="size-2.5" /> Chuẩn {contrastAnalysis.wcagLevel}
+                  <CheckCircle className="size-2.5" /> {t('settings:wcagStandard', 'Chuẩn {{level}}', { level: contrastAnalysis.wcagLevel })}
                 </span>
               </div>
 
               {/* Presets Swatches */}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
-                  Bộ sưu tập bảng màu thám tử
+                  {t('settings:paletteCollection', 'Bộ sưu tập bảng màu thám tử')}
                 </p>
                 <div className="grid grid-cols-7 gap-2">
                   {DETECTIVE_PERSONA_PRESETS.map((preset) => {
@@ -508,14 +513,14 @@ export function SettingsPage() {
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div>
                 <p className="text-xs font-bold text-foreground uppercase tracking-wider">
-                  Thao trường xem trước tương tác
+                  {t('settings:livePreviewTitle', 'Thao trường xem trước tương tác')}
                 </p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Mô phỏng tức thì các thành phần giao diện thực tế khi áp dụng bảng màu
+                  {t('settings:livePreviewDesc', 'Mô phỏng tức thì các thành phần giao diện thực tế khi áp dụng bảng màu')}
                 </p>
               </div>
               <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                <CheckCircle className="size-3" /> Đạt chuẩn tương phản ({contrastAnalysis.score})
+                <CheckCircle className="size-3" /> {t('settings:contrastPassed', 'Đạt chuẩn tương phản ({{score}})', { score: contrastAnalysis.score })}
               </span>
             </div>
 
@@ -527,16 +532,16 @@ export function SettingsPage() {
                     type="button"
                     className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xs hover:opacity-90 active:scale-98 transition-all cursor-pointer"
                   >
-                    Nút Primary
+                    {t('settings:primaryButton', 'Nút Primary')}
                   </button>
                   <button
                     type="button"
                     className="rounded-xl border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-bold text-primary hover:bg-primary/20 active:scale-98 transition-all cursor-pointer"
                   >
-                    Nút Outline
+                    {t('settings:outlineButton', 'Nút Outline')}
                   </button>
                   <span className="inline-flex items-center gap-1 rounded-lg bg-primary/15 px-2.5 py-1 text-xs font-bold text-primary border border-primary/25">
-                    <Sparkles className="size-3" /> Badge Nổi Bật
+                    <Sparkles className="size-3" /> {t('settings:featuredBadge', 'Badge Nổi Bật')}
                   </span>
                 </div>
               </div>
@@ -552,21 +557,21 @@ export function SettingsPage() {
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-primary animate-pulse" />
                     <span className="font-mono text-[9px] font-bold text-muted-foreground uppercase tracking-widest">
-                      VẬT CHỨNG #EVD-049
+                      {t('settings:evidenceTitle', 'VẬT CHỨNG #EVD-049')}
                     </span>
                   </div>
                   <InvestigationStamp
                     variant="classified"
-                    label="HỒ SƠ MẬT"
+                    label={t('settings:classifiedStamp', 'HỒ SƠ MẬT')}
                     size="sm"
                     animated={false}
                     rotate="-rotate-2"
                   />
                 </div>
                 <div className="mt-2">
-                  <p className="text-xs font-bold text-foreground">Trích xuất cơ sở dữ liệu nghi can</p>
+                  <p className="text-xs font-bold text-foreground">{t('settings:evidenceDescHeader', 'Trích xuất cơ sở dữ liệu nghi can')}</p>
                   <p className="text-[10px] text-muted-foreground mt-0.5">
-                    Độ tương phản tự động bảo đảm văn bản luôn sắc nét và dễ đọc.
+                    {t('settings:evidenceDescSub', 'Độ tương phản tự động bảo đảm văn bản luôn sắc nét và dễ đọc.')}
                   </p>
                 </div>
               </div>
@@ -578,11 +583,14 @@ export function SettingsPage() {
       {/* 3. NGÔN NGỮ */}
       {activeTab === 'language' && (
         <SectionWrapper
-          title="Ngôn ngữ hiển thị"
-          description="Tùy chỉnh ngôn ngữ áp dụng trên toàn bộ ứng dụng"
+          title={t('settings:languageTitle', 'Ngôn ngữ hiển thị')}
+          description={t('settings:languageDesc', 'Tùy chỉnh ngôn ngữ áp dụng trên toàn bộ ứng dụng')}
           icon={Globe}
         >
-          <SettingRow label="Ngôn ngữ hệ thống" description="Ngôn ngữ được ưu tiên hiển thị">
+          <SettingRow
+            label={t('settings:systemLanguageLabel', 'Ngôn ngữ hệ thống')}
+            description={t('settings:systemLanguageDesc', 'Ngôn ngữ được ưu tiên hiển thị')}
+          >
             <SegmentedControl
               value={currentLang}
               onChange={(code) => {
@@ -601,14 +609,14 @@ export function SettingsPage() {
       {/* 4. BẢO MẬT & MẬT KHẨU */}
       {activeTab === 'account-password' && (
         <SectionWrapper
-          title="Bảo mật & Mật khẩu"
-          description="Quản lý và cập nhật mật khẩu bảo mật cho tài khoản của bạn"
+          title={t('settings:securityTitle', 'Bảo mật & Mật khẩu')}
+          description={t('settings:securityDesc', 'Quản lý và cập nhật mật khẩu bảo mật cho tài khoản của bạn')}
           icon={KeyRound}
         >
           <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 block">
-                Mật khẩu hiện tại
+                {t('settings:currentPassword', 'Mật khẩu hiện tại')}
               </label>
               <div className="relative">
                 <input
@@ -630,7 +638,7 @@ export function SettingsPage() {
 
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 block">
-                Mật khẩu mới
+                {t('settings:newPassword', 'Mật khẩu mới')}
               </label>
               <div className="relative">
                 <input
@@ -661,7 +669,7 @@ export function SettingsPage() {
                     ))}
                   </div>
                   <p className="font-mono text-[10px] text-muted-foreground">
-                    Độ mạnh: <span className="font-bold text-foreground">{STR_LABEL[pwdStrength]}</span>
+                    {t('settings:strengthLabel', 'Độ mạnh:')} <span className="font-bold text-foreground">{strengthLabels[pwdStrength]}</span>
                   </p>
                 </div>
               )}
@@ -669,7 +677,7 @@ export function SettingsPage() {
 
             <div>
               <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 block">
-                Xác nhận mật khẩu mới
+                {t('settings:confirmPassword', 'Xác nhận mật khẩu mới')}
               </label>
               <div className="relative">
                 <input
@@ -694,12 +702,12 @@ export function SettingsPage() {
             <div className="flex items-center justify-between pt-2">
               {pwdSaveState === 'saving' && (
                 <span className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Loader2 className="size-3 animate-spin" /> Đang cập nhật...
+                  <Loader2 className="size-3 animate-spin" /> {t('settings:updating', 'Đang cập nhật...')}
                 </span>
               )}
               {pwdSaveState === 'saved' && (
                 <span className="text-xs text-emerald-500 font-bold flex items-center gap-1">
-                  <CheckCircle className="size-3.5" /> Mật khẩu đã được đổi thành công!
+                  <CheckCircle className="size-3.5" /> {t('settings:passwordUpdated', 'Mật khẩu đã được đổi thành công!')}
                 </span>
               )}
               {!pwdSaveState && <span />}
@@ -709,7 +717,7 @@ export function SettingsPage() {
                 disabled={pwdSaveState === 'saving'}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer disabled:opacity-50"
               >
-                <Lock className="size-3.5" /> Cập nhật mật khẩu
+                <Lock className="size-3.5" /> {t('settings:updatePasswordBtn', 'Cập nhật mật khẩu')}
               </button>
             </div>
           </form>
@@ -718,7 +726,7 @@ export function SettingsPage() {
 
       {/* Footer notice */}
       <p className="text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground pt-4">
-        Hệ thống Avi-Mystery HQ · Mọi thay đổi tuỳ chỉnh được lưu tự động
+        {t('settings:quickNotice', 'Hệ thống Avi-Mystery HQ · Mọi thay đổi tuỳ chỉnh được lưu tự động')}
       </p>
     </div>
   );

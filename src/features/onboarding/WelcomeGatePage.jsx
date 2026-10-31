@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import {
   Zap,
@@ -13,11 +13,35 @@ import {
   CheckCircle2,
   Shield,
   FileSpreadsheet,
+  Briefcase,
+  GraduationCap,
+  Dumbbell,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth.js';
 import { useTheme } from '../../app/providers/ThemeProvider.jsx';
 import { onboardingService, ONBOARDING_STATUS } from './onboardingService.js';
 import { Button } from '../../components/ui/Button.jsx';
+
+const INTENT_OPTIONS = [
+  {
+    id: 'case',
+    icon: Briefcase,
+    title: 'Phá án thực chiến',
+    desc: 'Thích giải đố, đọc hồ sơ hiện trường và tìm manh mối từ dữ liệu ngay.',
+  },
+  {
+    id: 'academy',
+    icon: GraduationCap,
+    title: 'Học nghiệp vụ từ con số 0',
+    desc: 'Mới bắt đầu, muốn học lý thuyết Excel & SQL căn bản trước khi phá án.',
+  },
+  {
+    id: 'practice',
+    icon: Dumbbell,
+    title: 'Luyện tập kỹ năng tự do',
+    desc: 'Đã có nền tảng, muốn rèn nhanh câu lệnh SQL hoặc hàm Excel theo chủ đề.',
+  },
+];
 
 /**
  * WelcomeGatePage — Hồ sơ Nhập Ngũ Đặc Vụ (First-Run Experience)
@@ -31,6 +55,8 @@ export function WelcomeGatePage() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+
+  const [selectedIntent, setSelectedIntent] = useState('case');
 
   if (isLoading) {
     return (
@@ -48,12 +74,27 @@ export function WelcomeGatePage() {
     return <Navigate to="/dashboard" replace />;
   }
 
+  function saveUserIntent(intentId) {
+    try {
+      localStorage.setItem(`avi:user_intent:${user.id}`, intentId);
+    } catch {
+      // ignore storage errors
+    }
+  }
+
+  function handleSelectIntent(intentId) {
+    setSelectedIntent(intentId);
+    saveUserIntent(intentId);
+  }
+
   function handleStartTutorial() {
+    saveUserIntent(selectedIntent);
     onboardingService.setStatus(user.id, ONBOARDING_STATUS.IN_PROGRESS);
     navigate('/onboarding/case-0', { replace: true });
   }
 
   function handleSkip() {
+    saveUserIntent(selectedIntent);
     onboardingService.setStatus(user.id, ONBOARDING_STATUS.SKIPPED);
     navigate('/dashboard', { replace: true });
   }
@@ -81,21 +122,21 @@ export function WelcomeGatePage() {
             className="rounded-md border border-border bg-background p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             aria-label="Toggle theme"
           >
-            {theme === 'dark'
-              ? <Sun className="size-4 text-amber-400" />
-              : <Moon className="size-4" />
-            }
+            {theme === 'dark' ? (
+              <Sun className="size-4 text-amber-400" />
+            ) : (
+              <Moon className="size-4" />
+            )}
           </button>
         </div>
       </header>
 
       {/* ── Main Content ── */}
-      <main className="max-w-5xl mx-auto px-5 py-12 sm:py-16">
+      <main className="max-w-5xl mx-auto px-5 py-10 sm:py-14">
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-
-          {/* ── LEFT 6 COLS: Investigator Induction Briefing ── */}
+          {/* ── LEFT 6 COLS: Investigator Induction & Personal Intent Selector ── */}
           <div className="lg:col-span-6">
-            <div className="inline-flex items-center gap-2 rounded-sm border border-primary/40 bg-primary/10 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-primary mb-5">
+            <div className="inline-flex items-center gap-2 rounded-sm border border-primary/40 bg-primary/10 px-3 py-1 font-mono text-[11px] font-bold uppercase tracking-wider text-primary mb-4">
               <Shield className="size-3.5" />
               <span>Nhà điều tra mới gia nhập</span>
             </div>
@@ -104,33 +145,83 @@ export function WelcomeGatePage() {
               Chào mừng, <span className="text-primary">{firstName}!</span>
             </h1>
 
-            <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-              Trước khi bắt đầu điều tra các vụ án kinh doanh thật, hãy cùng khám phá{' '}
-              <strong className="text-foreground">cách nền tảng hoạt động</strong>{' '}
-              qua một vụ án đơn giản, chỉ mất khoảng 2 phút.
+            <p className="mt-3 text-sm sm:text-base leading-relaxed text-muted-foreground">
+              Trước khi bắt đầu, hãy chọn <strong className="text-foreground">nhu cầu ưu tiên</strong> của bạn để hệ thống sắp xếp bàn làm việc phù hợp nhất:
             </p>
 
+            {/* Personal Intent Picker */}
+            <div className="mt-4 flex flex-col gap-2.5">
+              {INTENT_OPTIONS.map((opt) => {
+                const Icon = opt.icon;
+                const isActive = selectedIntent === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => handleSelectIntent(opt.id)}
+                    className={`w-full text-left rounded-md border p-3.5 transition-all cursor-pointer flex items-start gap-3 ${
+                      isActive
+                        ? 'border-primary bg-primary/10 shadow-2xs'
+                        : 'border-border bg-card/70 hover:border-primary/40 hover:bg-card'
+                    }`}
+                  >
+                    <div
+                      className={`grid size-8 shrink-0 place-items-center rounded-sm border mt-0.5 ${
+                        isActive
+                          ? 'border-primary/40 bg-primary text-primary-foreground'
+                          : 'border-border bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      <Icon className="size-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs sm:text-sm font-bold text-foreground">
+                          {opt.title}
+                        </span>
+                        {isActive && (
+                          <span className="font-mono text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-xs bg-primary/20 text-primary">
+                            Đang chọn
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-snug">
+                        {opt.desc}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Training Protocol Checklist */}
-            <ul className="mt-6 space-y-3 border-l-2 border-primary/40 pl-4">
-              {[
-                { icon: TableProperties, code: '01', text: 'Đọc hiểu Hồ sơ vụ án & dữ liệu' },
-                { icon: Search,          code: '02', text: 'Sử dụng bảng tính để tìm manh mối' },
-                { icon: Award,           code: '03', text: 'Nộp bài và nhận XP thưởng' },
-              ].map(({ icon: Icon, code, text }) => (
-                <li key={text} className="flex items-center gap-3 text-sm text-foreground">
-                  <span className="shrink-0 grid size-7 place-items-center rounded-sm border border-primary/30 bg-primary/10 font-mono text-[10px] font-bold text-primary">
-                    <Icon className="size-3.5 text-primary" />
-                  </span>
-                  <span className="font-mono text-xs text-muted-foreground">[{code}]</span>
-                  <span className="font-medium">{text}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="mt-6 pt-5 border-t border-border">
+              <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                QUY TRÌNH LÀM QUEN NHANH (2 PHÚT):
+              </p>
+              <ul className="space-y-2.5 border-l-2 border-primary/40 pl-4">
+                {[
+                  { icon: TableProperties, code: '01', text: 'Đọc hiểu Hồ sơ vụ án & dữ liệu' },
+                  { icon: Search, code: '02', text: 'Sử dụng bảng tính để tìm manh mối' },
+                  { icon: Award, code: '03', text: 'Nộp bài và nhận XP thưởng' },
+                ].map(({ icon: Icon, code, text }) => (
+                  <li key={text} className="flex items-center gap-3 text-xs sm:text-sm text-foreground">
+                    <span className="shrink-0 grid size-6 place-items-center rounded-sm border border-primary/30 bg-primary/10 font-mono text-[10px] font-bold text-primary">
+                      <Icon className="size-3 text-primary" />
+                    </span>
+                    <span className="font-mono text-[11px] text-muted-foreground">[{code}]</span>
+                    <span className="font-medium">{text}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
             {/* Time estimate */}
-            <div className="mt-7 inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 text-xs font-mono text-muted-foreground">
+            <div className="mt-5 inline-flex items-center gap-2 rounded-sm border border-border bg-card px-3.5 py-2 text-xs font-mono text-muted-foreground">
               <Clock className="size-3.5 text-primary shrink-0" />
-              <span>Ước tính: <strong className="text-foreground">~2 phút</strong></span>
+              <span>
+                Ước tính: <strong className="text-foreground">~2 phút</strong>
+              </span>
             </div>
           </div>
 
@@ -160,11 +251,11 @@ export function WelcomeGatePage() {
                       >
                         {i === 0 ? <CheckCircle2 className="size-3.5" /> : i + 1}
                       </div>
-                      <span className="text-[10px] font-mono font-medium text-muted-foreground hidden sm:block">{step}</span>
+                      <span className="text-[10px] font-mono font-medium text-muted-foreground hidden sm:block">
+                        {step}
+                      </span>
                     </div>
-                    {i < 3 && (
-                      <div className="flex-1 h-px bg-border" />
-                    )}
+                    {i < 3 && <div className="flex-1 h-px bg-border" />}
                   </React.Fragment>
                 ))}
               </div>
@@ -221,7 +312,7 @@ export function WelcomeGatePage() {
               </div>
 
               <p className="text-center text-[11px] text-muted-foreground">
-                Bạn có thể xem lại hướng dẫn bất kỳ lúc nào trong phần Hồ sơ.
+                Lựa chọn nhu cầu của bạn sẽ được lưu lại và có thể đổi bất cứ lúc nào tại Bàn chỉ huy.
               </p>
             </div>
           </div>
